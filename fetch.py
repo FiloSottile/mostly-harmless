@@ -10,11 +10,11 @@ g = geocoders.Google(domain='maps.google.com')
 def parse_listing(listing):
     res = {}
     if '<strong>Event name</strong>' in listing:
-        res['name'] = re.search(r'<strong>Event name</strong>: <b>([^<]+)</b>', listing).group(1)
+        res['name'] = re.search(r'<strong>Event name</strong>: <b>(?:<[^>]+?>)*([^<]+)(?:<[^>]+?>)*</b>', listing).group(1)
     else:
         res['name'] = re.search(r'<li>Name: (?:<[^>]+?>)*([^<]+)', listing).group(1)
-    mobj = re.search(r'Email: <b>(\w+) &quot;at"</b>&nbsp;<strong>\n([\w\.]+)&nbsp;</strong>', listing)
-    res['email'] = mobj.group(1) + '@' + mobj.group(2) if mobj else None
+    mobj = re.search(r'Email: <b>([^ ]+) &quot;at"</b>&nbsp;<strong>\n([^&]+)&nbsp;</strong>', listing)
+    res['email'] = str(len(mobj.group(2).split('.')[0])) + ',' + str(len(mobj.group(2))) + ',' + mobj.group(2).replace('.', '', 1) + mobj.group(1) if mobj else None
     mobj = re.search(r'Fingerprint: <a href="[^"]*">(\w+)<b>(\w+)</b></a>\n \(([\w/]+)\)', listing)
     res['fingerprint'] = mobj.group(1) + mobj.group(2) if mobj else None
     res['key'] = mobj.group(2) if mobj else None
@@ -30,8 +30,7 @@ def parse_listing(listing):
 # TODO Key ID field like here http://biglumber.com/x/web?sn=Enrico+Franceschi
 
 index_page = urllib2.urlopen('http://biglumber.com/x/web?va=1').read().decode('iso-8859-1')
-#index_page = index_page[index_page.index('<li><a href="http://biglumber.com/x/web?so=Italy">'):]
-#index_page = index_page[:index_page.index('</ul></li>')]
+index_page = index_page[index_page.index('<li>'):]
 
 locations_list = re.findall(r'http://biglumber\.com/x/web\?sl=(\d+)', index_page)
 
