@@ -7,7 +7,7 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
 	<!--[if lte IE 8]>
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
@@ -24,12 +24,15 @@
 		h1 {
 			margin-top: 30px;
 		}
+		.github-ribbon {
+			z-index: 10;
+		}
 	</style>
 
 </head>
 <body>
 
-	<a href="https://github.com/FiloSottile/Biglumber-map">
+	<a href="https://github.com/FiloSottile/Biglumber-map" class="github-ribbon">
 		<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
 	</a>
 
@@ -41,7 +44,7 @@
 		<p>Made by <a href="http://www.pytux.it">FiloSottile</a> (<a href="http://twitter.com/FiloSottile">Twitter</a> - <a href="https://github.com/FiloSottile">GitHub</a>). Code under <a href="http://filosottile.mit-license.org/">MIT license</a>.</p>
 	</div>
 
-	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
+	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
 	<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
 
 	<script>
@@ -51,6 +54,10 @@
     		maxZoom: 18
 		}).addTo(map);
 	</script>
+
+	<script src="//static.getclicky.com/js" type="text/javascript"></script>
+	<script type="text/javascript">try{ clicky.init(100540743); }catch(e){}</script>
+	<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100540743ns.gif" /></p></noscript>
 
 </body>
 </html>
