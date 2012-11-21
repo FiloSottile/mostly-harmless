@@ -23,9 +23,17 @@ def oauth_login_url():
         fb_login_uri += "&scope=%s" % ",".join(FBAPI_SCOPE)
     return fb_login_uri
 
+def b64decode(s):
+    s = str(s)
+    s = s.ljust((len(s)/4)*4+4, '=') if len(s) % 4 else s
+    return urlsafe_b64decode(s)
+
+def b64encode(d):
+    return urlsafe_b64encode(d).rstrip('=')
+
 def parse_signed_request(signed_request):
     encoded_sig, payload = signed_request.split('.', 1)
-    data = json.loads(urlsafe_b64decode(str(payload)))
+    data = json.loads(b64decode(payload))
 
     if not data['algorithm'].upper() == 'HMAC-SHA256':
         # TODO log
@@ -33,7 +41,7 @@ def parse_signed_request(signed_request):
 
     h = hmac.new(FB_APP_SECRET, digestmod=hashlib.sha256)
     h.update(payload)
-    expected_sig = urlsafe_b64encode(h.digest()).rstrip('=')
+    expected_sig = b64encode(h.digest())
     if expected_sig != encoded_sig:
         # TODO log
         return False
