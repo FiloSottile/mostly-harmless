@@ -30,7 +30,7 @@ class index:
         if not fb_data.get('user_id'):
             return "<script> top.location.href='" + fb.oauth_login_url() + "'</script>"
 
-        return render.index(fb_data['user_id'])
+        return render.index(fb_data['user_id'], _)
 
 application = web.application(urls, globals())
 if DEBUG: application.internalerror = web.debugerror
