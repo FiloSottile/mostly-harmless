@@ -1,9 +1,10 @@
-from urllib2 import quote as urlquote
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+import urllib2
 import web
 import json
 import os
 import hmac, hashlib
+from urllib import urlencode
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 FB_APP_ID = os.environ.get('FACEBOOK_APP_ID')
 FB_APP_SECRET = os.environ.get('FACEBOOK_SECRET')
@@ -17,7 +18,7 @@ def get_home():
 def oauth_login_url():
     fb_login_uri = ("https://www.facebook.com/dialog/oauth"
                     "?client_id=%s&redirect_uri=%s" %
-                    (FB_APP_ID, urlquote('https://apps.facebook.com/' + FB_NAMESPACE + '/')))
+                    (FB_APP_ID, urllib2.quote('https://apps.facebook.com/' + FB_NAMESPACE + '/')))
 
     if FBAPI_SCOPE:
         fb_login_uri += "&scope=%s" % ",".join(FBAPI_SCOPE)
@@ -47,3 +48,10 @@ def parse_signed_request(signed_request):
         return False
 
     return data
+
+def call(c, args=None):
+    url = "https://graph.facebook.com/{0}".format(c)
+    if args: params = '?' + urlencode(args)
+    else: params = ''
+    r = urllib2.urlopen(url + params)
+    return json.loads(r.read())
