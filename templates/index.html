@@ -2,3 +2,30 @@ $def with (fb_data, cover, flipped_cover, _)
 
 <img src="$cover">
 <img src="$flipped_cover">
+
+<button onclick="upload()">Upload</button>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+var access_token = '$fb_data['oauth_token']';
+var flipped_cover = '$flipped_cover';
+
+function upload() {
+	var url='https://graph.facebook.com/photos?access_token=' + access_token;
+	console.log(url);
+
+	jQuery.post(url, { url: flipped_cover }, function(data) {
+		console.log(data);
+		ready(data['id']);
+	}, 'json');
+}
+
+function ready(fbid) {
+	jQuery('button').text('Go!');
+	jQuery('button').attr('onclick', 'redirect(' + fbid + ')');
+}
+
+function redirect(fbid) {
+	top.location.href = 'https://www.facebook.com/me?preview_cover=' + fbid;
+}
+</script>
