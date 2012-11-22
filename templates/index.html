@@ -1,4 +1,4 @@
-$def with (fb_data, cover, flipped_cover, _)
+$def with (fb_data, cover, flipped_cover, host, _)
 
 <img src="$cover">
 <img src="$flipped_cover">
@@ -8,7 +8,7 @@ $def with (fb_data, cover, flipped_cover, _)
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
 var access_token = '$fb_data['oauth_token']';
-var flipped_cover = '$flipped_cover';
+var flipped_cover = 'http://$host$flipped_cover';
 
 function upload() {
 	var url='https://graph.facebook.com/photos?access_token=' + access_token;

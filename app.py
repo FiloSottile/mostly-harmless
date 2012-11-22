@@ -65,9 +65,9 @@ class index:
         cover = fb.call('fql', args={'q': "SELECT pic_cover FROM user WHERE uid='{}'".format(fb_data['user_id']),
                                      'access_token': fb_data['oauth_token']})['data'][0]['pic_cover']['source']
 
-        flipped_cover = web.ctx.homedomain + flip_url(cover)
+        flipped_cover = flip_url(cover)
 
-        return render.index(fb_data, cover, flipped_cover, _)
+        return render.index(fb_data, cover, flipped_cover, web.ctx.host, _)
 
 application = web.application(urls, globals())
 if DEBUG: application.internalerror = web.debugerror
