@@ -1,0 +1,6 @@
+* Attribuzione/footer
+* Stringhe gettext
+* La qualità scende, e non va bene
+* Pulsanti e metadata social, per poi farla condividere
+* Advertise
+* Elementi non HTTPS
