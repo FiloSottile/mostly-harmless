@@ -1,6 +1,8 @@
+BLOCKING:
 * Attribuzione/footer
 * Stringhe gettext
-* La qualità scende, e non va bene
+
+NON-BLOCKING:
 * Pulsanti e metadata social, per poi farla condividere
 * Advertise
 * Elementi non HTTPS

@@ -55,3 +55,8 @@ def call(c, args=None):
     else: params = ''
     r = urllib2.urlopen(url + params)
     return json.loads(r.read())
+
+def get_biggest_image(fbid):
+    # Works because FB passes biggest first. Maybe we should instead max(width)
+    res = call(fbid, { 'fields': 'images' })
+    return res['images'][0]['source']

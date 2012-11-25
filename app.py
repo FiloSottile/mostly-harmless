@@ -62,8 +62,9 @@ class index:
         if not fb_data.get('user_id'):
             return "<script> top.location.href='" + fb.oauth_login_url() + "'</script>"
 
-        cover = fb.call('fql', args={'q': "SELECT pic_cover FROM user WHERE uid='{}'".format(fb_data['user_id']),
-                                     'access_token': fb_data['oauth_token']})['data'][0]['pic_cover']['source']
+        res = fb.call('fql', args={'q': "SELECT pic_cover FROM user WHERE uid='{}'".format(fb_data['user_id']),
+                                   'access_token': fb_data['oauth_token']})
+        cover = fb.get_biggest_image(res['data'][0]['pic_cover']['cover_id'])
 
         flipped_cover = flip_url(cover)
 
