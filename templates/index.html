@@ -120,6 +120,13 @@ body {
 	line-height: 1.28;
 	padding-top: 10px;
 }
+.footer a {
+	color: #3b5998;
+	text-decoration: none;
+}
+.footer a:hover {
+	text-decoration: underline;
+}
 
 .jqmWindow {
     display: none;
@@ -149,7 +156,7 @@ body {
 	<div class="title"><div><div>$_("_title_")</div></div></div>
 
 	<div class="container">
-		<div class="header">$_("_description_")</div>
+		<div class="header">$:_("_description_")</div>
 
 		<div class="content">
 
@@ -162,21 +169,21 @@ body {
 		</div>
 	</div>
 
-	<div class="footer">$_("_footer_")</div>
+	<div class="footer">$:_("_footer_")</div>
 
 </div>
 
 
 <div class="jqmWindow" id="waitdialog">
 
-<p>$_("_wait_")</p>
+<p>$:_("_wait_")</p>
 <p><img src="http://i.imgur.com/0v3Gw.gif"></p>
 
 </div>
 
 <div class="jqmWindow" id="donedialog">
 
-<p>$_("_done_")</p>
+<p>$_(":_done_")</p>
 <p><div class="button" onclick="redirect()"><span>$_("_go_button_")</span></div></p>
 
 </div>

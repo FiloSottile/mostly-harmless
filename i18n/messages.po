@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-21 22:42+0100\n"
+"POT-Creation-Date: 2012-12-02 03:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/index.html:3
-msgid "Hello, World!"
+#: templates/index.html:149 templates/index.html:156
+msgid "_title_"
 msgstr ""
 
-#: templates/index.html:4
-msgid "How's goin'?"
+#: templates/index.html:152 templates/index.html:159
+msgid "_description_"
+msgstr ""
+
+#: templates/index.html:160 templates/index.html:167
+msgid "_flip_button_"
+msgstr ""
+
+#: templates/index.html:165 templates/index.html:172
+msgid "_footer_"
+msgstr ""
+
+#: templates/index.html:172 templates/index.html:179
+msgid "_wait_"
+msgstr ""
+
+#: templates/index.html:179
+msgid "_done_"
+msgstr ""
+
+#: templates/index.html:180 templates/index.html:187
+msgid "_go_button_"
+msgstr ""
+
+#: templates/index.html:186
+msgid ":_done_"
 msgstr ""
