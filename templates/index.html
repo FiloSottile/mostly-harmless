@@ -112,6 +112,15 @@ body {
 	white-space: nowrap;
 }
 
+.footer {
+	width: 758px;
+	color: gray;
+	font-size: 11px;
+	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+	line-height: 1.28;
+	padding-top: 10px;
+}
+
 .jqmWindow {
     display: none;
     position: fixed;
@@ -133,7 +142,7 @@ body {
 </head>
 <body>
 
-<a href="#" onclick="top.location.href='https://github.com/FiloSottile/cover-flipper'"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/FiloSottile/cover-flipper"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
 <div class="fixed-block">
 
@@ -152,6 +161,8 @@ body {
 
 		</div>
 	</div>
+
+	<div class="footer">$_("_footer_")</div>
 
 </div>
 
@@ -204,8 +215,19 @@ function redirect() {
 	top.location.href = 'https://www.facebook.com/me?preview_cover=' + window.cover_fbid;
 }
 
-jQuery('#waitdialog').jqm({ modal: true });
-jQuery('#donedialog').jqm({ modal: true });
+jQuery(document).ready(function() {
+	jQuery('#waitdialog').jqm({ modal: true });
+	jQuery('#donedialog').jqm({ modal: true });
+
+	jQuery('a').each(function() {
+		var href = jQuery(this).attr('href');
+		jQuery(this).click(function() {
+			top.location.href = href;
+			console.log(href);
+		});
+		jQuery(this).attr('href', '#');
+	});
+});
 </script>
 
 

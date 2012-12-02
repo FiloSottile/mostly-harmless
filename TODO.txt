@@ -1,5 +1,4 @@
 BLOCKING:
-* Attribuzione/footer
 * Stringhe gettext
 
 NON-BLOCKING:
