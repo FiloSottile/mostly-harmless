@@ -1,4 +1,4 @@
-$def with (fb_data, cover, flipped_cover, host, _)
+$def with (fb_data, cover, flipped_cover, host, _, DEBUG)
 
 <html>
 <head>
@@ -7,6 +7,7 @@ $def with (fb_data, cover, flipped_cover, host, _)
 body {
 	background: #e7ebf2;
 	padding-bottom: 25px;
+	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
 }
 
 .fixed-block {
@@ -116,7 +117,6 @@ body {
 	width: 758px;
 	color: gray;
 	font-size: 11px;
-	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
 	line-height: 1.28;
 	padding-top: 10px;
 }
@@ -140,8 +140,10 @@ body {
     border: 1px solid #c4cde0;
 	-webkit-border-radius: 3px;
     padding: 12px;
-    font-family: helvetica;
-    text-align: center;
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+}
+#waitdialog {
+	text-align: center;
 }
 .jqmOverlay { background-color: #000; }
 </style>
@@ -183,7 +185,7 @@ body {
 
 <div class="jqmWindow" id="donedialog">
 
-<p>$_(":_done_")</p>
+<p>$:_("_done_")</p>
 <p><div class="button" onclick="redirect()"><span>$_("_go_button_")</span></div></p>
 
 </div>
@@ -201,6 +203,9 @@ this._jqm;b(g).each(function(){this[c]||(this[c]=[],b(this).click(function(){for
 <script type="text/javascript">
 var access_token = '$fb_data['oauth_token']';
 var flipped_cover = 'http://$host$flipped_cover';
+
+$if DEBUG:
+	flipped_cover = 'http://fakeimg.pl/2048x600/?text=Cover%20flipper';
 
 function upload() {
 	jQuery('#waitdialog').jqmShow()

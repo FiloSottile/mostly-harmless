@@ -68,7 +68,7 @@ class index:
 
         flipped_cover = flip_url(cover)
 
-        return render.index(fb_data, cover, flipped_cover, web.ctx.host, _)
+        return render.index(fb_data, cover, flipped_cover, web.ctx.host, _, DEBUG)
 
 application = web.application(urls, globals())
 if DEBUG: application.internalerror = web.debugerror

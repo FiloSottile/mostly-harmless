@@ -1,7 +1,5 @@
-BLOCKING:
-* Stringhe gettext
-
-NON-BLOCKING:
 * Pulsanti e metadata social, per poi farla condividere
+* App Details / pagina FB / App Center / bookmark
 * Advertise
 * Elementi non HTTPS
+* Cornice e y-height cover
