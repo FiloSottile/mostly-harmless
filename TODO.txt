@@ -3,3 +3,4 @@
 * Advertise
 * Elementi non HTTPS
 * Cornice e y-height cover
+* Improve analytics, expand event tracking

@@ -12,6 +12,7 @@ FACEBOOK_APP_ID=109689179196355
 FACEBOOK_SECRET=1234567890abcdef1234567890abcdef
 FACEBOOK_NAMESPACE=coverflipper
 DEBUG=0
+TRACKING_ID=UA-5634110-7
 ```
 
 Also, the following commits are great boilerplates:

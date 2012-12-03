@@ -1,4 +1,4 @@
-$def with (fb_data, cover, flipped_cover, host, _, DEBUG)
+$def with (fb_data, cover, flipped_cover, host, tracking_id, _, DEBUG)
 
 <html>
 <head>
@@ -208,6 +208,8 @@ $if DEBUG:
 	flipped_cover = 'http://fakeimg.pl/2048x600/?text=Cover%20flipper';
 
 function upload() {
+	_gaq.push(['_trackEvent', 'Flow', 'Upload']);
+
 	jQuery('#waitdialog').jqmShow()
 
 	var url='https://graph.facebook.com/photos?access_token=' + access_token;
@@ -224,6 +226,7 @@ function ready() {
 }
 
 function redirect() {
+	_gaq.push(['_trackEvent', 'Flow', 'Redirect']);
 	top.location.href = 'https://www.facebook.com/me?preview_cover=' + window.cover_fbid;
 }
 
@@ -240,6 +243,20 @@ jQuery(document).ready(function() {
 		jQuery(this).attr('href', '#');
 	});
 });
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '$tracking_id']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
 </script>
 
 
