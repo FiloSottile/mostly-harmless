@@ -61,6 +61,7 @@ for location in locations_list:
         result[location] = (location_name, (lat, lng), len(parsed_listings), parsed_listings)
     except:
         print '[ERROR]', location
+        # TODO log
         traceback.print_exc()
     time.sleep(3)
 
