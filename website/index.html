@@ -9,10 +9,14 @@
 
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
 	<!--[if lte IE 8]>
-		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
 	<![endif]-->
+
+        <link rel="stylesheet" href="MarkerCluster.css" />
+	<link rel="stylesheet" href="MarkerCluster.Default.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="MarkerCluster.Default.ie.css" /><![endif]-->
 
 	<style>
 		#map {
@@ -58,7 +62,8 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/bootstrap.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.1/jquery.fancybox.pack.js"></script>
-	<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+	<script src="leaflet.markercluster-src.js"></script>
 
 	<script>
 	$(document).ready(function(){
@@ -67,14 +72,19 @@
     		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
     		maxZoom: 18
 		}).addTo(map);
+
+		var markerClusters = new L.MarkerClusterGroup();
 		
 		$.getJSON('biglumber.json', function(data) {
 		  window.biglumber_data = data;
 		  $.each(data, function(key, val) {
-		    marker = L.marker(val[1]).addTo(map);
+		    marker = L.marker(val[1]);
 		    marker.bindPopup("<strong>" + val[0] + "</strong><br>Listings: " + val[2] + "<br><a href=\"#\" onclick=\"show_listings(" + key + ")\">View »</a>");
+		    markerClusters.addLayer(marker);
 		  });
 		});
+
+		map.addLayer(markerClusters);
 	});
 
 	function show_listings(key) {
