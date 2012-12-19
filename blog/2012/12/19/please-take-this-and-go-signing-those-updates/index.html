@@ -106,7 +106,7 @@
 
 <div class="entry-content"><p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
-<p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploitted in the wild and it is easy</a>.</p>
+<p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
 
 <p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license&#8230;<br/>
 Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and&#8230; it&#8217;s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it&#8217;s yours.</p>
@@ -168,7 +168,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public key and how to sign new updates. Don&#8217;t worry, it&#8217;s all really easy; if you happen to encounter any issue, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
+<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public keys and how to sign new updates. Don&#8217;t worry, it&#8217;s all really easy; if you happen to encounter any issues, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
 
 <p>I am sufficiently proficient only in Python, so if any C, Perl, PHP or Brainfuck guru wants to show up and contribute the same function in another language, it would be awesome!</p>
 
