@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PyTux</title>
+  <title>Please take this and go signing those updates - PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://FiloSottile.github.com/">
+  <link rel="canonical" href="http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -74,15 +74,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/12/19/please-take-this-and-go-signing-those-updates/">Please Take This and Go Signing Those Updates</a></h1>
+      <h1 class="entry-title">Please Take This and Go Signing Those Updates</h1>
     
     
       <p class="meta">
@@ -100,14 +97,14 @@
 
 <time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/12/19/please-take-this-and-go-signing-those-updates/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
+<div class="entry-content"><p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploitted in the wild and it is easy</a>.</p>
 
@@ -178,18 +175,68 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <p>Now you don&#8217;t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br/>
 (And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
   
 
 
-    </article>
+<time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
+      
+
+<span class="categories">
   
-  <div class="pagination">
+    <a class='category' href='/blog/categories/crypto/'>crypto</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/" data-via="FiloSottile" data-counturl="http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -206,7 +253,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
@@ -236,7 +283,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <section>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   <script type="text/javascript">
     $.domReady(function(){
@@ -252,7 +299,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 
 <section>
   <h1>My Pinboard</h1>
-  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
   <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
 </section>
 <script type="text/javascript">
@@ -274,6 +321,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -288,7 +336,10 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
       var disqus_shortname = 'pytux';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/';
+        var disqus_url = 'http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

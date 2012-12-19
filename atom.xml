@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://FiloSottile.github.com/atom.xml" rel="self"/>
   <link href="http://FiloSottile.github.com/"/>
-  <updated>2012-12-17T18:41:35+01:00</updated>
+  <updated>2012-12-19T23:02:11+01:00</updated>
   <id>http://FiloSottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -14,11 +14,80 @@
 
   
   <entry>
-    <title type="html"><![CDATA[An idea a week]]></title>
-    <link href="http://FiloSottile.github.com/blog/2012/12/17/an-idea-a-week/"/>
-    <updated>2012-12-17T11:25:00+01:00</updated>
-    <id>http://FiloSottile.github.com/blog/2012/12/17/an-idea-a-week</id>
-    <content type="html"><![CDATA[<p>Lorem? Impsum!</p>
+    <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
+    <link href="http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/"/>
+    <updated>2012-12-19T20:47:00+01:00</updated>
+    <id>http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates</id>
+    <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
+
+<p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploitted in the wild and it is easy</a>.</p>
+
+<p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license&#8230;<br/>
+Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and&#8230; it&#8217;s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it&#8217;s yours.</p>
+
+<figure class='code'><figcaption><span>rsa_verify.py </span><a href='https://gist.github.com/4340076#file-rsa_verify-py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">rsa_verify</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span class='line'>    <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+</span><span class='line'>    <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span> <span class="c"># You&#39;ll need the backport for 2.4 http://code.krypto.org/python/hashlib/</span>
+</span><span class='line'>    <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">version_info</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="k">return</span> <span class="n">x</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;latin1&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)))</span>
+</span><span class='line'>    <span class="n">block_size</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="n">n</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">block_size</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">n</span> <span class="o">&gt;&gt;=</span> <span class="mi">8</span>
+</span><span class='line'>    <span class="n">signature</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">raw_bytes</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">signature</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">raw_bytes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pack</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span> <span class="n">signature</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">))</span>
+</span><span class='line'>        <span class="n">signature</span> <span class="o">&gt;&gt;=</span> <span class="mi">8</span>
+</span><span class='line'>    <span class="n">signature</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_bytes</span><span class="p">))</span> <span class="o">*</span> <span class="n">b</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_bytes</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">signature</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00\x01</span><span class="s">&#39;</span><span class="p">):</span> <span class="k">return</span> <span class="bp">False</span>
+</span><span class='line'>    <span class="n">signature</span> <span class="o">=</span> <span class="n">signature</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+</span><span class='line'>    <span class="k">if</span> <span class="ow">not</span> <span class="n">b</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+</span><span class='line'>    <span class="n">signature</span> <span class="o">=</span> <span class="n">signature</span><span class="p">[</span><span class="n">signature</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+</span><span class='line'>    <span class="k">if</span> <span class="ow">not</span> <span class="n">signature</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x30\x31\x30\x0D\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20</span><span class="s">&#39;</span><span class="p">)):</span> <span class="k">return</span> <span class="bp">False</span>
+</span><span class='line'>    <span class="n">signature</span> <span class="o">=</span> <span class="n">signature</span><span class="p">[</span><span class="mi">19</span><span class="p">:]</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">signature</span> <span class="o">!=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">():</span> <span class="k">return</span> <span class="bp">False</span>
+</span><span class='line'>    <span class="k">return</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public key and how to sign new updates. Don&#8217;t worry, it&#8217;s all really easy; if you happen to encounter any issue, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
+
+<p>I am sufficiently proficient only in Python, so if any C, Perl, PHP or Brainfuck guru wants to show up and contribute the same function in another language, it would be awesome!</p>
+
+<p>Now you don&#8217;t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br/>
+(And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 ]]></content>
   </entry>
   
