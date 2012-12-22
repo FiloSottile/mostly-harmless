@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[PyTux]]></title>
-  <link href="http://FiloSottile.github.com/atom.xml" rel="self"/>
-  <link href="http://FiloSottile.github.com/"/>
-  <updated>2012-12-19T23:13:05+01:00</updated>
-  <id>http://FiloSottile.github.com/</id>
+  <link href="http://filosottile.github.com/atom.xml" rel="self"/>
+  <link href="http://filosottile.github.com/"/>
+  <updated>2012-12-22T20:08:32+01:00</updated>
+  <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -14,10 +14,314 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
+    <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+    <updated>2012-12-22T19:20:00+01:00</updated>
+    <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
+    <content type="html"><![CDATA[<blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+By using it you are accepting this and you accept not to consider the author liable for your use.</p>
+
+<p>For the technically inclined, it&#8217;s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p></blockquote>
+
+<p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
+
+<h3>Features</h3>
+
+<ul>
+<li>Different messages for male and female friends;</li>
+<li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
+<li>Configurable time to wait between a message and the next, with total duration prediction;</li>
+<li>List of friends to exclude.</li>
+</ul>
+
+
+<p>If you have any request or suggestion, simply leave a comment.</p>
+
+<h3>Installation</h3>
+
+<ul>
+<li>Drag this &#8221;<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>&#8221; to your bookmarks bar;</li>
+<li>Done! Now the Krumiro button is ready.</li>
+</ul>
+
+
+<h3>Use</h3>
+
+<ul>
+<li>While on a Facebook page, simply click it;</li>
+<li>Some windows asking you what to do will show up;</li>
+<li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.</li>
+</ul>
+
+
+<h3>Code (for the curious - it&#8217;s ugly)</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">msg_m_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the message for males. I\&#39;ll replace %name with the recipient name.&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">msg_f_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the message for females. I\&#39;ll replace %name with the recipient name.&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">throttle_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the pause in milliseconds between a friend and the next.&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">exclude_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the list of friends to ignore, comma separated.&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">exerror_alert</span> <span class="o">=</span> <span class="s1">&#39;%s is not in your friends, you might have made a mistake. Do you want to continue?&#39;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">time_alert</span> <span class="o">=</span> <span class="s1">&#39;The script will take %s seconds!&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="s1">&#39;Done!&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">){</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="o">=</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">){</span><span class="k">if</span><span class="p">(</span><span class="k">void</span> <span class="mi">0</span><span class="o">===</span><span class="k">this</span><span class="o">||</span><span class="kc">null</span><span class="o">===</span><span class="k">this</span><span class="p">)</span><span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">;</span><span class="kd">var</span> <span class="nx">c</span><span class="o">=</span><span class="nb">Object</span><span class="p">(</span><span class="k">this</span><span class="p">),</span><span class="nx">b</span><span class="o">=</span><span class="nx">c</span><span class="p">.</span><span class="nx">length</span><span class="o">&gt;&gt;&gt;</span><span class="mi">0</span><span class="p">;</span><span class="k">if</span><span class="p">(</span><span class="mi">0</span><span class="o">===</span><span class="nx">b</span><span class="p">)</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="kd">var</span> <span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="mi">0</span><span class="o">&lt;</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="nb">Number</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="nx">a</span><span class="o">!==</span><span class="nx">a</span><span class="o">?</span><span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="o">:</span><span class="mi">0</span><span class="o">!==</span><span class="nx">a</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">!==</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">&amp;&amp;</span><span class="nx">a</span><span class="o">!==-</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="p">))</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="o">&lt;</span><span class="nx">a</span><span class="o">||-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">a</span><span class="p">))));</span><span class="k">if</span><span class="p">(</span><span class="nx">a</span><span class="o">&gt;=</span><span class="nx">b</span><span class="p">)</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="k">for</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="o">&lt;=</span><span class="nx">a</span><span class="o">?</span><span class="nx">a</span><span class="o">:</span><span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">b</span><span class="o">-</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span><span class="mi">0</span><span class="p">);</span><span class="nx">a</span><span class="o">&lt;</span><span class="nx">b</span><span class="p">;</span><span class="nx">a</span><span class="o">++</span><span class="p">)</span><span class="k">if</span><span class="p">(</span><span class="nx">a</span> <span class="k">in</span> <span class="nx">c</span><span class="o">&amp;&amp;</span><span class="nx">c</span><span class="p">[</span><span class="nx">a</span><span class="p">]</span><span class="o">===</span><span class="nx">d</span><span class="p">)</span><span class="k">return</span> <span class="nx">a</span><span class="p">;</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">};}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">size</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="nx">s</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">s</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">sleep</span><span class="p">(</span><span class="nx">milliseconds</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="nx">e7</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">((</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nx">milliseconds</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">send</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">to</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">function</span> <span class="nx">serialize</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span>
+</span><span class='line'>         <span class="nx">str</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">p</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">p</span><span class="p">]));</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kd">function</span> <span class="nx">random</span><span class="p">(</span><span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">min</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">len</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">max</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">len</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="nx">max</span> <span class="o">-</span> <span class="nx">min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="nx">min</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kd">function</span> <span class="nx">generatePhstamp</span><span class="p">(</span><span class="nx">qs</span><span class="p">,</span> <span class="nx">dtsg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">input_len</span> <span class="o">=</span> <span class="nx">qs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">numeric_csrf_value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">ii</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">ii</span><span class="o">&lt;</span><span class="nx">dtsg</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">ii</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">numeric_csrf_value</span><span class="o">+=</span><span class="nx">dtsg</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">ii</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s1">&#39;1&#39;</span> <span class="o">+</span> <span class="nx">numeric_csrf_value</span> <span class="o">+</span> <span class="nx">input_len</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">fbid</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp_relative]&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">getHours</span><span class="p">()).</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">getMinutes</span><span class="p">()).</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][author]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">fbid</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_cleared]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][message_id]&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;@mail.projektitan.com&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][specific_to_list][0]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;__user&quot;</span><span class="o">:</span> <span class="nx">fbid</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp_absolute]&quot;</span><span class="o">:</span> <span class="s2">&quot;Oggi&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][spoof_warning]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][client_thread_id]&quot;</span><span class="o">:</span> <span class="s2">&quot;user:&quot;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][source]&quot;</span><span class="o">:</span> <span class="s2">&quot;source:chat:web&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][has_attachment]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][source_tags][0]&quot;</span><span class="o">:</span> <span class="s2">&quot;source:chat&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][body]&quot;</span><span class="o">:</span> <span class="nx">msg</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_filtered_content]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp]&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">),</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_unread]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][action_type]&quot;</span><span class="o">:</span> <span class="s2">&quot;ma-type:user-generated-message&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;__a&quot;</span><span class="o">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][specific_to_list][1]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">fbid</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][html_body]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][status]&quot;</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;client&quot;</span><span class="o">:</span> <span class="s2">&quot;mercury&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_forward]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;fb_dtsg&quot;</span><span class="o">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">fb_dtsg</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// Thanks http://pastebin.com/VJAhUw30</span>
+</span><span class='line'>    <span class="nx">req</span> <span class="o">+=</span> <span class="s2">&quot;&amp;phstamp=&quot;</span> <span class="o">+</span> <span class="nx">generatePhstamp</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">fb_dtsg</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">xmlhttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;/ajax/mercury/send_messages.php&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">buddy</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span> <span class="o">+</span> <span class="s2">&quot;&amp;__a=1&amp;viewer=&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">resp</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">9</span><span class="p">));</span>
+</span><span class='line'>        <span class="nx">callback</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">payload</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">spam</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">msg_m</span><span class="p">,</span> <span class="nx">msg_f</span><span class="p">,</span> <span class="nx">buddy_num</span><span class="p">,</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">pos</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">throttle</span><span class="p">,</span> <span class="nx">exclude</span><span class="p">,</span> <span class="nx">present</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">buddy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">buddy_num</span> <span class="o">=</span> <span class="nx">size</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">msg_m</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">msg_m_prompt</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">msg_f</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">msg_f_prompt</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">exclude</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">exclude_prompt</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">exclude</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">trim</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="nx">exclude</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">exclude</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">present</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">buddy_list</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">name</span> <span class="o">==</span> <span class="nx">exclude</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">())</span> <span class="nx">present</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">present</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="nx">exerror_alert</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s&#39;</span><span class="p">,</span> <span class="nx">exclude</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">())))</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nx">throttle</span> <span class="o">=</span> <span class="o">+</span><span class="nx">prompt</span><span class="p">(</span><span class="nx">throttle_prompt</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="nx">time_alert</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s&#39;</span><span class="p">,</span> <span class="nx">buddy_num</span><span class="o">*</span><span class="nx">throttle</span><span class="o">/</span><span class="mi">1000</span><span class="p">)))</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">buddy_list</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">gender</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg_f</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">else</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg_m</span><span class="p">;</span>
+</span><span class='line'>            <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%name&#39;</span><span class="p">,</span> <span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">firstName</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">name</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="nx">send</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">pos</span> <span class="o">%</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">buddy_num</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">pos</span><span class="o">/</span><span class="p">(</span><span class="nx">buddy_num</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; %&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">pos</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>            <span class="nx">sleep</span><span class="p">(</span><span class="nx">throttle</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nx">alert</span><span class="p">(</span><span class="nx">done</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">spam</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-    <link href="http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates/"/>
+    <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
     <updated>2012-12-19T20:47:00+01:00</updated>
-    <id>http://FiloSottile.github.com/blog/2012/12/19/please-take-this-and-go-signing-those-updates</id>
+    <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
     <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
