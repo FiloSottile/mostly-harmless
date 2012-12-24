@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2012-12-22T20:08:32+01:00</updated>
+  <updated>2012-12-24T03:28:54+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -52,6 +52,9 @@ By using it you are accepting this and you accept not to consider the author lia
 <li>Some windows asking you what to do will show up;</li>
 <li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.</li>
 </ul>
+
+
+<!-- more -->
 
 
 <h3>Code (for the curious - it&#8217;s ugly)</h3>
