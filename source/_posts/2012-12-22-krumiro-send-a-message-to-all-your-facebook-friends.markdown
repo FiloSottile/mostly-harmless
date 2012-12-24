@@ -28,7 +28,7 @@ If you have any request or suggestion, simply leave a comment.
 * While on a Facebook page, simply click it;
 * Some windows asking you what to do will show up;
 * The page will freeze until the script has finished, go grab a coffee, and maybe [follow me on Twitter](https://www.twitter.com).
-
+<!-- more -->
 ### Code (for the curious - it's ugly)
 ```javascript
 var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';

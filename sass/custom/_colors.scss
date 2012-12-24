@@ -49,17 +49,17 @@
 // The following are ordered in terms of vague importance.
  
 //Pick your favorite color. If you picked a thoughtful blue, try again. 
-$main-color: #cb4b16;
+//$main-color: #cb4b16;
 
 //This controls the sidebar
-$sidebar-bg: desaturate(lighten($main-color, 50), 30);
-$sidebar-color: darken($main-color, 100);
-$sidebar-link-color: saturate($main-color, 100);
-$sidebar-link-color-hover:  darken($main-color, 100);
+//$sidebar-bg: desaturate(lighten($main-color, 50), 30);
+//$sidebar-color: darken($main-color, 100);
+//$sidebar-link-color: saturate($main-color, 100);
+//$sidebar-link-color-hover:  darken($main-color, 100);
 
  
 //How links appear overall
-$link-color: darken($main-color, 10);
-$link-color-hover: darken($main-color, 100);
-$link-color-visited: darken($main-color,10);
-$link-color-active: lighten($link-color-hover,10);
+//$link-color: darken($main-color, 10);
+//$link-color-hover: darken($main-color, 100);
+//$link-color-visited: darken($main-color,10);
+//$link-color-active: lighten($link-color-hover,10);

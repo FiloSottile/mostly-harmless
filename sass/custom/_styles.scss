@@ -8,3 +8,11 @@ html {
 a.external-link:after {
 	content: " \27A6";
 }
+
+body > header {
+	background: none;
+}
+
+#content {
+	background-image: url(/images/grey.png);
+}
