@@ -16,3 +16,26 @@ body > header {
 #content {
 	background-image: url(/images/grey.png);
 }
+
+body {
+	zoom: 0.9;
+}
+
+.permalink {
+	background: darken($main-bg, 5);
+	display: inline-block;
+	padding: .4em .8em;
+	margin-right: .5em;
+	text-decoration: none;
+	color: mix($text-color, $text-color-light);
+	@extend .serif;
+	@include transition(background-color .5s);
+	&:visited {
+	  color: mix($text-color, $text-color-light);
+	}
+	&:hover {
+	  background: $link-color-hover;
+	  text-shadow: none;
+	  color: $main-bg;
+	}
+}
