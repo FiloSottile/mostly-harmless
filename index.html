@@ -9,8 +9,8 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Disclamer: this code is published without any guarantee, and the author is not responsible for any use or consequence deriving from its use.
-By using &hellip;">
+  <meta name="description" content="Today looking at the Travis log of a Pull request build I saw this interesting command: 1
+git fetch origin +refs/pull/611/merge: Turns out that &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,8 @@ By using &hellip;">
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+  <!-- <li><a href="/Biglumber-map/">Biglumber map</a></li> -->
 </ul>
 
 </nav>
@@ -84,7 +86,70 @@ By using &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - Send a Message to All Your Facebook Friends</a></h1>
+      
+        <!-- This defines how Octopress will use posts with external-url. -->
+        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: Checkout a Pull Request as a Branch</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-01T06:36:00+01:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
+
+<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
+
+<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
+
+<p>An example in the Coderwall ProTip linked at the title.</p>
+</div>
+    
+    
+  
+
+  
+    <footer>
+      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Permalink</a>
+    </footer>
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - Send a Message to All Your Facebook Friends</a></h1>
+      
     
     
       <p class="meta">
@@ -108,49 +173,7 @@ By using &hellip;">
 
 
   
-    <div class="entry-content"><blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
-By using it you are accepting this and you accept not to consider the author liable for your use.</p>
 
-<p>For the technically inclined, it&#8217;s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p></blockquote>
-
-<p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
-
-<h3>Features</h3>
-
-<ul>
-<li>Different messages for male and female friends;</li>
-<li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
-<li>Configurable time to wait between a message and the next, with total duration prediction;</li>
-<li>List of friends to exclude.</li>
-</ul>
-
-
-<p>If you have any request or suggestion, simply leave a comment.</p>
-
-<h3>Installation</h3>
-
-<ul>
-<li>Drag this &#8221;<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>&#8221; to your bookmarks bar;</li>
-<li>Done! Now the Krumiro button is ready.</li>
-</ul>
-
-
-<h3>Use</h3>
-
-<ul>
-<li>While on a Facebook page, simply click it;</li>
-<li>Some windows asking you what to do will show up;</li>
-<li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.</li>
-</ul>
-
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/krumiro-send-a-message-to-all-your-facebook-friends/">Read on &rarr;</a>
-      </footer>
-    
   
 
 
@@ -162,7 +185,10 @@ By using it you are accepting this and you accept not to consider the author lia
       
   <header>
     
-      <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please Take This and Go Signing Those Updates</a></h1>
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please Take This and Go Signing Those Updates</a></h1>
+      
     
     
       <p class="meta">
@@ -187,6 +213,8 @@ By using it you are accepting this and you accept not to consider the author lia
 
   
 
+  
+
 
     </article>
     
@@ -208,6 +236,10 @@ By using it you are accepting this and you accept not to consider the author lia
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/github-checkout-a-pull-request-as-a-branch/">GitHub: checkout a pull request as a branch</a>
+      </li>
     
       <li class="post">
         <a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a>
@@ -294,7 +326,7 @@ By using it you are accepting this and you accept not to consider the author lia
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Filippo Valsorda -
+  Copyright &copy; 2013 - Filippo Valsorda -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

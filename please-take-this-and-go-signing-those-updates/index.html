@@ -69,6 +69,8 @@
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+  <!-- <li><a href="/Biglumber-map/">Biglumber map</a></li> -->
 </ul>
 
 </nav>
@@ -79,7 +81,9 @@
   
   <header>
     
-      <h1 class="entry-title">Please Take This and Go Signing Those Updates</h1>
+      
+        <h1 class="entry-title">Please Take This and Go Signing Those Updates</h1>
+      
     
     
       <p class="meta">
@@ -102,7 +106,7 @@
   </header>
 
 
-<div class="entry-content"><p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
+  <div class="entry-content"><p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
 
@@ -173,6 +177,8 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <p>Now you don&#8217;t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br/>
 (And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 </div>
+
+  
 
 
   <footer>
@@ -248,6 +254,10 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/github-checkout-a-pull-request-as-a-branch/">GitHub: checkout a pull request as a branch</a>
+      </li>
     
       <li class="post">
         <a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a>
@@ -335,7 +345,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Filippo Valsorda -
+  Copyright &copy; 2013 - Filippo Valsorda -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

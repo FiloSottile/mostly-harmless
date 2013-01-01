@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2012-12-24T04:00:47+01:00</updated>
+  <updated>2013-01-01T07:05:32+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -14,11 +14,39 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
-    <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+    
+      <title type="html"><![CDATA[GitHub: checkout a pull request as a branch &#10150;]]></title>
+      <link href="https://coderwall.com/p/z5rkga"/>
+    
+    <updated>2013-01-01T06:36:00+01:00</updated>
+    <id>http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch</id>
+    
+      <content type="html"><![CDATA[<p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
+
+<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
+
+<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
+
+<p>An example in the Coderwall ProTip linked at the title.</p>
+<br><a href="http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/">Permalink</a>]]></content>
+    
+  </entry>
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
+      <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+    
     <updated>2012-12-22T19:20:00+01:00</updated>
     <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
-    <content type="html"><![CDATA[<blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+    
+      <content type="html"><![CDATA[<blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
 By using it you are accepting this and you accept not to consider the author liable for your use.</p>
 
 <p>For the technically inclined, it&#8217;s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p></blockquote>
@@ -318,14 +346,18 @@ By using it you are accepting this and you accept not to consider the author lia
 
 
 ]]></content>
+    
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-    <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
+    
+      <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
+      <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
+    
     <updated>2012-12-19T20:47:00+01:00</updated>
     <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
-    <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
+    
+      <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
 
@@ -396,6 +428,7 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
 <p>Now you don&#8217;t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br/>
 (And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 ]]></content>
+    
   </entry>
   
 </feed>
