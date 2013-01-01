@@ -70,7 +70,6 @@
   <li><a href="/">Blog</a></li>
   <li><a href="/archives">Archives</a></li>
   <li><a href="/links">Links</a></li>
-  <!-- <li><a href="/Biglumber-map/">Biglumber map</a></li> -->
 </ul>
 
 </nav>
@@ -117,25 +116,76 @@
   <p>I am Filippo Valsorda (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>), an Italian student, a problem solver.
   	I love cryptography, Python, InfoSec and maths.
   	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a>.</p>
+
+	<iframe width='180' height='60' src='http://wizpert.com/wizapi/widget?beta_key=3ba42&view=266&ep=7370' frameborder='0' scrolling='no' allowfullscreen> </iframe>
 </section>
 <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/github-checkout-a-pull-request-as-a-branch/">GitHub: checkout a pull request as a branch</a>
-      </li>
-    
-      <li class="post">
-        <a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a>
-      </li>
-    
-      <li class="post">
-        <a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a>
-      </li>
-    
+  <h1>Projects</h1>
+
+  <ul>
+  	<li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+  	<li><a href="/Biglumber-map/">Biglumber map</a></li>
+  	<li><a href="https://apps.facebook.com/coverflipper/">Facebook cover flipper</a></li>
   </ul>
+ </section>
+<section>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , jsonpCallback: 'callback'
+            , jsonpCallbackName: '?'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'FiloSottile',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+  <style type="text/css">
+    .cw_badge img {
+      padding: 5px;
+      border: 0 none !important;
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  </style>
 </section>
+
 
 <section>
   <h1>GitHub Repos</h1>
@@ -201,8 +251,6 @@
     document.getElementsByTagName('head')[0].appendChild(pinboardInit);
   })();
 </script>
-
-
 
 
   
