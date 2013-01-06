@@ -39,3 +39,14 @@ body {
 	  color: $main-bg;
 	}
 }
+
+.coderwall h1 {
+	position: relative;
+}
+
+.coderwall h1 img {
+	border: none;
+	bottom: .3em;
+	position: absolute;
+	right: 0;
+}
