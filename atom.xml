@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-01-06T17:52:29+01:00</updated>
+  <updated>2013-01-12T00:30:21+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Automatically compile .less and .coffee files]]></title>
+      <link href="http://filosottile.github.com/automatically-compile-less-and-coffee-files/"/>
+    
+    <updated>2013-01-12T00:25:00+01:00</updated>
+    <id>http://filosottile.github.com/automatically-compile-less-and-coffee-files</id>
+    
+      <content type="html"><![CDATA[<p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
+
+<p>Simply launch it from the relevant folder and it will work in the background.</p>
+
+<p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python2</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">watchdog.events</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">watchdog.observers</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sh</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">time</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Detach</span>
+</span><span class='line'><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">():</span> <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">coffee</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">coffee</span><span class="o">.</span><span class="n">bake</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">less</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">lessc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Handler</span><span class="p">(</span><span class="n">watchdog</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">PatternMatchingEventHandler</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">watchdog</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">PatternMatchingEventHandler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;*.less&#39;</span><span class="p">,</span> <span class="s">&#39;*.coffee&#39;</span><span class="p">],</span>
+</span><span class='line'>            <span class="n">ignore_directories</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">on_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.less&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">less</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.css&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.coffee&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">coffee</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">on_created</span> <span class="o">=</span> <span class="n">on_modified</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">event_handler</span> <span class="o">=</span> <span class="n">Handler</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">observer</span> <span class="o">=</span> <span class="n">watchdog</span><span class="o">.</span><span class="n">observers</span><span class="o">.</span><span class="n">Observer</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">observer</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">event_handler</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">observer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">observer</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
+
+<p>Should be compatible with Mac OS X and Linux at least, BSD and Win&#8230; maybe.</p>
+]]></content>
+    
+  </entry>
   
   <entry>
     
