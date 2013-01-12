@@ -39,9 +39,11 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 
     def on_modified(self, event):
         if event.src_path.lower().endswith('.less'):
-            less(event.src_path, event.src_path[:-5] + '.css')
+            try: less(event.src_path, event.src_path[:-5] + '.css')
+            except sh.ErrorReturnCode_1 as e: print e.stderr
         if event.src_path.lower().endswith('.coffee'):
-            coffee(event.src_path)
+            try: coffee(event.src_path)
+            except sh.ErrorReturnCode_1 as e: print e.stderr
 
     on_created = on_modified
 
@@ -56,6 +58,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+
 ```
 
 It requires `coffee` (`npm install coffee-script`) and `lessc` (`npm install less`).
