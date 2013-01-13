@@ -155,6 +155,8 @@
 <span class='line-number'>36</span>
 <span class='line-number'>37</span>
 <span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python2</span>
 </span><span class='line'>
 </span><span class='line'><span class="kn">import</span> <span class="nn">watchdog.events</span>
@@ -176,9 +178,11 @@
 </span><span class='line'>
 </span><span class='line'>    <span class="k">def</span> <span class="nf">on_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 </span><span class='line'>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.less&#39;</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">less</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.css&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">try</span><span class="p">:</span> <span class="n">less</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.css&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode_1</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">print</span> <span class="n">e</span><span class="o">.</span><span class="n">stderr</span>
 </span><span class='line'>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.coffee&#39;</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">coffee</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">try</span><span class="p">:</span> <span class="n">coffee</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode_1</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">print</span> <span class="n">e</span><span class="o">.</span><span class="n">stderr</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">on_created</span> <span class="o">=</span> <span class="n">on_modified</span>
 </span><span class='line'>
