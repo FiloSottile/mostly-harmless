@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-01-13T13:26:04+01:00</updated>
+  <updated>2013-01-14T23:35:36+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,225 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
+      <link href="http://filosottile.github.com/archive-your-github-repo-and-data/"/>
+    
+    <updated>2013-01-14T23:17:00+01:00</updated>
+    <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
+    
+      <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a &#8220;get your data off that cloud before it explodes!&#8221;-style post,
+but sometimes you want to take an offline copy of your or somebody&#8217;s work.</p>
+
+<p>Here is a quick and dirty Python script that will help you clone all the repositories, the Gists and some metadata
+that can be fetched over the API.
+Be warned, it only fetches public repos and data and there&#8217;s no error checking.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
+</span><span class='line'>
+</span><span class='line'>Dump an user's public GitHub data into current directory.
+</span><span class='line'>
+</span><span class='line'>positional arguments:
+</span><span class='line'>  username       the GH username
+</span><span class='line'>
+</span><span class='line'>optional arguments:
+</span><span class='line'>  -h, --help     show this help message and exit
+</span><span class='line'>  --forks        git clone also forks (default is don't)
+</span><span class='line'>  --no-gist      don't download user gists (default is do)
+</span><span class='line'>  --no-metadata  don't download user metadata (default is do)</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># This is free and unencumbered software released into the public domain.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Anyone is free to copy, modify, publish, use, compile, sell, or</span>
+</span><span class='line'><span class="c"># distribute this software, either in source code form or as a compiled</span>
+</span><span class='line'><span class="c"># binary, for any purpose, commercial or non-commercial, and by any</span>
+</span><span class='line'><span class="c"># means.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># In jurisdictions that recognize copyright laws, the author or authors</span>
+</span><span class='line'><span class="c"># of this software dedicate any and all copyright interest in the</span>
+</span><span class='line'><span class="c"># software to the public domain. We make this dedication for the benefit</span>
+</span><span class='line'><span class="c"># of the public at large and to the detriment of our heirs and</span>
+</span><span class='line'><span class="c"># successors. We intend this dedication to be an overt act of</span>
+</span><span class='line'><span class="c"># relinquishment in perpetuity of all present and future rights to this</span>
+</span><span class='line'><span class="c"># software under copyright law.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span>
+</span><span class='line'><span class="c"># EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span>
+</span><span class='line'><span class="c"># MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span>
+</span><span class='line'><span class="c"># IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</span>
+</span><span class='line'><span class="c"># OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</span>
+</span><span class='line'><span class="c"># ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</span>
+</span><span class='line'><span class="c"># OTHER DEALINGS IN THE SOFTWARE.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># For more information, please refer to &lt;http://unlicense.org/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">argparse</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">call</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">json</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os.path</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">&#39;Dump an user</span><span class="se">\&#39;</span><span class="s">s public GitHub data into current directory.&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;username&#39;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">help</span><span class="o">=</span><span class="s">&#39;the GH username&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--forks&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;forks&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">help</span><span class="o">=</span><span class="s">&#39;git clone also forks (default is don</span><span class="se">\&#39;</span><span class="s">t)&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--no-gist&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;gists&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_false&#39;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">help</span><span class="o">=</span><span class="s">&#39;don</span><span class="se">\&#39;</span><span class="s">t download user gists (default is do)&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--no-metadata&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;metadata&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_false&#39;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">help</span><span class="o">=</span><span class="s">&#39;don</span><span class="se">\&#39;</span><span class="s">t download user metadata (default is do)&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">clear_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\{[^\}]*\}&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;https://api.github.com/users/&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;user.json&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">clear_url</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;repos_url&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'><span class="n">repos</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;repos.json&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="p">[</span><span class="s">&#39;fork&#39;</span><span class="p">]:</span>
+</span><span class='line'>        <span class="n">call</span><span class="p">([</span><span class="s">&#39;git&#39;</span><span class="p">,</span> <span class="s">&#39;clone&#39;</span><span class="p">,</span> <span class="n">repo</span><span class="p">[</span><span class="s">&#39;clone_url&#39;</span><span class="p">]])</span>
+</span><span class='line'>    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">forks</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">&#39;forks&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">&#39;forks&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">call</span><span class="p">([</span><span class="s">&#39;git&#39;</span><span class="p">,</span> <span class="s">&#39;clone&#39;</span><span class="p">,</span> <span class="n">repo</span><span class="p">[</span><span class="s">&#39;clone_url&#39;</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;forks&#39;</span><span class="p">,</span> <span class="n">repo</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])])</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">clear_url</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;gists_url&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'><span class="n">gists</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;gists.json&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">gists</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">&#39;gists&#39;</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">&#39;gists&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">gist</span> <span class="ow">in</span> <span class="n">gists</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">call</span><span class="p">([</span><span class="s">&#39;git&#39;</span><span class="p">,</span> <span class="s">&#39;clone&#39;</span><span class="p">,</span> <span class="n">gist</span><span class="p">[</span><span class="s">&#39;git_pull_url&#39;</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;gists&#39;</span><span class="p">,</span> <span class="n">gist</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])])</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;received_events&#39;</span><span class="p">,</span> <span class="s">&#39;events&#39;</span><span class="p">,</span> <span class="s">&#39;organizations&#39;</span><span class="p">,</span> <span class="s">&#39;followers&#39;</span><span class="p">,</span> <span class="s">&#39;starred&#39;</span><span class="p">,</span> <span class="s">&#39;following&#39;</span><span class="p">,</span> <span class="s">&#39;subscriptions&#39;</span><span class="p">]:</span>
+</span><span class='line'>        <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">clear_url</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;_url&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.json&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
+]]></content>
+    
+  </entry>
   
   <entry>
     
