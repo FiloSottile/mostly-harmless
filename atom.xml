@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-01-20T00:15:39+01:00</updated>
+  <updated>2013-01-20T00:20:57+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -64,6 +64,8 @@ This way an automated program will not suffice and they&#8217;ll not have enough
 <blockquote><p>This time I have the feeling that the bad guys win.</p></blockquote>
 
 <p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
+
+<p>P.P.S. If you read this far, you might enjoy <a href="https://twitter.com/FiloSottile">following me on Twitter</a></p>
 ]]></content>
     
   </entry>
