@@ -15,7 +15,7 @@ however what Mega does is **eliminate the single point of failure**.
 What made sharing over Megaupload difficult and finally killed the service was that
 MPAA and RIAA could pressure Mega to obtain access to their data
 (remember that they had direct read and delete access to Mega* data),
-fingerprint a bunch of files and take down those matched pirate videos or tracks.
+fingerprint a bunch of files and take down those that matched pirate videos or tracks.
 
 *Now Mega encrypts client-side all the uploaded data, and gives you the key to store (and share) along with the URL.*
 

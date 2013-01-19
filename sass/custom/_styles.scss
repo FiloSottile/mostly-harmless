@@ -20,6 +20,9 @@ body > header {
 body {
 	zoom: 0.9;
 }
+.twitter-follow-button, .sharing {
+	zoom: 1.1;
+}
 
 .permalink {
 	background: darken($main-bg, 5);
