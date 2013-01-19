@@ -52,3 +52,5 @@ But now, **one simply upload to Mega the file, and then share link+key with his 
 > This time I have the feeling that the bad guys win.
 
 P.S. I know that [JavaScript crypto is doomed](http://www.matasano.com/articles/javascript-cryptography/) but they are not going to MitM your connection to steal your Mega keys, really.
+
+P.P.S. If you read this far, you might enjoy [following me on Twitter](https://twitter.com/FiloSottile)
