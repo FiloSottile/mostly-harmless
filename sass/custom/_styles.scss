@@ -57,3 +57,14 @@ div.sharing {
 	position: absolute;
 	right: 0;
 }
+
+section.aboutme {
+	iframe {
+		display: block;
+		margin: 0 auto;
+	}
+	img {
+		display: block;
+		margin: 20px auto 0;
+	}
+}
