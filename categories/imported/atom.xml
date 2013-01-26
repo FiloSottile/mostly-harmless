@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: imported | PyTux]]></title>
+  <link href="http://filosottile.github.com/categories/imported/atom.xml" rel="self"/>
+  <link href="http://filosottile.github.com/"/>
+  <updated>2013-01-26T11:51:40+01:00</updated>
+  <id>http://filosottile.github.com/</id>
+  <author>
+    <name><![CDATA[Filippo Valsorda]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
+    <link href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/"/>
+    <updated>2012-05-12T16:44:00+02:00</updated>
+    <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
+    <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that's what I use it for - rendering some elements of the page as images for later use.</p>
+
+<p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
+
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.</p>
+
+<!--more-->
+
+
+<p>Here is a modified version of the rasterize.js example to output Retina screenshots.
+<div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
+<noscript><pre><code>var page = require('webpage').create(),
+    address, output, size;
+
+if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
+    console.log('Usage: rasterize.js URL filename');
+    phantom.exit();
+} else {
+    address = phantom.args[0];
+    output = phantom.args[1];
+    page.viewportSize = { width: 1280, height: 1024 };
+    page.open(address, function (status) {
+        if (status !== 'success') {
+            console.log('Unable to load the address!');
+        } else {
+            page.evaluate(function () {
+                /* scale the whole body */
+                document.body.style.webkitTransform = &quot;scale(2)&quot;;
+                document.body.style.webkitTransformOrigin = &quot;0% 0%&quot;;
+                /* fix the body width that overflows out of the viewport */
+                document.body.style.width = &quot;50%&quot;;
+            });
+            window.setTimeout(function () {
+                page.render(output);
+                phantom.exit();
+            }, 200);
+        }
+    });
+}</code></pre></noscript></div>
+</p>
+
+<h3>Bonus</h3>
+
+<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br/>
+Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBoundingClientRect"><code>element.getBoundingClientRect</code></a> (<a href="http://ejohn.org/blog/getboundingclientrect-is-awesome/">getBoundingClientRect is Awesome</a>) and PhantomJS <a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-clipRect"><code>page.clipRect</code></a>.</p>
+
+<p>Here is a spoiler ;)
+<div><script src='https://gist.github.com/2667279.js?file=gistfile1.js'></script>
+<noscript><pre><code>page.clipRect = page.evaluate(function() {
+    return document.getElementById(ELEMENT_ID).getBoundingClientRect(); 
+});</code></pre></noscript></div>
+</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
+<li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
+<li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

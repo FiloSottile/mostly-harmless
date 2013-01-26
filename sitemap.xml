@@ -1,41 +1,49 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/</loc>
+        <lastmod>2013-01-26T11:50:40+01:00</lastmod>
+    </url>
+    <url>
         <loc>http://filosottile.github.com/please-take-this-and-go-signing-those-updates/</loc>
-        <lastmod>2013-01-19T15:53:35+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/
         </loc>
-        <lastmod>2012-12-24T03:27:28+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/</loc>
-        <lastmod>2013-01-01T06:44:12+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/automatically-compile-less-and-coffee-files/</loc>
-        <lastmod>2013-01-12T00:56:38+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/archive-your-github-repo-and-data/</loc>
-        <lastmod>2013-01-14T23:34:10+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/why-mega-will-change-the-status-quo/</loc>
-        <lastmod>2013-01-20T00:20:30+01:00</lastmod>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/archives/</loc>
-        <lastmod>2013-01-20T00:20:30+01:00</lastmod>
+        <lastmod>2013-01-26T11:50:40+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/</loc>
-        <lastmod>2013-01-20T00:20:30+01:00</lastmod>
+        <lastmod>2013-01-26T11:50:40+01:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/links/</loc>
-        <lastmod>2013-01-20T00:20:30+01:00</lastmod>
+        <lastmod>2013-01-26T11:50:40+01:00</lastmod>
+    </url>
+    <url>
+        <loc>http://filosottile.github.com/robots.txt</loc>
+        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
     </url>
 </urlset>

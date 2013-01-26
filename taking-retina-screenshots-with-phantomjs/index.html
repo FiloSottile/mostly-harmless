@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Blog Archive - PyTux</title>
+  <title>Taking Retina screenshots with PhantomJS - PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Blog Archive 2013 Why Mega WILL change the status quo
-Jan 19 2013 Archive your GitHub repo and data
-Jan 14 2013 Automatically compile .less and . &hellip;">
+  <meta name="description" content="With PhantomJS, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ Jan 14 2013 Automatically compile .less and . &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filosottile.github.com/archives/">
+  <link rel="canonical" href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,107 +76,162 @@ Jan 14 2013 Automatically compile .less and . &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Blog Archive</h1>
+    
+      
+        <h1 class="entry-title">Taking Retina screenshots with PhantomJS</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-12T16:44:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives">
 
 
+  <div class="entry-content"><p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that&#8217;s what I use it for - rendering some elements of the page as images for later use.</p>
+
+<p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
+
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.</p>
+
+<!--more-->
 
 
-  
-  <h2>2013</h2>
+<p>Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
 
-<article>
-  
-<h1><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
-<time datetime="2013-01-19T19:23:00+01:00" pubdate><span class='month'>Jan</span> <span class='day'>19</span> <span class='year'>2013</span></time>
+<div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
+<noscript><pre><code>var page = require('webpage').create(),
+    address, output, size;
 
-
-</article>
-
-
-
-
-
-<article>
-  
-<h1><a href="/archive-your-github-repo-and-data/">Archive your GitHub repo and data</a></h1>
-<time datetime="2013-01-14T23:17:00+01:00" pubdate><span class='month'>Jan</span> <span class='day'>14</span> <span class='year'>2013</span></time>
-
-
-</article>
-
-
-
-
-
-<article>
-  
-<h1><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
-<time datetime="2013-01-12T00:25:00+01:00" pubdate><span class='month'>Jan</span> <span class='day'>12</span> <span class='year'>2013</span></time>
-
-
-</article>
+if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
+    console.log('Usage: rasterize.js URL filename');
+    phantom.exit();
+} else {
+    address = phantom.args[0];
+    output = phantom.args[1];
+    page.viewportSize = { width: 1280, height: 1024 };
+    page.open(address, function (status) {
+        if (status !== 'success') {
+            console.log('Unable to load the address!');
+        } else {
+            page.evaluate(function () {
+                /* scale the whole body */
+                document.body.style.webkitTransform = &quot;scale(2)&quot;;
+                document.body.style.webkitTransformOrigin = &quot;0% 0%&quot;;
+                /* fix the body width that overflows out of the viewport */
+                document.body.style.width = &quot;50%&quot;;
+            });
+            window.setTimeout(function () {
+                page.render(output);
+                phantom.exit();
+            }, 200);
+        }
+    });
+}</code></pre></noscript></div>
 
 
+<h3>Bonus</h3>
+
+<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br/>
+Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBoundingClientRect"><code>element.getBoundingClientRect</code></a> (<a href="http://ejohn.org/blog/getboundingclientrect-is-awesome/">getBoundingClientRect is Awesome</a>) and PhantomJS <a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-clipRect"><code>page.clipRect</code></a>.</p>
+
+<p>Here is a spoiler ;)</p>
+
+<div><script src='https://gist.github.com/2667279.js?file=gistfile1.js'></script>
+<noscript><pre><code>page.clipRect = page.evaluate(function() {
+    return document.getElementById(ELEMENT_ID).getBoundingClientRect(); 
+});</code></pre></noscript></div>
 
 
+<h3>References</h3>
 
-
-
-  
-  <h2>2012</h2>
-
-<article>
-  
-<h1><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a></h1>
-<time datetime="2012-12-22T19:20:00+01:00" pubdate><span class='month'>Dec</span> <span class='day'>22</span> <span class='year'>2012</span></time>
-
-
-</article>
-
-
-
-
-
-<article>
-  
-<h1><a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a></h1>
-<time datetime="2012-12-19T20:47:00+01:00" pubdate><span class='month'>Dec</span> <span class='day'>19</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/categories/crypto/'>crypto</a></span>
-</footer>
-
-
-</article>
-
-
-
-
-
-<article>
-  
-<h1><a href="/taking-retina-screenshots-with-phantomjs/">Taking Retina screenshots with PhantomJS</a></h1>
-<time datetime="2012-05-12T16:44:00+02:00" pubdate><span class='month'>May</span> <span class='day'>12</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/categories/imported/'>imported</a></span>
-</footer>
-
-
-</article>
-
+<ul>
+<li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
+<li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
+<li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a></li>
+</ul>
 
 </div>
 
   
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-12T16:44:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/imported/'>imported</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/" data-via="FiloSottile" data-counturl="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/please-take-this-and-go-signing-those-updates/" title="Next Post: Please take this and go signing those updates">Please take this and go signing those updates &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -348,7 +401,10 @@ Jan 14 2013 Automatically compile .less and . &hellip;">
       var disqus_shortname = 'pytux';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/';
+        var disqus_url = 'http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
