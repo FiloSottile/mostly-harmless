@@ -425,10 +425,10 @@ Be warned, it only fetches public repos and data and there&#8217;s no error chec
       return {
         showBadges: function(options){
           $.ajax({
-              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+              url: 'http://coderwall.com/' + options.user + '.json?callback=call19543'
             , type: 'jsonp'
             , jsonpCallback: 'callback'
-            , jsonpCallbackName: '?'
+            , jsonpCallbackName: 'call19543'
             , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
             , success: function(res) {
                 render(options, res.data.badges);
