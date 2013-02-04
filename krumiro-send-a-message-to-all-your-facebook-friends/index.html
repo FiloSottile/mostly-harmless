@@ -147,261 +147,134 @@ By using it you are accepting this and you accept not to consider the author lia
 
 <h3>Code (for the curious - it&#8217;s ugly)</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">msg_m_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the message for males. I\&#39;ll replace %name with the recipient name.&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">msg_f_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the message for females. I\&#39;ll replace %name with the recipient name.&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">throttle_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the pause in milliseconds between a friend and the next.&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">exclude_prompt</span> <span class="o">=</span> <span class="s1">&#39;Insert the list of friends to ignore, comma separated.&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">exerror_alert</span> <span class="o">=</span> <span class="s1">&#39;%s is not in your friends, you might have made a mistake. Do you want to continue?&#39;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">time_alert</span> <span class="o">=</span> <span class="s1">&#39;The script will take %s seconds!&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="s1">&#39;Done!&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">){</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="o">=</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">){</span><span class="k">if</span><span class="p">(</span><span class="k">void</span> <span class="mi">0</span><span class="o">===</span><span class="k">this</span><span class="o">||</span><span class="kc">null</span><span class="o">===</span><span class="k">this</span><span class="p">)</span><span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">;</span><span class="kd">var</span> <span class="nx">c</span><span class="o">=</span><span class="nb">Object</span><span class="p">(</span><span class="k">this</span><span class="p">),</span><span class="nx">b</span><span class="o">=</span><span class="nx">c</span><span class="p">.</span><span class="nx">length</span><span class="o">&gt;&gt;&gt;</span><span class="mi">0</span><span class="p">;</span><span class="k">if</span><span class="p">(</span><span class="mi">0</span><span class="o">===</span><span class="nx">b</span><span class="p">)</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="kd">var</span> <span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="mi">0</span><span class="o">&lt;</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="nb">Number</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="nx">a</span><span class="o">!==</span><span class="nx">a</span><span class="o">?</span><span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="o">:</span><span class="mi">0</span><span class="o">!==</span><span class="nx">a</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">!==</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">&amp;&amp;</span><span class="nx">a</span><span class="o">!==-</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="p">))</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="o">&lt;</span><span class="nx">a</span><span class="o">||-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">a</span><span class="p">))));</span><span class="k">if</span><span class="p">(</span><span class="nx">a</span><span class="o">&gt;=</span><span class="nx">b</span><span class="p">)</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="k">for</span><span class="p">(</span><span class="nx">a</span><span class="o">=</span><span class="mi">0</span><span class="o">&lt;=</span><span class="nx">a</span><span class="o">?</span><span class="nx">a</span><span class="o">:</span><span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">b</span><span class="o">-</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span><span class="mi">0</span><span class="p">);</span><span class="nx">a</span><span class="o">&lt;</span><span class="nx">b</span><span class="p">;</span><span class="nx">a</span><span class="o">++</span><span class="p">)</span><span class="k">if</span><span class="p">(</span><span class="nx">a</span> <span class="k">in</span> <span class="nx">c</span><span class="o">&amp;&amp;</span><span class="nx">c</span><span class="p">[</span><span class="nx">a</span><span class="p">]</span><span class="o">===</span><span class="nx">d</span><span class="p">)</span><span class="k">return</span> <span class="nx">a</span><span class="p">;</span><span class="k">return</span><span class="o">-</span><span class="mi">1</span><span class="p">};}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">size</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">key</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="nx">s</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">s</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">sleep</span><span class="p">(</span><span class="nx">milliseconds</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="nx">e7</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">((</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nx">milliseconds</span><span class="p">){</span>
-</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">send</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">to</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">function</span> <span class="nx">serialize</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span>
-</span><span class='line'>         <span class="nx">str</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">p</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">p</span><span class="p">]));</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="kd">function</span> <span class="nx">random</span><span class="p">(</span><span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">min</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">len</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">max</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">len</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="nx">max</span> <span class="o">-</span> <span class="nx">min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="nx">min</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="kd">function</span> <span class="nx">generatePhstamp</span><span class="p">(</span><span class="nx">qs</span><span class="p">,</span> <span class="nx">dtsg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">input_len</span> <span class="o">=</span> <span class="nx">qs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">numeric_csrf_value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">ii</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">ii</span><span class="o">&lt;</span><span class="nx">dtsg</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">ii</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">numeric_csrf_value</span><span class="o">+=</span><span class="nx">dtsg</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">ii</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s1">&#39;1&#39;</span> <span class="o">+</span> <span class="nx">numeric_csrf_value</span> <span class="o">+</span> <span class="nx">input_len</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">fbid</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp_relative]&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">getHours</span><span class="p">()).</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">getMinutes</span><span class="p">()).</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][author]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">fbid</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_cleared]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][message_id]&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;@mail.projektitan.com&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][specific_to_list][0]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;__user&quot;</span><span class="o">:</span> <span class="nx">fbid</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp_absolute]&quot;</span><span class="o">:</span> <span class="s2">&quot;Oggi&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][spoof_warning]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][client_thread_id]&quot;</span><span class="o">:</span> <span class="s2">&quot;user:&quot;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][source]&quot;</span><span class="o">:</span> <span class="s2">&quot;source:chat:web&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][has_attachment]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][source_tags][0]&quot;</span><span class="o">:</span> <span class="s2">&quot;source:chat&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][body]&quot;</span><span class="o">:</span> <span class="nx">msg</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_filtered_content]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][timestamp]&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">),</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_unread]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][action_type]&quot;</span><span class="o">:</span> <span class="s2">&quot;ma-type:user-generated-message&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;__a&quot;</span><span class="o">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][specific_to_list][1]&quot;</span><span class="o">:</span> <span class="s2">&quot;fbid:&quot;</span> <span class="o">+</span> <span class="nx">fbid</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][html_body]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][status]&quot;</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;client&quot;</span><span class="o">:</span> <span class="s2">&quot;mercury&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;message_batch[0][is_forward]&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;fb_dtsg&quot;</span><span class="o">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">fb_dtsg</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>    <span class="c1">// Thanks http://pastebin.com/VJAhUw30</span>
-</span><span class='line'>    <span class="nx">req</span> <span class="o">+=</span> <span class="s2">&quot;&amp;phstamp=&quot;</span> <span class="o">+</span> <span class="nx">generatePhstamp</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">fb_dtsg</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">xmlhttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;/ajax/mercury/send_messages.php&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">buddy</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span> <span class="o">+</span> <span class="s2">&quot;&amp;__a=1&amp;viewer=&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Env</span><span class="p">.</span><span class="nx">user</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">resp</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">9</span><span class="p">));</span>
-</span><span class='line'>        <span class="nx">callback</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">payload</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">spam</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">msg_m</span><span class="p">,</span> <span class="nx">msg_f</span><span class="p">,</span> <span class="nx">buddy_num</span><span class="p">,</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">pos</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">throttle</span><span class="p">,</span> <span class="nx">exclude</span><span class="p">,</span> <span class="nx">present</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">buddy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">buddy_num</span> <span class="o">=</span> <span class="nx">size</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">msg_m</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">msg_m_prompt</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">msg_f</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">msg_f_prompt</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">exclude</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">exclude_prompt</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">exclude</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">trim</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="nx">exclude</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">exclude</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">present</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">buddy_list</span><span class="p">)</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">name</span> <span class="o">==</span> <span class="nx">exclude</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">())</span> <span class="nx">present</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">present</span><span class="p">)</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="nx">exerror_alert</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s&#39;</span><span class="p">,</span> <span class="nx">exclude</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">())))</span> <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nx">throttle</span> <span class="o">=</span> <span class="o">+</span><span class="nx">prompt</span><span class="p">(</span><span class="nx">throttle_prompt</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="nx">time_alert</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%s&#39;</span><span class="p">,</span> <span class="nx">buddy_num</span><span class="o">*</span><span class="nx">throttle</span><span class="o">/</span><span class="mi">1000</span><span class="p">)))</span> <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">buddy_list</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">gender</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg_f</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">else</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg_m</span><span class="p">;</span>
-</span><span class='line'>            <span class="nx">msg</span> <span class="o">=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;%name&#39;</span><span class="p">,</span> <span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">firstName</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">buddy_list</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">name</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="nx">send</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">pos</span> <span class="o">%</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">buddy_num</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">pos</span><span class="o">/</span><span class="p">(</span><span class="nx">buddy_num</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; %&#39;</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">pos</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'>            <span class="nx">sleep</span><span class="p">(</span><span class="nx">throttle</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nx">alert</span><span class="p">(</span><span class="nx">done</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">spam</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<div><script src='https://gist.github.com/4215248.js?file=krumiro_en.js'></script>
+<noscript><pre><code>var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';
+var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
+var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
+var exclude_prompt = 'Insert the list of friends to ignore, comma separated.';
+var exerror_alert = '%s is not in your friends, you might have made a mistake. Do you want to continue?'
+var time_alert = 'The script will take %s seconds!';
+var done = 'Done!';
+
+if(!Array.prototype.indexOf){Array.prototype.indexOf=function(d){if(void 0===this||null===this)throw new TypeError;var c=Object(this),b=c.length&gt;&gt;&gt;0;if(0===b)return-1;var a=0;0&lt;arguments.length&amp;&amp;(a=Number(arguments[1]),a!==a?a=0:0!==a&amp;&amp;(a!==1/0&amp;&amp;a!==-(1/0))&amp;&amp;(a=(0&lt;a||-1)*Math.floor(Math.abs(a))));if(a&gt;=b)return-1;for(a=0&lt;=a?a:Math.max(b-Math.abs(a),0);a&lt;b;a++)if(a in c&amp;&amp;c[a]===d)return a;return-1};}
+
+function size(obj) {
+    var s = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) s++;
+    }
+    return s;
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i &lt; 1e7; i++) {
+        if ((new Date().getTime() - start) &gt; milliseconds){
+          break;
+        }
+    }
+}
+
+function send(msg, to) {
+    function serialize(obj) {
+      var str = [];
+      for(var p in obj)
+         str.push(p + &quot;=&quot; + encodeURIComponent(obj[p]));
+      return str.join(&quot;&amp;&quot;);
+    }
+    function random(len) {
+        var min = Math.pow(10, len-1);
+        var max = Math.pow(10, len);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function generatePhstamp(qs, dtsg) {
+        var input_len = qs.length;
+        numeric_csrf_value='';
+     
+        for(var ii=0;ii&lt;dtsg.length;ii++) {
+            numeric_csrf_value+=dtsg.charCodeAt(ii);
+        }
+        return '1' + numeric_csrf_value + input_len;
+    }
+    var fbid = window.Env.user;
+    var d = new Date();
+    var data = {
+       &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + ('0'+d.getHours()).slice(-2) + &quot;:&quot; + ('0'+d.getMinutes()).slice(-2), 
+       &quot;message_batch[0][author]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][is_cleared]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][message_id]&quot;: &quot;&lt;&quot; + random(14) + &quot;:&quot; + random(10) + &quot;-&quot; + random(10) + &quot;@mail.projektitan.com&gt;&quot;, 
+       &quot;message_batch[0][specific_to_list][0]&quot;: &quot;fbid:&quot; + to, 
+       &quot;__user&quot;: fbid, 
+       &quot;message_batch[0][timestamp_absolute]&quot;: &quot;Oggi&quot;, 
+       &quot;message_batch[0][spoof_warning]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][client_thread_id]&quot;: &quot;user:&quot; + to, 
+       &quot;message_batch[0][source]&quot;: &quot;source:chat:web&quot;, 
+       &quot;message_batch[0][has_attachment]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][source_tags][0]&quot;: &quot;source:chat&quot;, 
+       &quot;message_batch[0][body]&quot;: msg, 
+       &quot;message_batch[0][is_filtered_content]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][timestamp]&quot;: &quot;&quot; + Math.round(new Date().getTime() / 1000), 
+       &quot;message_batch[0][is_unread]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][action_type]&quot;: &quot;ma-type:user-generated-message&quot;, 
+       &quot;__a&quot;: &quot;1&quot;, 
+       &quot;message_batch[0][specific_to_list][1]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][html_body]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][status]&quot;: &quot;0&quot;, 
+       &quot;client&quot;: &quot;mercury&quot;, 
+       &quot;message_batch[0][is_forward]&quot;: &quot;false&quot;, 
+       &quot;fb_dtsg&quot;: window.Env.fb_dtsg
+    };
+    var req = serialize(data);
+    // Thanks http://pastebin.com/VJAhUw30
+    req += &quot;&amp;phstamp=&quot; + generatePhstamp(req, data.fb_dtsg);
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open('POST', '/ajax/mercury/send_messages.php');
+    xmlhttp.send(req);
+}
+
+function buddy(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.Env.user + &quot;&amp;__a=1&amp;viewer=&quot; + window.Env.user, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        var resp = JSON.parse(xhr.responseText.slice(9));
+        callback(resp.payload);
+      }
+    };
+    xhr.send();
+}
+
+function spam() {
+    var msg_m, msg_f, buddy_num, msg, pos = 1, throttle, exclude, present;
+    buddy(function(buddy_list) {
+        buddy_num = size(buddy_list);
+        msg_m = prompt(msg_m_prompt);
+        msg_f = prompt(msg_f_prompt);
+        exclude = prompt(exclude_prompt).split(&quot;,&quot;);
+        if (exclude.length == 1 &amp;&amp; exclude[0].trim() == '') exclude = Array();
+        for (var i = 0; i &lt; exclude.length; i++) {
+            present = false;
+            for (var id in buddy_list)
+                if (buddy_list[id].name == exclude[i].trim()) present = true;
+            if (!present)
+                if (!confirm(exerror_alert.replace('%s', exclude[i].trim()))) return;
+        }
+        throttle = +prompt(throttle_prompt);
+        if (!confirm(time_alert.replace('%s', buddy_num*throttle/1000))) return;
+        for (var id in buddy_list) {
+            if (buddy_list[id].gender === 1) msg = msg_f;
+            else msg = msg_m;
+            msg = msg.replace('%name', buddy_list[id].firstName);
+            if (exclude.indexOf(buddy_list[id].name) == -1) send(msg, id);
+            if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + ' %');
+            pos++;
+            sleep(throttle);
+        }
+        alert(done);
+    });
+}
+
+spam();</code></pre></noscript></div>
 
 
 
