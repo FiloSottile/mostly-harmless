@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-02-04T23:11:33+01:00</updated>
+  <updated>2013-02-21T23:22:40+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Programming isn't always easy &#10150;]]></title>
+      <link href="http://blog.wizpert.com/programming-help/"/>
+    
+    <updated>2013-02-21T23:14:00+01:00</updated>
+    <id>http://filosottile.github.com/programming-isnt-always-easy</id>
+    
+      <content type="html"><![CDATA[<p>Since about a month now I&#8217;m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
+
+<p>Here is a guest post on their blog.</p>
+
+<p><em>Some people say that with all the reference documentation available, programming is easy.</em> &#8230;</p>
+<br><a href="http://filosottile.github.com/programming-isnt-always-easy/">Permalink</a>]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -31,141 +48,7 @@ for example on those that expose the config file on the public internet. Just sa
 
 
 <div><script src='https://gist.github.com/4663892.js'></script>
-<noscript><pre><code>#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-##############################################################
-# Lempel-Ziv-Stac decompression
-# BitReader and RingList classes
-# 
-# Copyright (C) 2011  Filippo Valsorda - FiloSottile
-# filosottile.wiki gmail.com - www.pytux.it
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see &amp;lt;http://www.gnu.org/licenses/&amp;gt;.
-# 
-##############################################################
-
-import collections
-
-class BitReader:
-    &amp;quot;&amp;quot;&amp;quot;
-    Gets a string or a iterable of chars (also mmap)
-    representing bytes (ord) and permits to extract
-    bits one by one like a stream
-    &amp;quot;&amp;quot;&amp;quot;
-    def __init__(self, bytes):
-        self._bits = collections.deque()
-        
-        for byte in bytes:
-            byte = ord(byte)
-            for n in xrange(8):
-                self._bits.append(bool((byte &amp;gt;&amp;gt; (7-n)) &amp;amp; 1))
-            
-    def getBit(self):
-        return self._bits.popleft()
-        
-    def getBits(self, num):
-        res = 0
-        for i in xrange(num):
-            res += self.getBit() &amp;lt;&amp;lt; num-1-i
-        return res
-        
-    def getByte(self):
-        return self.getBits(8)
-        
-    def __len__(self):
-        return len(self._bits)
-        
-class RingList:
-    &amp;quot;&amp;quot;&amp;quot;
-    When the list is full, for every item appended
-    the older is removed
-    &amp;quot;&amp;quot;&amp;quot;
-    def __init__(self, length):
-        self.__data__ = collections.deque()
-        self.__full__ = False
-        self.__max__ = length
-
-    def append(self, x):
-        if self.__full__:
-            self.__data__.popleft()
-        self.__data__.append(x)
-        if self.size() == self.__max__:
-            self.__full__ = True
-
-    def get(self):
-        return self.__data__
-
-    def size(self):
-        return len(self.__data__)
-
-    def maxsize(self):
-        return self.__max__
-        
-    def __getitem__(self, n):
-        if n &amp;gt;= self.size():
-            return None
-        return self.__data__[n]
-        
-def LZSDecompress(data, window = RingList(2048)):
-    &amp;quot;&amp;quot;&amp;quot;
-    Gets a string or a iterable of chars (also mmap)
-    representing bytes (ord) and an optional
-    pre-populated dictionary; return the decompressed
-    string and the final dictionary
-    &amp;quot;&amp;quot;&amp;quot;
-    reader = BitReader(data)
-    result = ''
-    
-    while True:
-        bit = reader.getBit()
-        if not bit:
-            char = reader.getByte()
-            result += chr(char)
-            window.append(char)
-        else:
-            bit = reader.getBit()
-            if bit:
-                offset = reader.getBits(7)
-                if offset == 0:
-                    # EOF
-                    break
-            else:
-                offset = reader.getBits(11)
-            
-            lenField = reader.getBits(2)
-            if lenField &amp;lt; 3:
-                lenght = lenField + 2
-            else:
-                lenField &amp;lt;&amp;lt;= 2
-                lenField += reader.getBits(2)
-                if lenField &amp;lt; 15:
-                    lenght = (lenField &amp;amp; 0x0f) + 5
-                else:
-                    lenCounter = 0
-                    lenField = reader.getBits(4)
-                    while lenField == 15:
-                        lenField = reader.getBits(4)
-                        lenCounter += 1
-                    lenght = 15*lenCounter + 8 + lenField
-            
-            for i in xrange(lenght):
-                char = window[-offset]
-                result += chr(char)
-                window.append(char)
-    
-    return result, window</code></pre></noscript></div>
+<noscript><pre><code></code></pre></noscript></div>
 
 
 
