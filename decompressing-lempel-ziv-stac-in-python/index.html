@@ -30,6 +30,22 @@ used on embedded devices, for example for config files, for example on routers &
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -108,17 +124,12 @@ used on embedded devices, for example for config files, for example on routers &
 
   <div class="entry-content"><p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
 used on embedded devices, for example for config files, for example on routers,
-for example on those that expose the config file on the public internet. Just sayin&#8217;&#8230;</p>
+for example on those that expose the config file on the public internet. Just sayin’…</p>
 
-<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.</p>
-
-<!-- more -->
-
-
-<div><script src='https://gist.github.com/4663892.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
+<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.
+<!-- more --></p>
+<div><script src="https://gist.github.com/4663892.js"></script>
+<noscript><pre><code /></pre></noscript></div>
 
 </div>
 

@@ -29,6 +29,22 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -109,15 +125,16 @@
 
 <p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
 Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
-And there are much more examples of data best kept offline&#8230;</p>
+And there are much more examples of data best kept offline…</p>
 
 <p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
 
 <p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
 
-<p>If you don&#8217;t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+<p>If you don’t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
 
-<p>It&#8217;s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+<p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+
 </div>
 
   

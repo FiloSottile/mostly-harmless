@@ -9,8 +9,8 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="GitHub is a service we all trust, so this is not a &#8220;get your data off that cloud before it explodes!&#8221;-style post,
-but sometimes you want &hellip;">
+  <meta name="description" content="GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
+but sometimes you want to take an &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -29,6 +29,22 @@ but sometimes you want &hellip;">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
   
   <script type="text/javascript">
@@ -106,14 +122,14 @@ but sometimes you want &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>GitHub is a service we all trust, so this is not a &#8220;get your data off that cloud before it explodes!&#8221;-style post,
-but sometimes you want to take an offline copy of your or somebody&#8217;s work.</p>
+  <div class="entry-content"><p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
+but sometimes you want to take an offline copy of your or somebody’s work.</p>
 
 <p>Here is a quick and dirty Python script that will help you clone all the repositories, the Gists and some metadata
 that can be fetched over the API.
-Be warned, it only fetches public repos and data and there&#8217;s no error checking.</p>
+Be warned, it only fetches public repos and data and there’s no error checking.</p>
 
-<div><script src='https://gist.github.com/4710058.js?file=usage.txt'></script>
+<div><script src="https://gist.github.com/4710058.js?file=usage.txt"></script>
 <noscript><pre><code>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
 
 Dump an user's public GitHub data into current directory.
@@ -127,10 +143,7 @@ optional arguments:
   --no-gist      don't download user gists (default is do)
   --no-metadata  don't download user metadata (default is do)</code></pre></noscript></div>
 
-
-
-
-<div><script src='https://gist.github.com/4710058.js?file=archive_GH.py'></script>
+<div><script src="https://gist.github.com/4710058.js?file=archive_GH.py"></script>
 <noscript><pre><code>#!/usr/bin/env python3
 
 # This is free and unencumbered software released into the public domain.
@@ -215,7 +228,6 @@ if args.metadata:
         data = urlopen(clear_url(user[name + '_url'])).read()
         with open(name + '.json', 'wb') as f:
             f.write(data)</code></pre></noscript></div>
-
 
 <p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
 </div>

@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-02-23T09:37:53+01:00</updated>
+  <updated>2013-02-23T10:14:50+01:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -25,15 +25,16 @@
 
 <p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
 Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
-And there are much more examples of data best kept offline&#8230;</p>
+And there are much more examples of data best kept offline…</p>
 
 <p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
 
 <p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
 
-<p>If you don&#8217;t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+<p>If you don’t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
 
-<p>It&#8217;s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+<p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+
 ]]></content>
     
   </entry>
@@ -46,11 +47,12 @@ And there are much more examples of data best kept offline&#8230;</p>
     <updated>2013-02-21T23:14:00+01:00</updated>
     <id>http://filosottile.github.com/programming-isnt-always-easy</id>
     
-      <content type="html"><![CDATA[<p>Since about a month now I&#8217;m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
+      <content type="html"><![CDATA[<p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
 
 <p>Here is a guest post on their blog.</p>
 
-<p><em>Some people say that with all the reference documentation available, programming is easy.</em> &#8230;</p>
+<p><em>Some people say that with all the reference documentation available, programming is easy.</em> …</p>
+
 <br><a href="http://filosottile.github.com/programming-isnt-always-easy/">Permalink</a>]]></content>
     
   </entry>
@@ -65,17 +67,12 @@ And there are much more examples of data best kept offline&#8230;</p>
     
       <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
 used on embedded devices, for example for config files, for example on routers,
-for example on those that expose the config file on the public internet. Just sayin&#8217;&#8230;</p>
+for example on those that expose the config file on the public internet. Just sayin’…</p>
 
-<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.</p>
-
-<!-- more -->
-
-
-<div><script src='https://gist.github.com/4663892.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
+<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.
+<!-- more --></p>
+<div><script src="https://gist.github.com/4663892.js"></script>
+<noscript><pre><code /></pre></noscript></div>
 
 ]]></content>
     
@@ -102,11 +99,11 @@ fingerprint a bunch of files and take down those that matched pirate videos or t
 
 <p><em>Now Mega encrypts client-side all the uploaded data, and gives you the key to store (and share) along with the URL.</em></p>
 
-<p>How this changes the outcome, you ask? Simply stated, <strong>now MPAA and RIAA can&#8217;t do anything with access only to Mega infrastructure</strong>.</p>
+<p>How this changes the outcome, you ask? Simply stated, <strong>now MPAA and RIAA can’t do anything with access only to Mega infrastructure</strong>.</p>
 
 <p>Obviously key (and URL sharing) is the weakest link in the chain. but consider the two following (common) scenarios:</p>
 
-<h3>The classic pirate movie/music forum/blog</h3>
+<h3 id="the-classic-pirate-moviemusic-forumblog">The classic pirate movie/music forum/blog</h3>
 
 <p>The users of those sites always re-uploaded all the content,
 as taking the links of another community was considered really unkind and prevented in various ways.</p>
@@ -119,17 +116,19 @@ in a giant struggle that never comes to an end.</p>
 <p>This because <strong>each community will have its own copy of the data, each one requiring its key to be taken down, and each key will have to be fetched from each particular site</strong>.</p>
 
 <p>Do you want to be sure that no one will take down your link? Put it (and its key) behind a CAPTCHA.
-This way an automated program will not suffice and they&#8217;ll not have enough human resources to check all the forums, blogs, etc.</p>
+This way an automated program will not suffice and they’ll not have enough human resources to check all the forums, blogs, etc.</p>
 
-<h3>The underground textual community</h3>
+<h3 id="the-underground-textual-community">The underground textual community</h3>
 
-<p>Let&#8217;s say an IRC channel, but also a Skype group chat or Facebook group might work (although I would never share pirate stuff along with my name and surname, but &#8230;).</p>
+<p>Let’s say an IRC channel, but also a Skype group chat or Facebook group might work (although I would never share pirate stuff along with my name and surname, but …).</p>
 
-<p>Ever tried sharing big amounts of data over those services? It&#8217;s a pain. And sharing with a number of people is plainly impossible.</p>
+<p>Ever tried sharing big amounts of data over those services? It’s a pain. And sharing with a number of people is plainly impossible.</p>
 
 <p>But now, <strong>one simply upload to Mega the file, and then share link+key with his closed group, and the only way to prevent this is to <em>be part</em> of that group</strong>.</p>
 
-<blockquote><p>This time I have the feeling that the bad guys win.</p></blockquote>
+<blockquote>
+  <p>This time I have the feeling that the bad guys win.</p>
+</blockquote>
 
 <p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
 
@@ -146,14 +145,14 @@ This way an automated program will not suffice and they&#8217;ll not have enough
     <updated>2013-01-14T23:17:00+01:00</updated>
     <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
     
-      <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a &#8220;get your data off that cloud before it explodes!&#8221;-style post,
-but sometimes you want to take an offline copy of your or somebody&#8217;s work.</p>
+      <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
+but sometimes you want to take an offline copy of your or somebody’s work.</p>
 
 <p>Here is a quick and dirty Python script that will help you clone all the repositories, the Gists and some metadata
 that can be fetched over the API.
-Be warned, it only fetches public repos and data and there&#8217;s no error checking.</p>
+Be warned, it only fetches public repos and data and there’s no error checking.</p>
 
-<div><script src='https://gist.github.com/4710058.js?file=usage.txt'></script>
+<div><script src="https://gist.github.com/4710058.js?file=usage.txt"></script>
 <noscript><pre><code>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
 
 Dump an user's public GitHub data into current directory.
@@ -167,10 +166,7 @@ optional arguments:
   --no-gist      don't download user gists (default is do)
   --no-metadata  don't download user metadata (default is do)</code></pre></noscript></div>
 
-
-
-
-<div><script src='https://gist.github.com/4710058.js?file=archive_GH.py'></script>
+<div><script src="https://gist.github.com/4710058.js?file=archive_GH.py"></script>
 <noscript><pre><code>#!/usr/bin/env python3
 
 # This is free and unencumbered software released into the public domain.
@@ -256,7 +252,6 @@ if args.metadata:
         with open(name + '.json', 'wb') as f:
             f.write(data)</code></pre></noscript></div>
 
-
 <p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
 ]]></content>
     
@@ -276,7 +271,7 @@ if args.metadata:
 
 <p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
 
-<div><script src='https://gist.github.com/4710041.js?file=watch_and_build.py'></script>
+<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
 <noscript><pre><code>#!/usr/bin/env python2
 
 import watchdog.events
@@ -318,10 +313,9 @@ if __name__ == &quot;__main__&quot;:
         observer.stop()
     observer.join()</code></pre></noscript></div>
 
-
 <p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
 
-<p>Should be compatible with Mac OS X and Linux at least, BSD and Win&#8230; maybe.</p>
+<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
 ]]></content>
     
   </entry>
@@ -336,9 +330,8 @@ if __name__ == &quot;__main__&quot;:
     
       <content type="html"><![CDATA[<p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
 
@@ -359,48 +352,41 @@ if __name__ == &quot;__main__&quot;:
     <updated>2012-12-22T19:20:00+01:00</updated>
     <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
     
-      <content type="html"><![CDATA[<blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+      <content type="html"><![CDATA[<blockquote>
+  <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
 By using it you are accepting this and you accept not to consider the author liable for your use.</p>
 
-<p>For the technically inclined, it&#8217;s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p></blockquote>
+  <p>For the technically inclined, it’s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p>
+</blockquote>
 
 <p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
 
-<h3>Features</h3>
-
+<h3 id="features">Features</h3>
 <ul>
-<li>Different messages for male and female friends;</li>
-<li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
-<li>Configurable time to wait between a message and the next, with total duration prediction;</li>
-<li>List of friends to exclude.</li>
+  <li>Different messages for male and female friends;</li>
+  <li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
+  <li>Configurable time to wait between a message and the next, with total duration prediction;</li>
+  <li>List of friends to exclude.</li>
 </ul>
-
 
 <p>If you have any request or suggestion, simply leave a comment.</p>
 
-<h3>Installation</h3>
-
+<h3 id="installation">Installation</h3>
 <ul>
-<li>Drag this &#8221;<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>&#8221; to your bookmarks bar;</li>
-<li>Done! Now the Krumiro button is ready.</li>
+  <li>Drag this “<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>” to your bookmarks bar;</li>
+  <li>Done! Now the Krumiro button is ready.</li>
 </ul>
 
-
-<h3>Use</h3>
-
+<h3 id="use">Use</h3>
 <ul>
-<li>While on a Facebook page, simply click it;</li>
-<li>Some windows asking you what to do will show up;</li>
-<li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.</li>
+  <li>While on a Facebook page, simply click it;</li>
+  <li>Some windows asking you what to do will show up;</li>
+  <li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.
+<!-- more --></li>
 </ul>
 
-
-<!-- more -->
-
-
-<h3>Code (for the curious - it&#8217;s ugly)</h3>
-
-<div><script src='https://gist.github.com/4215248.js?file=krumiro_en.js'></script>
+<h3 id="code-for-the-curious---its-ugly">Code (for the curious - it’s ugly)</h3>
+<div><script src="https://gist.github.com/4215248.js?file=krumiro_en.js"></script>
 <noscript><pre><code>var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';
 var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
 var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
@@ -529,8 +515,6 @@ function spam() {
 
 spam();</code></pre></noscript></div>
 
-
-
 ]]></content>
     
   </entry>
@@ -547,10 +531,10 @@ spam();</code></pre></noscript></div>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
 
-<p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license&#8230;<br/>
-Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and&#8230; it&#8217;s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it&#8217;s yours.</p>
+<p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license…<br />
+Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and… it’s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it’s yours.</p>
 
-<div><script src='https://gist.github.com/4340076.js?file=rsa_verify.py'></script>
+<div><script src="https://gist.github.com/4340076.js?file=rsa_verify.py"></script>
 <noscript><pre><code>def rsa_verify(message, signature, key):
     from struct import pack
     from hashlib import sha256 # You'll need the backport for 2.4 http://code.krypto.org/python/hashlib/
@@ -579,12 +563,11 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
     if signature != sha256(message).digest(): return False
     return True</code></pre></noscript></div>
 
-
-<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public keys and how to sign new updates. Don&#8217;t worry, it&#8217;s all really easy; if you happen to encounter any issues, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
+<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public keys and how to sign new updates. Don’t worry, it’s all really easy; if you happen to encounter any issues, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
 
 <p>I am sufficiently proficient only in Python, so if any C, Perl, PHP or Brainfuck guru wants to show up and contribute the same function in another language, it would be awesome!</p>
 
-<p>Now you don&#8217;t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br/>
+<p>Now you don’t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br />
 (And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 ]]></content>
     
@@ -598,18 +581,14 @@ Then, <strong>take this</strong>! It&#8217;s a drop-in, <em>zero-dependency</em>
     <updated>2012-05-12T16:44:00+02:00</updated>
     <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
     
-      <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that&#8217;s what I use it for - rendering some elements of the page as images for later use.</p>
+      <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
 <p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
 
-<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.</p>
-
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.
 <!--more-->
-
-
-<p>Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
-
-<div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
+Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
+<div><script src="https://gist.github.com/2667199.js?file=rasterize.js"></script>
 <noscript><pre><code>var page = require('webpage').create(),
     address, output, size;
 
@@ -639,26 +618,21 @@ if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
     });
 }</code></pre></noscript></div>
 
-
-<h3>Bonus</h3>
-
-<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br/>
+<h3 id="bonus">Bonus</h3>
+<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br />
 Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBoundingClientRect"><code>element.getBoundingClientRect</code></a> (<a href="http://ejohn.org/blog/getboundingclientrect-is-awesome/">getBoundingClientRect is Awesome</a>) and PhantomJS <a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-clipRect"><code>page.clipRect</code></a>.</p>
 
 <p>Here is a spoiler ;)</p>
-
-<div><script src='https://gist.github.com/2667279.js?file=gistfile1.js'></script>
+<div><script src="https://gist.github.com/2667279.js?file=gistfile1.js"></script>
 <noscript><pre><code>page.clipRect = page.evaluate(function() {
     return document.getElementById(ELEMENT_ID).getBoundingClientRect(); 
 });</code></pre></noscript></div>
 
-
-<h3>References</h3>
-
+<h3 id="references">References</h3>
 <ul>
-<li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
-<li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
-<li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a></li>
+  <li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a> </li>
 </ul>
 
 ]]></content>
@@ -677,7 +651,7 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
 
 <p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
 
-<div><script src='https://gist.github.com/2077204.js?file=HEAD-request.py'></script>
+<div><script src="https://gist.github.com/2077204.js?file=HEAD-request.py"></script>
 <noscript><pre><code>import urllib2
 
 class HeadRequest(urllib2.Request):
@@ -711,10 +685,9 @@ response = opener.open(HeadRequest(url))
 print response.geturl()
 print response.info()</code></pre></noscript></div>
 
-
 <p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
 
-<div><script src='https://gist.github.com/2077115.js?file=redirect-follower.py'></script>
+<div><script src="https://gist.github.com/2077115.js?file=redirect-follower.py"></script>
 <noscript><pre><code>#!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
@@ -772,8 +745,6 @@ for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
 response = opener.open(HeadRequest(sys.argv[1]))
 
 print response.geturl()</code></pre></noscript></div>
-
-
 
 ]]></content>
     

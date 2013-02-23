@@ -29,6 +29,22 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -105,18 +121,14 @@
   </header>
 
 
-  <div class="entry-content"><p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that&#8217;s what I use it for - rendering some elements of the page as images for later use.</p>
+  <div class="entry-content"><p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
 <p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
 
-<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.</p>
-
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.
 <!--more-->
-
-
-<p>Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
-
-<div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
+Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
+<div><script src="https://gist.github.com/2667199.js?file=rasterize.js"></script>
 <noscript><pre><code>var page = require('webpage').create(),
     address, output, size;
 
@@ -146,26 +158,21 @@ if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
     });
 }</code></pre></noscript></div>
 
-
-<h3>Bonus</h3>
-
-<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br/>
+<h3 id="bonus">Bonus</h3>
+<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br />
 Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBoundingClientRect"><code>element.getBoundingClientRect</code></a> (<a href="http://ejohn.org/blog/getboundingclientrect-is-awesome/">getBoundingClientRect is Awesome</a>) and PhantomJS <a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-clipRect"><code>page.clipRect</code></a>.</p>
 
 <p>Here is a spoiler ;)</p>
-
-<div><script src='https://gist.github.com/2667279.js?file=gistfile1.js'></script>
+<div><script src="https://gist.github.com/2667279.js?file=gistfile1.js"></script>
 <noscript><pre><code>page.clipRect = page.evaluate(function() {
     return document.getElementById(ELEMENT_ID).getBoundingClientRect(); 
 });</code></pre></noscript></div>
 
-
-<h3>References</h3>
-
+<h3 id="references">References</h3>
 <ul>
-<li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
-<li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
-<li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a></li>
+  <li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a> </li>
 </ul>
 
 </div>

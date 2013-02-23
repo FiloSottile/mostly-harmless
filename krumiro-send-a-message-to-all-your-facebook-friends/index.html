@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="Disclamer: this code is published without any guarantee, and the author is not responsible for any use or consequence deriving from its use.
-By using &hellip;">
+By &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -29,6 +29,22 @@ By using &hellip;">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
   
   <script type="text/javascript">
@@ -106,48 +122,41 @@ By using &hellip;">
   </header>
 
 
-  <div class="entry-content"><blockquote><p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+  <div class="entry-content"><blockquote>
+  <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
 By using it you are accepting this and you accept not to consider the author liable for your use.</p>
 
-<p>For the technically inclined, it&#8217;s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p></blockquote>
+  <p>For the technically inclined, it’s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p>
+</blockquote>
 
 <p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
 
-<h3>Features</h3>
-
+<h3 id="features">Features</h3>
 <ul>
-<li>Different messages for male and female friends;</li>
-<li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
-<li>Configurable time to wait between a message and the next, with total duration prediction;</li>
-<li>List of friends to exclude.</li>
+  <li>Different messages for male and female friends;</li>
+  <li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
+  <li>Configurable time to wait between a message and the next, with total duration prediction;</li>
+  <li>List of friends to exclude.</li>
 </ul>
-
 
 <p>If you have any request or suggestion, simply leave a comment.</p>
 
-<h3>Installation</h3>
-
+<h3 id="installation">Installation</h3>
 <ul>
-<li>Drag this &#8221;<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>&#8221; to your bookmarks bar;</li>
-<li>Done! Now the Krumiro button is ready.</li>
+  <li>Drag this “<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>” to your bookmarks bar;</li>
+  <li>Done! Now the Krumiro button is ready.</li>
 </ul>
 
-
-<h3>Use</h3>
-
+<h3 id="use">Use</h3>
 <ul>
-<li>While on a Facebook page, simply click it;</li>
-<li>Some windows asking you what to do will show up;</li>
-<li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.</li>
+  <li>While on a Facebook page, simply click it;</li>
+  <li>Some windows asking you what to do will show up;</li>
+  <li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.
+<!-- more --></li>
 </ul>
 
-
-<!-- more -->
-
-
-<h3>Code (for the curious - it&#8217;s ugly)</h3>
-
-<div><script src='https://gist.github.com/4215248.js?file=krumiro_en.js'></script>
+<h3 id="code-for-the-curious---its-ugly">Code (for the curious - it’s ugly)</h3>
+<div><script src="https://gist.github.com/4215248.js?file=krumiro_en.js"></script>
 <noscript><pre><code>var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';
 var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
 var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
@@ -275,8 +284,6 @@ function spam() {
 }
 
 spam();</code></pre></noscript></div>
-
-
 
 </div>
 

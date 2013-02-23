@@ -29,6 +29,22 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -111,7 +127,7 @@
 
 <p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
 
-<div><script src='https://gist.github.com/4710041.js?file=watch_and_build.py'></script>
+<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
 <noscript><pre><code>#!/usr/bin/env python2
 
 import watchdog.events
@@ -153,10 +169,9 @@ if __name__ == &quot;__main__&quot;:
         observer.stop()
     observer.join()</code></pre></noscript></div>
 
-
 <p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
 
-<p>Should be compatible with Mac OS X and Linux at least, BSD and Win&#8230; maybe.</p>
+<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
 </div>
 
   

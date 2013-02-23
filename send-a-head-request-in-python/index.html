@@ -29,6 +29,22 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -109,7 +125,7 @@
 
 <p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
 
-<div><script src='https://gist.github.com/2077204.js?file=HEAD-request.py'></script>
+<div><script src="https://gist.github.com/2077204.js?file=HEAD-request.py"></script>
 <noscript><pre><code>import urllib2
 
 class HeadRequest(urllib2.Request):
@@ -143,10 +159,9 @@ response = opener.open(HeadRequest(url))
 print response.geturl()
 print response.info()</code></pre></noscript></div>
 
-
 <p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
 
-<div><script src='https://gist.github.com/2077115.js?file=redirect-follower.py'></script>
+<div><script src="https://gist.github.com/2077115.js?file=redirect-follower.py"></script>
 <noscript><pre><code>#!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
@@ -204,8 +219,6 @@ for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
 response = opener.open(HeadRequest(sys.argv[1]))
 
 print response.geturl()</code></pre></noscript></div>
-
-
 
 </div>
 
