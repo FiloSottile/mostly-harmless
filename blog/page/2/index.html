@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="The only really secure place for data is an offline computer. A couple of use cases: store your primary GPG key offline, without expire date, then &hellip;">
+  <meta name="description" content="There are a lot of questions on this topic around the web and common answers are to use httplib, that however is a really-low level library, or to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filosottile.github.com/">
+  <link rel="canonical" href="http://filosottile.github.com/blog/page/2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -86,7 +86,7 @@
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/offline-storage-on-a-rpi/">Offline storage on a RPi</a></h1>
+        <h1 class="entry-title"><a href="/send-a-head-request-in-python/">Send a HEAD request in Python</a></h1>
       
     
     
@@ -103,7 +103,7 @@
   
 
 
-<time datetime="2013-02-22T23:21:00+01:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
+<time datetime="2012-03-18T17:53:00+01:00" pubdate data-updated="true">Mar 18<span>th</span>, 2012</time>
         
       </p>
     
@@ -111,19 +111,108 @@
 
 
   
-    <div class="entry-content"><p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
+    <div class="entry-content"><p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
 
-<p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
-Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
-And there are much more examples of data best kept offline&#8230;</p>
+<p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
 
-<p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
+<div><script src='https://gist.github.com/2077204.js?file=HEAD-request.py'></script>
+<noscript><pre><code>import urllib2
 
-<p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
+class HeadRequest(urllib2.Request):
+    def get_method(self):
+        return &quot;HEAD&quot;
 
-<p>If you don&#8217;t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
+    &quot;&quot;&quot;
+    Subclass the HTTPRedirectHandler to make it use our 
+    HeadRequest also on the redirected URL
+    &quot;&quot;&quot;
+    def redirect_request(self, req, fp, code, msg, headers, newurl): 
+        if code in (301, 302, 303, 307):
+            newurl = newurl.replace(' ', '%20') 
+            return HeadRequest(newurl, 
+                               headers=req.headers, 
+                               origin_req_host=req.get_origin_req_host(), 
+                               unverifiable=True) 
+        else: 
+            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
 
-<p>It&#8217;s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+# Build our opener with the HEADRedirectHandler
+opener = urllib2.OpenerDirector() 
+for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
+                HEADRedirectHandler,
+                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
+    opener.add_handler(handler())
+
+response = opener.open(HeadRequest(url))
+
+print response.geturl()
+print response.info()</code></pre></noscript></div>
+
+
+<p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
+
+<div><script src='https://gist.github.com/2077115.js?file=redirect-follower.py'></script>
+<noscript><pre><code>#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+import sys
+import urllib2
+
+# This script uses HEAD requests (with fallback in case of 405) 
+# to follow the redirect path up to the real URL
+# (c) 2012 Filippo Valsorda - FiloSottile
+# Released under the GPL license
+
+class HeadRequest(urllib2.Request):
+    def get_method(self):
+        return &quot;HEAD&quot;
+
+class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
+    &quot;&quot;&quot;
+    Subclass the HTTPRedirectHandler to make it use our 
+    HeadRequest also on the redirected URL
+    &quot;&quot;&quot;
+    def redirect_request(self, req, fp, code, msg, headers, newurl): 
+        if code in (301, 302, 303, 307):
+            newurl = newurl.replace(' ', '%20') 
+            newheaders = dict((k,v) for k,v in req.headers.items()
+                              if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
+            return HeadRequest(newurl, 
+                               headers=newheaders,
+                               origin_req_host=req.get_origin_req_host(), 
+                               unverifiable=True) 
+        else: 
+            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp) 
+            
+class HTTPMethodFallback(urllib2.BaseHandler):
+    &quot;&quot;&quot;
+    Fallback to GET if HEAD is not allowed (405 HTTP error)
+    &quot;&quot;&quot;
+    def http_error_405(self, req, fp, code, msg, headers): 
+        fp.read()
+        fp.close()
+
+        newheaders = dict((k,v) for k,v in req.headers.items()
+                          if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
+        return self.parent.open(urllib2.Request(req.get_full_url(), 
+                                         headers=newheaders, 
+                                         origin_req_host=req.get_origin_req_host(), 
+                                         unverifiable=True))
+
+# Build our opener
+opener = urllib2.OpenerDirector() 
+for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
+                HTTPMethodFallback, HEADRedirectHandler,
+                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
+    opener.add_handler(handler())
+
+response = opener.open(HeadRequest(sys.argv[1]))
+
+print response.geturl()</code></pre></noscript></div>
+
+
+
 </div>
     
     
@@ -135,370 +224,11 @@ And there are much more examples of data best kept offline&#8230;</p>
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://blog.wizpert.com/programming-help/">Programming isn&#8217;t always easy</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-21T23:14:00+01:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/programming-isnt-always-easy/">Permalink</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-29T12:06:00+01:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-19T19:23:00+01:00" pubdate data-updated="true">Jan 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/archive-your-github-repo-and-data/">Archive your GitHub repo and data</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-14T23:17:00+01:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-12T00:25:00+01:00" pubdate data-updated="true">Jan 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-01T06:36:00+01:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Permalink</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-22T19:20:00+01:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/taking-retina-screenshots-with-phantomjs/">Taking Retina screenshots with PhantomJS</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-12T16:44:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
     <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
     
   </div>
 </div>
