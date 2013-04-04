@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-02-23T10:14:50+01:00</updated>
+  <updated>2013-04-04T21:55:51+02:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Claimed a RECAP Aaron Swartz grant &#10150;]]></title>
+      <link href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/"/>
+    
+    <updated>2013-04-04T21:40:00+02:00</updated>
+    <id>http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant</id>
+    
+      <content type="html"><![CDATA[<p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
+
+<p>The Firefox (and now Chrome) extension intercepts public domain documents downloaded from the pay-walled legal archive <a href="http://www.pacer.gov/">PACER</a> and uploads them to the <a href="http://archive.org/">Internet Archive</a>. Freely available documents are then marked as such for the sake of a juster access to public records.</p>
+
+<p>Details and comments in the linked blog post.</p>
+
+<br><a href="http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant/">Permalink</a>]]></content>
+    
+  </entry>
   
   <entry>
     
