@@ -123,7 +123,7 @@ MathJax.Hub.Config({
 
   <div class="entry-content"><p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
 
-<p><a href="https://www.facebook.com/BugBounty"><img class="img_right" src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+<p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
 
 <p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
 
@@ -140,7 +140,7 @@ MathJax.Hub.Config({
 
 <p>Authenticating with our iOS app access token we can issue queries like</p>
 
-<pre><code>SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 order by communication_rank desc
+<pre><code>SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 ORDER BY communication_rank DESC
 </code></pre>
 
 <p>for an arbitrary friend’s <code>uid1</code> (the above is the one of my favorite guinea pig, Anna) instead of just for ours. That queries return output like</p>
@@ -159,7 +159,7 @@ MathJax.Hub.Config({
 
 <p>The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on <a href="https://www.facebook.com/whitehat/thanks/">their thanks page</a> (a great, great CV builder), plus some pleasant compliments.</p>
 
-<p><img class="img_center" src="/images/whitehat.png" alt="White Hat Bounty" /></p>
+<p class="img_center"><img src="/images/whitehat.png" alt="White Hat Bounty" /></p>
 
 <p>Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he’s being heard, offer him a direct contact (you get ticket-bound <em>Reply-To</em>s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.</p>
 
@@ -205,8 +205,6 @@ MathJax.Hub.Config({
     </tr>
   </tbody>
 </table>
-
-<p>In case you wanted to, you can <a href="https://twitter.com/FiloSottile">follow me on Twitter</a>.</p>
 </div>
 
   
@@ -272,7 +270,7 @@ MathJax.Hub.Config({
   
     <section class="aboutme">
   <h1>About Me</h1>
-  <p>I am Filippo Valsorda (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>), an Italian student, a problem solver.
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>), an Italian student, a problem solver.
   	I love cryptography, Python, InfoSec and maths.
   	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a>.</p>
 
