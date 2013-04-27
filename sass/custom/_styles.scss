@@ -67,6 +67,9 @@ section.aboutme {
 		display: block;
 		margin: 20px auto 0;
 	}
+	.name {
+		font-family: Valli;
+	}
 }
 
 .gist .line-data {
@@ -93,4 +96,19 @@ article .img_left {
 article .img_center {
 	display: block;
 	margin: 0 auto;
+}
+
+@font-face {
+    font-family: 'vallimedium';
+    src: url('/assets/valli_3-webfont.eot');
+    src: url('/assets/valli_3-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/assets/valli_3-webfont.woff') format('woff'),
+         url('/assets/valli_3-webfont.ttf') format('truetype'),
+         url('/assets/valli_3-webfont.svg#vallimedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body > header h1, body > header h2 {
+	font-family: Valli;
 }
