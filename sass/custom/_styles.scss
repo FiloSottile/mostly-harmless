@@ -72,3 +72,25 @@ section.aboutme {
 .gist .line-data {
 	width: 100%;
 }
+
+article table {
+	margin-bottom: 1em;
+	td {
+		padding: 0 10px;
+	}
+}
+
+article .img_right {
+	float: right;
+	margin: 0 0 0 15px;
+}
+
+article .img_left {
+	float: left;
+	margin: 0 15px 0 0;
+}
+
+article .img_center {
+	display: block;
+	margin: 0 auto;
+}
