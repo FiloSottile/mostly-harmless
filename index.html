@@ -129,7 +129,7 @@ MathJax.Hub.Config({
   
     <div class="entry-content"><p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
 
-<p><a href="https://www.facebook.com/BugBounty"><img class="img_right" src="images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+<p><a href="https://www.facebook.com/BugBounty"><img class="img_right" src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
 
 <p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
 
