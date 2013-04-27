@@ -8,7 +8,8 @@ categories:
 
 **tl;dr** I found a vulnerability in Facebook that allowed anyone to see the "strength" of all his friends' friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.
 
-[<img class="img_right" src="/images/BugBounty.png" alt="Facebook Bug Bounty" />](https://www.facebook.com/BugBounty)
+[![Facebook Bug Bounty](/images/BugBounty.png)](https://www.facebook.com/BugBounty)
+{: .img_right }
 
 Early this year Facebook started showing "*last active*" times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting `m.facebook.com` would have been enough, but emh...). So, I started [Burp Proxy](http://portswigger.net/burp/proxy.html) with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.
 
@@ -24,7 +25,7 @@ The [docs](https://developers.facebook.com/docs/reference/fql/friend) tell us th
 
 Authenticating with our iOS app access token we can issue queries like
 
-    SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 order by communication_rank desc
+    SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 ORDER BY communication_rank DESC
 
 for an arbitrary friend's `uid1` (the above is the one of my favorite guinea pig, Anna) instead of just for ours. That queries return output like
 
@@ -41,7 +42,8 @@ The first time I reported the issue through [their form](https://www.facebook.co
 
 The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on [their thanks page](https://www.facebook.com/whitehat/thanks/) (a great, great CV builder), plus some pleasant compliments.
 
-<img class="img_center" src="/images/whitehat.png" alt="White Hat Bounty" />
+![White Hat Bounty](/images/whitehat.png)
+{: .img_center }
 
 Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he's being heard, offer him a direct contact (you get ticket-bound *Reply-To*s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.
 
@@ -56,5 +58,3 @@ Facebook offers a great example of how to run a Bug Bounty Program: assure the r
 | 1 feb 2013 | Bounty awarded |
 | 18 mar 2013 | Bounty paid |
 | 26 apr 2013 | This public disclosure |
-
-In case you wanted to, you can [follow me on Twitter](https://twitter.com/FiloSottile).
