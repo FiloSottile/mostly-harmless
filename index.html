@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the RECAP extension to the Appellate Courts documents and win &hellip;">
+  <meta name="description" content="tl;dr I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -101,6 +101,59 @@ MathJax.Hub.Config({
   <header>
     
       
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/a-bug-worth-4200%24/">A bug worth 4200$</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-26T13:04:00+02:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
+
+<p><a href="https://www.facebook.com/BugBounty"><img class="img_right" src="images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+
+<p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/a-bug-worth-4200%24/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
         <!-- This defines how Octopress will use posts with external-url. -->
         <h1 class="entry-title"><a class="external-link" href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/">Claimed a RECAP Aaron Swartz grant</a></h1>
       
@@ -126,16 +179,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
-
-<p>The Firefox (and now Chrome) extension intercepts public domain documents downloaded from the pay-walled legal archive <a href="http://www.pacer.gov/">PACER</a> and uploads them to the <a href="http://archive.org/">Internet Archive</a>. Freely available documents are then marked as such for the sake of a juster access to public records.</p>
-
-<p>Details and comments in the linked blog post.</p>
-
-</div>
-    
-    
   
 
   
@@ -454,45 +497,6 @@ MathJax.Hub.Config({
 
 
 <time datetime="2012-12-22T19:20:00+01:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
         
       </p>
     

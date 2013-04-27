@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-04-04T22:00:16+02:00</updated>
+  <updated>2013-04-27T04:29:06+02:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,104 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[A bug worth 4200$]]></title>
+      <link href="http://filosottile.github.com/a-bug-worth-4200%24/"/>
+    
+    <updated>2013-04-26T13:04:00+02:00</updated>
+    <id>http://filosottile.github.com/a-bug-worth-4200$</id>
+    
+      <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
+
+<p><a href="https://www.facebook.com/BugBounty"><img class="img_right" src="images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+
+<p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
+
+<!-- more -->
+
+<p>They are mainly <a href="https://developers.facebook.com/docs/technical-guides/fql/"><strong>FQL multiqueries</strong></a>, and one in particular caught my eye (<code>queries</code> parameter URLDecoded for readability):</p>
+
+<pre><code>GET /method/fql.multiquery?sdk=ios&amp;queries={"top_friends":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me() order by communication_rank desc LIMIT 15)","online":"SELECT uid, is_pushable, has_messenger FROM user WHERE online_presence ='active' AND uid IN (SELECT uid2 FROM friend WHERE uid1=me())","favorites":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT favorite_id FROM messaging_favorite WHERE uid=me())","favoriteRanking":"SELECT favorite_id, ordering FROM messaging_favorite WHERE uid=me()"}&amp;sdk_version=2&amp;access_token=REDACTED&amp;format=json&amp;locale=it_IT
+</code></pre>
+
+<p>These are a bunch of queries against the <code>user</code> table based on JOINs on the <code>messaging_favorite</code> and <code>friend</code> tables. This <code>friend</code> table is interesting: it holds all the friendships with their details, for example <strong><code>communication_rank</code></strong>. By fiddling around a bit with it I guessed that it is a rank of the <em>“strength”</em> of <code>uid1</code>’s friendship with <code>uid2</code>, probably the thing that decides who’s shown in your chat sidebar even when he’s offline.</p>
+
+<p>The <a href="https://developers.facebook.com/docs/reference/fql/friend">docs</a> tell us that “[the access token owner is] the only user that this table can be queried for, the friends of friends cannot be retrieved”. Hmm. Should we trust the docs? Turns out, <strong>NO</strong>! ;)</p>
+
+<p>Authenticating with our iOS app access token we can issue queries like</p>
+
+<pre><code>SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 order by communication_rank desc
+</code></pre>
+
+<p>for an arbitrary friend’s <code>uid1</code> (the above is the one of my favorite guinea pig, Anna) instead of just for ours. That queries return output like</p>
+
+<pre><code>{ "uid2": "1234567890", "communication_rank": "2.4456558227539" },
+{ "uid2": "4242424242", "communication_rank": "1.68115234375" },
+{ "uid2": "1337133713", "communication_rank": "1.602783203125" },
+...
+</code></pre>
+
+<p>that tells us with which users the target contacts most, maybe the most interesting and private bit of information after message logs. We don’t even need to be friends of that users!</p>
+
+<h2 id="reporting-and-patching">Reporting and patching</h2>
+
+<p>The first time I reported the issue through <a href="https://www.facebook.com/whitehat/report/">their form</a> it got dismissed, probably also because I didn’t explain it very well. After offering a real world example they confirmed and quickly patched it.</p>
+
+<p>The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on <a href="https://www.facebook.com/whitehat/thanks/">their thanks page</a> (a great, great CV builder), plus some pleasant compliments.</p>
+
+<p><img class="img_center" src="images/whitehat.png" alt="White Hat Bounty" /></p>
+
+<p>Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he’s being heard, offer him a direct contact (you get ticket-bound <em>Reply-To</em>s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.</p>
+
+<h2 id="vulnerability-timeline">Vulnerability timeline</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td>1 gen 2013</td>
+      <td><strong>Vulnerability discovered and bug report filed</strong></td>
+    </tr>
+    <tr>
+      <td>7 gen 2013</td>
+      <td>Test accounts POC sent</td>
+    </tr>
+    <tr>
+      <td>18 gen 2013</td>
+      <td>First dismissing reply received</td>
+    </tr>
+    <tr>
+      <td>19 gen 2013</td>
+      <td><strong>Better explanation and real-users POC sent</strong></td>
+    </tr>
+    <tr>
+      <td>28 gen 2013</td>
+      <td>Vulnerability confirmed and acknowledged</td>
+    </tr>
+    <tr>
+      <td>~ 30 gen 2013</td>
+      <td><strong>Vulnerability fixed</strong></td>
+    </tr>
+    <tr>
+      <td>1 feb 2013</td>
+      <td>Bounty awarded</td>
+    </tr>
+    <tr>
+      <td>18 mar 2013</td>
+      <td>Bounty paid</td>
+    </tr>
+    <tr>
+      <td>26 apr 2013</td>
+      <td>This public disclosure</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In case you wanted to, you can <a href="https://twitter.com/FiloSottile">follow me on Twitter</a>.</p>
+]]></content>
+    
+  </entry>
   
   <entry>
     
