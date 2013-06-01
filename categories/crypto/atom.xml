@@ -4,7 +4,7 @@
   <title><![CDATA[Category: crypto | PyTux]]></title>
   <link href="http://filosottile.github.com/categories/crypto/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-04-27T17:08:26+02:00</updated>
+  <updated>2013-06-02T00:18:49+02:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,18 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Javascript Crypto is not Inherently Broken, Only it isn't Inherently a Solution]]></title>
+    <link href="http://filosottile.github.com/javascript-crypto-is-not-inherently-broken/"/>
+    <updated>2013-05-27T08:15:00+02:00</updated>
+    <id>http://filosottile.github.com/javascript-crypto-is-not-inherently-broken</id>
+    <content type="html"><![CDATA[<p><em>This is a long IMHO on the Javascript Crypto <a href="https://news.ycombinator.com/item?id=5768837">discussion</a>, that flourished following the re-publication of <a href="http://log.nadim.cc/?p=33">a post</a> by Nadim Kobeissi in response to <a href="http://www.matasano.com/articles/javascript-cryptography/">an article</a> by Matasano.</em></p>
+
+<p>First, full disclosure: I don’t Know Nadim much, but I respect his work and like his goals; on the other hand, I’m a big Matasano fan, I found <a href="x">their quizzes</a> awesome (go check them out!) and honestly I would sign a deal with the devil to work for them. Moreover, the people involved in the discussion are amongst the ones I admire most.</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
