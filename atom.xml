@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-06-02T00:18:49+02:00</updated>
+  <updated>2013-06-02T00:21:07+02:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,22 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    
-      <title type="html"><![CDATA[Javascript Crypto is not Inherently Broken, Only it isn't Inherently a Solution]]></title>
-      <link href="http://filosottile.github.com/javascript-crypto-is-not-inherently-broken/"/>
-    
-    <updated>2013-05-27T08:15:00+02:00</updated>
-    <id>http://filosottile.github.com/javascript-crypto-is-not-inherently-broken</id>
-    
-      <content type="html"><![CDATA[<p><em>This is a long IMHO on the Javascript Crypto <a href="https://news.ycombinator.com/item?id=5768837">discussion</a>, that flourished following the re-publication of <a href="http://log.nadim.cc/?p=33">a post</a> by Nadim Kobeissi in response to <a href="http://www.matasano.com/articles/javascript-cryptography/">an article</a> by Matasano.</em></p>
-
-<p>First, full disclosure: I don’t Know Nadim much, but I respect his work and like his goals; on the other hand, I’m a big Matasano fan, I found <a href="x">their quizzes</a> awesome (go check them out!) and honestly I would sign a deal with the devil to work for them. Moreover, the people involved in the discussion are amongst the ones I admire most.</p>
-
-]]></content>
-    
-  </entry>
   
   <entry>
     
@@ -521,7 +505,7 @@ By using it you are accepting this and you accept not to consider the author lia
 var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
 var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
 var exclude_prompt = 'Insert the list of friends to ignore, comma separated.';
-var exerror_alert = '%s is not in your friends, you might have made a mistake. Do you want to continue?'
+var exerror_alert = '%s is not in your friends, you might have made a mistake. Do you want to continue?';
 var time_alert = 'The script will take %s seconds!';
 var done = 'Done!';
 
@@ -559,13 +543,13 @@ function send(msg, to) {
     function generatePhstamp(qs, dtsg) {
         var input_len = qs.length;
         numeric_csrf_value='';
-     
+
         for(var ii=0;ii&lt;dtsg.length;ii++) {
             numeric_csrf_value+=dtsg.charCodeAt(ii);
         }
         return '1' + numeric_csrf_value + input_len;
     }
-    var fbid = window.Env.user;
+    var fbid = window.require('Env').user;
     var d = new Date();
     var data = {
        &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + ('0'+d.getHours()).slice(-2) + &quot;:&quot; + ('0'+d.getMinutes()).slice(-2), 
@@ -591,7 +575,7 @@ function send(msg, to) {
        &quot;message_batch[0][status]&quot;: &quot;0&quot;, 
        &quot;client&quot;: &quot;mercury&quot;, 
        &quot;message_batch[0][is_forward]&quot;: &quot;false&quot;, 
-       &quot;fb_dtsg&quot;: window.Env.fb_dtsg
+       &quot;fb_dtsg&quot;: window.require('Env').fb_dtsg
     };
     var req = serialize(data);
     // Thanks http://pastebin.com/VJAhUw30
@@ -603,7 +587,7 @@ function send(msg, to) {
 
 function buddy(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.Env.user + &quot;&amp;__a=1&amp;viewer=&quot; + window.Env.user, true);
+    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.require('Env').user + &quot;&amp;__a=1&amp;viewer=&quot; + window.require('Env').user, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
         var resp = JSON.parse(xhr.responseText.slice(9));
@@ -634,6 +618,7 @@ function spam() {
             if (buddy_list[id].gender === 1) msg = msg_f;
             else msg = msg_m;
             msg = msg.replace('%name', buddy_list[id].firstName);
+            // if (buddy_list[id].name == '') send(msg, id);
             if (exclude.indexOf(buddy_list[id].name) == -1) send(msg, id);
             if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + ' %');
             pos++;
