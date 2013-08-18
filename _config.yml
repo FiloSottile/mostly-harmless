@@ -70,11 +70,10 @@ github_skip_forks: false
 
 # Twitter
 twitter_user: FiloSottile
+twitter_widget_id: 369235929669435393
 twitter_tweet_count: 4
-twitter_show_replies: false
 twitter_follow_button: false
 twitter_show_follower_count: false
-twitter_tweet_button: true
 
 # Google +1
 google_plus_one: true
