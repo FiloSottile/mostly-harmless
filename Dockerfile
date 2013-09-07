@@ -13,6 +13,6 @@ RUN cd /tmp/tor-0.2.3.25 && make install
 ADD ./torrc /etc/torrc
 
 # Generate a random nickname for the relay
-RUN echo "Nickname docker-$(head -c 16 /dev/urandom  | sha1sum | cut -c1-10)" >> /etc/torrc
+RUN echo "Nickname docker$(head -c 16 /dev/urandom  | sha1sum | cut -c1-10)" >> /etc/torrc
 
 CMD /usr/local/bin/tor -f /etc/torrc
