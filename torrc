@@ -1,0 +1,4 @@
+Log notice stdout
+Log debug stderr
+ExitPolicy reject *:*
+
