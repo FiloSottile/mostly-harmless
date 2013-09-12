@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS | PyTux]]></title>
+  <link href="http://filosottile.github.com/categories/ios/atom.xml" rel="self"/>
+  <link href="http://filosottile.github.com/"/>
+  <updated>2013-09-12T18:29:37+01:00</updated>
+  <id>http://filosottile.github.com/</id>
+  <author>
+    <name><![CDATA[Filippo Valsorda]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
+    <link href="http://filosottile.github.com/dumping-the-ios-simulator-memory/"/>
+    <updated>2013-09-12T18:26:00+01:00</updated>
+    <id>http://filosottile.github.com/dumping-the-ios-simulator-memory</id>
+    <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
+
+<p>To do so on a device you’ll need a Jailbreak, SSH access, and <code>gdb</code>. See <a href="https://www.soldierx.com/tutorials/iPhone-Dumping-Game-Memory-and-Injecting-Custom-Code-into-Games">this</a> or <a href="http://rce64.wordpress.com/2013/01/26/decrypting-apps-on-ios-6-single-architecture-no-pieaslr/">this</a>.</p>
+
+<p>If instead you’re up to a simulated app, things are easier: apps running in the simulator are actually just <em>native processes</em> on your Mac OS X.</p>
+
+<p>So, how to get a core dump of a Mac OS X process? Sadly gdb <a href="http://sourceware.org/gdb/onlinedocs/gdb/Core-File-Generation.html">can’t do so</a>. <em>Mac OS X Internals</em> comes to the rescue with <a href="http://osxbook.com/book/bonus/chapter8/core/">this</a> article.</p>
+
+<p>It is actually an interesting read, but if you are in a hurry, skip to downloading <a href="http://osxbook.com/book/bonus/chapter8/core/download/gcore.c">the code</a> and compile it like this (screw the Makefile, it compiles also for PowerPC)</p>
+
+<pre><code>gcc -O2 -arch i386 -Wall -o gcore gcore.c
+gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
+</code></pre>
+
+<p>Then simply run your app, find the process id <code>grep</code>-ping <code>ps -hax</code> and run</p>
+
+<pre><code>sudo gcore 1234
+</code></pre>
+
+<p>And enjoy your core dump. (Bonus: you can load it up in <code>gdb</code>)</p>
+
+<p>If you happen to want the dump happen at a particular moment, place a regular breakpoint in XCode, then dump the memory when the process is paused.</p>
+]]></content>
+  </entry>
+  
+</feed>

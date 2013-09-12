@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>GitHub: checkout a pull request as a branch - PyTux</title>
+  <title>Dumping the iOS simulator memory - PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Today looking at the Travis log of a Pull request build I saw this interesting command: 1
-git fetch origin +refs/pull/611/merge: Turns out that &hellip;">
+  <meta name="description" content="To audit memory or to debug with external tools it can be useful to get a dump of the running memory of an app. To do so on a device you’ll need a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ git fetch origin +refs/pull/611/merge: Turns out that &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/">
+  <link rel="canonical" href="http://filosottile.github.com/dumping-the-ios-simulator-memory/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -112,7 +111,7 @@ MathJax.Hub.Config({
   <header>
     
       
-        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
+        <h1 class="entry-title">Dumping the iOS simulator memory</h1>
       
     
     
@@ -129,31 +128,37 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-01-01T06:36:00+00:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
+<time datetime="2013-09-12T18:26:00+01:00" pubdate data-updated="true">Sep 12<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
+  <div class="entry-content"><p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>To do so on a device you’ll need a Jailbreak, SSH access, and <code>gdb</code>. See <a href="https://www.soldierx.com/tutorials/iPhone-Dumping-Game-Memory-and-Injecting-Custom-Code-into-Games">this</a> or <a href="http://rce64.wordpress.com/2013/01/26/decrypting-apps-on-ios-6-single-architecture-no-pieaslr/">this</a>.</p>
 
-<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
+<p>If instead you’re up to a simulated app, things are easier: apps running in the simulator are actually just <em>native processes</em> on your Mac OS X.</p>
 
-<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
+<p>So, how to get a core dump of a Mac OS X process? Sadly gdb <a href="http://sourceware.org/gdb/onlinedocs/gdb/Core-File-Generation.html">can’t do so</a>. <em>Mac OS X Internals</em> comes to the rescue with <a href="http://osxbook.com/book/bonus/chapter8/core/">this</a> article.</p>
 
-<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
+<p>It is actually an interesting read, but if you are in a hurry, skip to downloading <a href="http://osxbook.com/book/bonus/chapter8/core/download/gcore.c">the code</a> and compile it like this (screw the Makefile, it compiles also for PowerPC)</p>
 
-<p>An example in the Coderwall ProTip linked at the title.</p>
+<pre><code>gcc -O2 -arch i386 -Wall -o gcore gcore.c
+gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
+</code></pre>
+
+<p>Then simply run your app, find the process id <code>grep</code>-ping <code>ps -hax</code> and run</p>
+
+<pre><code>sudo gcore 1234
+</code></pre>
+
+<p>And enjoy your core dump. (Bonus: you can load it up in <code>gdb</code>)</p>
+
+<p>If you happen to want the dump happen at a particular moment, place a regular breakpoint in XCode, then dump the memory when the process is paused.</p>
 </div>
 
-  
-    <footer>
-      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Permalink</a>
-    </footer>
   
 
 
@@ -176,8 +181,14 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-01-01T06:36:00+00:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
+<time datetime="2013-09-12T18:26:00+01:00" pubdate data-updated="true">Sep 12<span>th</span>, 2013</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/categories/ios/'>iOS</a>
+  
+</span>
 
 
     </p>
@@ -196,10 +207,8 @@ MathJax.Hub.Config({
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/krumiro-send-a-message-to-all-your-facebook-friends/" title="Previous Post: Krumiro - send a message to all your Facebook friends">&laquo; Krumiro - send a message to all your Facebook friends</a>
+        <a class="basic-alignment left" href="/a-bug-worth-4200%24/" title="Previous Post: A bug worth 4200$">&laquo; A bug worth 4200$</a>
       
-      
-        <a class="basic-alignment right" href="/automatically-compile-less-and-coffee-files/" title="Next Post: Automatically compile .less and .coffee files">Automatically compile .less and .coffee files &raquo;</a>
       
     </p>
   </footer>
@@ -366,8 +375,8 @@ MathJax.Hub.Config({
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/';
-        var disqus_url = 'http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/';
+        var disqus_identifier = 'http://filosottile.github.com/dumping-the-ios-simulator-memory/';
+        var disqus_url = 'http://filosottile.github.com/dumping-the-ios-simulator-memory/';
         var disqus_script = 'embed.js';
       
     (function () {
