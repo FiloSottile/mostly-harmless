@@ -2,76 +2,80 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://filosottile.github.com/send-a-head-request-in-python/</loc>
-        <lastmod>2013-01-26T11:03:45+00:00</lastmod>
+        <lastmod>2013-01-26T06:03:45-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/</loc>
-        <lastmod>2013-01-26T10:50:40+00:00</lastmod>
+        <lastmod>2013-01-26T05:50:40-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/please-take-this-and-go-signing-those-updates/</loc>
-        <lastmod>2013-02-04T21:47:06+00:00</lastmod>
+        <lastmod>2013-02-04T16:47:06-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/
         </loc>
-        <lastmod>2013-02-23T09:12:53+00:00</lastmod>
+        <lastmod>2013-02-23T04:12:53-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/</loc>
-        <lastmod>2013-01-26T10:33:01+00:00</lastmod>
+        <lastmod>2013-01-26T05:33:01-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/automatically-compile-less-and-coffee-files/</loc>
-        <lastmod>2013-02-04T21:52:23+00:00</lastmod>
+        <lastmod>2013-02-04T16:52:23-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/archive-your-github-repo-and-data/</loc>
-        <lastmod>2013-02-04T22:09:47+00:00</lastmod>
+        <lastmod>2013-02-04T17:09:47-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/why-mega-will-change-the-status-quo/</loc>
-        <lastmod>2013-01-26T10:33:01+00:00</lastmod>
+        <lastmod>2013-01-26T05:33:01-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python/</loc>
-        <lastmod>2013-01-29T12:34:44+00:00</lastmod>
+        <lastmod>2013-01-29T07:34:44-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/programming-isnt-always-easy/</loc>
-        <lastmod>2013-02-21T22:19:24+00:00</lastmod>
+        <lastmod>2013-02-21T17:19:24-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/offline-storage-on-a-rpi/</loc>
-        <lastmod>2013-02-23T08:22:51+00:00</lastmod>
+        <lastmod>2013-02-23T03:22:51-05:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant/</loc>
-        <lastmod>2013-04-04T20:52:50+01:00</lastmod>
+        <lastmod>2013-04-04T15:52:50-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/a-bug-worth-4200%24/</loc>
-        <lastmod>2013-04-27T14:08:57+01:00</lastmod>
+        <lastmod>2013-04-27T09:08:57-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/dumping-the-ios-simulator-memory/</loc>
-        <lastmod>2013-09-12T18:27:19+01:00</lastmod>
+        <lastmod>2013-09-12T13:27:19-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://filosottile.github.com/instance-monkey-patching-in-python/</loc>
+        <lastmod>2013-10-07T01:13:37-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/archives/</loc>
-        <lastmod>2013-09-12T18:27:19+01:00</lastmod>
+        <lastmod>2013-10-07T01:13:37-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/</loc>
-        <lastmod>2013-09-12T18:27:19+01:00</lastmod>
+        <lastmod>2013-10-07T01:13:37-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/links/</loc>
-        <lastmod>2013-09-12T18:27:19+01:00</lastmod>
+        <lastmod>2013-10-07T01:13:37-04:00</lastmod>
     </url>
     <url>
         <loc>http://filosottile.github.com/robots.txt</loc>
-        <lastmod>2013-01-26T10:33:01+00:00</lastmod>
+        <lastmod>2013-01-26T05:33:01-05:00</lastmod>
     </url>
 </urlset>

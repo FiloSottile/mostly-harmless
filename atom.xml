@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-09-12T18:29:37+01:00</updated>
+  <updated>2013-10-07T01:15:58-04:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -15,10 +15,157 @@
   
   <entry>
     
+      <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
+      <link href="http://filosottile.github.com/instance-monkey-patching-in-python/"/>
+    
+    <updated>2013-10-07T00:19:00-04:00</updated>
+    <id>http://filosottile.github.com/instance-monkey-patching-in-python</id>
+    
+      <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
+
+<p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>
+
+<p><strong>Class methods</strong> monkey patching in Python is really easy, as you can freely assign function to class method names:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">not_exactly_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">not_exactly_add</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">9</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- more -->
+
+<p>This way <strong>all the instances</strong> of the target class will have the method monkey-patched and there is no problem with arguments, bindings… Everything really straight-forward.</p>
+
+<p>We can also call the old existing method, to handle only some cases or to add some functionality while not repeating code (<a href="https://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>):</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">old_boring_add</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">add_is_not_enough</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">return</span> <span class="n">old_boring_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">6</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">add_is_not_enough</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">7</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- Finally, we might want to monkey-patch repeatedly, maybe dinamically, and so have each monkey-patch to **build on top of the previous one**. Easy done,  -->
+
+<p>But what if we wanted to do the same, patching <strong>just a single instance</strong>?</p>
+
+<p>To recap, the requirements are:</p>
+
+<ul>
+  <li>we want just the current instance to be patched;</li>
+  <li>we want to build something on top of the existing method, not to replace it entirely;</li>
+  <li>we want each monkey-patch not to rollback all the previous ones (so no <a href="http://docs.python.org/2/library/functions.html#super"><code>super()</code></a> or class method call);</li>
+  <li>we want to be able to do so also from inside a method.</li>
+</ul>
+
+<p>The trick is to save and use the existing method as we did above, and then <strong>bind the new function to the instance</strong> with <a href="http://docs.python.org/2/library/types.html#types.MethodType"><code>types.MethodType</code></a> before assigning it to the method name.</p>
+
+<p>The binding is the magic that causes the instance to be passed as first argument (<code>self</code>) each time the method is called. See <a href="http://stackoverflow.com/questions/114214/class-method-differences-in-python-bound-unbound-and-static">these</a> <a href="http://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python">two</a> StackOverflow questions to get an idea.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">types</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">become_more_powerful</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="n">old_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">def</span> <span class="nf">more_powerful_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>          <span class="k">return</span> <span class="n">old_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">...</span>       <span class="bp">self</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">more_powerful_add</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">6</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">7</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And here we go!</p>
+
+<h2 id="a-practical-example">A practical example</h2>
+
+<p>You can see this technique being used in <a href="https://github.com/rg3/youtube-dl"><em>youtube-dl</em></a> to silence expected warnings in <a href="https://github.com/rg3/youtube-dl/commit/00fcc17aeeab11ce694699bf183d33a3af75aab6">this commit</a>.</p>
+
+<p>The monkey-patching of the instance is done on itself by a method of a testing subclass of the downloader.</p>
+
+]]></content>
+    
+  </entry>
+  
+  <entry>
+    
       <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
       <link href="http://filosottile.github.com/dumping-the-ios-simulator-memory/"/>
     
-    <updated>2013-09-12T18:26:00+01:00</updated>
+    <updated>2013-09-12T18:26:00-04:00</updated>
     <id>http://filosottile.github.com/dumping-the-ios-simulator-memory</id>
     
       <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
@@ -52,7 +199,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[A bug worth 4200$]]></title>
       <link href="http://filosottile.github.com/a-bug-worth-4200%24/"/>
     
-    <updated>2013-04-26T13:04:00+01:00</updated>
+    <updated>2013-04-26T13:04:00-04:00</updated>
     <id>http://filosottile.github.com/a-bug-worth-4200$</id>
     
       <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
@@ -148,7 +295,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[Claimed a RECAP Aaron Swartz grant &#10150;]]></title>
       <link href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/"/>
     
-    <updated>2013-04-04T21:40:00+01:00</updated>
+    <updated>2013-04-04T21:40:00-04:00</updated>
     <id>http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant</id>
     
       <content type="html"><![CDATA[<p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
@@ -166,7 +313,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[Offline storage on a RPi]]></title>
       <link href="http://filosottile.github.com/offline-storage-on-a-rpi/"/>
     
-    <updated>2013-02-22T23:21:00+00:00</updated>
+    <updated>2013-02-22T23:21:00-05:00</updated>
     <id>http://filosottile.github.com/offline-storage-on-a-rpi</id>
     
       <content type="html"><![CDATA[<p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
@@ -192,7 +339,7 @@ And there are much more examples of data best kept offline…</p>
       <title type="html"><![CDATA[Programming isn't always easy &#10150;]]></title>
       <link href="http://blog.wizpert.com/programming-help/"/>
     
-    <updated>2013-02-21T23:14:00+00:00</updated>
+    <updated>2013-02-21T23:14:00-05:00</updated>
     <id>http://filosottile.github.com/programming-isnt-always-easy</id>
     
       <content type="html"><![CDATA[<p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
@@ -210,7 +357,7 @@ And there are much more examples of data best kept offline…</p>
       <title type="html"><![CDATA[Decompressing Lempel-Ziv-Stac in Python]]></title>
       <link href="http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python/"/>
     
-    <updated>2013-01-29T12:06:00+00:00</updated>
+    <updated>2013-01-29T12:06:00-05:00</updated>
     <id>http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python</id>
     
       <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
@@ -231,7 +378,7 @@ for example on those that expose the config file on the public internet. Just sa
       <title type="html"><![CDATA[Why Mega WILL change the status quo]]></title>
       <link href="http://filosottile.github.com/why-mega-will-change-the-status-quo/"/>
     
-    <updated>2013-01-19T19:23:00+00:00</updated>
+    <updated>2013-01-19T19:23:00-05:00</updated>
     <id>http://filosottile.github.com/why-mega-will-change-the-status-quo</id>
     
       <content type="html"><![CDATA[<p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
@@ -290,7 +437,7 @@ This way an automated program will not suffice and they’ll not have enough hum
       <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
       <link href="http://filosottile.github.com/archive-your-github-repo-and-data/"/>
     
-    <updated>2013-01-14T23:17:00+00:00</updated>
+    <updated>2013-01-14T23:17:00-05:00</updated>
     <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
     
       <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
@@ -410,7 +557,7 @@ if args.metadata:
       <title type="html"><![CDATA[Automatically compile .less and .coffee files]]></title>
       <link href="http://filosottile.github.com/automatically-compile-less-and-coffee-files/"/>
     
-    <updated>2013-01-12T00:25:00+00:00</updated>
+    <updated>2013-01-12T00:25:00-05:00</updated>
     <id>http://filosottile.github.com/automatically-compile-less-and-coffee-files</id>
     
       <content type="html"><![CDATA[<p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
@@ -473,7 +620,7 @@ if __name__ == &quot;__main__&quot;:
       <title type="html"><![CDATA[GitHub: checkout a pull request as a branch &#10150;]]></title>
       <link href="https://coderwall.com/p/z5rkga"/>
     
-    <updated>2013-01-01T06:36:00+00:00</updated>
+    <updated>2013-01-01T06:36:00-05:00</updated>
     <id>http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch</id>
     
       <content type="html"><![CDATA[<p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
@@ -497,7 +644,7 @@ if __name__ == &quot;__main__&quot;:
       <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
       <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
     
-    <updated>2012-12-22T19:20:00+00:00</updated>
+    <updated>2012-12-22T19:20:00-05:00</updated>
     <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
     
       <content type="html"><![CDATA[<blockquote>
@@ -673,7 +820,7 @@ spam();</code></pre></noscript></div>
       <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
       <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
     
-    <updated>2012-12-19T20:47:00+00:00</updated>
+    <updated>2012-12-19T20:47:00-05:00</updated>
     <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
     
       <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
@@ -727,7 +874,7 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
       <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
       <link href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/"/>
     
-    <updated>2012-05-12T16:44:00+01:00</updated>
+    <updated>2012-05-12T16:44:00-04:00</updated>
     <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
     
       <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
@@ -793,7 +940,7 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
       <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
       <link href="http://filosottile.github.com/send-a-head-request-in-python/"/>
     
-    <updated>2012-03-18T17:53:00+00:00</updated>
+    <updated>2012-03-18T17:53:00-04:00</updated>
     <id>http://filosottile.github.com/send-a-head-request-in-python</id>
     
       <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
