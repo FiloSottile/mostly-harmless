@@ -75,6 +75,8 @@ twitter_tweet_count: 4
 twitter_follow_button: false
 twitter_show_follower_count: false
 
+twitter_tweet_button: true
+
 # Google +1
 google_plus_one: true
 google_plus_one_size: medium
