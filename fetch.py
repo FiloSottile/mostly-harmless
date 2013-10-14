@@ -5,7 +5,7 @@ import json
 import traceback
 
 from geopy import geocoders  
-g = geocoders.Google(domain='maps.google.com')
+g = geocoders.GoogleV3()
 
 from bs4 import BeautifulSoup
 
