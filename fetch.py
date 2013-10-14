@@ -31,8 +31,12 @@ def parse_listing(listing):
             res['email'] = str(len(at.split('.')[0])) + ',' + str(len(at)) + ',' + at.replace('.', '', 1) + who
         elif li.get_text().startswith("Fingerprint:"):
             res['fingerprint'] = li.a.get_text()
-            res['key'] = li.a.b.string
-            res['keytype'] = re.search(r"\(([^\)]+)\)", li.get_text()).group(1)
+            if hasattr(li.a, 'b'):
+                res['key'] = li.a.b.string
+                res['keytype'] = re.search(r"\(([^\)]+)\)", li.get_text()).group(1)
+        elif li.get_text().startswith("Key ID:"):
+            res['fingerprint'] += li.get_text().split(':')[-1].strip()
+            res['key'] = li.b.string
         elif li.get_text().startswith("URL:"):
             res['url'] = li.a.get("href")
         elif li.get_text().startswith("Key comment:"):
