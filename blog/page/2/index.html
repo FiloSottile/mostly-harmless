@@ -9,8 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Today looking at the Travis log of a Pull request build I saw this interesting command: 1
-git fetch origin +refs/pull/611/merge: Turns out that &hellip;">
+  <meta name="description" content="This small python script makes use of watchdog (and sh) to monitor your code directory (recursively) and build less and CoffeeScript files upon edit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -116,6 +115,100 @@ MathJax.Hub.Config({
   <header>
     
       
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true">Jan 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
+
+<p>Simply launch it from the relevant folder and it will work in the background.</p>
+
+<p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
+
+<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
+<noscript><pre><code>#!/usr/bin/env python2
+
+import watchdog.events
+import watchdog.observers
+import sh
+import time
+import os
+
+# Detach
+if os.fork(): os._exit(0)
+
+coffee = sh.coffee.bake('-c')
+less = sh.lessc
+
+class Handler(watchdog.events.PatternMatchingEventHandler):
+    def __init__(self):
+        watchdog.events.PatternMatchingEventHandler.__init__(self, patterns=['*.less', '*.coffee'],
+            ignore_directories=True, case_sensitive=False)
+
+    def on_modified(self, event):
+        if event.src_path.lower().endswith('.less'):
+            try: less(event.src_path, event.src_path[:-5] + '.css')
+            except sh.ErrorReturnCode_1 as e: print e.stderr
+        if event.src_path.lower().endswith('.coffee'):
+            try: coffee(event.src_path)
+            except sh.ErrorReturnCode_1 as e: print e.stderr
+
+    on_created = on_modified
+
+if __name__ == &quot;__main__&quot;:
+    event_handler = Handler()
+    observer = watchdog.observers.Observer()
+    observer.schedule(event_handler, path='.', recursive=True)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()</code></pre></noscript></div>
+
+<p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
+
+<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
         <!-- This defines how Octopress will use posts with external-url. -->
         <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
       
@@ -141,22 +234,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
-
-<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
-
-<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
-
-<p>An example in the Coderwall ProTip linked at the title.</p>
-</div>
-    
-    
   
 
   

