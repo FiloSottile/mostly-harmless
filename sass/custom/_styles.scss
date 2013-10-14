@@ -125,3 +125,10 @@ body > header h1, body > header h2 {
 .code table {
 	margin-bottom: 0;
 }
+
+html .gist .gist-file .gist-meta {
+	text-shadow: none;
+}
+html .gist .gist-file .gist-meta a[href*='#file'] {
+	right: 0;
+}
