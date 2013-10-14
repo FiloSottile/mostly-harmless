@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript | PyTux]]></title>
+  <link href="http://filosottile.github.com/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://filosottile.github.com/"/>
+  <updated>2013-10-14T16:40:02-04:00</updated>
+  <id>http://filosottile.github.com/</id>
+  <author>
+    <name><![CDATA[Filippo Valsorda]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
+    <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+    <updated>2012-12-22T19:20:00-05:00</updated>
+    <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
+    <content type="html"><![CDATA[<blockquote>
+  <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+By using it you are accepting this and you accept not to consider the author liable for your use.</p>
+
+  <p>For the technically inclined, it’s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p>
+</blockquote>
+
+<p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
+
+<h3 id="features">Features</h3>
+<ul>
+  <li>Different messages for male and female friends;</li>
+  <li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
+  <li>Configurable time to wait between a message and the next, with total duration prediction;</li>
+  <li>List of friends to exclude.</li>
+</ul>
+
+<p>If you have any request or suggestion, simply leave a comment.</p>
+
+<h3 id="installation">Installation</h3>
+<ul>
+  <li>Drag this “<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>” to your bookmarks bar;</li>
+  <li>Done! Now the Krumiro button is ready.</li>
+</ul>
+
+<h3 id="use">Use</h3>
+<ul>
+  <li>While on a Facebook page, simply click it;</li>
+  <li>Some windows asking you what to do will show up;</li>
+  <li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.
+<!-- more --></li>
+</ul>
+
+<h3 id="code-for-the-curious---its-ugly">Code (for the curious - it’s ugly)</h3>
+<p><div><script src='https://gist.github.com/4215248.js?file=krumiro_en.js'></script>
+<noscript><pre><code>var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';
+var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
+var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
+var exclude_prompt = 'Insert the list of friends to ignore, comma separated.';
+var exerror_alert = '%s is not in your friends, you might have made a mistake. Do you want to continue?';
+var time_alert = 'The script will take %s seconds!';
+var done = 'Done!';
+
+if(!Array.prototype.indexOf){Array.prototype.indexOf=function(d){if(void 0===this||null===this)throw new TypeError;var c=Object(this),b=c.length&gt;&gt;&gt;0;if(0===b)return-1;var a=0;0&lt;arguments.length&amp;&amp;(a=Number(arguments[1]),a!==a?a=0:0!==a&amp;&amp;(a!==1/0&amp;&amp;a!==-(1/0))&amp;&amp;(a=(0&lt;a||-1)*Math.floor(Math.abs(a))));if(a&gt;=b)return-1;for(a=0&lt;=a?a:Math.max(b-Math.abs(a),0);a&lt;b;a++)if(a in c&amp;&amp;c[a]===d)return a;return-1};}
+
+function size(obj) {
+    var s = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) s++;
+    }
+    return s;
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i &lt; 1e7; i++) {
+        if ((new Date().getTime() - start) &gt; milliseconds){
+          break;
+        }
+    }
+}
+
+function send(msg, to) {
+    function serialize(obj) {
+      var str = [];
+      for(var p in obj)
+         str.push(p + &quot;=&quot; + encodeURIComponent(obj[p]));
+      return str.join(&quot;&amp;&quot;);
+    }
+    function random(len) {
+        var min = Math.pow(10, len-1);
+        var max = Math.pow(10, len);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function generatePhstamp(qs, dtsg) {
+        var input_len = qs.length;
+        numeric_csrf_value='';
+
+        for(var ii=0;ii&lt;dtsg.length;ii++) {
+            numeric_csrf_value+=dtsg.charCodeAt(ii);
+        }
+        return '1' + numeric_csrf_value + input_len;
+    }
+    var fbid = window.require('Env').user;
+    var d = new Date();
+    var data = {
+       &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + ('0'+d.getHours()).slice(-2) + &quot;:&quot; + ('0'+d.getMinutes()).slice(-2), 
+       &quot;message_batch[0][author]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][is_cleared]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][message_id]&quot;: &quot;&lt;&quot; + random(14) + &quot;:&quot; + random(10) + &quot;-&quot; + random(10) + &quot;@mail.projektitan.com&gt;&quot;, 
+       &quot;message_batch[0][specific_to_list][0]&quot;: &quot;fbid:&quot; + to, 
+       &quot;__user&quot;: fbid, 
+       &quot;message_batch[0][timestamp_absolute]&quot;: &quot;Oggi&quot;, 
+       &quot;message_batch[0][spoof_warning]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][client_thread_id]&quot;: &quot;user:&quot; + to, 
+       &quot;message_batch[0][source]&quot;: &quot;source:chat:web&quot;, 
+       &quot;message_batch[0][has_attachment]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][source_tags][0]&quot;: &quot;source:chat&quot;, 
+       &quot;message_batch[0][body]&quot;: msg, 
+       &quot;message_batch[0][is_filtered_content]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][timestamp]&quot;: &quot;&quot; + Math.round(new Date().getTime() / 1000), 
+       &quot;message_batch[0][is_unread]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][action_type]&quot;: &quot;ma-type:user-generated-message&quot;, 
+       &quot;__a&quot;: &quot;1&quot;, 
+       &quot;message_batch[0][specific_to_list][1]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][html_body]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][status]&quot;: &quot;0&quot;, 
+       &quot;client&quot;: &quot;mercury&quot;, 
+       &quot;message_batch[0][is_forward]&quot;: &quot;false&quot;, 
+       &quot;fb_dtsg&quot;: window.require('Env').fb_dtsg
+    };
+    var req = serialize(data);
+    // Thanks http://pastebin.com/VJAhUw30
+    req += &quot;&amp;phstamp=&quot; + generatePhstamp(req, data.fb_dtsg);
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open('POST', '/ajax/mercury/send_messages.php');
+    xmlhttp.send(req);
+}
+
+function buddy(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.require('Env').user + &quot;&amp;__a=1&amp;viewer=&quot; + window.require('Env').user, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        var resp = JSON.parse(xhr.responseText.slice(9));
+        callback(resp.payload);
+      }
+    };
+    xhr.send();
+}
+
+function spam() {
+    var msg_m, msg_f, buddy_num, msg, pos = 1, throttle, exclude, present;
+    buddy(function(buddy_list) {
+        buddy_num = size(buddy_list);
+        msg_m = prompt(msg_m_prompt);
+        msg_f = prompt(msg_f_prompt);
+        exclude = prompt(exclude_prompt).split(&quot;,&quot;);
+        if (exclude.length == 1 &amp;&amp; exclude[0].trim() == '') exclude = Array();
+        for (var i = 0; i &lt; exclude.length; i++) {
+            present = false;
+            for (var id in buddy_list)
+                if (buddy_list[id].name == exclude[i].trim()) present = true;
+            if (!present)
+                if (!confirm(exerror_alert.replace('%s', exclude[i].trim()))) return;
+        }
+        throttle = +prompt(throttle_prompt);
+        if (!confirm(time_alert.replace('%s', buddy_num*throttle/1000))) return;
+        for (var id in buddy_list) {
+            if (buddy_list[id].gender === 1) msg = msg_f;
+            else msg = msg_m;
+            msg = msg.replace('%name', buddy_list[id].firstName);
+            // if (buddy_list[id].name == '') send(msg, id);
+            if (exclude.indexOf(buddy_list[id].name) == -1) send(msg, id);
+            if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + ' %');
+            pos++;
+            sleep(throttle);
+        }
+        alert(done);
+    });
+}
+
+spam();</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
+    <link href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/"/>
+    <updated>2012-05-12T16:44:00-04:00</updated>
+    <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
+    <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
+
+<p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
+
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.
+<!--more-->
+Here is a modified version of the rasterize.js example to output Retina screenshots.
+<div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
+<noscript><pre><code>var page = require('webpage').create(),
+    address, output, size;
+
+if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
+    console.log('Usage: rasterize.js URL filename');
+    phantom.exit();
+} else {
+    address = phantom.args[0];
+    output = phantom.args[1];
+    page.viewportSize = { width: 1280, height: 1024 };
+    page.open(address, function (status) {
+        if (status !== 'success') {
+            console.log('Unable to load the address!');
+        } else {
+            page.evaluate(function () {
+                /* scale the whole body */
+                document.body.style.webkitTransform = &quot;scale(2)&quot;;
+                document.body.style.webkitTransformOrigin = &quot;0% 0%&quot;;
+                /* fix the body width that overflows out of the viewport */
+                document.body.style.width = &quot;50%&quot;;
+            });
+            window.setTimeout(function () {
+                page.render(output);
+                phantom.exit();
+            }, 200);
+        }
+    });
+}</code></pre></noscript></div>
+</p>
+
+<h3 id="bonus">Bonus</h3>
+<p>You might want to render only a single element, for example your content div or your always-buggy sidebar, to an image.<br />
+Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBoundingClientRect"><code>element.getBoundingClientRect</code></a> (<a href="http://ejohn.org/blog/getboundingclientrect-is-awesome/">getBoundingClientRect is Awesome</a>) and PhantomJS <a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-clipRect"><code>page.clipRect</code></a>.</p>
+
+<p>Here is a spoiler ;)
+<div><script src='https://gist.github.com/2667279.js?file=gistfile1.js'></script>
+<noscript><pre><code>page.clipRect = page.evaluate(function() {
+    return document.getElementById(ELEMENT_ID).getBoundingClientRect(); 
+});</code></pre></noscript></div>
+</p>
+
+<h3 id="references">References</h3>
+<ul>
+  <li><a href="http://fcargoet.evolix.net/2012/01/use-phantomjs-to-take-screenshots-of-you-webapp-for-you/">Use PhantomJS to take screenshots of your webapp for you</a> - /home/florian</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
+  <li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a> </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

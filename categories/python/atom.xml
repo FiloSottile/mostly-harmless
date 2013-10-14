@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python | PyTux]]></title>
   <link href="http://filosottile.github.com/categories/python/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-10-14T16:25:06-04:00</updated>
+  <updated>2013-10-14T16:40:02-04:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -110,6 +110,300 @@
 
 <p>The monkey-patching of the instance is done on itself by a method of a testing subclass of the downloader.</p>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Decompressing Lempel-Ziv-Stac in Python]]></title>
+    <link href="http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python/"/>
+    <updated>2013-01-29T12:06:00-05:00</updated>
+    <id>http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python</id>
+    <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
+used on embedded devices, for example for config files, for example on routers,
+for example on those that expose the config file on the public internet. Just sayin’…</p>
+
+<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.
+<!-- more -->
+<div><script src='https://gist.github.com/4663892.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
+    <link href="http://filosottile.github.com/archive-your-github-repo-and-data/"/>
+    <updated>2013-01-14T23:17:00-05:00</updated>
+    <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
+    <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
+but sometimes you want to take an offline copy of your or somebody’s work.</p>
+
+<p>Here is a quick and dirty Python script that will help you clone all the repositories, the Gists and some metadata
+that can be fetched over the API.
+Be warned, it only fetches public repos and data and there’s no error checking.</p>
+
+<p><div><script src='https://gist.github.com/4710058.js?file=usage.txt'></script>
+<noscript><pre><code>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
+
+Dump an user's public GitHub data into current directory.
+
+positional arguments:
+  username       the GH username
+
+optional arguments:
+  -h, --help     show this help message and exit
+  --forks        git clone also forks (default is don't)
+  --no-gist      don't download user gists (default is do)
+  --no-metadata  don't download user metadata (default is do)</code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/4710058.js?file=archive_GH.py'></script>
+<noscript><pre><code>#!/usr/bin/env python3
+
+# This is free and unencumbered software released into the public domain.
+
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+
+# THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# For more information, please refer to &lt;http://unlicense.org/&gt;
+
+import argparse
+from urllib.request import urlopen
+from subprocess import call
+import json
+import re
+import os.path
+
+parser = argparse.ArgumentParser(description='Dump an user\'s public GitHub data into current directory.')
+parser.add_argument('user', metavar='username',
+                   help='the GH username')
+parser.add_argument('--forks', dest='forks', action='store_true',
+                   help='git clone also forks (default is don\'t)')
+parser.add_argument('--no-gist', dest='gists', action='store_false',
+                   help='don\'t download user gists (default is do)')
+parser.add_argument('--no-metadata', dest='metadata', action='store_false',
+                   help='don\'t download user metadata (default is do)')
+
+args = parser.parse_args()
+
+def clear_url(url):
+    return re.sub(r'\{[^\}]*\}', '', url)
+
+data = urlopen('https://api.github.com/users/' + args.user).read()
+user = json.loads(data.decode('utf-8'))
+if args.metadata:
+    with open('user.json', 'wb') as f:
+        f.write(data)
+
+data = urlopen(clear_url(user['repos_url'])).read()
+repos = json.loads(data.decode('utf-8'))
+if args.metadata:
+    with open('repos.json', 'wb') as f:
+        f.write(data)
+for repo in repos:
+    if not repo['fork']:
+        call(['git', 'clone', repo['clone_url']])
+    elif args.forks:
+        if not os.path.exists('forks'):
+            os.makedirs('forks')
+        call(['git', 'clone', repo['clone_url'], os.path.join('forks', repo['name'])])
+
+data = urlopen(clear_url(user['gists_url'])).read()
+gists = json.loads(data.decode('utf-8'))
+if args.metadata:
+    with open('gists.json', 'wb') as f:
+        f.write(data)
+if args.gists:
+    if not os.path.exists('gists'):
+        os.makedirs('gists')
+    for gist in gists:
+        call(['git', 'clone', gist['git_pull_url'], os.path.join('gists', gist['id'])])
+
+if args.metadata:
+    for name in ['received_events', 'events', 'organizations', 'followers', 'starred', 'following', 'subscriptions']:
+        data = urlopen(clear_url(user[name + '_url'])).read()
+        with open(name + '.json', 'wb') as f:
+            f.write(data)</code></pre></noscript></div>
+</p>
+
+<p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
+    <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
+    <updated>2012-12-19T20:47:00-05:00</updated>
+    <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
+    <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
+
+<p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
+
+<p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license…<br />
+Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and… it’s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it’s yours.</p>
+
+<p><div><script src='https://gist.github.com/4340076.js?file=rsa_verify.py'></script>
+<noscript><pre><code>def rsa_verify(message, signature, key):
+    from struct import pack
+    from hashlib import sha256 # You'll need the backport for 2.4 http://code.krypto.org/python/hashlib/
+    from sys import version_info
+    def b(x):
+        if version_info[0] == 2: return x
+        else: return x.encode('latin1')
+    assert(type(message) == type(b('')))
+    block_size = 0
+    n = key[0]
+    while n:
+        block_size += 1
+        n &gt;&gt;= 8
+    signature = pow(int(signature, 16), key[1], key[0])
+    raw_bytes = []
+    while signature:
+        raw_bytes.insert(0, pack(&quot;B&quot;, signature &amp; 0xFF))
+        signature &gt;&gt;= 8
+    signature = (block_size - len(raw_bytes)) * b('\x00') + b('').join(raw_bytes)
+    if signature[0:2] != b('\x00\x01'): return False
+    signature = signature[2:]
+    if not b('\x00') in signature: return False
+    signature = signature[signature.index(b('\x00'))+1:]
+    if not signature.startswith(b('\x30\x31\x30\x0D\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20')): return False
+    signature = signature[19:]
+    if signature != sha256(message).digest(): return False
+    return True</code></pre></noscript></div>
+</p>
+
+<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public keys and how to sign new updates. Don’t worry, it’s all really easy; if you happen to encounter any issues, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
+
+<p>I am sufficiently proficient only in Python, so if any C, Perl, PHP or Brainfuck guru wants to show up and contribute the same function in another language, it would be awesome!</p>
+
+<p>Now you don’t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br />
+(And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
+    <link href="http://filosottile.github.com/send-a-head-request-in-python/"/>
+    <updated>2012-03-18T17:53:00-04:00</updated>
+    <id>http://filosottile.github.com/send-a-head-request-in-python</id>
+    <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
+
+<p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
+
+<p><div><script src='https://gist.github.com/2077204.js?file=HEAD-request.py'></script>
+<noscript><pre><code>import urllib2
+
+class HeadRequest(urllib2.Request):
+    def get_method(self):
+        return &quot;HEAD&quot;
+
+class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
+    &quot;&quot;&quot;
+    Subclass the HTTPRedirectHandler to make it use our 
+    HeadRequest also on the redirected URL
+    &quot;&quot;&quot;
+    def redirect_request(self, req, fp, code, msg, headers, newurl): 
+        if code in (301, 302, 303, 307):
+            newurl = newurl.replace(' ', '%20') 
+            return HeadRequest(newurl, 
+                               headers=req.headers, 
+                               origin_req_host=req.get_origin_req_host(), 
+                               unverifiable=True) 
+        else: 
+            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
+
+# Build our opener with the HEADRedirectHandler
+opener = urllib2.OpenerDirector() 
+for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
+                HEADRedirectHandler,
+                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
+    opener.add_handler(handler())
+
+response = opener.open(HeadRequest(url))
+
+print response.geturl()
+print response.info()</code></pre></noscript></div>
+</p>
+
+<p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
+
+<p><div><script src='https://gist.github.com/2077115.js?file=redirect-follower.py'></script>
+<noscript><pre><code>#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+import sys
+import urllib2
+
+# This script uses HEAD requests (with fallback in case of 405) 
+# to follow the redirect path up to the real URL
+# (c) 2012 Filippo Valsorda - FiloSottile
+# Released under the GPL license
+
+class HeadRequest(urllib2.Request):
+    def get_method(self):
+        return &quot;HEAD&quot;
+
+class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
+    &quot;&quot;&quot;
+    Subclass the HTTPRedirectHandler to make it use our 
+    HeadRequest also on the redirected URL
+    &quot;&quot;&quot;
+    def redirect_request(self, req, fp, code, msg, headers, newurl): 
+        if code in (301, 302, 303, 307):
+            newurl = newurl.replace(' ', '%20') 
+            newheaders = dict((k,v) for k,v in req.headers.items()
+                              if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
+            return HeadRequest(newurl, 
+                               headers=newheaders,
+                               origin_req_host=req.get_origin_req_host(), 
+                               unverifiable=True) 
+        else: 
+            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp) 
+            
+class HTTPMethodFallback(urllib2.BaseHandler):
+    &quot;&quot;&quot;
+    Fallback to GET if HEAD is not allowed (405 HTTP error)
+    &quot;&quot;&quot;
+    def http_error_405(self, req, fp, code, msg, headers): 
+        fp.read()
+        fp.close()
+
+        newheaders = dict((k,v) for k,v in req.headers.items()
+                          if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
+        return self.parent.open(urllib2.Request(req.get_full_url(), 
+                                         headers=newheaders, 
+                                         origin_req_host=req.get_origin_req_host(), 
+                                         unverifiable=True))
+
+# Build our opener
+opener = urllib2.OpenerDirector() 
+for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
+                HTTPMethodFallback, HEADRedirectHandler,
+                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
+    opener.add_handler(handler())
+
+response = opener.open(HeadRequest(sys.argv[1]))
+
+print response.geturl()</code></pre></noscript></div>
+</p>
 ]]></content>
   </entry>
   

