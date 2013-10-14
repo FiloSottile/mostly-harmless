@@ -3,7 +3,9 @@ layout: post
 title: "Please take this and go signing those updates"
 date: 2012-12-19 20:47
 comments: true
-categories: crypto
+categories:
+ - crypto
+ - python
 ---
 If your program does any sort of self-updating, it is *fundamental* that you **check the update payload integrity**. And no, fetching it over HTTPS might [not](http://docs.python.org/2/library/urllib2.html) [be](http://docs.python.org/3.3/library/urllib.request.html) [enough](http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html).
 

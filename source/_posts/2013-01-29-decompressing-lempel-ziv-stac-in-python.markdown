@@ -4,6 +4,7 @@ title: "Decompressing Lempel-Ziv-Stac in Python"
 date: 2013-01-29 12:06
 comments: true
 categories: 
+ - python
 ---
 Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
 used on embedded devices, for example for config files, for example on routers,

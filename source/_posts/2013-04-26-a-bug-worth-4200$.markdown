@@ -4,6 +4,7 @@ title: "A bug worth 4200$"
 date: 2013-04-26 13:04
 comments: true
 categories: 
+ - security
 ---
 
 **tl;dr** I found a vulnerability in Facebook that allowed anyone to see the "strength" of all his friends' friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.

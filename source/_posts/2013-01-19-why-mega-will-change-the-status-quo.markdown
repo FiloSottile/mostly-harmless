@@ -4,6 +4,7 @@ title: "Why Mega WILL change the status quo"
 date: 2013-01-19 19:23
 comments: true
 categories: 
+ - commentary
 ---
 
 *A response to [this](https://dl.dropbox.com/u/4374976/random/megaless.html)

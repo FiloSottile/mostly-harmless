@@ -5,6 +5,7 @@ date: 2012-05-12 16:44
 comments: true
 categories: 
  - imported
+ - javascript
 ---
 
 With [PhantomJS](http://phantomjs.org), a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that's what I use it for - rendering some elements of the page as images for later use.

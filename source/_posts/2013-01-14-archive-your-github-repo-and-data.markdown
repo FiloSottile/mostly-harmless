@@ -4,6 +4,7 @@ title: "Archive your GitHub repo and data"
 date: 2013-01-14 23:17
 comments: true
 categories: 
+ - python
 ---
 GitHub is a service we all trust, so this is not a "get your data off that cloud before it explodes!"-style post,
 but sometimes you want to take an offline copy of your or somebody's work.

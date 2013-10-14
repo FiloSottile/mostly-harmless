@@ -3,7 +3,9 @@ layout: post
 title: "Dumping the iOS simulator memory"
 date: 2013-09-12 18:26
 comments: true
-categories: iOS
+categories:
+ - iOS
+ - security
 ---
 
 To audit memory or to debug with external tools it can be useful to get a **dump of the running memory of an app**.

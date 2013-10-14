@@ -4,6 +4,7 @@ title: "Krumiro - send a message to all your Facebook friends"
 date: 2012-12-22 19:20
 comments: true
 categories: 
+ - javascript
 ---
 > **Disclamer**: this code is published without any guarantee, and **the author is not responsible for any use or consequence deriving from its use**.
 > By using it you are accepting this and you accept not to consider the author liable for your use.

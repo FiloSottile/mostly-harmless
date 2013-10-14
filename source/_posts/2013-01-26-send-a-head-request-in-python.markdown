@@ -5,6 +5,7 @@ date: 2012-03-18 17:53
 comments: true
 categories: 
  - imported
+ - python
 ---
 
 There are a lot of questions on this topic around the web and common answers are to use `httplib`, that however is a really-low level library, or to use `urllib2`, but a lot of people complains about it returning to `GET` if following a redirect.

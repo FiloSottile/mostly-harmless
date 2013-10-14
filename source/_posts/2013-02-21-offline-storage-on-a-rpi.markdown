@@ -3,7 +3,8 @@ layout: post
 title: "Offline storage on a RPi"
 date: 2013-02-22 23:21
 comments: true
-categories: 
+categories:
+ - security
 ---
 
 The only really secure place for data is **an [offline][airgap] computer**.
