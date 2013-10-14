@@ -60,7 +60,12 @@ for location in locations_list:
         location_name = re.search(r'Biglumber listings for (.+)', city_listings_page.find("h1").string).group(1)
         place, (lat, lng) = g.geocode(location_name.encode('utf8'), exactly_one=False)[0]
         listings = city_listings_page.html.body.find_all("ul", recursive=False)
-        parsed_listings = map(parse_listing, listings)
+        parsed_listings = []
+        for l in listings:
+            try:
+                parsed_listings.append(parse_listing(l))
+            except:
+                print '[SKIP]', location, l
         print place, '=>', len(parsed_listings)
         result[location] = (location_name, (lat, lng), len(parsed_listings), parsed_listings)
     except:
