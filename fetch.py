@@ -31,7 +31,7 @@ def parse_listing(listing):
             res['email'] = str(len(at.split('.')[0])) + ',' + str(len(at)) + ',' + at.replace('.', '', 1) + who
         elif li.get_text().startswith("Fingerprint:"):
             res['fingerprint'] = li.a.get_text()
-            if hasattr(li.a, 'b'):
+            if li.a.b:
                 res['key'] = li.a.b.string
                 res['keytype'] = re.search(r"\(([^\)]+)\)", li.get_text()).group(1)
         elif li.get_text().startswith("Key ID:"):
