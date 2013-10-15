@@ -48,8 +48,6 @@ And make sure that there are no [`setuid`](https://en.wikipedia.org/wiki/Setuid)
 
 {% gist 6976188 unchroot.c %}
 
----
-
 [^1]: Or even just the CAP_SYS_CHROOT privilege (that self-chroot jailing processes often forget to drop), most of the cases we just need to be able to run `chroot()`.
 [^2]: [Ahem](http://galeri4.uludagsozluk.com/105/im-ceo-bitch_182484.jpg).
 [^3]: `find / -type f \( -perm -4000 -o -perm -2000 \)`

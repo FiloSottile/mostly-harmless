@@ -136,3 +136,16 @@ html .gist .gist-file .gist-meta a[href*='#file'] {
 a code {
 	color: #1863a1;
 }
+
+.footnotes {
+	padding-top: 0.8em;
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAABCAYAAACsXeyTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFUlEQVQIHWNIS0sr/v//PwMMDzY+ADqMahlW4J91AAAAAElFTkSuQmCC') top left repeat-x;
+	p {
+		margin-bottom: 0.2em;
+	}
+	font-size: 0.8em;
+	a[rel=reference] {
+		padding-left: 3px;
+		text-decoration: none;
+	}
+}
