@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-10-14T16:40:02-04:00</updated>
+  <updated>2013-10-15T21:19:42-04:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,27 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[A journal approach that actually works for me &#10150;]]></title>
+      <link href="http://www.bulletjournal.com/"/>
+    
+    <updated>2013-10-15T20:57:00-04:00</updated>
+    <id>http://filosottile.github.com/a-journal-approach-that-actually-works-for-me</id>
+    
+      <content type="html"><![CDATA[<p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
+
+<p>It basically helps you to organize your <strong>pen-and-paper note-taking</strong>. It provides guidance and avoids confusion, but it is not too over-structured, so you are still free to take notes as you want and you won’t have to stick to particular procedures (like with GTD).</p>
+
+<p>Have a look at the video, it is actually enjoyable and gives you a good overview of the system. (This also is a first, I’m usually a text person.)</p>
+
+<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
+
+<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
+<br><a href="http://filosottile.github.com/a-journal-approach-that-actually-works-for-me/">Permalink</a>]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -135,8 +156,6 @@ int main() {
     chroot(&quot;.&quot;);  
     return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
 }</code></pre></noscript></div>
-
-<hr />
 
 <div class="footnotes">
   <ol>
