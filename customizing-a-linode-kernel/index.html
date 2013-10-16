@@ -223,9 +223,9 @@ MathJax.Hub.Config({
 <div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">apt-get install grub-legacy-ec2
-</span><span class="line">sed -i 's/indomU=true/indomU=false/' /boot/grub/menu.lst
-</span><span class="line">update-grub-legacy-ec2</span></code></pre></td></tr></table></div></figure></notextile></div>
+</pre></td><td class="code"><pre><code class=""><span class="line"># apt-get install grub-legacy-ec2
+</span><span class="line"># sed -i 's/indomU=true/indomU=false/' /boot/grub/menu.lst
+</span><span class="line"># update-grub-legacy-ec2</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>And that’s it! Now go to the <strong>Linode Manager</strong>, edit your Configuration Profile to use <em>pv-grub-x86_64</em> as the “Kernel” and reboot.</p>
 
