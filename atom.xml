@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filosottile.github.com/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-10-16T01:12:13-04:00</updated>
+  <updated>2013-10-16T02:23:28-04:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -15,31 +15,10 @@
   
   <entry>
     
-      <title type="html"><![CDATA[A journal approach that actually works for me &#10150;]]></title>
-      <link href="http://www.bulletjournal.com/"/>
-    
-    <updated>2013-10-15T20:57:00-04:00</updated>
-    <id>http://filosottile.github.com/a-journal-approach-that-actually-works-for-me</id>
-    
-      <content type="html"><![CDATA[<p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
-
-<p>It basically helps you to organize your <strong>pen-and-paper note-taking</strong>. It provides guidance and avoids confusion, but it is not too over-structured, so you are still free to take notes as you want and you won’t have to stick to particular procedures (like with GTD).</p>
-
-<p>Have a look at the video, it is actually enjoyable and gives you a good overview of the system. (This also is a first, I’m usually a text person.)</p>
-
-<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
-
-<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
-<br><a href="http://filosottile.github.com/a-journal-approach-that-actually-works-for-me/">Permalink</a>]]></content>
-    
-  </entry>
-  
-  <entry>
-    
       <title type="html"><![CDATA[Customizing a Linode kernel]]></title>
       <link href="http://filosottile.github.com/customizing-a-linode-kernel/"/>
     
-    <updated>2013-10-15T15:15:00-04:00</updated>
+    <updated>2013-10-15T23:15:00-04:00</updated>
     <id>http://filosottile.github.com/customizing-a-linode-kernel</id>
     
       <content type="html"><![CDATA[<p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
@@ -159,6 +138,27 @@
   </ol>
 </div>
 ]]></content>
+    
+  </entry>
+  
+  <entry>
+    
+      <title type="html"><![CDATA[A journal approach that actually works for me &#10150;]]></title>
+      <link href="http://www.bulletjournal.com/"/>
+    
+    <updated>2013-10-15T20:57:00-04:00</updated>
+    <id>http://filosottile.github.com/a-journal-approach-that-actually-works-for-me</id>
+    
+      <content type="html"><![CDATA[<p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
+
+<p>It basically helps you to organize your <strong>pen-and-paper note-taking</strong>. It provides guidance and avoids confusion, but it is not too over-structured, so you are still free to take notes as you want and you won’t have to stick to particular procedures (like with GTD).</p>
+
+<p>Have a look at the video, it is actually enjoyable and gives you a good overview of the system. (This also is a first, I’m usually a text person.)</p>
+
+<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
+
+<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
+<br><a href="http://filosottile.github.com/a-journal-approach-that-actually-works-for-me/">Permalink</a>]]></content>
     
   </entry>
   
