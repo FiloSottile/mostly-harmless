@@ -9,9 +9,8 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="A response to this
-on the newly launched Mega. It is true that theoretically no sharing approach can solve the problem of being inspectable,
-however &hellip;">
+  <meta name="description" content="Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
+used on embedded devices, for example for config files, for example on routers &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -118,6 +117,58 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-29T12:06:00-05:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
+used on embedded devices, for example for config files, for example on routers,
+for example on those that expose the config file on the public internet. Just sayin’…</p>
+
+<p>There is not a Python implementation of it, so here is my Lempel-Ziv-Stac decompression routine.
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/decompressing-lempel-ziv-stac-in-python/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
       
     
@@ -142,57 +193,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
-on the newly launched <a href="https://mega.co.nz">Mega</a>.</em></p>
-
-<p>It is true that theoretically no sharing approach can solve the problem of being inspectable,
-however what Mega does is <strong>eliminate the single point of failure</strong>.</p>
-
-<p>What made sharing over Megaupload difficult and finally killed the service was that
-MPAA and RIAA could pressure Mega to obtain access to their data
-(remember that they had direct read and delete access to Mega* data),
-fingerprint a bunch of files and take down those that matched pirate videos or tracks.</p>
-
-<p><em>Now Mega encrypts client-side all the uploaded data, and gives you the key to store (and share) along with the URL.</em></p>
-
-<p>How this changes the outcome, you ask? Simply stated, <strong>now MPAA and RIAA can’t do anything with access only to Mega infrastructure</strong>.</p>
-
-<p>Obviously key (and URL sharing) is the weakest link in the chain. but consider the two following (common) scenarios:</p>
-
-<h3 id="the-classic-pirate-moviemusic-forumblog">The classic pirate movie/music forum/blog</h3>
-
-<p>The users of those sites always re-uploaded all the content,
-as taking the links of another community was considered really unkind and prevented in various ways.</p>
-
-<p>However, all the copies were easy to kill at once by fingerprinting.</p>
-
-<p>Now, instead, a MPAA/RIAA employee (or program) would have to scan through all those disperse, ephemeral and registration-based communities,
-in a giant struggle that never comes to an end.</p>
-
-<p>This because <strong>each community will have its own copy of the data, each one requiring its key to be taken down, and each key will have to be fetched from each particular site</strong>.</p>
-
-<p>Do you want to be sure that no one will take down your link? Put it (and its key) behind a CAPTCHA.
-This way an automated program will not suffice and they’ll not have enough human resources to check all the forums, blogs, etc.</p>
-
-<h3 id="the-underground-textual-community">The underground textual community</h3>
-
-<p>Let’s say an IRC channel, but also a Skype group chat or Facebook group might work (although I would never share pirate stuff along with my name and surname, but …).</p>
-
-<p>Ever tried sharing big amounts of data over those services? It’s a pain. And sharing with a number of people is plainly impossible.</p>
-
-<p>But now, <strong>one simply upload to Mega the file, and then share link+key with his closed group, and the only way to prevent this is to <em>be part</em> of that group</strong>.</p>
-
-<blockquote>
-  <p>This time I have the feeling that the bad guys win.</p>
-</blockquote>
-
-<p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
-
-<p>P.P.S. If you read this far, you might enjoy <a href="https://twitter.com/FiloSottile">following me on Twitter</a></p>
-</div>
-    
-    
   
 
   
@@ -314,7 +314,7 @@ This way an automated program will not suffice and they’ll not have enough hum
 
   
     <footer>
-      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Permalink</a>
+      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Read on &rarr;</a>
     </footer>
   
 
@@ -490,9 +490,8 @@ This way an automated program will not suffice and they’ll not have enough hum
   
     <section class="aboutme">
   <h1>About Me</h1>
-  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>), an Italian student, a problem solver.
-  	I love cryptography, Python, InfoSec and maths.
-  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a>.</p>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I am attending <a href="http://hackerschool.com">Hacker School</a> in NYC.</p>
 
   <img src="http://projecteuler.net/profile/FiloSottile.png">
 </section>

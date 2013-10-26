@@ -9,7 +9,8 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="I’m trying to compartmentalize my Linode server with Docker, and so I’ll need a 3.8+ 64-bit kernel with AUFS support1. Ok. My old Linode was 32-bit, &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -116,6 +117,50 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/how-we-distribute-youtube-dl/">How we distribute youtube-dl</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-26T19:07:00-04:00" pubdate data-updated="true">Oct 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content">
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a></h1>
       
     
@@ -140,24 +185,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
-
-<p>My old Linode was 32-bit, but using the Dashboard and the doubled storage Linode just upgraded me to I was able to add a <strong>Ubuntu 12.04 64-bit Configuration Profile and Disk Image</strong>, reboot to that and mount the old disk image to copy files over. So far so good.</p>
-
-<p>The current Linode kernel is a custom <strong>3.9.3</strong>. Nice. But without <strong>AUFS support</strong>, ouch. Ok then, I’ll need to recompile this thing.</p>
-
-<p>Also, <code>lxc-checkconfig</code> tells me that I miss support for a lot of things, so…</p>
-
-<p>NOTE: There are easy tutorials<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup> telling you to use the vendor provided kernels, but I feel like there is a reason if Linode ships his own custom kernel, so I really want to just customize theirs.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/customizing-a-linode-kernel/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -201,7 +228,7 @@ MathJax.Hub.Config({
 
   
     <footer>
-      <a class="permalink" href="/a-journal-approach-that-actually-works-for-me/">Permalink</a>
+      <a class="permalink" href="/a-journal-approach-that-actually-works-for-me/">Read on &rarr;</a>
     </footer>
   
 
@@ -400,7 +427,7 @@ MathJax.Hub.Config({
 
   
     <footer>
-      <a class="permalink" href="/claimed-a-recap-aaron-swartz-grant/">Permalink</a>
+      <a class="permalink" href="/claimed-a-recap-aaron-swartz-grant/">Read on &rarr;</a>
     </footer>
   
 
@@ -482,47 +509,8 @@ MathJax.Hub.Config({
 
   
     <footer>
-      <a class="permalink" href="/programming-isnt-always-easy/">Permalink</a>
+      <a class="permalink" href="/programming-isnt-always-easy/">Read on &rarr;</a>
     </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-29T12:06:00-05:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
   
 
 
@@ -541,9 +529,8 @@ MathJax.Hub.Config({
   
     <section class="aboutme">
   <h1>About Me</h1>
-  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>), an Italian student, a problem solver.
-  	I love cryptography, Python, InfoSec and maths.
-  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a>.</p>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I am attending <a href="http://hackerschool.com">Hacker School</a> in NYC.</p>
 
   <img src="http://projecteuler.net/profile/FiloSottile.png">
 </section>
