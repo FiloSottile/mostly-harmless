@@ -2,13 +2,14 @@ FROM ubuntu
 MAINTAINER Patrick O'Doherty <p@trickod.com>
 
 EXPOSE 9091
+ENV VERSION 0.2.3.25  # unstable  0.2.4.17-rc
 
 RUN apt-get install -y curl build-essential libevent-dev libssl-dev
-RUN curl https://www.torproject.org/dist/tor-0.2.3.25.tar.gz | tar xz -C /tmp
+RUN curl https://www.torproject.org/dist/tor-${VERSION}.tar.gz | tar xz -C /tmp
 
-RUN cd /tmp/tor-0.2.3.25 && ./configure
-RUN cd /tmp/tor-0.2.3.25 && make
-RUN cd /tmp/tor-0.2.3.25 && make install
+RUN cd /tmp/tor-${VERSION} && ./configure
+RUN cd /tmp/tor-${VERSION} && make
+RUN cd /tmp/tor-${VERSION} && make install
 
 ADD ./torrc /etc/torrc
 
