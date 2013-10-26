@@ -39,7 +39,7 @@
 
   {% if post.external-url %}
     <footer>
-      <a class="permalink" href="{{ root_url }}{{ post.url }}">Permalink</a>
+      <a class="permalink" href="{{ root_url }}{{ post.url }}">{{ site.excerpt_link }}</a>
     </footer>
   {% endif %}
 {% else %}
