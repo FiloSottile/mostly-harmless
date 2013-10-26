@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="A response to this
+on the newly launched Mega. It is true that theoretically no sharing approach can solve the problem of being inspectable,
+however &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://filosottile.github.com/blog/page/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="PyTux" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37225193-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:filosottile.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+</ul>
+
+</nav>
+
+<nav role="navigation">
+
+<ul class="main-navigation"><li><a><strong>Projects</strong></a></li>
+    <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+    <li><a href="/Biglumber-map/">Biglumber map</a></li>
+    <li><a href="https://apps.facebook.com/coverflipper/">Facebook cover flipper</a></li>
+    <li><a href="https://traviscron.pythonanywhere.com/">Travis cron trigger</a></li>
+    <li><a href="https://ruzzlemap.it/">Ruzzle map</a></li>
+    <li><a href="https://www.recapthelaw.org/">RECAP</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-19T19:23:00-05:00" pubdate data-updated="true">Jan 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
+on the newly launched <a href="https://mega.co.nz">Mega</a>.</em></p>
+
+<p>It is true that theoretically no sharing approach can solve the problem of being inspectable,
+however what Mega does is <strong>eliminate the single point of failure</strong>.</p>
+
+<p>What made sharing over Megaupload difficult and finally killed the service was that
+MPAA and RIAA could pressure Mega to obtain access to their data
+(remember that they had direct read and delete access to Mega* data),
+fingerprint a bunch of files and take down those that matched pirate videos or tracks.</p>
+
+<p><em>Now Mega encrypts client-side all the uploaded data, and gives you the key to store (and share) along with the URL.</em></p>
+
+<p>How this changes the outcome, you ask? Simply stated, <strong>now MPAA and RIAA can’t do anything with access only to Mega infrastructure</strong>.</p>
+
+<p>Obviously key (and URL sharing) is the weakest link in the chain. but consider the two following (common) scenarios:</p>
+
+<h3 id="the-classic-pirate-moviemusic-forumblog">The classic pirate movie/music forum/blog</h3>
+
+<p>The users of those sites always re-uploaded all the content,
+as taking the links of another community was considered really unkind and prevented in various ways.</p>
+
+<p>However, all the copies were easy to kill at once by fingerprinting.</p>
+
+<p>Now, instead, a MPAA/RIAA employee (or program) would have to scan through all those disperse, ephemeral and registration-based communities,
+in a giant struggle that never comes to an end.</p>
+
+<p>This because <strong>each community will have its own copy of the data, each one requiring its key to be taken down, and each key will have to be fetched from each particular site</strong>.</p>
+
+<p>Do you want to be sure that no one will take down your link? Put it (and its key) behind a CAPTCHA.
+This way an automated program will not suffice and they’ll not have enough human resources to check all the forums, blogs, etc.</p>
+
+<h3 id="the-underground-textual-community">The underground textual community</h3>
+
+<p>Let’s say an IRC channel, but also a Skype group chat or Facebook group might work (although I would never share pirate stuff along with my name and surname, but …).</p>
+
+<p>Ever tried sharing big amounts of data over those services? It’s a pain. And sharing with a number of people is plainly impossible.</p>
+
+<p>But now, <strong>one simply upload to Mega the file, and then share link+key with his closed group, and the only way to prevent this is to <em>be part</em> of that group</strong>.</p>
+
+<blockquote>
+  <p>This time I have the feeling that the bad guys win.</p>
+</blockquote>
+
+<p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
+
+<p>P.P.S. If you read this far, you might enjoy <a href="https://twitter.com/FiloSottile">following me on Twitter</a></p>
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/archive-your-github-repo-and-data/">Archive your GitHub repo and data</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-14T23:17:00-05:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true">Jan 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- This defines how Octopress will use posts with external-url. -->
+        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-01T06:36:00-05:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+    <footer>
+      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-22T19:20:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-19T20:47:00-05:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/taking-retina-screenshots-with-phantomjs/">Taking Retina screenshots with PhantomJS</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-12T16:44:00-04:00" pubdate data-updated="true">May 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/send-a-head-request-in-python/">Send a HEAD request in Python</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-18T17:53:00-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+
+  
+
+
+    </article>
+    
+  
+  <div class="pagination">
+    
+    <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section class="aboutme">
+  <h1>About Me</h1>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I am attending <a href="http://hackerschool.com">Hacker School</a> in NYC.</p>
+
+  <img src="http://projecteuler.net/profile/FiloSottile.png">
+</section>
+
+<section class="coderwall">
+  <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
+  src="http://api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=call19543'
+            , type: 'jsonp'
+            , jsonpCallback: 'callback'
+            , jsonpCallbackName: 'call19543'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'FiloSottile',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+  <style type="text/css">
+    .cw_badge img {
+      padding: 5px;
+      border: 0 none !important;
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'FiloSottile',
+            count: 5,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile"  data-widget-id="369235929669435393"  data-link-color="#1863a1" data-tweet-limit="4" data-chrome="noheader nofooter transparent noscrollbar">Tweets by @FiloSottile</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </ul>
+  
+    <p>Follow <a href="http://twitter.com/FiloSottile">@FiloSottile</a></p>
+  
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "FiloSottile"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Filippo Valsorda -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'pytux';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<!-- (MIT License) - Copyright (c) 2012 Ilya Grigorik -->
+<script>
+    (function(d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = '//hnbutton.appspot.com/static/hn.min.js';
+        s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+</script>
+
+
+
+</body>
+</html>
