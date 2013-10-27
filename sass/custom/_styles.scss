@@ -149,3 +149,26 @@ a code {
 		text-decoration: none;
 	}
 }
+
+#cv {
+	font-size: 17px;
+	a {
+		text-decoration: none;
+	}
+	a:visited {
+		color: #1863a1;
+	}
+	b {
+		font-weight: bold;
+	}
+	position: relative;
+	.cv-download {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		padding: 10px;
+		background: #f2f2f2 url('/images/noise.png?1359196381') top left;
+		border-radius: 5px 0 0 0;
+		font-size: 16px;
+	}
+}
