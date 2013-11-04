@@ -158,6 +158,9 @@ a code {
 	a:visited {
 		color: #1863a1;
 	}
+	a:first-of-type, a:hover {
+		color: #0181eb;
+	}
 	b {
 		font-weight: bold;
 	}
