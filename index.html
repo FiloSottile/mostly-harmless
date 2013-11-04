@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="I’m trying to compartmentalize my Linode server with Docker, and so I’ll need a 3.8+ 64-bit kernel with AUFS support1. Ok. My old Linode was 32-bit, &hellip;">
+  <meta name="description" content="The next step in my playing with chroot escapes is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -118,6 +118,68 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-04T02:05:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>The next step in my <a href="/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
+
+<p>By the way, a system call is a function of the kernel invoked by a userspace program and it can be something like writing to a file descriptor, or even exiting. Usually, these are wrapped by C functions in the standard library.</p>
+
+<h3 id="the-system-calls">The system calls</h3>
+
+<p>First, we need to know what system call we want to make, and what arguments it pretends.</p>
+
+<p>A full list is hosted by Apple <a href="http://www.opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master">here</a>. The header also hints at the fact that they are inherited from BSD. Yeah, <a href="https://en.wikipedia.org/wiki/OS_X">that makes sense</a>.</p>
+
+<p>So, to write our proverbial <em>Hello world</em> we will pick the syscall 4</p>
+
+<pre><code>4   AUE_NULL    ALL { user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); }
+</code></pre>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/making-system-calls-from-assembly-in-mac-os-x/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a></h1>
       
     
@@ -142,24 +204,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
-
-<p>My old Linode was 32-bit, but using the Dashboard and the doubled storage Linode just upgraded me to I was able to add a <strong>Ubuntu 12.04 64-bit Configuration Profile and Disk Image</strong>, reboot to that and mount the old disk image to copy files over. So far so good.</p>
-
-<p>The current Linode kernel is a custom <strong>3.9.3</strong>. Nice. But without <strong>AUFS support</strong>, ouch. Ok then, I’ll need to recompile this thing.</p>
-
-<p>Also, <code>lxc-checkconfig</code> tells me that I miss support for a lot of things, so…</p>
-
-<p>NOTE: There are easy tutorials<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup> telling you to use the vendor provided kernels, but I feel like there is a reason if Linode ships his own custom kernel, so I really want to just customize theirs.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/customizing-a-linode-kernel/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -492,45 +536,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-29T12:06:00-05:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -547,6 +552,32 @@ MathJax.Hub.Config({
   	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I am attending <a href="http://hackerschool.com">Hacker School</a> in NYC.</p>
 
   <img src="http://projecteuler.net/profile/FiloSottile.png">
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a>
+      </li>
+    
+      <li class="post">
+        <a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/a-journal-approach-that-actually-works-for-me/">A journal approach that actually works for me</a>
+      </li>
+    
+      <li class="post">
+        <a href="/escaping-a-chroot-jail-slash-1/">Escaping a chroot jail/1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/instance-monkey-patching-in-python/">Instance monkey-patching in Python</a>
+      </li>
+    
+  </ul>
 </section>
 
 <section class="coderwall">
