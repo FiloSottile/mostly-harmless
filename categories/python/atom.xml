@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: python | PyTux]]></title>
-  <link href="http://filosottile.github.com/categories/python/atom.xml" rel="self"/>
-  <link href="http://filosottile.github.com/"/>
-  <updated>2013-11-05T15:01:57-05:00</updated>
-  <id>http://filosottile.github.com/</id>
+  <link href="http://filippo.io/categories/python/atom.xml" rel="self"/>
+  <link href="http://filippo.io/"/>
+  <updated>2013-11-05T17:59:08-05:00</updated>
+  <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
-    <link href="http://filosottile.github.com/instance-monkey-patching-in-python/"/>
+    <link href="http://filippo.io/instance-monkey-patching-in-python/"/>
     <updated>2013-10-07T00:19:00-04:00</updated>
-    <id>http://filosottile.github.com/instance-monkey-patching-in-python</id>
+    <id>http://filippo.io/instance-monkey-patching-in-python</id>
     <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
 
 <p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>
@@ -115,9 +115,9 @@
   
   <entry>
     <title type="html"><![CDATA[Decompressing Lempel-Ziv-Stac in Python]]></title>
-    <link href="http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python/"/>
+    <link href="http://filippo.io/decompressing-lempel-ziv-stac-in-python/"/>
     <updated>2013-01-29T12:06:00-05:00</updated>
-    <id>http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python</id>
+    <id>http://filippo.io/decompressing-lempel-ziv-stac-in-python</id>
     <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
 used on embedded devices, for example for config files, for example on routers,
 for example on those that expose the config file on the public internet. Just sayin’…</p>
@@ -266,9 +266,9 @@ def LZSDecompress(data, window = RingList(2048)):
   
   <entry>
     <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
-    <link href="http://filosottile.github.com/archive-your-github-repo-and-data/"/>
+    <link href="http://filippo.io/archive-your-github-repo-and-data/"/>
     <updated>2013-01-14T23:17:00-05:00</updated>
-    <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
+    <id>http://filippo.io/archive-your-github-repo-and-data</id>
     <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
 but sometimes you want to take an offline copy of your or somebody’s work.</p>
 
@@ -384,9 +384,9 @@ if args.metadata:
   
   <entry>
     <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-    <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
+    <link href="http://filippo.io/please-take-this-and-go-signing-those-updates/"/>
     <updated>2012-12-19T20:47:00-05:00</updated>
-    <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
+    <id>http://filippo.io/please-take-this-and-go-signing-those-updates</id>
     <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
@@ -435,9 +435,9 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
   
   <entry>
     <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
-    <link href="http://filosottile.github.com/send-a-head-request-in-python/"/>
+    <link href="http://filippo.io/send-a-head-request-in-python/"/>
     <updated>2012-03-18T17:53:00-04:00</updated>
-    <id>http://filosottile.github.com/send-a-head-request-in-python</id>
+    <id>http://filippo.io/send-a-head-request-in-python</id>
     <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
 
 <p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>

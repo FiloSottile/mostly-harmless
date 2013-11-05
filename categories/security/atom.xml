@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: security | PyTux]]></title>
-  <link href="http://filosottile.github.com/categories/security/atom.xml" rel="self"/>
-  <link href="http://filosottile.github.com/"/>
-  <updated>2013-11-05T15:01:57-05:00</updated>
-  <id>http://filosottile.github.com/</id>
+  <link href="http://filippo.io/categories/security/atom.xml" rel="self"/>
+  <link href="http://filippo.io/"/>
+  <updated>2013-11-05T17:59:08-05:00</updated>
+  <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Analyzing the Adobe leaked passwords]]></title>
-    <link href="http://filosottile.github.com/analyzing-the-adobe-leaked-passwords/"/>
+    <link href="http://filippo.io/analyzing-the-adobe-leaked-passwords/"/>
     <updated>2013-11-04T11:15:00-05:00</updated>
-    <id>http://filosottile.github.com/analyzing-the-adobe-leaked-passwords</id>
+    <id>http://filippo.io/analyzing-the-adobe-leaked-passwords</id>
     <content type="html"><![CDATA[<p><img src="http://imgs.xkcd.com/comics/encryptic.png" alt="XKCD is on it" class="center" /></p>
 
 <p>On October Adobe reported that some user data, including credit cards and password dumps, got stolen from their servers. Now the passwords dump has leaked, and it’s hilarious.</p>
@@ -82,9 +82,9 @@
   
   <entry>
     <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
-    <link href="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/"/>
+    <link href="http://filippo.io/escaping-a-chroot-jail-slash-1/"/>
     <updated>2013-10-14T10:00:00-04:00</updated>
-    <id>http://filosottile.github.com/escaping-a-chroot-jail-slash-1</id>
+    <id>http://filippo.io/escaping-a-chroot-jail-slash-1</id>
     <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
 
 <!-- more -->
@@ -217,9 +217,9 @@ int main() {
   
   <entry>
     <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
-    <link href="http://filosottile.github.com/dumping-the-ios-simulator-memory/"/>
+    <link href="http://filippo.io/dumping-the-ios-simulator-memory/"/>
     <updated>2013-09-12T18:26:00-04:00</updated>
-    <id>http://filosottile.github.com/dumping-the-ios-simulator-memory</id>
+    <id>http://filippo.io/dumping-the-ios-simulator-memory</id>
     <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
 
 <p>To do so on a device you’ll need a Jailbreak, SSH access, and <code>gdb</code>. See <a href="https://www.soldierx.com/tutorials/iPhone-Dumping-Game-Memory-and-Injecting-Custom-Code-into-Games">this</a> or <a href="http://rce64.wordpress.com/2013/01/26/decrypting-apps-on-ios-6-single-architecture-no-pieaslr/">this</a>.</p>
@@ -247,9 +247,9 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
   
   <entry>
     <title type="html"><![CDATA[A bug worth 4200$]]></title>
-    <link href="http://filosottile.github.com/a-bug-worth-4200%24/"/>
+    <link href="http://filippo.io/a-bug-worth-4200%24/"/>
     <updated>2013-04-26T13:04:00-04:00</updated>
-    <id>http://filosottile.github.com/a-bug-worth-4200$</id>
+    <id>http://filippo.io/a-bug-worth-4200$</id>
     <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
 
 <p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
@@ -339,9 +339,9 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
   
   <entry>
     <title type="html"><![CDATA[Offline storage on a RPi]]></title>
-    <link href="http://filosottile.github.com/offline-storage-on-a-rpi/"/>
+    <link href="http://filippo.io/offline-storage-on-a-rpi/"/>
     <updated>2013-02-22T23:21:00-05:00</updated>
-    <id>http://filosottile.github.com/offline-storage-on-a-rpi</id>
+    <id>http://filippo.io/offline-storage-on-a-rpi</id>
     <content type="html"><![CDATA[<p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
 
 <p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).

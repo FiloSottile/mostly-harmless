@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[PyTux]]></title>
-  <link href="http://filosottile.github.com/atom.xml" rel="self"/>
-  <link href="http://filosottile.github.com/"/>
-  <updated>2013-11-05T15:01:57-05:00</updated>
-  <id>http://filosottile.github.com/</id>
+  <link href="http://filippo.io/atom.xml" rel="self"/>
+  <link href="http://filippo.io/"/>
+  <updated>2013-11-05T17:59:08-05:00</updated>
+  <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -16,10 +16,10 @@
   <entry>
     
       <title type="html"><![CDATA[Analyzing the Adobe leaked passwords]]></title>
-      <link href="http://filosottile.github.com/analyzing-the-adobe-leaked-passwords/"/>
+      <link href="http://filippo.io/analyzing-the-adobe-leaked-passwords/"/>
     
     <updated>2013-11-04T11:15:00-05:00</updated>
-    <id>http://filosottile.github.com/analyzing-the-adobe-leaked-passwords</id>
+    <id>http://filippo.io/analyzing-the-adobe-leaked-passwords</id>
     
       <content type="html"><![CDATA[<p><img src="http://imgs.xkcd.com/comics/encryptic.png" alt="XKCD is on it" class="center" /></p>
 
@@ -87,12 +87,12 @@
   <entry>
     
       <title type="html"><![CDATA[Making system calls from Assembly in Mac OS X]]></title>
-      <link href="http://filosottile.github.com/making-system-calls-from-assembly-in-mac-os-x/"/>
+      <link href="http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/"/>
     
     <updated>2013-11-04T02:05:00-05:00</updated>
-    <id>http://filosottile.github.com/making-system-calls-from-assembly-in-mac-os-x</id>
+    <id>http://filippo.io/making-system-calls-from-assembly-in-mac-os-x</id>
     
-      <content type="html"><![CDATA[<p>The next step in my <a href="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
+      <content type="html"><![CDATA[<p>The next step in my <a href="http://filippo.io/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
 
 <p>By the way, a system call is a function of the kernel invoked by a userspace program and it can be something like writing to a file descriptor, or even exiting. Usually, these are wrapped by C functions in the standard library.</p>
 
@@ -205,10 +205,10 @@ msg:    db      &quot;Hello, world!&quot;, 10
   <entry>
     
       <title type="html"><![CDATA[Customizing a Linode kernel]]></title>
-      <link href="http://filosottile.github.com/customizing-a-linode-kernel/"/>
+      <link href="http://filippo.io/customizing-a-linode-kernel/"/>
     
     <updated>2013-10-15T23:15:00-04:00</updated>
-    <id>http://filosottile.github.com/customizing-a-linode-kernel</id>
+    <id>http://filippo.io/customizing-a-linode-kernel</id>
     
       <content type="html"><![CDATA[<p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
 
@@ -336,7 +336,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
       <link href="http://www.bulletjournal.com/"/>
     
     <updated>2013-10-15T20:57:00-04:00</updated>
-    <id>http://filosottile.github.com/a-journal-approach-that-actually-works-for-me</id>
+    <id>http://filippo.io/a-journal-approach-that-actually-works-for-me</id>
     
       <content type="html"><![CDATA[<p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
 
@@ -344,20 +344,20 @@ msg:    db      &quot;Hello, world!&quot;, 10
 
 <p>Have a look at the video, it is actually enjoyable and gives you a good overview of the system. (This also is a first, I’m usually a text person.)</p>
 
-<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
+<p><img src="http://filippo.io/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
 
-<p><img src="http://filosottile.github.com/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
-<br><a href="http://filosottile.github.com/a-journal-approach-that-actually-works-for-me/">Permalink</a>]]></content>
+<p><img src="http://filippo.io/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
+<br><a href="http://filippo.io/a-journal-approach-that-actually-works-for-me/">Permalink</a>]]></content>
     
   </entry>
   
   <entry>
     
       <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
-      <link href="http://filosottile.github.com/escaping-a-chroot-jail-slash-1/"/>
+      <link href="http://filippo.io/escaping-a-chroot-jail-slash-1/"/>
     
     <updated>2013-10-14T10:00:00-04:00</updated>
-    <id>http://filosottile.github.com/escaping-a-chroot-jail-slash-1</id>
+    <id>http://filippo.io/escaping-a-chroot-jail-slash-1</id>
     
       <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
 
@@ -494,10 +494,10 @@ int main() {
   <entry>
     
       <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
-      <link href="http://filosottile.github.com/instance-monkey-patching-in-python/"/>
+      <link href="http://filippo.io/instance-monkey-patching-in-python/"/>
     
     <updated>2013-10-07T00:19:00-04:00</updated>
-    <id>http://filosottile.github.com/instance-monkey-patching-in-python</id>
+    <id>http://filippo.io/instance-monkey-patching-in-python</id>
     
       <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
 
@@ -641,10 +641,10 @@ int main() {
   <entry>
     
       <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
-      <link href="http://filosottile.github.com/dumping-the-ios-simulator-memory/"/>
+      <link href="http://filippo.io/dumping-the-ios-simulator-memory/"/>
     
     <updated>2013-09-12T18:26:00-04:00</updated>
-    <id>http://filosottile.github.com/dumping-the-ios-simulator-memory</id>
+    <id>http://filippo.io/dumping-the-ios-simulator-memory</id>
     
       <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
 
@@ -675,14 +675,14 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
   <entry>
     
       <title type="html"><![CDATA[A bug worth 4200$]]></title>
-      <link href="http://filosottile.github.com/a-bug-worth-4200%24/"/>
+      <link href="http://filippo.io/a-bug-worth-4200%24/"/>
     
     <updated>2013-04-26T13:04:00-04:00</updated>
-    <id>http://filosottile.github.com/a-bug-worth-4200$</id>
+    <id>http://filippo.io/a-bug-worth-4200$</id>
     
       <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
 
-<p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="http://filosottile.github.com/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
+<p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="http://filippo.io/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
 
 <p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
 
@@ -718,7 +718,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
 
 <p>The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on <a href="https://www.facebook.com/whitehat/thanks/">their thanks page</a> (a great, great CV builder), plus some pleasant compliments.</p>
 
-<p class="img_center"><img src="http://filosottile.github.com/images/whitehat.png" alt="White Hat Bounty" /></p>
+<p class="img_center"><img src="http://filippo.io/images/whitehat.png" alt="White Hat Bounty" /></p>
 
 <p>Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he’s being heard, offer him a direct contact (you get ticket-bound <em>Reply-To</em>s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.</p>
 
@@ -774,7 +774,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <link href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/"/>
     
     <updated>2013-04-04T21:40:00-04:00</updated>
-    <id>http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant</id>
+    <id>http://filippo.io/claimed-a-recap-aaron-swartz-grant</id>
     
       <content type="html"><![CDATA[<p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
 
@@ -782,17 +782,17 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
 
 <p>Details and comments in the linked blog post.</p>
 
-<br><a href="http://filosottile.github.com/claimed-a-recap-aaron-swartz-grant/">Permalink</a>]]></content>
+<br><a href="http://filippo.io/claimed-a-recap-aaron-swartz-grant/">Permalink</a>]]></content>
     
   </entry>
   
   <entry>
     
       <title type="html"><![CDATA[Offline storage on a RPi]]></title>
-      <link href="http://filosottile.github.com/offline-storage-on-a-rpi/"/>
+      <link href="http://filippo.io/offline-storage-on-a-rpi/"/>
     
     <updated>2013-02-22T23:21:00-05:00</updated>
-    <id>http://filosottile.github.com/offline-storage-on-a-rpi</id>
+    <id>http://filippo.io/offline-storage-on-a-rpi</id>
     
       <content type="html"><![CDATA[<p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
 
@@ -818,7 +818,7 @@ And there are much more examples of data best kept offline…</p>
       <link href="http://blog.wizpert.com/programming-help/"/>
     
     <updated>2013-02-21T23:14:00-05:00</updated>
-    <id>http://filosottile.github.com/programming-isnt-always-easy</id>
+    <id>http://filippo.io/programming-isnt-always-easy</id>
     
       <content type="html"><![CDATA[<p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
 
@@ -826,17 +826,17 @@ And there are much more examples of data best kept offline…</p>
 
 <p><em>Some people say that with all the reference documentation available, programming is easy.</em> …</p>
 
-<br><a href="http://filosottile.github.com/programming-isnt-always-easy/">Permalink</a>]]></content>
+<br><a href="http://filippo.io/programming-isnt-always-easy/">Permalink</a>]]></content>
     
   </entry>
   
   <entry>
     
       <title type="html"><![CDATA[Decompressing Lempel-Ziv-Stac in Python]]></title>
-      <link href="http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python/"/>
+      <link href="http://filippo.io/decompressing-lempel-ziv-stac-in-python/"/>
     
     <updated>2013-01-29T12:06:00-05:00</updated>
-    <id>http://filosottile.github.com/decompressing-lempel-ziv-stac-in-python</id>
+    <id>http://filippo.io/decompressing-lempel-ziv-stac-in-python</id>
     
       <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
 used on embedded devices, for example for config files, for example on routers,
@@ -988,10 +988,10 @@ def LZSDecompress(data, window = RingList(2048)):
   <entry>
     
       <title type="html"><![CDATA[Why Mega WILL change the status quo]]></title>
-      <link href="http://filosottile.github.com/why-mega-will-change-the-status-quo/"/>
+      <link href="http://filippo.io/why-mega-will-change-the-status-quo/"/>
     
     <updated>2013-01-19T19:23:00-05:00</updated>
-    <id>http://filosottile.github.com/why-mega-will-change-the-status-quo</id>
+    <id>http://filippo.io/why-mega-will-change-the-status-quo</id>
     
       <content type="html"><![CDATA[<p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
 on the newly launched <a href="https://mega.co.nz">Mega</a>.</em></p>
@@ -1047,10 +1047,10 @@ This way an automated program will not suffice and they’ll not have enough hum
   <entry>
     
       <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
-      <link href="http://filosottile.github.com/archive-your-github-repo-and-data/"/>
+      <link href="http://filippo.io/archive-your-github-repo-and-data/"/>
     
     <updated>2013-01-14T23:17:00-05:00</updated>
-    <id>http://filosottile.github.com/archive-your-github-repo-and-data</id>
+    <id>http://filippo.io/archive-your-github-repo-and-data</id>
     
       <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
 but sometimes you want to take an offline copy of your or somebody’s work.</p>
@@ -1167,10 +1167,10 @@ if args.metadata:
   <entry>
     
       <title type="html"><![CDATA[Automatically compile .less and .coffee files]]></title>
-      <link href="http://filosottile.github.com/automatically-compile-less-and-coffee-files/"/>
+      <link href="http://filippo.io/automatically-compile-less-and-coffee-files/"/>
     
     <updated>2013-01-12T00:25:00-05:00</updated>
-    <id>http://filosottile.github.com/automatically-compile-less-and-coffee-files</id>
+    <id>http://filippo.io/automatically-compile-less-and-coffee-files</id>
     
       <content type="html"><![CDATA[<p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
 
@@ -1233,7 +1233,7 @@ if __name__ == &quot;__main__&quot;:
       <link href="https://coderwall.com/p/z5rkga"/>
     
     <updated>2013-01-01T06:36:00-05:00</updated>
-    <id>http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch</id>
+    <id>http://filippo.io/github-checkout-a-pull-request-as-a-branch</id>
     
       <content type="html"><![CDATA[<p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
 
@@ -1247,17 +1247,17 @@ if __name__ == &quot;__main__&quot;:
 <p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
 
 <p>An example in the Coderwall ProTip linked at the title.</p>
-<br><a href="http://filosottile.github.com/github-checkout-a-pull-request-as-a-branch/">Permalink</a>]]></content>
+<br><a href="http://filippo.io/github-checkout-a-pull-request-as-a-branch/">Permalink</a>]]></content>
     
   </entry>
   
   <entry>
     
       <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
-      <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+      <link href="http://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/"/>
     
     <updated>2012-12-22T19:20:00-05:00</updated>
-    <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
+    <id>http://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends</id>
     
       <content type="html"><![CDATA[<blockquote>
   <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
@@ -1430,10 +1430,10 @@ spam();</code></pre></noscript></div>
   <entry>
     
       <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-      <link href="http://filosottile.github.com/please-take-this-and-go-signing-those-updates/"/>
+      <link href="http://filippo.io/please-take-this-and-go-signing-those-updates/"/>
     
     <updated>2012-12-19T20:47:00-05:00</updated>
-    <id>http://filosottile.github.com/please-take-this-and-go-signing-those-updates</id>
+    <id>http://filippo.io/please-take-this-and-go-signing-those-updates</id>
     
       <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
@@ -1484,10 +1484,10 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
   <entry>
     
       <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
-      <link href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/"/>
+      <link href="http://filippo.io/taking-retina-screenshots-with-phantomjs/"/>
     
     <updated>2012-05-12T16:44:00-04:00</updated>
-    <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
+    <id>http://filippo.io/taking-retina-screenshots-with-phantomjs</id>
     
       <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
@@ -1550,10 +1550,10 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
   <entry>
     
       <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
-      <link href="http://filosottile.github.com/send-a-head-request-in-python/"/>
+      <link href="http://filippo.io/send-a-head-request-in-python/"/>
     
     <updated>2012-03-18T17:53:00-04:00</updated>
-    <id>http://filosottile.github.com/send-a-head-request-in-python</id>
+    <id>http://filippo.io/send-a-head-request-in-python</id>
     
       <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
 

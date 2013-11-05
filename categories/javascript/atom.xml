@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: javascript | PyTux]]></title>
-  <link href="http://filosottile.github.com/categories/javascript/atom.xml" rel="self"/>
-  <link href="http://filosottile.github.com/"/>
-  <updated>2013-11-05T15:01:57-05:00</updated>
-  <id>http://filosottile.github.com/</id>
+  <link href="http://filippo.io/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://filippo.io/"/>
+  <updated>2013-11-05T17:59:08-05:00</updated>
+  <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
-    <link href="http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends/"/>
+    <link href="http://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/"/>
     <updated>2012-12-22T19:20:00-05:00</updated>
-    <id>http://filosottile.github.com/krumiro-send-a-message-to-all-your-facebook-friends</id>
+    <id>http://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends</id>
     <content type="html"><![CDATA[<blockquote>
   <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
 By using it you are accepting this and you accept not to consider the author liable for your use.</p>
@@ -187,9 +187,9 @@ spam();</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
-    <link href="http://filosottile.github.com/taking-retina-screenshots-with-phantomjs/"/>
+    <link href="http://filippo.io/taking-retina-screenshots-with-phantomjs/"/>
     <updated>2012-05-12T16:44:00-04:00</updated>
-    <id>http://filosottile.github.com/taking-retina-screenshots-with-phantomjs</id>
+    <id>http://filippo.io/taking-retina-screenshots-with-phantomjs</id>
     <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
 <p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
