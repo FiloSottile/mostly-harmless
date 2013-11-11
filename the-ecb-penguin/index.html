@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PyTux</title>
+  <title>The ECB Penguin - PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="The only really secure place for data is an offline computer. A couple of use cases: store your primary GPG key offline, without expire date, then &hellip;">
+  <meta name="description" content="This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filippo.io/blog/page/2/">
+  <link rel="canonical" href="http://filippo.io/the-ecb-penguin/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -107,18 +107,13 @@ MathJax.Hub.Config({
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    
-    <article>
-      
   <header>
     
       
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/offline-storage-on-a-rpi/">Offline storage on a RPi</a></h1>
+        <h1 class="entry-title">The ECB Penguin</h1>
       
     
     
@@ -135,408 +130,143 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-02-22T23:21:00-05:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
+<time datetime="2013-11-10T19:54:00-05:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-  
-    <div class="entry-content"><p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
+  <div class="entry-content"><p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
 
-<p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
-Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
-And there are much more examples of data best kept offline…</p>
+<p>This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of the <a href="https://commons.wikimedia.org/wiki/File:Tux.jpg">Tux Linux mascot</a> encrypted with a block cipher in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29">ECB mode</a> that still shows clearly the outline of the original.</p>
 
-<p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
+<div class="reset-zoom"><blockquote class="twitter-tweet" data-conversation="none" align="center" data-dnt="true"><p>.<a href="https://twitter.com/solardiz">@solardiz</a> <a href="https://twitter.com/ErrataRob">@ErrataRob</a> ECB mode strikes again, I see. It&#39;s hard to believe there&#39;s anyone left who hasn&#39;t seen the penguin.</p>&mdash; Andrea (@puellavulnerata) <a href="https://twitter.com/puellavulnerata/statuses/396863689602519041">November 3, 2013</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
 
-<p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
+<!-- more -->
 
-<p>If you don’t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+<p><img src="/images/ecb penguin - Google.png" alt="Google suggestions" class="center" /></p>
 
-<p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+<h2 id="ecb">ECB</h2>
+
+<p>You have a cipher, that with a key will encrypt 16 bytes of data. And you have some data, that is more than 16 bytes. So you have a problem. Well, ECB is the wrong solution to that problem: you just encrypt each 16-bytes block separately.</p>
+
+<p>Why is it wrong? Because this way blocks that were equal before encryption will <strong>remain equal</strong> also after! And this will lead to all kinds of unwanted consequences.</p>
+
+<p>One good example is the recent <a href="/analyzing-the-adobe-leaked-passwords/">Adobe passwords crossword game</a> but the best visualization of the concept is him, the penguin!</p>
+
+<h2 id="the-original">The original</h2>
+
+<p>The <a href="https://en.wikipedia.org/wiki/File:Tux_ecb.jpg">original image</a> has been created by <a href="https://en.wikipedia.org/wiki/User:Lunkwill">User:Lunkwill</a> of en.wikipedia in 2004 and added to the page “<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block cipher mode of operation</a>” with <a href="https://en.wikipedia.org/w/index.php?title=Block_cipher_mode_of_operation&amp;diff=prev&amp;oldid=2191923">this edit</a>.</p>
+
+<p>It has even been <a href="https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/April-2004#Tux_ecb.jpg">proposed as a Wikipedia featured picture</a>.</p>
+
+<p>Nothing more is known about the original. I wrote an email to the author, and I will update the blog post if he replies.</p>
+
+<h2 id="my-take-at-it">My take at it</h2>
+
+<p>The picture is amazing, but rather low quality even for screen, let alone for printing. So, I decided to generate my own.</p>
+
+<p>First thing needed was an image format where the pixels were represented sequentially as plain bytes, without any compression, and possibly with a simple header. The perfect candidate turned out to be the <a href="https://en.wikipedia.org/wiki/Netpbm_format#PPM_example">PPM binary format</a>, part of the Netpbm spec. (It is just basically a ASCII header and then a sequence of 3-bytes RGB representations of the pixels.)</p>
+
+<p>Here is the process:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c"># First convert the Tux to PPM with Gimp</span>
+</span><span class="line"><span class="c"># Then take the header apart</span>
+</span><span class="line">head -n 4 Tux.ppm &gt; header.txt
+</span><span class="line">tail -n +5 Tux.ppm &gt; body.bin
+</span><span class="line"><span class="c"># Then encrypt with ECB (experiment with some different keys)</span>
+</span><span class="line">openssl enc -aes-128-ecb -nosalt -pass pass:<span class="s2">&quot;ANNA&quot;</span> -in body.bin -out body.ecb.bin
+</span><span class="line"><span class="c"># And finally put the result together and convert to some better format with Gimp</span>
+</span><span class="line">cat header.txt body.ecb.bin &gt; Tux.ecb.ppm
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And the result! (Prints soon on sale, it makes for a great nerdy office decoration, much like “Crypto Safety Procedures”)</p>
+
+<p><a href="/images/Tux-ECB.png"><img src="/images/Tux-ECB-small.png" alt="Tux ecb.jpg" class="center" /></a></p>
+
+<h3 id="bonus-pop-art">Bonus: pop art</h3>
+
+<p>Also, the color combinations spawning from the different keys reminded me of the <a href="https://www.google.com/search?q=Marilyn+Monroe+by+Andy+Warhol&amp;tbm=isch">Marilyn Monroe by Andy Warhol</a>, so… (Canvas prints soon on sale for this, too!)</p>
+
+<p><img src="/images/POP-xsmall.png" alt="POP Tuxes" class="center" /></p>
 
 </div>
-    
-    
-  
 
   
 
 
-    </article>
-    
-  
-    
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
       
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://blog.wizpert.com/programming-help/">Programming isn&#8217;t always easy</a></h1>
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-10T19:54:00-05:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
       
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
-
-
-<time datetime="2013-02-21T23:14:00-05:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
+    <a class='category' href='/categories/crypto/'>crypto</a>
   
+</span>
 
+
+    </p>
+    
+      <div class="sharing">
   
-    <footer>
-      <a class="permalink" href="/programming-isnt-always-easy/">Read on &rarr;</a>
-    </footer>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/the-ecb-penguin/" data-via="FiloSottile" data-counturl="http://filippo.io/the-ecb-penguin/" >Tweet</a>
   
-
-
-    </article>
-    
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/decompressing-lempel-ziv-stac-in-python/">Decompressing Lempel-Ziv-Stac in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+  <div class="g-plusone" data-size="medium"></div>
   
-
-
-<time datetime="2013-01-29T12:06:00-05:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
   
-
   
-
-
-    </article>
-    
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-19T19:23:00-05:00" pubdate data-updated="true">Jan 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/archive-your-github-repo-and-data/">Archive your GitHub repo and data</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-14T23:17:00-05:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true">Jan 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-01T06:36:00-05:00" pubdate data-updated="true">Jan 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/krumiro-send-a-message-to-all-your-facebook-friends/">Krumiro - send a message to all your Facebook friends</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-22T19:20:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/please-take-this-and-go-signing-those-updates/">Please take this and go signing those updates</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-19T20:47:00-05:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/taking-retina-screenshots-with-phantomjs/">Taking Retina screenshots with PhantomJS</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-12T16:44:00-04:00" pubdate data-updated="true">May 12<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/3/">&larr; Older</a>
-    
-    <a href="/archives">Blog Archives</a>
-    
-    <a class="next" href="/">Newer &rarr;</a>
-    
-  </div>
 </div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/analyzing-the-adobe-leaked-passwords/" title="Previous Post: Analyzing the Adobe leaked passwords">&laquo; Analyzing the Adobe leaked passwords</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section class="aboutme">
@@ -577,7 +307,7 @@ And there are much more examples of data best kept offline…</p>
   <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
   src="http://api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
   <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
 
   <script type="text/javascript">
@@ -636,7 +366,7 @@ And there are much more examples of data best kept offline…</p>
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
@@ -667,7 +397,7 @@ And there are much more examples of data best kept offline…</p>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
     <!-- <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile"  data-widget-id="369235929669435393"  data-link-color="#1863a1" data-tweet-limit="4" data-chrome="noheader nofooter transparent noscrollbar">Tweets by @FiloSottile</a>
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script> &#8211;>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script> -->
     <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile" data-widget-id="369235929669435393">Tweets di @FiloSottile</a>
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
   </ul>
@@ -679,7 +409,7 @@ And there are much more examples of data best kept offline…</p>
 
 <section>
   <h1>My Pinboard</h1>
-  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
   <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
 </section>
 <script type="text/javascript">
@@ -699,6 +429,7 @@ And there are much more examples of data best kept offline…</p>
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -713,7 +444,10 @@ And there are much more examples of data best kept offline…</p>
       var disqus_shortname = 'pytux';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://filippo.io/the-ecb-penguin/';
+        var disqus_url = 'http://filippo.io/the-ecb-penguin/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2013-11-05T17:59:08-05:00</updated>
+  <updated>2013-11-11T00:19:34-05:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,81 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[The ECB Penguin]]></title>
+      <link href="http://filippo.io/the-ecb-penguin/"/>
+    
+    <updated>2013-11-10T19:54:00-05:00</updated>
+    <id>http://filippo.io/the-ecb-penguin</id>
+    
+      <content type="html"><![CDATA[<p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
+
+<p>This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of the <a href="https://commons.wikimedia.org/wiki/File:Tux.jpg">Tux Linux mascot</a> encrypted with a block cipher in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29">ECB mode</a> that still shows clearly the outline of the original.</p>
+
+<div class="reset-zoom"><blockquote class="twitter-tweet" data-conversation="none" align="center" data-dnt="true"><p>.<a href="https://twitter.com/solardiz">@solardiz</a> <a href="https://twitter.com/ErrataRob">@ErrataRob</a> ECB mode strikes again, I see. It&#39;s hard to believe there&#39;s anyone left who hasn&#39;t seen the penguin.</p>&mdash; Andrea (@puellavulnerata) <a href="https://twitter.com/puellavulnerata/statuses/396863689602519041">November 3, 2013</a></blockquote>
+<script async="" src="http://filippo.io//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
+
+<!-- more -->
+
+<p><img src="http://filippo.io/images/ecb penguin - Google.png" alt="Google suggestions" class="center" /></p>
+
+<h2 id="ecb">ECB</h2>
+
+<p>You have a cipher, that with a key will encrypt 16 bytes of data. And you have some data, that is more than 16 bytes. So you have a problem. Well, ECB is the wrong solution to that problem: you just encrypt each 16-bytes block separately.</p>
+
+<p>Why is it wrong? Because this way blocks that were equal before encryption will <strong>remain equal</strong> also after! And this will lead to all kinds of unwanted consequences.</p>
+
+<p>One good example is the recent <a href="http://filippo.io/analyzing-the-adobe-leaked-passwords/">Adobe passwords crossword game</a> but the best visualization of the concept is him, the penguin!</p>
+
+<h2 id="the-original">The original</h2>
+
+<p>The <a href="https://en.wikipedia.org/wiki/File:Tux_ecb.jpg">original image</a> has been created by <a href="https://en.wikipedia.org/wiki/User:Lunkwill">User:Lunkwill</a> of en.wikipedia in 2004 and added to the page “<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block cipher mode of operation</a>” with <a href="https://en.wikipedia.org/w/index.php?title=Block_cipher_mode_of_operation&amp;diff=prev&amp;oldid=2191923">this edit</a>.</p>
+
+<p>It has even been <a href="https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/April-2004#Tux_ecb.jpg">proposed as a Wikipedia featured picture</a>.</p>
+
+<p>Nothing more is known about the original. I wrote an email to the author, and I will update the blog post if he replies.</p>
+
+<h2 id="my-take-at-it">My take at it</h2>
+
+<p>The picture is amazing, but rather low quality even for screen, let alone for printing. So, I decided to generate my own.</p>
+
+<p>First thing needed was an image format where the pixels were represented sequentially as plain bytes, without any compression, and possibly with a simple header. The perfect candidate turned out to be the <a href="https://en.wikipedia.org/wiki/Netpbm_format#PPM_example">PPM binary format</a>, part of the Netpbm spec. (It is just basically a ASCII header and then a sequence of 3-bytes RGB representations of the pixels.)</p>
+
+<p>Here is the process:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c"># First convert the Tux to PPM with Gimp</span>
+</span><span class="line"><span class="c"># Then take the header apart</span>
+</span><span class="line">head -n 4 Tux.ppm &gt; header.txt
+</span><span class="line">tail -n +5 Tux.ppm &gt; body.bin
+</span><span class="line"><span class="c"># Then encrypt with ECB (experiment with some different keys)</span>
+</span><span class="line">openssl enc -aes-128-ecb -nosalt -pass pass:<span class="s2">&quot;ANNA&quot;</span> -in body.bin -out body.ecb.bin
+</span><span class="line"><span class="c"># And finally put the result together and convert to some better format with Gimp</span>
+</span><span class="line">cat header.txt body.ecb.bin &gt; Tux.ecb.ppm
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And the result! (Prints soon on sale, it makes for a great nerdy office decoration, much like “Crypto Safety Procedures”)</p>
+
+<p><a href="http://filippo.io/images/Tux-ECB.png"><img src="http://filippo.io/images/Tux-ECB-small.png" alt="Tux ecb.jpg" class="center" /></a></p>
+
+<h3 id="bonus-pop-art">Bonus: pop art</h3>
+
+<p>Also, the color combinations spawning from the different keys reminded me of the <a href="https://www.google.com/search?q=Marilyn+Monroe+by+Andy+Warhol&amp;tbm=isch">Marilyn Monroe by Andy Warhol</a>, so… (Canvas prints soon on sale for this, too!)</p>
+
+<p><img src="http://filippo.io/images/POP-xsmall.png" alt="POP Tuxes" class="center" /></p>
+
+]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -1542,117 +1617,6 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
   <li><a href="https://github.com/ariya/phantomjs/wiki/Screen-Capture">Rendering QuickStart example</a> - PhantomJs Wiki</li>
   <li><a href="https://github.com/ariya/phantomjs/wiki/API-Reference#wiki-webpage-render"><code>render()</code> API reference</a> </li>
 </ul>
-
-]]></content>
-    
-  </entry>
-  
-  <entry>
-    
-      <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
-      <link href="http://filippo.io/send-a-head-request-in-python/"/>
-    
-    <updated>2012-03-18T17:53:00-04:00</updated>
-    <id>http://filippo.io/send-a-head-request-in-python</id>
-    
-      <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
-
-<p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
-
-<div><script src="https://gist.github.com/2077204.js?file=HEAD-request.py"></script>
-<noscript><pre><code>import urllib2
-
-class HeadRequest(urllib2.Request):
-    def get_method(self):
-        return &quot;HEAD&quot;
-
-class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
-    &quot;&quot;&quot;
-    Subclass the HTTPRedirectHandler to make it use our 
-    HeadRequest also on the redirected URL
-    &quot;&quot;&quot;
-    def redirect_request(self, req, fp, code, msg, headers, newurl): 
-        if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
-            return HeadRequest(newurl, 
-                               headers=req.headers, 
-                               origin_req_host=req.get_origin_req_host(), 
-                               unverifiable=True) 
-        else: 
-            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
-
-# Build our opener with the HEADRedirectHandler
-opener = urllib2.OpenerDirector() 
-for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
-                HEADRedirectHandler,
-                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
-    opener.add_handler(handler())
-
-response = opener.open(HeadRequest(url))
-
-print response.geturl()
-print response.info()</code></pre></noscript></div>
-
-<p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
-
-<div><script src="https://gist.github.com/2077115.js?file=redirect-follower.py"></script>
-<noscript><pre><code>#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-import sys
-import urllib2
-
-# This script uses HEAD requests (with fallback in case of 405) 
-# to follow the redirect path up to the real URL
-# (c) 2012 Filippo Valsorda - FiloSottile
-# Released under the GPL license
-
-class HeadRequest(urllib2.Request):
-    def get_method(self):
-        return &quot;HEAD&quot;
-
-class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
-    &quot;&quot;&quot;
-    Subclass the HTTPRedirectHandler to make it use our 
-    HeadRequest also on the redirected URL
-    &quot;&quot;&quot;
-    def redirect_request(self, req, fp, code, msg, headers, newurl): 
-        if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
-            newheaders = dict((k,v) for k,v in req.headers.items()
-                              if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
-            return HeadRequest(newurl, 
-                               headers=newheaders,
-                               origin_req_host=req.get_origin_req_host(), 
-                               unverifiable=True) 
-        else: 
-            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp) 
-            
-class HTTPMethodFallback(urllib2.BaseHandler):
-    &quot;&quot;&quot;
-    Fallback to GET if HEAD is not allowed (405 HTTP error)
-    &quot;&quot;&quot;
-    def http_error_405(self, req, fp, code, msg, headers): 
-        fp.read()
-        fp.close()
-
-        newheaders = dict((k,v) for k,v in req.headers.items()
-                          if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
-        return self.parent.open(urllib2.Request(req.get_full_url(), 
-                                         headers=newheaders, 
-                                         origin_req_host=req.get_origin_req_host(), 
-                                         unverifiable=True))
-
-# Build our opener
-opener = urllib2.OpenerDirector() 
-for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
-                HTTPMethodFallback, HEADRedirectHandler,
-                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
-    opener.add_handler(handler())
-
-response = opener.open(HeadRequest(sys.argv[1]))
-
-print response.geturl()</code></pre></noscript></div>
 
 ]]></content>
     
