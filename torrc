@@ -1,3 +1,4 @@
 Log notice stdout
 ExitPolicy reject *:*
+ORPort 9001
 
