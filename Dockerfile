@@ -2,7 +2,7 @@ FROM ubuntu
 MAINTAINER Patrick O'Doherty <p@trickod.com>
 
 EXPOSE 9091
-ENV VERSION 0.2.3.25  # unstable  0.2.4.17-rc
+ENV VERSION 0.2.3.25
 
 RUN apt-get install -y curl build-essential libevent-dev libssl-dev
 RUN curl https://www.torproject.org/dist/tor-${VERSION}.tar.gz | tar xz -C /tmp
