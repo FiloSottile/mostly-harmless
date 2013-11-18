@@ -52,15 +52,17 @@ openssl enc -aes-128-ecb -nosalt -pass pass:"ANNA" -in body.bin -out body.ecb.bi
 cat header.txt body.ecb.bin > Tux.ecb.ppm
 ```
 
-And the result! (Prints soon on sale, it makes for a great nerdy office decoration, much like "Crypto Safety Procedures")
+And the result! ([Prints on sale](http://www.cafepress.com/ecbpenguin.1060438520), it makes for a great nerdy office decoration, much like "Crypto Safety Procedures")
 
 [![Tux ecb.jpg](/images/Tux-ECB-small.png){:.center}](/images/Tux-ECB.png)
 
 ### Bonus: pop art
 
-Also, the color combinations spawning from the different keys reminded me of the [Marilyn Monroe by Andy Warhol][marylin], so... (Canvas prints soon on sale for this, too!)
+Also, the color combinations spawning from the different keys reminded me of the [Marilyn Monroe by Andy Warhol][marylin], so... ([Poster](http://www.cafepress.com/ecbpenguin.1060711059)!)
 
 ![POP Tuxes](/images/POP-xsmall.png){:.center}
+
+[Visit the shop](http://www.cafepress.com/ecbpenguin) for other ECB Tux gear! Or just [follow me](https://twitter.com/FiloSottile) on Twitter.
 
 [marylin]: https://www.google.com/search?q=Marilyn+Monroe+by+Andy+Warhol&tbm=isch
 [ecb]: https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29

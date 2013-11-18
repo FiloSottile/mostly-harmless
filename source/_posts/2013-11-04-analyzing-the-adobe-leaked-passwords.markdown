@@ -43,6 +43,18 @@ But again: it's not secure because it's a keyed cipher. The hacker might have th
 
 Also, I'm eager to check if they used a strong master password...
 
+## The XKCD
+
+By the way, the comic is not using real data, the first hex block, Base64 encoded is `ThiswasnotY=` :)
+
+## A first manual effort
+
+Jeremi Gosney ([@jmgosney](https://twitter.com/jmgosney)) counted the password repetitions, took the most common ones and then guessed the plaintext either by getting it from one of the users or from the hints. Again: anyone that shares a 8-characters block with your key can recover it.
+
+[http://stricture-group.com/files/adobe-top100.txt](http://stricture-group.com/files/adobe-top100.txt)
+
+We should crowdsource this.
+
 ---
 
 This is a rolling blog post, [follow me](https://twitter.com/FiloSottile) on Twitter for updates
