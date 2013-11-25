@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python | PyTux]]></title>
   <link href="http://filippo.io/categories/python/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2013-11-24T19:53:23-05:00</updated>
+  <updated>2013-11-25T11:56:10-05:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,224 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round]]></title>
+    <link href="http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/"/>
+    <updated>2013-11-25T10:52:00-05:00</updated>
+    <id>http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round</id>
+    <content type="html"><![CDATA[<p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
+
+<p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
+
+<p><em>NOTE: if for some reason I misunderstood and I wasn’t allowed to do this, please get in contact with me ASAP and I’ll take this down.</em></p>
+
+<!-- more -->
+
+<h2 id="square-detector">Square Detector</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-square-detector-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-square_detector-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-square_detector_answer-txt">the answer</a>.</p>
+
+<p>This was an easy one, I just scanned the grid until I found a <code>#</code>, assumed it was the upper-left corner and counted the following <code>#</code> to learn the edge length. At this point I had all the info to build a model of how a correct grid should look like, so I just checked the real one against it.</p>
+
+<p><div><script src='https://gist.github.com/7643628.js?file=Square%20Detector.py'></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import sys
+
+T = int(sys.stdin.readline().strip())
+
+for t in range(1, T + 1):
+    N = int(sys.stdin.readline().strip())
+    GRID = [sys.stdin.readline().strip() for i in range(N)]
+
+    # Find the the upper-left corner (J, I) and the edge K
+    for I, row in enumerate(GRID):
+        if not '#' in row: continue
+        K = 0
+        J = row.index('#')
+        for x in range(J, N):
+            if row[x] == '#': K += 1
+            else: break
+        break
+
+    # If the square would not fit, fail
+    if I + K &gt; N:
+        print('Case #%i: NO' % t)
+        continue
+    
+    # Build a module of how a row including the square should look like
+    MOD = (J * '.' + K * '#').ljust(N, '.')
+
+    # Check that the grid looks like what it should
+    for i, row in enumerate(GRID):
+        if i &gt;= I and i &lt; I + K:
+            if row != MOD: break
+        else:
+            if row != N * '.': break
+    else:
+        # Reached if we didn't break out of the loop
+        # Ok, I'll admit that for-else is not that clear
+        print('Case #%i: YES' % t)
+        continue
+
+    print('Case #%i: NO' % t)
+</code></pre></noscript></div>
+</p>
+
+<h2 id="basketball-game">Basketball Game</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-basketball-game-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-basketball_game-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-basketball_game_answer-txt">the answer</a>.</p>
+
+<p>This is actually my favorite. The problem was fun and the Python code reads as if it was English. It makes hard use of mutable objects and their properties.</p>
+
+<p><div><script src='https://gist.github.com/7643628.js?file=Basketball%20Game.py'></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import sys
+INPUT = open(sys.argv[1])
+
+class Player():
+    name = None
+    shot_percentage = None
+    height = None
+    draft = None
+    time_played = 0
+
+T = int(INPUT.readline().strip())
+
+for t in range(1, T + 1):
+    N, M, P = [int(x) for x in INPUT.readline().strip().split(' ')]
+    PLAYERS = []
+    for _ in range(N):
+        player = Player()
+        player.name, s, h = INPUT.readline().strip().split(' ')
+        player.shot_percentage, player.height = int(s), int(h)
+        PLAYERS.append(player)
+
+    PLAYERS.sort(reverse=True, key=lambda p: (p.shot_percentage, p.height))
+    for n, p in enumerate(PLAYERS):
+        p.draft = n + 1
+
+    TEAM_A = [p for p in PLAYERS if p.draft % 2 != 0]
+    TEAM_B = [p for p in PLAYERS if p.draft % 2 == 0]
+
+    PLAYING_A = TEAM_A[:P]
+    PLAYING_B = TEAM_B[:P]
+
+    for _ in range(M):
+        for TEAM, PLAYING in ((TEAM_A, PLAYING_A), (TEAM_B, PLAYING_B)):
+            if len(TEAM) == len(PLAYING): continue
+
+            for p in PLAYING: p.time_played += 1
+
+            BENCH = [p for p in TEAM if p not in PLAYING]
+
+            leaving = sorted(PLAYING, key=lambda p: (p.time_played, p.draft))[-1]
+            entering = sorted(BENCH, key=lambda p: (p.time_played, p.draft))[0]
+
+            PLAYING.remove(leaving)
+            PLAYING.append(entering)
+
+            BENCH.remove(entering)
+            BENCH.append(leaving)
+
+    print('Case #%i: ' % t + ' '.join(sorted(p.name for p in PLAYING_A + PLAYING_B)))
+
+</code></pre></noscript></div>
+</p>
+
+<h2 id="tennison">Tennison</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-tennison-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-tennison-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-tennison_answer-txt">the answer</a>.</p>
+
+<p>Finally the hardest one. This was a nice recursive problem. The constrains allowed for a lot of big test cases, so I went a bit overkill with speed, wrote some custom caching, ported my actual recursive function to Cython (it’s awesome! Just check out the <code>-a</code> HTML output to figure out what you have to optimize and you’re done) and made the program parallelizable.</p>
+
+<p>Turns out, memoization would have been enough. Still, it has been really fun!</p>
+
+<p><div><script src='https://gist.github.com/7643628.js?file=Tennison.py'></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import pyximport; pyximport.install()
+from fast_Tennison import play_a_set
+
+from multiprocessing import Pool
+
+import sys
+
+T = int(sys.stdin.readline().strip())
+
+TEST_CASES = []
+for t in range(1, T + 1):
+    l = sys.stdin.readline().strip().split(' ')
+    K = int(l[0])
+    ps, pr, pi, pu, pw, pd, pl = (float(x) for x in l[1:])
+    won, lost = 0, 0
+    TEST_CASES.append((t, {}, K, won, lost, pi, ps, pr, pu, pw, pd, pl))
+
+def do(x):
+    r = play_a_set(*x[1:])
+    sys.stderr.write('#{}: {:f}\n'.format(x[0], r))
+    return r
+pool = Pool(processes=8)
+RESULTS = pool.map(do, TEST_CASES, chunksize=1)
+
+for t in range(1, T + 1):
+    print('Case #{}: {:f}'.format(t, RESULTS[t-1]))
+</code></pre></noscript></div>
+
+<div><script src='https://gist.github.com/7643628.js?file=fast_Tennison.pyx'></script>
+<noscript><pre><code>cpdef double play_a_set(cache, int K, int won, int lost, double p_sun, double ps, double pr, double pu, double pw, double pd, double pl):
+    cdef double new_p_sun, positive
+
+    if won == K: return 1
+    if lost == K: return 0
+
+    if won * 1000 + lost * 10 + p_sun in cache:
+      return cache[won * 1000 + lost * 10 + p_sun]
+
+    positive = 0
+
+    ## There is sun     P: p_sun
+    #### He wins            P: ps
+    ###### p_sun changes        P: pw
+    new_p_sun = min(1, p_sun + pu)
+    positive += p_sun * ps * pw * play_a_set(cache, K, won+1, lost, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pw
+    positive += p_sun * ps * (1 - pw) * play_a_set(cache, K, won+1, lost, p_sun, ps, pr, pu, pw, pd, pl)
+    #### He loses           P: 1 - ps
+    ###### p_sun changes        P: pl
+    new_p_sun = max(0, p_sun - pd)
+    positive += p_sun * (1 - ps) * pl * play_a_set(cache, K, won, lost+1, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pl
+    positive += p_sun * (1 - ps) * (1 - pl) * play_a_set(cache, K, won, lost+1, p_sun, ps, pr, pu, pw, pd, pl)
+    ## There is rain    P: 1 - p_sun
+    #### He wins            P: pr
+    ###### p_sun changes        P: pw
+    new_p_sun = min(1, p_sun + pu)
+    positive += (1 - p_sun) * pr * pw * play_a_set(cache, K, won+1, lost, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pw
+    positive += (1 - p_sun) * pr * (1 - pw) * play_a_set(cache, K, won+1, lost, p_sun, ps, pr, pu, pw, pd, pl)
+    #### He loses           P: 1 - pr
+    ###### p_sun changes        P: pl
+    new_p_sun = max(0, p_sun - pd)
+    positive += (1 - p_sun) * (1 - pr) * pl * play_a_set(cache, K, won, lost+1, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pl
+    positive += (1 - p_sun) * (1 - pr) * (1 - pl) * play_a_set(cache, K, won, lost+1, p_sun, ps, pr, pu, pw, pd, pl)
+
+    cache[won * 1000 + lost * 10 + p_sun] = positive
+
+    return positive
+</code></pre></noscript></div>
+</p>
+
+<p>That’s all! I got admitted to the next round, so maybe <a href="https://twitter.com/FiloSottile">follow me on Twitter</a> if you want to read the next batch of problems and solutions!</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Python GitHub Push WebHook Handler]]></title>
@@ -451,57 +669,6 @@ if args.metadata:
 </p>
 
 <p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-    <link href="http://filippo.io/please-take-this-and-go-signing-those-updates/"/>
-    <updated>2012-12-19T20:47:00-05:00</updated>
-    <id>http://filippo.io/please-take-this-and-go-signing-those-updates</id>
-    <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
-
-<p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>
-
-<p>The common way to sign something is to use RSA, but you might not want to rely on <em>yet another external dependency</em>, with God knows which license…<br />
-Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <strong>RSA signature verifying function</strong> that run on Python 2.4+ (seriously) and… it’s in the Public Domain (<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>), it’s yours.</p>
-
-<p><div><script src='https://gist.github.com/4340076.js?file=rsa_verify.py'></script>
-<noscript><pre><code>def rsa_verify(message, signature, key):
-    from struct import pack
-    from hashlib import sha256 # You'll need the backport for 2.4 http://code.krypto.org/python/hashlib/
-    from sys import version_info
-    def b(x):
-        if version_info[0] == 2: return x
-        else: return x.encode('latin1')
-    assert(type(message) == type(b('')))
-    block_size = 0
-    n = key[0]
-    while n:
-        block_size += 1
-        n &gt;&gt;= 8
-    signature = pow(int(signature, 16), key[1], key[0])
-    raw_bytes = []
-    while signature:
-        raw_bytes.insert(0, pack(&quot;B&quot;, signature &amp; 0xFF))
-        signature &gt;&gt;= 8
-    signature = (block_size - len(raw_bytes)) * b('\x00') + b('').join(raw_bytes)
-    if signature[0:2] != b('\x00\x01'): return False
-    signature = signature[2:]
-    if not b('\x00') in signature: return False
-    signature = signature[signature.index(b('\x00'))+1:]
-    if not signature.startswith(b('\x30\x31\x30\x0D\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20')): return False
-    signature = signature[19:]
-    if signature != sha256(message).digest(): return False
-    return True</code></pre></noscript></div>
-</p>
-
-<p><a href="https://gist.github.com/4340076">Here</a> are the instructions on how to generate your private and public keys and how to sign new updates. Don’t worry, it’s all really easy; if you happen to encounter any issues, shoot me a mail at <code>filippo.valsorda -&gt; gmail.com</code>!</p>
-
-<p>I am sufficiently proficient only in Python, so if any C, Perl, PHP or Brainfuck guru wants to show up and contribute the same function in another language, it would be awesome!</p>
-
-<p>Now you don’t have any excuses anymore (at least you Python devs): <strong>go signing your updates</strong>!<br />
-(And maybe also <a href="https://www.twitter.com/FiloSottile">following me on Twitter</a>)</p>
 ]]></content>
   </entry>
   

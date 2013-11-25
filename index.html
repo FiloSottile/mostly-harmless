@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="GitHub offers a number of Service Hooks that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you &hellip;">
+  <meta name="description" content="Facebook organizes this cool competition called the Hacker Cup. Yesterday the Qualification Round finished, and the user solutions got published. So &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,60 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-25T10:52:00-05:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
+
+<p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
+
+<p><em>NOTE: if for some reason I misunderstood and I wasn’t allowed to do this, please get in contact with me ASAP and I’ll take this down.</em></p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a></h1>
       
     
@@ -144,74 +198,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
-
-<p>There is a official Rack handler somewhere, and maybe a Django one, but nothing in pure Python. So here is it.</p>
-
-<p>It’s pretty simple and self-contained, start it with the IP address and port to listen on as arguments, and it will pass a function - <code>handle_hook()</code> - the payload received on each push as a Python dictionary. It also checks that the originating IP is actually GH.</p>
-
-<p>Then simply enter the address of your server on the GH Service Hooks repo Admin page, and you’re all set.</p>
-
-<p><img src="/images/Service Hooks 2013-11-24 00-54-05.png" alt="The Webhooks admin page" /></p>
-
-<p>For reference on what’s inside the payload, <a href="https://help.github.com/articles/post-receive-hooks">RTFM</a>.</p>
-
-<div><script src="https://gist.github.com/7634541.js?file=HookHandler.py"></script>
-<noscript><pre><code>#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-import BaseHTTPServer
-import sys
-import time
-import urlparse
-import json
-
-
-HOST_NAME = sys.argv[1]
-PORT_NUMBER = int(sys.argv[2])
-
-
-def handle_hook(payload):
-    pass
-
-
-class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    server_version = &quot;HookHandler/0.1&quot;
-    def do_GET(s):
-        s.send_response(200)
-        s.wfile.write('Hello!')
-
-    def do_POST(s):
-        # Check that the IP is within the GH ranges
-        if not any(s.client_address[0].startswith(IP)
-                   for IP in ('192.30.252', '192.30.253', '192.30.254', '192.30.255')):
-            s.send_error(403)
-
-        length = int(s.headers['Content-Length'])
-        post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
-        payload = json.loads(post_data['payload'][0])
-
-        handle_hook(payload)
-
-        s.send_response(200)
-
-
-if __name__ == '__main__':
-    server_class = BaseHTTPServer.HTTPServer
-    httpd = server_class((HOST_NAME, PORT_NUMBER), HookHandler)
-    print time.asctime(), &quot;Server Starts - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
-    print time.asctime(), &quot;Server Stops - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
-</code></pre></noscript></div>
-
-</div>
-    
-    
   
 
   
@@ -544,46 +530,6 @@ if __name__ == '__main__':
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/a-bug-worth-4200%24/">A bug worth 4200$</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-04-26T13:04:00-04:00" pubdate data-updated="true" class="updated">Apr 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -610,6 +556,10 @@ if __name__ == '__main__':
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a>
+      </li>
+    
+      <li class="post">
         <a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a>
       </li>
     
@@ -623,10 +573,6 @@ if __name__ == '__main__':
     
       <li class="post">
         <a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a>
-      </li>
-    
-      <li class="post">
-        <a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a>
       </li>
     
   </ul>
