@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="There are a lot of questions on this topic around the web and common answers are to use httplib, that however is a really-low level library, or to &hellip;">
+  <meta name="description" content="With PhantomJS, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,59 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/taking-retina-screenshots-with-phantomjs/">Taking Retina screenshots with PhantomJS</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2012-05-12T16:44:00-04:00" pubdate data-updated="true" class="updated">May 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
+
+<p>Here I will explain how to take Retina-like screenshots. These are screenshots with double width and height for the same element where the details are rendered with double the precision. There are different reasons to want that: you might not own a new iPad or an iPhone4* and want to see how your website would look on these devices or you might want to add a Retina unit test to your awesome test stack. I want to render text to images so that they will still look sharp on Retina screens when used as replacements.</p>
+
+<p>The key is the CSS3 <a href="http://www.w3schools.com/css3/css3_2dtransforms.asp"><code>transform</code></a> property and its <code>scale(2)</code> value, plus a couple of tweaks.
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/taking-retina-screenshots-with-phantomjs/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/send-a-head-request-in-python/">Send a HEAD request in Python</a></h1>
       
     
@@ -144,109 +197,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
-
-<p>Here is my <code>urllib2</code> solution, written looking at the code of <code>urllib2.HTTPRedirectHandler</code> and subclassing it in order to make it keep using the <code>HeadRequest</code>.</p>
-
-<div><script src="https://gist.github.com/2077204.js?file=HEAD-request.py"></script>
-<noscript><pre><code>import urllib2
-
-class HeadRequest(urllib2.Request):
-    def get_method(self):
-        return &quot;HEAD&quot;
-
-class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
-    &quot;&quot;&quot;
-    Subclass the HTTPRedirectHandler to make it use our 
-    HeadRequest also on the redirected URL
-    &quot;&quot;&quot;
-    def redirect_request(self, req, fp, code, msg, headers, newurl): 
-        if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
-            return HeadRequest(newurl, 
-                               headers=req.headers, 
-                               origin_req_host=req.get_origin_req_host(), 
-                               unverifiable=True) 
-        else: 
-            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
-
-# Build our opener with the HEADRedirectHandler
-opener = urllib2.OpenerDirector() 
-for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
-                HEADRedirectHandler,
-                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
-    opener.add_handler(handler())
-
-response = opener.open(HeadRequest(url))
-
-print response.geturl()
-print response.info()</code></pre></noscript></div>
-
-<p>For example, here is a fast URL un-shortener (redirect follower) realized with the method above (and a fallback).</p>
-
-<div><script src="https://gist.github.com/2077115.js?file=redirect-follower.py"></script>
-<noscript><pre><code>#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-import sys
-import urllib2
-
-# This script uses HEAD requests (with fallback in case of 405) 
-# to follow the redirect path up to the real URL
-# (c) 2012 Filippo Valsorda - FiloSottile
-# Released under the GPL license
-
-class HeadRequest(urllib2.Request):
-    def get_method(self):
-        return &quot;HEAD&quot;
-
-class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
-    &quot;&quot;&quot;
-    Subclass the HTTPRedirectHandler to make it use our 
-    HeadRequest also on the redirected URL
-    &quot;&quot;&quot;
-    def redirect_request(self, req, fp, code, msg, headers, newurl): 
-        if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
-            newheaders = dict((k,v) for k,v in req.headers.items()
-                              if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
-            return HeadRequest(newurl, 
-                               headers=newheaders,
-                               origin_req_host=req.get_origin_req_host(), 
-                               unverifiable=True) 
-        else: 
-            raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp) 
-            
-class HTTPMethodFallback(urllib2.BaseHandler):
-    &quot;&quot;&quot;
-    Fallback to GET if HEAD is not allowed (405 HTTP error)
-    &quot;&quot;&quot;
-    def http_error_405(self, req, fp, code, msg, headers): 
-        fp.read()
-        fp.close()
-
-        newheaders = dict((k,v) for k,v in req.headers.items()
-                          if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
-        return self.parent.open(urllib2.Request(req.get_full_url(), 
-                                         headers=newheaders, 
-                                         origin_req_host=req.get_origin_req_host(), 
-                                         unverifiable=True))
-
-# Build our opener
-opener = urllib2.OpenerDirector() 
-for handler in [urllib2.HTTPHandler, urllib2.HTTPDefaultErrorHandler,
-                HTTPMethodFallback, HEADRedirectHandler,
-                urllib2.HTTPErrorProcessor, urllib2.HTTPSHandler]:
-    opener.add_handler(handler())
-
-response = opener.open(HeadRequest(sys.argv[1]))
-
-print response.geturl()</code></pre></noscript></div>
-
-</div>
-    
-    
   
 
   
@@ -281,6 +231,10 @@ print response.geturl()</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-ecb-penguin/">The ECB Penguin</a>
       </li>
     
@@ -294,10 +248,6 @@ print response.geturl()</code></pre></noscript></div>
     
       <li class="post">
         <a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a>
-      </li>
-    
-      <li class="post">
-        <a href="/a-journal-approach-that-actually-works-for-me/">A journal approach that actually works for me</a>
       </li>
     
   </ul>
