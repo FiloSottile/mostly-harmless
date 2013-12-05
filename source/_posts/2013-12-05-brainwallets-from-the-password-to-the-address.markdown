@@ -14,6 +14,8 @@ But what is actually the process that takes a password and spits a Bitcoin walle
 
 So, we have a password, but we need a fixed-size (256-bit) secret value to make our private key. This step can be done in a number of ways as it boils down to hashing the password but is crucial to the strength of the resulting brainwallet.
 
+<!-- more -->
+
 Let's have a look at how popular Brainwallet generators do it. (As of 20131204)
 
 +----------------------------------------------------------|-------------------|-----------------------------------+
