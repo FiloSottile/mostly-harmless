@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2013-12-05T17:47:17-05:00</updated>
+  <updated>2013-12-05T17:49:00-05:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -28,6 +28,8 @@
 <h3 id="from-a-password-to-a-secret-value">1. From a password to a secret value</h3>
 
 <p>So, we have a password, but we need a fixed-size (256-bit) secret value to make our private key. This step can be done in a number of ways as it boils down to hashing the password but is crucial to the strength of the resulting brainwallet.</p>
+
+<!-- more -->
 
 <p>Let’s have a look at how popular Brainwallet generators do it. (As of 20131204)</p>
 
