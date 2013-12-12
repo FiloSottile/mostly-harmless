@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "How the new GMail image proxy works and what does this mean for you"
+title: "How the new Gmail image proxy actually works and what does this mean for you"
 date: 2013-12-12 17:52
 comments: true
 categories: 
 ---
 
-Google [recently announced](http://gmailblog.blogspot.com/2013/12/images-now-showing.html) that images in emails will be displayed automatically by default to GMail users, thanks to an anonymizing proxy operated by them.
+Google [recently announced](http://gmailblog.blogspot.com/2013/12/images-now-showing.html) that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by them.
 
 This, they say, will actually *benefit* users privacy.
 
@@ -56,7 +56,7 @@ The issue is that the single most useful piece of information a sender gets from
 
 Ok, they won't know my IP and this is really good, they won't set tracking cookies to link my different email accounts and they won't know what browser I'm running, they might even fail to exploit my machine thanks to transcoding (if they wanted to waste such a 0-day) but the default setting -- what most users settle on, let's face it -- just got weaker on privacy.
 
-Now, GMail has "✓ Seen".
+Now, Gmail has "✓ Seen".
 
 Note: you can [turn automatic loading off](https://support.google.com/mail/answer/145919?p=display_images&rd=1) and gain the privacy benefits of the proxy anyway.
 
