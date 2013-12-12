@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2013-12-05T17:49:00-05:00</updated>
+  <updated>2013-12-12T18:43:37-05:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,134 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[How the new GMail image proxy works and what does this mean for you]]></title>
+      <link href="http://filippo.io/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/"/>
+    
+    <updated>2013-12-12T17:52:00-05:00</updated>
+    <id>http://filippo.io/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you</id>
+    
+      <content type="html"><![CDATA[<p>Google <a href="http://gmailblog.blogspot.com/2013/12/images-now-showing.html">recently announced</a> that images in emails will be displayed automatically by default to GMail users, thanks to an anonymizing proxy operated by them.</p>
+
+<p>This, they say, will actually <em>benefit</em> users privacy.</p>
+
+<p>This might very well be true if images are prefetched when an email is received. The <a href="https://support.google.com/mail/answer/145919?p=display_images&amp;rd=1">help page</a> however does not make it seem like so (and states that images are transcoded, interesting).</p>
+
+<p>Since this feature has already been rolled out to me, I thought to check out how it actually works.</p>
+
+<!-- more -->
+
+<p>So, I set up a slightly modified SimpleHTTPServer to also log request headers (just added the line below)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">dict</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;: &#39;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Downloaded this image and exposed it at <code>http://filosottile.info/test.png</code></p>
+
+<p><img src="http://filippo.io/images/test.png" alt="the test image" /></p>
+
+<p>Here how a request from my browser looks like</p>
+
+<div><script src="https://gist.github.com/7937352.js?file=browser_request"></script>
+<noscript><pre><code>{
+    &quot;accept-language&quot;: &quot;en-US,en;q=0.8,it-IT;q=0.6,it;q=0.4&quot;,
+    &quot;accept-encoding&quot;: &quot;gzip,deflate,sdch&quot;,
+    &quot;cache-control&quot;: &quot;max-age=0&quot;,
+    &quot;connection&quot;: &quot;keep-alive&quot;,
+    &quot;accept&quot;: &quot;image/webp,*/*;q=0.8&quot;,
+    &quot;user-agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36&quot;,
+    &quot;host&quot;: &quot;filosottile.info&quot;,
+    &quot;if-modified-since&quot;: &quot;Wed, 31 Oct 2012 23:52:07 GMT&quot;
+}
+cpe-68-175-8-151.nyc.res.rr.com - - [12/Dec/2013 22:11:54] &quot;GET /test.png HTTP/1.1&quot; 200 -</code></pre></noscript></div>
+
+<p>Then, I sent the following HTML message to myself at 17:21:29 EST (<a href="https://gist.github.com/FiloSottile/7937352#file-full_body">here</a> the full email body when received)</p>
+
+<div><script src="https://gist.github.com/7937352.js?file=message.html"></script>
+<noscript><pre><code>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+
+&lt;img src=&quot;http://filosottile.info/test.png&quot;&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></noscript></div>
+
+<p>It immediately showed up on my phone. No requests. I waited a bit and opened my desktop inbox. No request.</p>
+
+<p><strong>Then, I opened the email, the image automatically loaded and immediately a request got logged on my server</strong></p>
+
+<div><script src="https://gist.github.com/7937352.js?file=on_open"></script>
+<noscript><pre><code>{
+    &quot;host&quot;: &quot;filosottile.info&quot;,
+    &quot;connection&quot;: &quot;Keep-alive&quot;,
+    &quot;accept-encoding&quot;: &quot;gzip,deflate&quot;,
+    &quot;user-agent&quot;: &quot;Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7 (via ggpht.com)&quot;
+}
+google-proxy-66-249-88-131.google.com - - [12/Dec/2013 22:23:40] &quot;GET /test.png HTTP/1.1&quot; 200 -</code></pre></noscript></div>
+
+<p>The image is indeed transcoded: exact same metadata (format, size…) but different body. Here is it, as got from the URL <code>https://ci6.googleusercontent.com/proxy/5YvKA8rt5kSAfWUwLZ1LfA_3fBdc2Qr5pHI-aWBr8fg0I27pvkXn5vljroVhYVWBHb5iCIIs=s0-d-e1-ft#http://filosottile.info/test.png</code></p>
+
+<p><img src="http://filippo.io/images/unnamed.png" alt="the test image" /></p>
+
+<p>And here are the <code>md5sum</code> and <code>identify</code> outputs</p>
+
+<div><script src="https://gist.github.com/7937352.js?file=image_files"></script>
+<noscript><pre><code>MD5 (unnamed.png) = ff614aa9214d23e6c292d357f043a7a5
+MD5 (test.png) = 5dfe622b1ce0d027e3918d601ff160d0
+unnamed.png PNG 568x63 568x63+0+0 8-bit sRGB 8.98KB 0.000u 0:00.000
+test.png PNG 568x63 568x63+0+0 8-bit sRGB 8.66KB 0.000u 0:00.009</code></pre></noscript></div>
+
+<p>Also, no caching is performed server-side, every time I downloaded that URL, <a href="https://gist.github.com/FiloSottile/7937352#file-other_hits">a request showed up on my server</a>.</p>
+
+<h2 id="so-whats-the-issue">So, what’s the issue?</h2>
+
+<p>The issue is that the single most useful piece of information a sender gets from you (or the Google proxy) loading the image is <strong>that/when you read the email</strong>. And this is not mitigated at all by this system, as it is only really a proxy and when you open an email the server will see a request. Mix that with the ubiquitous uniquely-named images (images with a name that is unique to an email) and you get read notifications.</p>
+
+<p>Ok, they won’t know my IP and this is really good, they won’t set tracking cookies to link my different email accounts and they won’t know what browser I’m running, they might even fail to exploit my machine thanks to transcoding (if they wanted to waste such a 0-day) but the default setting – what most users settle on, let’s face it – just got weaker on privacy.</p>
+
+<p>Now, GMail has “✓ Seen”.</p>
+
+<p>Note: you can <a href="https://support.google.com/mail/answer/145919?p=display_images&amp;rd=1">turn automatic loading off</a> and gain the privacy benefits of the proxy anyway.</p>
+
+<p>And you can <a href="https://twitter.com/FiloSottile">follow me on Twitter</a>, too.</p>
+
+<h2 id="bonus-the-arstechnica-article">Bonus: the ArsTechnica article</h2>
+
+<p>ArsTechnica put out <a href="http://arstechnica.com/information-technology/2013/12/gmail-blows-up-e-mail-marketing-by-caching-all-images-on-google-servers/">a terribly un-informed and un-researched article</a> that is so full of errors that I’m going to dissect it in reading order.</p>
+
+<p>Starting from the title, <em>“Gmail blows up e-mail marketing by caching all images on Google servers”</em>. As you can see, this might even benefit email marketing, for sure not blow it up.</p>
+
+<blockquote>
+  <p>[…] it will cache all images for Gmail users. Embedded images will now be saved by Google, and the e-mail content will be modified to display those images from Google’s cache, instead of from a third-party server.</p>
+</blockquote>
+
+<p>Simply wrong.</p>
+
+<blockquote>
+  <p>E-mail marketers will no longer be able to get any information from images—they will see a single request from Google, which will then be used to send the image out to all Gmail users. Unless you click on a link, marketers will have no idea the e-mail has been seen.</p>
+</blockquote>
+
+<p>We verified that instead this data is alive and kickin’, and there is NOT a single request.</p>
+
+<blockquote>
+  <p>While this means improved privacy from e-mail marketers, Google will now be digging deeper than ever into your e-mails and literally modifying the contents. If you were worried about e-mail scanning, this may take things a step further.</p>
+</blockquote>
+
+<p>Google always modified the email contents to sanitize HTML and, guess what, to disable images. Also, nothing barred Google from fetching the images in your emails anyway.</p>
+
+<blockquote>
+  <p>Google servers should also be faster than the usual third-party image host.</p>
+</blockquote>
+
+<p>All the opposite, as it is a proxy server and NOT a caching server it adds roundtrips to image loading.</p>
+]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -1755,30 +1883,6 @@ if __name__ == &quot;__main__&quot;:
 
 <p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
 ]]></content>
-    
-  </entry>
-  
-  <entry>
-    
-      <title type="html"><![CDATA[GitHub: checkout a pull request as a branch &#10150;]]></title>
-      <link href="https://coderwall.com/p/z5rkga"/>
-    
-    <updated>2013-01-01T06:36:00-05:00</updated>
-    <id>http://filippo.io/github-checkout-a-pull-request-as-a-branch</id>
-    
-      <content type="html"><![CDATA[<p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
-
-<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
-
-<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
-
-<p>An example in the Coderwall ProTip linked at the title.</p>
-<br><a href="http://filippo.io/github-checkout-a-pull-request-as-a-branch/">Permalink</a>]]></content>
     
   </entry>
   
