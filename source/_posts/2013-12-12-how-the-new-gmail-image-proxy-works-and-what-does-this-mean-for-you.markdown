@@ -62,6 +62,8 @@ Note: you can [turn automatic loading off](https://support.google.com/mail/answe
 
 And you can [follow me on Twitter](https://twitter.com/FiloSottile), too.
 
+[Discuss on HackerNews](https://news.ycombinator.com/item?id=6898087)
+
 ## Bonus: the ArsTechnica article
 
 ArsTechnica put out [a terribly un-informed and un-researched article](http://arstechnica.com/information-technology/2013/12/gmail-blows-up-e-mail-marketing-by-caching-all-images-on-google-servers/) that is so full of errors that I'm going to dissect it in reading order.
