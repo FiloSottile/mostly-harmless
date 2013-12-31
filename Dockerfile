@@ -1,6 +1,6 @@
 #################################################
 #
-# Iodine Dockerfile v1.0
+# Iodine Dockerfile v1.1
 # http://code.kryo.se/iodine/
 #
 # Run with:
@@ -8,21 +8,19 @@
 #
 #################################################
 
-FROM ubuntu
+FROM phusion/baseimage
 
 MAINTAINER Filippo Valsorda <fv@filippo.io>
 
-# Update APT cache
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update  # 2013-11-26
-
-# Set the locale
-RUN apt-get install -y language-pack-en
-RUN update-locale LANG=en_US.UTF-8
+RUN rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys
+ADD ssh_key /root/.ssh/authorized_keys
 
 RUN apt-get install -y net-tools iodine
-
 EXPOSE 53/udp
 
-# Thanks to https://github.com/jpetazzo/dockvpn for the tun/tap fix
-CMD ["/bin/bash", "-c", "mkdir -p /dev/net && mknod /dev/net/tun c 10 200 && iodined -c -f 10.16.0.1 $IODINE_HOST -P $IODINE_PASSWORD"]
+RUN mkdir /etc/service/iodined
+ADD iodined.sh /etc/service/iodined/run
+
+CMD ["/sbin/my_init"]
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
