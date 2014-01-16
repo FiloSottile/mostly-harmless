@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Automatically compile .less and .coffee files | PyTux</title>
+  <title>Category: Go | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="This small python script makes use of watchdog (and sh) to monitor your code directory (recursively) and build less and CoffeeScript files upon edit &hellip;">
+  <meta name="description" content="Category: Go">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filippo.io/automatically-compile-less-and-coffee-files/">
+  <link rel="canonical" href="http://filippo.iocategories/go/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -109,148 +109,36 @@ MathJax.Hub.Config({
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      
-        <h1 class="entry-title">Automatically compile .less and .coffee files</h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Go</h1>
     
   </header>
-
-
-  <div class="entry-content"><p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
-
-<p>Simply launch it from the relevant folder and it will work in the background.</p>
-
-<p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
-
-<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
-<noscript><pre><code>#!/usr/bin/env python2
-
-import watchdog.events
-import watchdog.observers
-import sh
-import time
-import os
-
-# Detach
-if os.fork(): os._exit(0)
-
-coffee = sh.coffee.bake('-c')
-less = sh.lessc
-
-class Handler(watchdog.events.PatternMatchingEventHandler):
-    def __init__(self):
-        watchdog.events.PatternMatchingEventHandler.__init__(self, patterns=['*.less', '*.coffee'],
-            ignore_directories=True, case_sensitive=False)
-
-    def on_modified(self, event):
-        if event.src_path.lower().endswith('.less'):
-            try: less(event.src_path, event.src_path[:-5] + '.css')
-            except sh.ErrorReturnCode_1 as e: print e.stderr
-        if event.src_path.lower().endswith('.coffee'):
-            try: coffee(event.src_path)
-            except sh.ErrorReturnCode_1 as e: print e.stderr
-
-    on_created = on_modified
-
-if __name__ == &quot;__main__&quot;:
-    event_handler = Handler()
-    observer = watchdog.observers.Observer()
-    observer.schedule(event_handler, path='.', recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()</code></pre></noscript></div>
-
-<p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
-
-<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
-</div>
-
   
-
-
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2014</h2>
+
+<article>
+  
+<h1><a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a></h1>
+<time datetime="2014-01-16T15:20:00-05:00" pubdate><span class='month'>Jan</span> <span class='day'>16</span> <span class='year'>2014</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/categories/go/'>Go</a></span>
+</footer>
 
 
-
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/automatically-compile-less-and-coffee-files/" data-via="FiloSottile" data-counturl="http://filippo.io/automatically-compile-less-and-coffee-files/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-  
-  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/github-checkout-a-pull-request-as-a-branch/" title="Previous Post: GitHub: checkout a pull request as a branch">&laquo; GitHub: checkout a pull request as a branch</a>
-      
-      
-        <a class="basic-alignment right" href="/archive-your-github-repo-and-data/" title="Next Post: Archive your GitHub repo and data">Archive your GitHub repo and data &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -433,10 +321,7 @@ if __name__ == &quot;__main__&quot;:
       var disqus_shortname = 'pytux';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://filippo.io/automatically-compile-less-and-coffee-files/';
-        var disqus_url = 'http://filippo.io/automatically-compile-less-and-coffee-files/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

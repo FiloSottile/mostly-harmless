@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Automatically compile .less and .coffee files | PyTux</title>
+  <title>Callback-based combinations (in Go) | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="This small python script makes use of watchdog (and sh) to monitor your code directory (recursively) and build less and CoffeeScript files upon edit &hellip;">
+  <meta name="description" content="Let’s have a look at this task: generate all the combinations of k elements out of N. That is, all the unordered k-tuples made of elements from a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filippo.io/automatically-compile-less-and-coffee-files/">
+  <link rel="canonical" href="http://filippo.io/callback-based-combinations-in-go/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -114,7 +114,7 @@ MathJax.Hub.Config({
   <header>
     
       
-        <h1 class="entry-title">Automatically compile .less and .coffee files</h1>
+        <h1 class="entry-title">Callback-based combinations (in Go)</h1>
       
     
     
@@ -132,64 +132,107 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
+<time datetime="2014-01-16T15:20:00-05:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
+  <div class="entry-content"><p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
 
-<p>Simply launch it from the relevant folder and it will work in the background.</p>
+<p>An example of an application: if you are bruteforcing two misspellings in a password, the optimal set of couples of characters to bruteforce at the same time is the set of all the combinations of 2 characters out of the password.</p>
 
-<p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
+<p>There are a number of ways you can do this in code. Algorithm-wise you have to choose between a recursive approach and an iterative one. The recursive one might be more immediate for some people, but it does. Not. Scale. (<em>Recursion limit reached</em> anyone?) Also in some languages <strong>function calls are really expensive</strong>.</p>
 
-<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
-<noscript><pre><code>#!/usr/bin/env python2
+<p>However what this article is about is how to grab the output. First you have to decide whether to return <em>k</em>-tuples of indices in 0 – N-1 or of actual pool elements.</p>
 
-import watchdog.events
-import watchdog.observers
-import sh
-import time
-import os
+<p>For example with a pool of elements of <code>qwerty</code> and a <em>k</em> of 2, you can decide to return values like <code>(q, t)</code> and <code>(t, y)</code> or <code>(0, 4)</code> and <code>(4, 5)</code>.</p>
 
-# Detach
-if os.fork(): os._exit(0)
+<!-- more -->
 
-coffee = sh.coffee.bake('-c')
-less = sh.lessc
+<p>My opinion is that you should always prefer the indices:</p>
 
-class Handler(watchdog.events.PatternMatchingEventHandler):
-    def __init__(self):
-        watchdog.events.PatternMatchingEventHandler.__init__(self, patterns=['*.less', '*.coffee'],
-            ignore_directories=True, case_sensitive=False)
+<ul>
+  <li>to return actual elements you have to pass the pool to the algorithm;</li>
+  <li>you can reuse a set of indices over two same-size pools;</li>
+  <li>for some tasks you can avoid the work of extracting the values from the pool by index all the times (e.g. if you filter them);</li>
+  <li>by returning elements you lose information about their index that might be irrecoverable (if there are duplicates in the pool) or expensive to recover (<code>O(N)</code>);</li>
+  <li>sometimes, well, you just need the indices.</li>
+</ul>
 
-    def on_modified(self, event):
-        if event.src_path.lower().endswith('.less'):
-            try: less(event.src_path, event.src_path[:-5] + '.css')
-            except sh.ErrorReturnCode_1 as e: print e.stderr
-        if event.src_path.lower().endswith('.coffee'):
-            try: coffee(event.src_path)
-            except sh.ErrorReturnCode_1 as e: print e.stderr
+<p>Then, you can think to a number of approaches here:</p>
 
-    on_created = on_modified
+<ol>
+  <li>just return an array or a set of all the combinations</li>
+  <li>yield them (if you have support for generators)</li>
+  <li>call a callback on each one</li>
+  <li>plainly process them where you generate them</li>
+</ol>
 
-if __name__ == &quot;__main__&quot;:
-    event_handler = Handler()
-    observer = watchdog.observers.Observer()
-    observer.schedule(event_handler, path='.', recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()</code></pre></noscript></div>
+<p>I prefer by far the callback approach:</p>
 
-<p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
+<ul>
+  <li>it is supported in much more languages than generators;</li>
+  <li>can be used elegantly and succinctly with anonymous functions;</li>
+  <li><strong>doesn’t require <code>k*N</code> memory</strong>, you can just filter or process them on the fly;</li>
+  <li>you can build any other approach over it, e.g. by passing a <code>append</code> function as the callback;</li>
+  <li>by using closures you can share the callee scope;</li>
+  <li>keeps your code <a href="https://en.wikipedia.org/wiki/Don%27t_Repeat_Yourself">DRY</a>.</li>
+</ul>
 
-<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
+<p>So, code! Here are the Go snippets for combinations with and without repetitions. Most of it was translated to Go from <a href="http://docs.python.org/2/library/itertools.html#itertools.combinations">the Python documentation</a> and adapted according to the contents of this article.</p>
+
+<div><script src="https://gist.github.com/8463644.js?file=combinations.go"></script>
+<noscript><pre><code>func combinations(n, m int, f func([]int)) {
+	// For each combination of m elements out of n
+	// call the function f passing a list of m integers in 0-n
+	// without repetitions
+	
+	// TODO: switch to iterative algo
+	s := make([]int, m)
+	last := m - 1
+	var rc func(int, int)
+	rc = func(i, next int) {
+		for j := next; j &lt; n; j++ {
+			s[i] = j
+			if i == last {
+				f(s)
+			} else {
+				rc(i+1, j+1)
+			}
+		}
+		return
+	}
+	rc(0, 0)
+}</code></pre></noscript></div>
+
+<div><script src="https://gist.github.com/8463644.js?file=combinations_with_replacement.go"></script>
+<noscript><pre><code>func combinations_with_replacement(n, m int, f func([]int)) {
+	// For each combination of m elements out of n
+	// call the function f passing a list of m integers in 0-n
+	// with repetitions
+	indices := make([]int, m)
+	f(indices)
+
+	for {
+		var i int
+		for i = m - 1; i &gt;= 0; i-- {
+			if indices[i] != n-1 {
+				break
+			}
+		}
+		if i &lt; 0 {
+			break
+		}
+
+		indices_i := indices[i]
+		for k := i; k &lt; m; k++ {
+			indices[k] = indices_i + 1
+		}
+		f(indices)
+	}
+}</code></pre></noscript></div>
 </div>
 
   
@@ -215,15 +258,21 @@ if __name__ == &quot;__main__&quot;:
 
 
 
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
+<time datetime="2014-01-16T15:20:00-05:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/categories/go/'>Go</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/automatically-compile-less-and-coffee-files/" data-via="FiloSottile" data-counturl="http://filippo.io/automatically-compile-less-and-coffee-files/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/callback-based-combinations-in-go/" data-via="FiloSottile" data-counturl="http://filippo.io/callback-based-combinations-in-go/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -237,10 +286,8 @@ if __name__ == &quot;__main__&quot;:
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/github-checkout-a-pull-request-as-a-branch/" title="Previous Post: GitHub: checkout a pull request as a branch">&laquo; GitHub: checkout a pull request as a branch</a>
+        <a class="basic-alignment left" href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/" title="Previous Post: How the new Gmail image proxy actually works and what does this mean for you">&laquo; How the new Gmail image proxy actually works and what does this mean for you</a>
       
-      
-        <a class="basic-alignment right" href="/archive-your-github-repo-and-data/" title="Next Post: Archive your GitHub repo and data">Archive your GitHub repo and data &raquo;</a>
       
     </p>
   </footer>
@@ -434,8 +481,8 @@ if __name__ == &quot;__main__&quot;:
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://filippo.io/automatically-compile-less-and-coffee-files/';
-        var disqus_url = 'http://filippo.io/automatically-compile-less-and-coffee-files/';
+        var disqus_identifier = 'http://filippo.io/callback-based-combinations-in-go/';
+        var disqus_url = 'http://filippo.io/callback-based-combinations-in-go/';
         var disqus_script = 'embed.js';
       
     (function () {

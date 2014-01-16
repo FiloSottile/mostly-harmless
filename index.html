@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Google recently announced that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by &hellip;">
+  <meta name="description" content="Let’s have a look at this task: generate all the combinations of k elements out of N. That is, all the unordered k-tuples made of elements from a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,64 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-01-16T15:20:00-05:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
+
+<p>An example of an application: if you are bruteforcing two misspellings in a password, the optimal set of couples of characters to bruteforce at the same time is the set of all the combinations of 2 characters out of the password.</p>
+
+<p>There are a number of ways you can do this in code. Algorithm-wise you have to choose between a recursive approach and an iterative one. The recursive one might be more immediate for some people, but it does. Not. Scale. (<em>Recursion limit reached</em> anyone?) Also in some languages <strong>function calls are really expensive</strong>.</p>
+
+<p>However what this article is about is how to grab the output. First you have to decide whether to return <em>k</em>-tuples of indices in 0 – N-1 or of actual pool elements.</p>
+
+<p>For example with a pool of elements of <code>qwerty</code> and a <em>k</em> of 2, you can decide to return values like <code>(q, t)</code> and <code>(t, y)</code> or <code>(0, 4)</code> and <code>(4, 5)</code>.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/callback-based-combinations-in-go/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a></h1>
       
     
@@ -144,22 +202,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>Google <a href="http://gmailblog.blogspot.com/2013/12/images-now-showing.html">recently announced</a> that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by them.</p>
-
-<p>This, they say, will actually <em>benefit</em> users privacy.</p>
-
-<p>This might very well be true if images are prefetched when an email is received. The <a href="https://support.google.com/mail/answer/145919?p=display_images&amp;rd=1">help page</a> however does not make it seem like so (and states that images are transcoded, interesting).</p>
-
-<p>Since this feature has already been rolled out to me, I thought to check out how it actually works.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -492,46 +534,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/escaping-a-chroot-jail-slash-1/">Escaping a chroot jail/1</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-14T10:00:00-04:00" pubdate data-updated="true" class="updated">Oct 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -558,6 +560,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
+      </li>
+    
+      <li class="post">
         <a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a>
       </li>
     
@@ -571,10 +577,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a>
-      </li>
-    
-      <li class="post">
-        <a href="/the-ecb-penguin/">The ECB Penguin</a>
       </li>
     
   </ul>
@@ -707,7 +709,7 @@ MathJax.Hub.Config({
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Filippo Valsorda -
+  Copyright &copy; 2014 - Filippo Valsorda -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

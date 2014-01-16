@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Monkey-patching is the technique of swapping functions or methods with others in order to change a module, library or class behavior. There are some &hellip;">
+  <meta name="description" content="Everybody will tell you that a chroot jail (that is, making a process think that a directory is instead the root folder, and not letting it access or &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,56 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/escaping-a-chroot-jail-slash-1/">Escaping a chroot jail/1</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-14T10:00:00-04:00" pubdate data-updated="true" class="updated">Oct 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/escaping-a-chroot-jail-slash-1/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/instance-monkey-patching-in-python/">Instance monkey-patching in Python</a></h1>
       
     
@@ -144,44 +194,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
-
-<p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>
-
-<p><strong>Class methods</strong> monkey patching in Python is really easy, as you can freely assign function to class method names:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
-</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
-</span><span class="line"><span class="o">...</span>
-</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
-</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">not_exactly_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-</span><span class="line"><span class="o">...</span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
-</span><span class="line"><span class="o">...</span>
-</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">not_exactly_add</span>
-</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</span><span class="line"><span class="mi">9</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/instance-monkey-patching-in-python/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -518,46 +530,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/automatically-compile-less-and-coffee-files/">Automatically compile .less and .coffee files</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-01-12T00:25:00-05:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -586,6 +558,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
+      </li>
+    
+      <li class="post">
         <a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a>
       </li>
     
@@ -599,10 +575,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a>
-      </li>
-    
-      <li class="post">
-        <a href="/the-ecb-penguin/">The ECB Penguin</a>
       </li>
     
   </ul>
@@ -735,7 +707,7 @@ MathJax.Hub.Config({
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Filippo Valsorda -
+  Copyright &copy; 2014 - Filippo Valsorda -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
