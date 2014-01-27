@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Let’s have a look at this task: generate all the combinations of k elements out of N. That is, all the unordered k-tuples made of elements from a &hellip;">
+  <meta name="description" content="youtube-dl is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,6 +120,60 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-01-27T02:12:00+01:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
+
+<p>What makes this possible is the structure of ytdl and its awesome community: all the common stuff (CLI, Downloading, Postprocessing) is in the core, and websites support is added in a plugin fashion (with a lot of helper functions available). So anyone can add support for its favorite video site by using another plugin as a template, with no need to understand the whole codebase. And a lot of people indeed did: <a href="https://github.com/rg3/youtube-dl/pulls">we’re nearing <strong>500 Pull Requests</strong></a>!</p>
+
+<p>So, what I’m going to show you today is how to add support to ytdl for a simple site (I picked <a href="https://vine.co/">Vine</a> for the tutorial) and how to contribute to ytdl in general.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/add-support-for-a-new-video-site-to-youtube-dl/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a></h1>
       
     
@@ -138,31 +192,13 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-01-16T15:20:00-05:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
+<time datetime="2014-01-16T15:20:00+01:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  
-    <div class="entry-content"><p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
-
-<p>An example of an application: if you are bruteforcing two misspellings in a password, the optimal set of couples of characters to bruteforce at the same time is the set of all the combinations of 2 characters out of the password.</p>
-
-<p>There are a number of ways you can do this in code. Algorithm-wise you have to choose between a recursive approach and an iterative one. The recursive one might be more immediate for some people, but it does. Not. Scale. (<em>Recursion limit reached</em> anyone?) Also in some languages <strong>function calls are really expensive</strong>.</p>
-
-<p>However what this article is about is how to grab the output. First you have to decide whether to return <em>k</em>-tuples of indices in 0 – N-1 or of actual pool elements.</p>
-
-<p>For example with a pool of elements of <code>qwerty</code> and a <em>k</em> of 2, you can decide to return values like <code>(q, t)</code> and <code>(t, y)</code> or <code>(0, 4)</code> and <code>(4, 5)</code>.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/callback-based-combinations-in-go/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -196,7 +232,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-12-12T17:52:00-05:00" pubdate data-updated="true" class="updated">Dec 12<span>th</span>, 2013</time>
+<time datetime="2013-12-12T17:52:00+01:00" pubdate data-updated="true" class="updated">Dec 12<span>th</span>, 2013</time>
         
       </p>
     
@@ -236,7 +272,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-12-05T17:43:00-05:00" pubdate data-updated="true" class="updated">Dec 5<span>th</span>, 2013</time>
+<time datetime="2013-12-05T17:43:00+01:00" pubdate data-updated="true" class="updated">Dec 5<span>th</span>, 2013</time>
         
       </p>
     
@@ -276,7 +312,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-25T10:52:00-05:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
+<time datetime="2013-11-25T10:52:00+01:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
         
       </p>
     
@@ -316,7 +352,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-24T19:23:00-05:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+<time datetime="2013-11-24T19:23:00+01:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
         
       </p>
     
@@ -356,7 +392,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-10T19:54:00-05:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
+<time datetime="2013-11-10T19:54:00+01:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
         
       </p>
     
@@ -396,7 +432,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-04T11:15:00-05:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+<time datetime="2013-11-04T11:15:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
         
       </p>
     
@@ -436,7 +472,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-04T02:05:00-05:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+<time datetime="2013-11-04T02:05:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
         
       </p>
     
@@ -476,7 +512,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-10-15T23:15:00-04:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
+<time datetime="2013-10-15T23:15:00+02:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
         
       </p>
     
@@ -485,50 +521,6 @@ MathJax.Hub.Config({
 
   
 
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://www.bulletjournal.com/">A journal approach that actually works for me</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-15T20:57:00-04:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/a-journal-approach-that-actually-works-for-me/">Read on &rarr;</a>
-    </footer>
   
 
 
@@ -561,6 +553,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a>
+      </li>
+    
+      <li class="post">
         <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
       </li>
     
@@ -574,10 +570,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a>
-      </li>
-    
-      <li class="post">
-        <a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-01-17T10:40:28-05:00</updated>
+  <updated>2014-01-27T05:10:09+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -15,10 +15,332 @@
   
   <entry>
     
+      <title type="html"><![CDATA[Add support for a new video site to youtube-dl]]></title>
+      <link href="http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
+    
+    <updated>2014-01-27T02:12:00+01:00</updated>
+    <id>http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
+    
+      <content type="html"><![CDATA[<p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
+
+<p>What makes this possible is the structure of ytdl and its awesome community: all the common stuff (CLI, Downloading, Postprocessing) is in the core, and websites support is added in a plugin fashion (with a lot of helper functions available). So anyone can add support for its favorite video site by using another plugin as a template, with no need to understand the whole codebase. And a lot of people indeed did: <a href="https://github.com/rg3/youtube-dl/pulls">we’re nearing <strong>500 Pull Requests</strong></a>!</p>
+
+<p>So, what I’m going to show you today is how to add support to ytdl for a simple site (I picked <a href="https://vine.co/">Vine</a> for the tutorial) and how to contribute to ytdl in general.</p>
+
+<!-- more -->
+
+<h2 id="how-ytdl-is-organized">How ytdl is organized</h2>
+
+<p>The website plugins are called Information Extractors – IE – and their role is clear and simple:</p>
+
+<ol>
+  <li>they describe what URLs they are able to interpret (with a regex)</li>
+  <li>they get a input URL, usually interact with the site and return a dictionary of information about the video, including its video file URL and its title <em>(over-simplified)</em></li>
+</ol>
+
+<p>You can find IEs in <code>youtube_dl/extractor</code>.</p>
+
+<p>The rest of ytdl deals with parsing the input arguments (<code>youtube_dl/__init__.py</code>), downloading the file (<code>youtube_dl.downloader</code>) and post-processing (<code>youtube_dl.postprocessor</code>)</p>
+
+<h2 id="lets-get-started">Let’s get started</h2>
+
+<p>Of course, if you didn’t already <code>git clone</code> ytdl GitHub repository and make sure it’s up-to-date.</p>
+
+<p>Remove the existing Vine IE if you want to follow along the tutorial step by step</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rm youtube_dl/extractor/vine.py
+</span><span class="line">sed -i <span class="s1">&#39;/VineIE/d&#39;</span> youtube_dl/extractor/__init__.py
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="anatomy-of-a-ie">Anatomy of a IE</h2>
+
+<p>We already know that a IE is found in <code>youtube_dl/extractor</code>, but how does it look like?</p>
+
+<p>Each site has its own file, named <code>lowercase_site.py</code>. Inside it, a subclass of <code>youtube_dl.extractor.common.InfoExtractor</code> named <code>CameCaseSiteIE</code> is defined.</p>
+
+<p>That subclass has a property, <code>_VALID_URL</code>, a regex that defines what URLs will be handled by the IE (a <code>re.match</code> is performed) and is usually reused to extract for example the video id.</p>
+
+<p>The only other thing needed is the <code>_real_extract</code> method. It takes a URL as its only argument and return a list of dicts, one for each video (usually just one), with <em>at least</em> the following fields:</p>
+
+<ul>
+  <li><code>id</code>: a short video id, should be unique for the site, usually it is site-internal</li>
+  <li><code>url</code>: the URL of the actual downloadable video file</li>
+  <li><code>ext</code>: the extension of the video file</li>
+  <li><code>title</code>: the human-readable full title of the video, all characters allowed, Unicode possibly</li>
+</ul>
+
+<p>So, this is how our bare VineIE should start looking like:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">InfoExtractor</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">VineIE</span><span class="p">(</span><span class="n">InfoExtractor</span><span class="p">):</span>
+</span><span class="line">    <span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/.*&#39;</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">_real_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+</span><span class="line">        <span class="k">return</span> <span class="p">[]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Finally, each IE is imported inside <code>youtube_dl/extractor/__init__.py</code> to be exposed. So, you’ll want to add a line like this to that file (please note that the IEs are alphabetically sorted)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">.vine</span> <span class="kn">import</span> <span class="n">VineIE</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Just this line will be enough.</p>
+
+<p><strong>A note about syntax</strong>: ytdl is a Python2/3 double codebase – that means, it runs both on Python 2 and Python 3, so be careful to use features and statements that are cross-compatible. You’ll find all the compatibility imports already done for you in <code>youtube_dl.utils</code>.</p>
+
+<h2 id="how-to-run-it">How to run it</h2>
+
+<p>Before digging deeper, let’s see how to test-run our development ytdl.</p>
+
+<p>Since youtube_dl is a executable Python package, you can run it from inside your working directory like this</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">URL</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So to run our Vine IE we would use something like</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">vine</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">foo</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>That indeed does not generate any output or error, great.</p>
+
+<h2 id="now-lets-look-at-vine">Now let’s look at Vine</h2>
+
+<p>The first thing you want to do is get a bunch of different videos from your target site, and try to spot the differences. In particular, start with the URL pattern and test assumptions about what parts of it are required or optional.</p>
+
+<p>Here is a Vine for you: <a href="https://vine.co/v/b9KOOWX7HUx"><code>https://vine.co/v/b9KOOWX7HUx</code></a></p>
+
+<p>The Vine URL pattern is really simple “<code>https://vine.co/v/VIDEO_ID</code>” so we can rewrite <code>_VALID_URL</code> as:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/v/(?P&lt;id&gt;\w+)&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So we can start doing some useful stuff in <code>_real_extract</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">mobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VALID_URL</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">video_id</span> <span class="o">=</span> <span class="n">mobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">webpage_url</span> <span class="o">=</span> <span class="s">&#39;https://vine.co/v/&#39;</span> <span class="o">+</span> <span class="n">video_id</span>
+</span><span class="line"><span class="n">webpage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_webpage</span><span class="p">(</span><span class="n">webpage_url</span><span class="p">,</span> <span class="n">video_id</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>InfoExtractor._download_webpage</code> downloads a webpage logging progress (this is what <code>video_id</code> is used for) and handles errors.</p>
+
+<p>Feel free to add a <code>print webpage</code> at the bottom of the function and run with <code>python -m youtube_dl https://vine.co/v/b9KOOWX7HUx</code> to check that everything is working.</p>
+
+<h2 id="the-fun-part-reversing">The fun part: reversing</h2>
+
+<p>Ok, so we have the page HTML and we know what we want to extract, now let’s dissect the page to get our file out.</p>
+
+<p>For this I usually turn to Chrome and its Developer Tools. The Network tab is invaluable in identifying what your final goal is, and so what you should be looking for.</p>
+
+<p>However Vine is really friendly, and a simple right-click &gt; Inspect Element on the playing video will be enough</p>
+
+<p><img src="http://filippo.io/images/Jack Dorsey's post on Vine 2014-01-27 04-25-35.png" alt="The video tag" /></p>
+
+<p>So, we just have to get the mp4 URL out of the <code>source</code> tag. <em>Tip</em>: use the Developer Tools to spot what you’re looking for, but then build your regex based on the actual page source, as pretty printing WILL get in your way and the live DOM might be substantially different from the source.</p>
+
+<p>A regex like this should fit: <code>&lt;source src="([^"]+)" type="video/mp4"&gt;</code></p>
+
+<p>Here comes the next step in our IE:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># Log that we are starting to parse the page</span>
+</span><span class="line"><span class="bp">self</span><span class="o">.</span><span class="n">report_extraction</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">video_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html_search_regex</span><span class="p">(</span><span class="s">r&#39;&lt;meta property=&quot;twitter:player:stream&quot; content=&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">webpage</span><span class="p">,</span> <span class="s">u&#39;video URL&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>InfoExtractor._html_search_regex</code>, as above, is a helper function that does the boilerplate searching, logging and error handling for you.</p>
+
+<p>Only the title to go. Again, modern pages help: we can piggyback on Facebook-targeted OpenGraph metadata to reliably extract the title</p>
+
+<p><img src="http://filippo.io/images/Jack Dorsey's post on Vine 2014-01-27 04-37-45.png" alt="The OpenGraph tag" /></p>
+
+<p>Aaaand, there’s a helper for that! The whole <code>InfoExtractor._og_search_*</code> suite.</p>
+
+<p>Let’s put this last piece in place and return our data</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">return</span> <span class="p">[{</span>
+</span><span class="line">    <span class="s">&#39;id&#39;</span><span class="p">:</span>        <span class="n">video_id</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;url&#39;</span><span class="p">:</span>       <span class="n">video_url</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;ext&#39;</span><span class="p">:</span>       <span class="s">&#39;mp4&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;title&#39;</span><span class="p">:</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_og_search_title</span><span class="p">(</span><span class="n">webpage</span><span class="p">),</span>
+</span><span class="line"><span class="p">}]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong>Note</strong>: there are better ways to parse HTML than regexes, but ytdl is Public Domain and self-contained, so using external libraries is not an option.</p>
+
+<h2 id="finish">Finish</h2>
+
+<p>Putting it all together, this should be more or less your final result</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">re</span>
+</span><span class="line">
+</span><span class="line"><span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">InfoExtractor</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">VineIE</span><span class="p">(</span><span class="n">InfoExtractor</span><span class="p">):</span>
+</span><span class="line">    <span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/v/(?P&lt;id&gt;\w+)&#39;</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">_real_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+</span><span class="line">        <span class="n">mobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VALID_URL</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">video_id</span> <span class="o">=</span> <span class="n">mobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="n">webpage_url</span> <span class="o">=</span> <span class="s">&#39;https://vine.co/v/&#39;</span> <span class="o">+</span> <span class="n">video_id</span>
+</span><span class="line">        <span class="n">webpage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_webpage</span><span class="p">(</span><span class="n">webpage_url</span><span class="p">,</span> <span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># Log that we are starting to parse the page</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">report_extraction</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">video_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html_search_regex</span><span class="p">(</span><span class="s">r&#39;&lt;meta property=&quot;twitter:player:stream&quot; content=&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">webpage</span><span class="p">,</span> <span class="s">u&#39;video URL&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">return</span> <span class="p">[{</span>
+</span><span class="line">            <span class="s">&#39;id&#39;</span><span class="p">:</span>        <span class="n">video_id</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;url&#39;</span><span class="p">:</span>       <span class="n">video_url</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;ext&#39;</span><span class="p">:</span>       <span class="s">&#39;mp4&#39;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;title&#39;</span><span class="p">:</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_og_search_title</span><span class="p">(</span><span class="n">webpage</span><span class="p">),</span>
+</span><span class="line">        <span class="p">}]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>With this few lines of code, you get all the power and the features of ytdl, for a new site!</p>
+
+<p>Now just run it, sit back and enjoy (and test a bunch of videos to be sure!)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">vine</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">b9KOOWX7HUx</span>
+</span><span class="line"><span class="p">[</span><span class="n">Vine</span><span class="p">]</span> <span class="n">b9KOOWX7HUx</span><span class="p">:</span> <span class="n">Downloading</span> <span class="n">webpage</span>
+</span><span class="line"><span class="p">[</span><span class="n">Vine</span><span class="p">]</span> <span class="n">b9KOOWX7HUx</span><span class="p">:</span> <span class="n">Extracting</span> <span class="n">information</span>
+</span><span class="line"><span class="p">[</span><span class="n">download</span><span class="p">]</span> <span class="n">Destination</span><span class="p">:</span> <span class="n">Chicken</span><span class="o">.-</span><span class="n">b9KOOWX7HUx</span><span class="o">.</span><span class="n">mp4</span>
+</span><span class="line"><span class="p">[</span><span class="n">download</span><span class="p">]</span> <span class="mi">100</span><span class="o">%</span> <span class="n">of</span> <span class="mf">884.30</span><span class="n">KiB</span> <span class="ow">in</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Finally, please <a href="https://github.com/rg3/youtube-dl/pulls">submit a PR</a> to get your IE included in ytdl. Don’t worry, if it downloads, we will be happy to merge it, and if it doesn’t, we will be happy to help!</p>
+
+<h2 id="ah-add-a-test">Ah, add a test</h2>
+
+<p>Forgot to mention, ytdl has a complete testing system built in. It is really important that you add a test to your IE before submitting it, as otherwise it would not be possible to do maintenance of so many IEs that break all the time when sites change layout.</p>
+
+<p>Try to write one for each video or URL type.</p>
+
+<p>You just need to add a <code>_TEST</code> dict property (or a <code>_TESTS</code> list of dicts) looking like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">_TEST</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">u&#39;url&#39;</span><span class="p">:</span> <span class="s">u&#39;https://vine.co/v/b9KOOWX7HUx&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;file&#39;</span><span class="p">:</span> <span class="s">u&#39;b9KOOWX7HUx.mp4&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;md5&#39;</span><span class="p">:</span> <span class="s">u&#39;2f36fed6235b16da96ce9b4dc890940d&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;info_dict&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s">u&quot;title&quot;</span><span class="p">:</span> <span class="s">u&quot;Chicken.&quot;</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The properties are as follows:</p>
+
+<ul>
+  <li><code>url</code> is the input URL</li>
+  <li><code>file</code> is the filename of the resulting video, with this format “<code>{id}.{ext}</code>”</li>
+  <li><code>md5</code> is the md5 hash <strong>of the first 10KB</strong> of the file, to get it download the video with the <code>--test</code> flag and run <code>md5sum</code> on it</li>
+  <li><code>info_dict</code> is just a dict of fields that will be checked against the <code>_real_extract</code> return value (missing fields will be ignored)</li>
+</ul>
+
+<p>You can run a single IE test on all the supported Python environments using <a href="https://testrun.org/tox/latest/">tox</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">tox</span> <span class="n">test</span><span class="o">.</span><span class="n">test_download</span><span class="p">:</span><span class="n">TestDownload</span><span class="o">.</span><span class="n">test_Vine</span>
+</span><span class="line"><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</span><span class="line"><span class="n">__________</span> <span class="n">summary</span> <span class="n">__________</span>
+</span><span class="line">  <span class="n">py26</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">py27</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">py33</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">congratulations</span> <span class="p">:)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<hr />
+
+<p>In the next article we will have a look at how to write a IE for a more picky/obfuscated video site.</p>
+]]></content>
+    
+  </entry>
+  
+  <entry>
+    
       <title type="html"><![CDATA[Callback-based combinations (in Go)]]></title>
       <link href="http://filippo.io/callback-based-combinations-in-go/"/>
     
-    <updated>2014-01-16T15:20:00-05:00</updated>
+    <updated>2014-01-16T15:20:00+01:00</updated>
     <id>http://filippo.io/callback-based-combinations-in-go</id>
     
       <content type="html"><![CDATA[<p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
@@ -124,7 +446,7 @@
       <title type="html"><![CDATA[How the new Gmail image proxy actually works and what does this mean for you]]></title>
       <link href="http://filippo.io/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/"/>
     
-    <updated>2013-12-12T17:52:00-05:00</updated>
+    <updated>2013-12-12T17:52:00+01:00</updated>
     <id>http://filippo.io/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you</id>
     
       <content type="html"><![CDATA[<p>Google <a href="http://gmailblog.blogspot.com/2013/12/images-now-showing.html">recently announced</a> that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by them.</p>
@@ -254,7 +576,7 @@ test.png PNG 568x63 568x63+0+0 8-bit sRGB 8.66KB 0.000u 0:00.009</code></pre></n
       <title type="html"><![CDATA[Brainwallets: from the password to the address]]></title>
       <link href="http://filippo.io/brainwallets-from-the-password-to-the-address/"/>
     
-    <updated>2013-12-05T17:43:00-05:00</updated>
+    <updated>2013-12-05T17:43:00+01:00</updated>
     <id>http://filippo.io/brainwallets-from-the-password-to-the-address</id>
     
       <content type="html"><![CDATA[<p><a href="https://en.bitcoin.it/wiki/Brainwallet">Brainwallets</a> are Bitcoin wallets generated uniquely from a passphrase that the users keeps in his mind so that it is required and sufficient to move the funds.</p>
@@ -413,7 +735,7 @@ test.png PNG 568x63 568x63+0+0 8-bit sRGB 8.66KB 0.000u 0:00.009</code></pre></n
       <title type="html"><![CDATA[Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round]]></title>
       <link href="http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/"/>
     
-    <updated>2013-11-25T10:52:00-05:00</updated>
+    <updated>2013-11-25T10:52:00+01:00</updated>
     <id>http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round</id>
     
       <content type="html"><![CDATA[<p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
@@ -632,7 +954,7 @@ for t in range(1, T + 1):
       <title type="html"><![CDATA[A Python GitHub Push WebHook Handler]]></title>
       <link href="http://filippo.io/a-python-github-push-webhook-handler/"/>
     
-    <updated>2013-11-24T19:23:00-05:00</updated>
+    <updated>2013-11-24T19:23:00+01:00</updated>
     <id>http://filippo.io/a-python-github-push-webhook-handler</id>
     
       <content type="html"><![CDATA[<p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
@@ -708,7 +1030,7 @@ if __name__ == '__main__':
       <title type="html"><![CDATA[The ECB Penguin]]></title>
       <link href="http://filippo.io/the-ecb-penguin/"/>
     
-    <updated>2013-11-10T19:54:00-05:00</updated>
+    <updated>2013-11-10T19:54:00+01:00</updated>
     <id>http://filippo.io/the-ecb-penguin</id>
     
       <content type="html"><![CDATA[<p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
@@ -785,7 +1107,7 @@ if __name__ == '__main__':
       <title type="html"><![CDATA[Analyzing the Adobe leaked passwords]]></title>
       <link href="http://filippo.io/analyzing-the-adobe-leaked-passwords/"/>
     
-    <updated>2013-11-04T11:15:00-05:00</updated>
+    <updated>2013-11-04T11:15:00+01:00</updated>
     <id>http://filippo.io/analyzing-the-adobe-leaked-passwords</id>
     
       <content type="html"><![CDATA[<p><img src="http://imgs.xkcd.com/comics/encryptic.png" alt="XKCD is on it" class="center" /></p>
@@ -856,7 +1178,7 @@ if __name__ == '__main__':
       <title type="html"><![CDATA[Making system calls from Assembly in Mac OS X]]></title>
       <link href="http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/"/>
     
-    <updated>2013-11-04T02:05:00-05:00</updated>
+    <updated>2013-11-04T02:05:00+01:00</updated>
     <id>http://filippo.io/making-system-calls-from-assembly-in-mac-os-x</id>
     
       <content type="html"><![CDATA[<p>The next step in my <a href="http://filippo.io/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
@@ -974,7 +1296,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
       <title type="html"><![CDATA[Customizing a Linode kernel]]></title>
       <link href="http://filippo.io/customizing-a-linode-kernel/"/>
     
-    <updated>2013-10-15T23:15:00-04:00</updated>
+    <updated>2013-10-15T23:15:00+02:00</updated>
     <id>http://filippo.io/customizing-a-linode-kernel</id>
     
       <content type="html"><![CDATA[<p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
@@ -1102,7 +1424,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
       <title type="html"><![CDATA[A journal approach that actually works for me &#10150;]]></title>
       <link href="http://www.bulletjournal.com/"/>
     
-    <updated>2013-10-15T20:57:00-04:00</updated>
+    <updated>2013-10-15T20:57:00+02:00</updated>
     <id>http://filippo.io/a-journal-approach-that-actually-works-for-me</id>
     
       <content type="html"><![CDATA[<p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
@@ -1123,7 +1445,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
       <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
       <link href="http://filippo.io/escaping-a-chroot-jail-slash-1/"/>
     
-    <updated>2013-10-14T10:00:00-04:00</updated>
+    <updated>2013-10-14T10:00:00+02:00</updated>
     <id>http://filippo.io/escaping-a-chroot-jail-slash-1</id>
     
       <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
@@ -1263,7 +1585,7 @@ int main() {
       <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
       <link href="http://filippo.io/instance-monkey-patching-in-python/"/>
     
-    <updated>2013-10-07T00:19:00-04:00</updated>
+    <updated>2013-10-07T00:19:00+02:00</updated>
     <id>http://filippo.io/instance-monkey-patching-in-python</id>
     
       <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
@@ -1410,7 +1732,7 @@ int main() {
       <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
       <link href="http://filippo.io/dumping-the-ios-simulator-memory/"/>
     
-    <updated>2013-09-12T18:26:00-04:00</updated>
+    <updated>2013-09-12T18:26:00+02:00</updated>
     <id>http://filippo.io/dumping-the-ios-simulator-memory</id>
     
       <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
@@ -1444,7 +1766,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[A bug worth 4200$]]></title>
       <link href="http://filippo.io/a-bug-worth-4200%24/"/>
     
-    <updated>2013-04-26T13:04:00-04:00</updated>
+    <updated>2013-04-26T13:04:00+02:00</updated>
     <id>http://filippo.io/a-bug-worth-4200$</id>
     
       <content type="html"><![CDATA[<p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
@@ -1540,7 +1862,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[Claimed a RECAP Aaron Swartz grant &#10150;]]></title>
       <link href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/"/>
     
-    <updated>2013-04-04T21:40:00-04:00</updated>
+    <updated>2013-04-04T21:40:00+02:00</updated>
     <id>http://filippo.io/claimed-a-recap-aaron-swartz-grant</id>
     
       <content type="html"><![CDATA[<p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
@@ -1558,7 +1880,7 @@ gcc -O2 -arch x86_64 -Wall -o gcore64 gcore.c
       <title type="html"><![CDATA[Offline storage on a RPi]]></title>
       <link href="http://filippo.io/offline-storage-on-a-rpi/"/>
     
-    <updated>2013-02-22T23:21:00-05:00</updated>
+    <updated>2013-02-22T23:21:00+01:00</updated>
     <id>http://filippo.io/offline-storage-on-a-rpi</id>
     
       <content type="html"><![CDATA[<p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
@@ -1584,7 +1906,7 @@ And there are much more examples of data best kept offline…</p>
       <title type="html"><![CDATA[Programming isn't always easy &#10150;]]></title>
       <link href="http://blog.wizpert.com/programming-help/"/>
     
-    <updated>2013-02-21T23:14:00-05:00</updated>
+    <updated>2013-02-21T23:14:00+01:00</updated>
     <id>http://filippo.io/programming-isnt-always-easy</id>
     
       <content type="html"><![CDATA[<p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
@@ -1602,7 +1924,7 @@ And there are much more examples of data best kept offline…</p>
       <title type="html"><![CDATA[Decompressing Lempel-Ziv-Stac in Python]]></title>
       <link href="http://filippo.io/decompressing-lempel-ziv-stac-in-python/"/>
     
-    <updated>2013-01-29T12:06:00-05:00</updated>
+    <updated>2013-01-29T12:06:00+01:00</updated>
     <id>http://filippo.io/decompressing-lempel-ziv-stac-in-python</id>
     
       <content type="html"><![CDATA[<p>Lempel-Ziv-Stac is a simple (and a bit exotic) compression algorithm,
@@ -1757,7 +2079,7 @@ def LZSDecompress(data, window = RingList(2048)):
       <title type="html"><![CDATA[Why Mega WILL change the status quo]]></title>
       <link href="http://filippo.io/why-mega-will-change-the-status-quo/"/>
     
-    <updated>2013-01-19T19:23:00-05:00</updated>
+    <updated>2013-01-19T19:23:00+01:00</updated>
     <id>http://filippo.io/why-mega-will-change-the-status-quo</id>
     
       <content type="html"><![CDATA[<p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
@@ -1807,126 +2129,6 @@ This way an automated program will not suffice and they’ll not have enough hum
 <p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
 
 <p>P.P.S. If you read this far, you might enjoy <a href="https://twitter.com/FiloSottile">following me on Twitter</a></p>
-]]></content>
-    
-  </entry>
-  
-  <entry>
-    
-      <title type="html"><![CDATA[Archive your GitHub repo and data]]></title>
-      <link href="http://filippo.io/archive-your-github-repo-and-data/"/>
-    
-    <updated>2013-01-14T23:17:00-05:00</updated>
-    <id>http://filippo.io/archive-your-github-repo-and-data</id>
-    
-      <content type="html"><![CDATA[<p>GitHub is a service we all trust, so this is not a “get your data off that cloud before it explodes!”-style post,
-but sometimes you want to take an offline copy of your or somebody’s work.</p>
-
-<p>Here is a quick and dirty Python script that will help you clone all the repositories, the Gists and some metadata
-that can be fetched over the API.
-Be warned, it only fetches public repos and data and there’s no error checking.</p>
-
-<div><script src="https://gist.github.com/4710058.js?file=usage.txt"></script>
-<noscript><pre><code>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
-
-Dump an user's public GitHub data into current directory.
-
-positional arguments:
-  username       the GH username
-
-optional arguments:
-  -h, --help     show this help message and exit
-  --forks        git clone also forks (default is don't)
-  --no-gist      don't download user gists (default is do)
-  --no-metadata  don't download user metadata (default is do)</code></pre></noscript></div>
-
-<div><script src="https://gist.github.com/4710058.js?file=archive_GH.py"></script>
-<noscript><pre><code>#!/usr/bin/env python3
-
-# This is free and unencumbered software released into the public domain.
-
-# Anyone is free to copy, modify, publish, use, compile, sell, or
-# distribute this software, either in source code form or as a compiled
-# binary, for any purpose, commercial or non-commercial, and by any
-# means.
-
-# In jurisdictions that recognize copyright laws, the author or authors
-# of this software dedicate any and all copyright interest in the
-# software to the public domain. We make this dedication for the benefit
-# of the public at large and to the detriment of our heirs and
-# successors. We intend this dedication to be an overt act of
-# relinquishment in perpetuity of all present and future rights to this
-# software under copyright law.
-
-# THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-# OTHER DEALINGS IN THE SOFTWARE.
-
-# For more information, please refer to &lt;http://unlicense.org/&gt;
-
-import argparse
-from urllib.request import urlopen
-from subprocess import call
-import json
-import re
-import os.path
-
-parser = argparse.ArgumentParser(description='Dump an user\'s public GitHub data into current directory.')
-parser.add_argument('user', metavar='username',
-                   help='the GH username')
-parser.add_argument('--forks', dest='forks', action='store_true',
-                   help='git clone also forks (default is don\'t)')
-parser.add_argument('--no-gist', dest='gists', action='store_false',
-                   help='don\'t download user gists (default is do)')
-parser.add_argument('--no-metadata', dest='metadata', action='store_false',
-                   help='don\'t download user metadata (default is do)')
-
-args = parser.parse_args()
-
-def clear_url(url):
-    return re.sub(r'\{[^\}]*\}', '', url)
-
-data = urlopen('https://api.github.com/users/' + args.user).read()
-user = json.loads(data.decode('utf-8'))
-if args.metadata:
-    with open('user.json', 'wb') as f:
-        f.write(data)
-
-data = urlopen(clear_url(user['repos_url'])).read()
-repos = json.loads(data.decode('utf-8'))
-if args.metadata:
-    with open('repos.json', 'wb') as f:
-        f.write(data)
-for repo in repos:
-    if not repo['fork']:
-        call(['git', 'clone', repo['clone_url']])
-    elif args.forks:
-        if not os.path.exists('forks'):
-            os.makedirs('forks')
-        call(['git', 'clone', repo['clone_url'], os.path.join('forks', repo['name'])])
-
-data = urlopen(clear_url(user['gists_url'])).read()
-gists = json.loads(data.decode('utf-8'))
-if args.metadata:
-    with open('gists.json', 'wb') as f:
-        f.write(data)
-if args.gists:
-    if not os.path.exists('gists'):
-        os.makedirs('gists')
-    for gist in gists:
-        call(['git', 'clone', gist['git_pull_url'], os.path.join('gists', gist['id'])])
-
-if args.metadata:
-    for name in ['received_events', 'events', 'organizations', 'followers', 'starred', 'following', 'subscriptions']:
-        data = urlopen(clear_url(user[name + '_url'])).read()
-        with open(name + '.json', 'wb') as f:
-            f.write(data)</code></pre></noscript></div>
-
-<p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
 ]]></content>
     
   </entry>

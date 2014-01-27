@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Go | PyTux]]></title>
   <link href="http://filippo.io/categories/go/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-01-17T10:40:28-05:00</updated>
+  <updated>2014-01-27T05:10:09+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Callback-based combinations (in Go)]]></title>
     <link href="http://filippo.io/callback-based-combinations-in-go/"/>
-    <updated>2014-01-16T15:20:00-05:00</updated>
+    <updated>2014-01-16T15:20:00+01:00</updated>
     <id>http://filippo.io/callback-based-combinations-in-go</id>
     <content type="html"><![CDATA[<p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
 

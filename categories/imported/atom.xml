@@ -4,7 +4,7 @@
   <title><![CDATA[Category: imported | PyTux]]></title>
   <link href="http://filippo.io/categories/imported/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-01-17T10:40:28-05:00</updated>
+  <updated>2014-01-27T05:10:09+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
     <link href="http://filippo.io/taking-retina-screenshots-with-phantomjs/"/>
-    <updated>2012-05-12T16:44:00-04:00</updated>
+    <updated>2012-05-12T16:44:00+02:00</updated>
     <id>http://filippo.io/taking-retina-screenshots-with-phantomjs</id>
     <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
@@ -80,7 +80,7 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
   <entry>
     <title type="html"><![CDATA[Send a HEAD request in Python]]></title>
     <link href="http://filippo.io/send-a-head-request-in-python/"/>
-    <updated>2012-03-18T17:53:00-04:00</updated>
+    <updated>2012-03-18T17:53:00+01:00</updated>
     <id>http://filippo.io/send-a-head-request-in-python</id>
     <content type="html"><![CDATA[<p>There are a lot of questions on this topic around the web and common answers are to use <code>httplib</code>, that however is a really-low level library, or to use <code>urllib2</code>, but a lot of people complains about it returning to <code>GET</code> if following a redirect.</p>
 
