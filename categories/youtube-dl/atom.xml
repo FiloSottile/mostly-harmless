@@ -4,7 +4,7 @@
   <title><![CDATA[Category: youtube-dl | PyTux]]></title>
   <link href="http://filippo.io/categories/youtube-dl/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-01-27T05:10:09+01:00</updated>
+  <updated>2014-01-31T19:43:43+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -237,6 +237,8 @@ _TEST = {
     u'file': u'b9KOOWX7HUx.mp4',
     u'md5': u'2f36fed6235b16da96ce9b4dc890940d',
     u'info_dict': {
+        u"id": u"b9KOOWX7HUx",
+        u"ext": u"mp4",
         u"title": u"Chicken."
     }
 }
@@ -246,9 +248,12 @@ _TEST = {
 
 <ul>
   <li><code>url</code> is the input URL</li>
-  <li><code>file</code> is the filename of the resulting video, with this format “<code>{id}.{ext}</code>”</li>
   <li><code>md5</code> is the md5 hash <strong>of the first 10KB</strong> of the file, to get it download the video with the <code>--test</code> flag and run <code>md5sum</code> on it</li>
   <li><code>info_dict</code> is just a dict of fields that will be checked against the <code>_real_extract</code> return value (missing fields will be ignored)</li>
+  <li>
+    <strike>`file` is the filename of the resulting video, with this format "`{id}.{ext}`"</strike>
+    <p><code>file</code> is deprecated, simply add <code>info_dict.id</code> and <code>info_dict.ext</code></p>
+  </li>
 </ul>
 
 <p>You can run a single IE test on all the supported Python environments using <a href="https://testrun.org/tox/latest/">tox</a></p>

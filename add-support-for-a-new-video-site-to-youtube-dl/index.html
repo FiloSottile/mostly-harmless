@@ -410,11 +410,15 @@ MathJax.Hub.Config({
 <span class="line-number">6</span>
 <span class="line-number">7</span>
 <span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">_TEST</span> <span class="o">=</span> <span class="p">{</span>
 </span><span class="line">    <span class="s">u&#39;url&#39;</span><span class="p">:</span> <span class="s">u&#39;https://vine.co/v/b9KOOWX7HUx&#39;</span><span class="p">,</span>
 </span><span class="line">    <span class="s">u&#39;file&#39;</span><span class="p">:</span> <span class="s">u&#39;b9KOOWX7HUx.mp4&#39;</span><span class="p">,</span>
 </span><span class="line">    <span class="s">u&#39;md5&#39;</span><span class="p">:</span> <span class="s">u&#39;2f36fed6235b16da96ce9b4dc890940d&#39;</span><span class="p">,</span>
 </span><span class="line">    <span class="s">u&#39;info_dict&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s">u&quot;id&quot;</span><span class="p">:</span> <span class="s">u&quot;b9KOOWX7HUx&quot;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">u&quot;ext&quot;</span><span class="p">:</span> <span class="s">u&quot;mp4&quot;</span><span class="p">,</span>
 </span><span class="line">        <span class="s">u&quot;title&quot;</span><span class="p">:</span> <span class="s">u&quot;Chicken.&quot;</span>
 </span><span class="line">    <span class="p">}</span>
 </span><span class="line"><span class="p">}</span>
@@ -424,9 +428,12 @@ MathJax.Hub.Config({
 
 <ul>
   <li><code>url</code> is the input URL</li>
-  <li><code>file</code> is the filename of the resulting video, with this format “<code>{id}.{ext}</code>”</li>
   <li><code>md5</code> is the md5 hash <strong>of the first 10KB</strong> of the file, to get it download the video with the <code>--test</code> flag and run <code>md5sum</code> on it</li>
   <li><code>info_dict</code> is just a dict of fields that will be checked against the <code>_real_extract</code> return value (missing fields will be ignored)</li>
+  <li>
+    <strike>`file` is the filename of the resulting video, with this format &#8220;`{id}.{ext}`&#8221;</strike>
+    <p><code>file</code> is deprecated, simply add <code>info_dict.id</code> and <code>info_dict.ext</code></p>
+  </li>
 </ul>
 
 <p>You can run a single IE test on all the supported Python environments using <a href="https://testrun.org/tox/latest/">tox</a></p>
