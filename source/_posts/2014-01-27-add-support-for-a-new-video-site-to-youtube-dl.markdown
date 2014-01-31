@@ -224,6 +224,8 @@ _TEST = {
     u'file': u'b9KOOWX7HUx.mp4',
     u'md5': u'2f36fed6235b16da96ce9b4dc890940d',
     u'info_dict': {
+        u"id": u"b9KOOWX7HUx",
+        u"ext": u"mp4",
         u"title": u"Chicken."
     }
 }
@@ -232,9 +234,9 @@ _TEST = {
 The properties are as follows:
 
 * `url` is the input URL
-* `file` is the filename of the resulting video, with this format "`{id}.{ext}`"
 * `md5` is the md5 hash **of the first 10KB** of the file, to get it download the video with the `--test` flag and run `md5sum` on it
 * `info_dict` is just a dict of fields that will be checked against the `_real_extract` return value (missing fields will be ignored)
+* <strike>`file` is the filename of the resulting video, with this format "`{id}.{ext}`"</strike> `file` is deprecated, simply add `info_dict.id` and `info_dict.ext`
 
 You can run a single IE test on all the supported Python environments using [tox](https://testrun.org/tox/latest/)
 
