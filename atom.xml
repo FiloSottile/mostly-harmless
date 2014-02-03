@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-01-31T19:43:43+01:00</updated>
+  <updated>2014-02-03T05:54:03+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
+      <link href="http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
+    
+    <updated>2014-02-03T03:47:00+01:00</updated>
+    <id>http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
+    
+      <content type="html"><![CDATA[<p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
+
+<p>So as promised let’s have a look at something a bit more uncooperative: <strong>TopVideo.cc</strong>.</p>
+
+<p>This is a kind of more shady site: it has changed gTLD at least once, it’s full of ads and fishy stuff and for our amazement, does not really like the idea of being scraped.</p>
+
+<p>First of all: <strong>familiarize with the watch flow</strong>. I downloaded a CC-BY-SA video from YouTube (turns out you can filter for them!) and uploaded it to TopVideo. Here is it: <a href="http://www.topvideo.cc/4w1c85nzsbj0">http://www.topvideo.cc/4w1c85nzsbj0</a>.</p>
+
+<p><em>Tip</em>: try first with an ad blocker, it will make everything (interacting with the site, inspecting requests…) far more pleasant, easy and secure. If it does not break your browser playback, it won’t break your reverse engineering.</p>
+
+<p><em>Note</em>: this time writing the <code>_VALID_URL</code> regex and the like is left to the reader. Just consider that the filename or other stuff might be added to the URL and that they were <code>topvideo.tv</code> before. If this confuses you, check my <a href="http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/">previous post</a>. </p>
+
+<p>Visiting the main link brings us to a page with no content except some scams and a <strong>“Proceed to video!” button</strong>.</p>
+
+<p><img src="http://filippo.io/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-02-38.png" alt="The first page" class="center" /></p>
+
+<p>So what is probably happening here is that they are having us <strong>acquire some sort of session ticket</strong> to see the video, or basically making us go through one more hop of ads/scraping deterrent.</p>
+
+<p>Clicking on the button leads us to the real video page.</p>
+
+<p><img src="http://filippo.io/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-12-55.png" alt="The video page" class="center" /></p>
+
+<p>(Let’s take a note of that embed stuff below, if reversing this page turns out to be crazy difficult the embed html might be a softer target.)</p>
+
+<p>So, a <strong>Flash player</strong>. If we are lucky (the norm) the video URL will be around in the source, in some <code>&lt;script&gt;</code> tag, under names like <em>player options</em>. (If we are not some logic will be embedded in the Flash swf and we will have to emulate that.)</p>
+
+<p>To figure out what we should be looking for we kick open the <strong>Network tab</strong> of the Developer Tools, start the video, and watch what happens.</p>
+
+<p><img src="http://filippo.io/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-25-46.png" alt="MP4 request" /></p>
+
+<p><strong>No intermediate requests seem to be spawned, and this mp4 starts downloading. Nice.</strong> Now, where did it get the url from?</p>
+
+<p>Let’s start grabbing pieces of that url and scouring the page source for them. The long alphanumeric string doesn’t disappoint us, and turns out an <strong>exact match</strong>. Got you!</p>
+
+<p><img src="http://filippo.io/images/view-source-www.topvideo.cc-4w1c85nzsbj0 2014-02-03 04-33-03.png" alt="Match!" class="center" /></p>
+
+<p><em>Tip</em>: <code>jwplayer</code> is a good ⌘F target for a lot of sites. </p>
+
+<p>But… Hm. It’s not nice you know? At this point you can either spot that <code>eval</code> at the beginning, turn it to a <code>console.log</code> and <strong>have the code deobfuscate for you</strong> or be sleep-deprivated as I was at the time and start reversing the thing. (I stopped when <a href="http://jsbeautifier.org/">jsbeautifier.org</a> kindly deobfuscated it for me.)</p>
+
+<p>Aaaaaand, there it is!</p>
+
+<p><img src="http://filippo.io/images/Online JavaScript beautifier 2014-02-03 04-47-24.png" alt="De-obfuscated" /></p>
+
+<p>Some Googling will reveal the obfuscator as an old version (?) of <a href="http://dean.edwards.name/packer/">dean.edwards.name/packer/</a> with “Base62 encode” turned on.</p>
+
+<h2 id="ok-lets-write-some-code">Ok, let’s write some code</h2>
+]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -2077,65 +2136,6 @@ def LZSDecompress(data, window = RingList(2048)):
     
     return result, window</code></pre></noscript></div>
 
-]]></content>
-    
-  </entry>
-  
-  <entry>
-    
-      <title type="html"><![CDATA[Why Mega WILL change the status quo]]></title>
-      <link href="http://filippo.io/why-mega-will-change-the-status-quo/"/>
-    
-    <updated>2013-01-19T19:23:00+01:00</updated>
-    <id>http://filippo.io/why-mega-will-change-the-status-quo</id>
-    
-      <content type="html"><![CDATA[<p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
-on the newly launched <a href="https://mega.co.nz">Mega</a>.</em></p>
-
-<p>It is true that theoretically no sharing approach can solve the problem of being inspectable,
-however what Mega does is <strong>eliminate the single point of failure</strong>.</p>
-
-<p>What made sharing over Megaupload difficult and finally killed the service was that
-MPAA and RIAA could pressure Mega to obtain access to their data
-(remember that they had direct read and delete access to Mega* data),
-fingerprint a bunch of files and take down those that matched pirate videos or tracks.</p>
-
-<p><em>Now Mega encrypts client-side all the uploaded data, and gives you the key to store (and share) along with the URL.</em></p>
-
-<p>How this changes the outcome, you ask? Simply stated, <strong>now MPAA and RIAA can’t do anything with access only to Mega infrastructure</strong>.</p>
-
-<p>Obviously key (and URL sharing) is the weakest link in the chain. but consider the two following (common) scenarios:</p>
-
-<h3 id="the-classic-pirate-moviemusic-forumblog">The classic pirate movie/music forum/blog</h3>
-
-<p>The users of those sites always re-uploaded all the content,
-as taking the links of another community was considered really unkind and prevented in various ways.</p>
-
-<p>However, all the copies were easy to kill at once by fingerprinting.</p>
-
-<p>Now, instead, a MPAA/RIAA employee (or program) would have to scan through all those disperse, ephemeral and registration-based communities,
-in a giant struggle that never comes to an end.</p>
-
-<p>This because <strong>each community will have its own copy of the data, each one requiring its key to be taken down, and each key will have to be fetched from each particular site</strong>.</p>
-
-<p>Do you want to be sure that no one will take down your link? Put it (and its key) behind a CAPTCHA.
-This way an automated program will not suffice and they’ll not have enough human resources to check all the forums, blogs, etc.</p>
-
-<h3 id="the-underground-textual-community">The underground textual community</h3>
-
-<p>Let’s say an IRC channel, but also a Skype group chat or Facebook group might work (although I would never share pirate stuff along with my name and surname, but …).</p>
-
-<p>Ever tried sharing big amounts of data over those services? It’s a pain. And sharing with a number of people is plainly impossible.</p>
-
-<p>But now, <strong>one simply upload to Mega the file, and then share link+key with his closed group, and the only way to prevent this is to <em>be part</em> of that group</strong>.</p>
-
-<blockquote>
-  <p>This time I have the feeling that the bad guys win.</p>
-</blockquote>
-
-<p>P.S. I know that <a href="http://www.matasano.com/articles/javascript-cryptography/">JavaScript crypto is doomed</a> but they are not going to MitM your connection to steal your Mega keys, really.</p>
-
-<p>P.P.S. If you read this far, you might enjoy <a href="https://twitter.com/FiloSottile">following me on Twitter</a></p>
 ]]></content>
     
   </entry>

@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: Bullet Journal. It replaced all my list- &hellip;">
+  <meta name="description" content="I’m trying to compartmentalize my Linode server with Docker, and so I’ll need a 3.8+ 64-bit kernel with AUFS support1. Ok. My old Linode was 32-bit, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,64 @@ MathJax.Hub.Config({
   <header>
     
       
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-15T23:15:00+02:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>I’m trying to compartmentalize my Linode server with <a href="http://docker.io">Docker</a>, and so I’ll need a <strong>3.8+ 64-bit kernel with AUFS</strong> support<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Ok.</p>
+
+<p>My old Linode was 32-bit, but using the Dashboard and the doubled storage Linode just upgraded me to I was able to add a <strong>Ubuntu 12.04 64-bit Configuration Profile and Disk Image</strong>, reboot to that and mount the old disk image to copy files over. So far so good.</p>
+
+<p>The current Linode kernel is a custom <strong>3.9.3</strong>. Nice. But without <strong>AUFS support</strong>, ouch. Ok then, I’ll need to recompile this thing.</p>
+
+<p>Also, <code>lxc-checkconfig</code> tells me that I miss support for a lot of things, so…</p>
+
+<p>NOTE: There are easy tutorials<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup> telling you to use the vendor provided kernels, but I feel like there is a reason if Linode ships his own custom kernel, so I really want to just customize theirs.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/customizing-a-linode-kernel/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
         <!-- This defines how Octopress will use posts with external-url. -->
         <h1 class="entry-title"><a class="external-link" href="http://www.bulletjournal.com/">A journal approach that actually works for me</a></h1>
       
@@ -145,19 +203,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>I usually don’t stick with productivity schemes for long, but I finally found one that seems to work for me: <strong>Bullet Journal</strong>. It replaced all my list-making and note-taking apps.</p>
-
-<p>It basically helps you to organize your <strong>pen-and-paper note-taking</strong>. It provides guidance and avoids confusion, but it is not too over-structured, so you are still free to take notes as you want and you won’t have to stick to particular procedures (like with GTD).</p>
-
-<p>Have a look at the video, it is actually enjoyable and gives you a good overview of the system. (This also is a first, I’m usually a text person.)</p>
-
-<p><img src="/images/2013-10-15 20.50.26.jpg" alt="A daily notes page and some random notes" /></p>
-
-<p><img src="/images/2013-10-15 20.50.38.jpg" alt="A month view" /></p>
-</div>
-    
-    
   
 
   
@@ -498,46 +543,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/why-mega-will-change-the-status-quo/">Why Mega WILL change the status quo</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-01-19T19:23:00+01:00" pubdate data-updated="true" class="updated">Jan 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -566,6 +571,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/scraping-a-video-out-of-a-more-stubborn-site/">Scraping the hell out of a more stubborn site</a>
+      </li>
+    
+      <li class="post">
         <a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a>
       </li>
     
@@ -579,10 +588,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a>
-      </li>
-    
-      <li class="post">
-        <a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a>
       </li>
     
   </ul>
