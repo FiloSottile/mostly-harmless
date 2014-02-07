@@ -28,8 +28,8 @@ RUN apt-get install -y net-tools iodine
 RUN mkdir /etc/service/iodined
 ADD iodined.sh /etc/service/iodined/run
 
-# Bind to the host 53 UDP port
-EXPOSE 53:53/udp
+# Expose the DNS port, remember to run -p 53:53/udp
+EXPOSE 53/udp
 
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
