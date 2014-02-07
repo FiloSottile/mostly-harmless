@@ -1,8 +1,13 @@
-FROM ubuntu
-MAINTAINER Patrick O'Doherty <p@trickod.com>
+# Use phusion/baseimage as base image.
+FROM phusion/baseimage:0.9.5
 
-EXPOSE 9091
-ENV VERSION 0.2.4.20
+MAINTAINER Filippo Valsorda <fv@filippo.io>
+
+# Set environment variables.
+ENV HOME /root
+
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
 
 RUN apt-get install -y curl build-essential libevent-dev libssl-dev
 RUN curl https://www.torproject.org/dist/tor-${VERSION}.tar.gz | tar xz -C /tmp
@@ -11,11 +16,18 @@ RUN cd /tmp/tor-${VERSION} && ./configure
 RUN cd /tmp/tor-${VERSION} && make
 RUN cd /tmp/tor-${VERSION} && make install
 
-ADD ./torrc /etc/torrc
-# Allow you to upgrade your relay without having to regenerate keys
-VOLUME /.tor
+ADD ./torrc /etc/torrc.template
 
-# Generate a random nickname for the relay
-RUN echo "Nickname docker$(head -c 16 /dev/urandom  | sha1sum | cut -c1-10)" >> /etc/torrc
+# Allow you to upgrade without losing the service details
+VOLUME /var/tor
 
-CMD /usr/local/bin/tor -f /etc/torrc
+# Add the boot script (this will link to the server)
+RUN mkdir -p /etc/my_init.d
+ADD boot.sh /etc/my_init.d/tor-boot.sh
+
+# Add the tor service entry for runit
+RUN mkdir /etc/service/tor
+ADD tor.sh /etc/service/tor/run
+
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
