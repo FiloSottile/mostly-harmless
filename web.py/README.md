@@ -4,4 +4,4 @@ This is a sample Dockerfile showing how to use [`phusion/baseimage`](https://git
 
 Also, you can use this as a base to offer a really simple web service. (I used it with my Tor .onion image as a client).
 
-**Note:** put you public SSH key in the folder before building, in a file named `ssh_key.pub`. Usually you'll want to copy your `authorized_keys`
+**Note:** put you public SSH key(s) in this folder before building, in a file named `authorized_keys`. Usually you'll want to copy your `authorized_keys`: `cp ~/.ssh/authorized_keys .`
