@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="This is the second post speaking about writing youtube-dl IEs, all the basics are here. So as promised let’s have a look at something a bit more &hellip;">
+  <meta name="description" content="tl;dr See the bullet points for the supported programs and the last paragraph for installation. Something I always wanted is native touchpad/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,6 +120,62 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-13T03:15:00+01:00" pubdate data-updated="true" class="updated">Mar 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><strong>tl;dr</strong> See the bullet points for the supported programs and the last paragraph for installation.</p>
+
+<p>Something I always wanted is native touchpad/mousewheel scrolling in all my terminal programs.</p>
+
+<p><a href="https://bitheap.org/mouseterm/">MouseTerm</a> hacks that into the OS X Terminal, but I am a iTerm2 user.</p>
+
+<p>I tried and gave up researching this a while ago, but today I got a notification from a Google Code bug I starred linking to <a href="https://code.google.com/p/iterm2/issues/detail?id=974">this</a>. Someone actually patched support for this a while ago, and someone else now updated the patch for current git!</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/native-scrolling-and-iterm2/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/scraping-a-video-out-of-a-more-stubborn-site/">Scraping the hell out of a more stubborn site</a></h1>
       
     
@@ -145,57 +201,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
-
-<p>So as promised let’s have a look at something a bit more uncooperative: <strong>TopVideo.cc</strong>.</p>
-
-<p>This is a kind of more shady site: it has changed gTLD at least once, it’s full of ads and fishy stuff and for our amazement, does not really like the idea of being scraped.</p>
-
-<p>First of all: <strong>familiarize with the watch flow</strong>. I downloaded a CC-BY-SA video from YouTube (turns out you can filter for them!) and uploaded it to TopVideo. Here is it: <a href="http://www.topvideo.cc/4w1c85nzsbj0">http://www.topvideo.cc/4w1c85nzsbj0</a>.</p>
-
-<p><em>Tip</em>: try first with an ad blocker, it will make everything (interacting with the site, inspecting requests…) far more pleasant, easy and secure. If it does not break your browser playback, it won’t break your reverse engineering.</p>
-
-<p><em>Note</em>: this time writing the <code>_VALID_URL</code> regex and the like is left to the reader. Just consider that the filename or other stuff might be added to the URL and that they were <code>topvideo.tv</code> before. If this confuses you, check my <a href="/add-support-for-a-new-video-site-to-youtube-dl/">previous post</a>. </p>
-
-<p>Visiting the main link brings us to a page with no content except some scams and a <strong>“Proceed to video!” button</strong>.</p>
-
-<p><img src="/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-02-38.png" alt="The first page" class="center" /></p>
-
-<p>So what is probably happening here is that they are having us <strong>acquire some sort of session ticket</strong> to see the video, or basically making us go through one more hop of ads/scraping deterrent.</p>
-
-<p>Clicking on the button leads us to the real video page.</p>
-
-<p><img src="/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-12-55.png" alt="The video page" class="center" /></p>
-
-<p>(Let’s take a note of that embed stuff below, if reversing this page turns out to be crazy difficult the embed html might be a softer target.)</p>
-
-<p>So, a <strong>Flash player</strong>. If we are lucky (the norm) the video URL will be around in the source, in some <code>&lt;script&gt;</code> tag, under names like <em>player options</em>. (If we are not some logic will be embedded in the Flash swf and we will have to emulate that.)</p>
-
-<p>To figure out what we should be looking for we kick open the <strong>Network tab</strong> of the Developer Tools, start the video, and watch what happens.</p>
-
-<p><img src="/images/Watch Minecraft Timelapse Volcanic Island veu6DfOTNv0 mp4 2014-02-03 04-25-46.png" alt="MP4 request" /></p>
-
-<p><strong>No intermediate requests seem to be spawned, and this mp4 starts downloading. Nice.</strong> Now, where did it get the url from?</p>
-
-<p>Let’s start grabbing pieces of that url and scouring the page source for them. The long alphanumeric string doesn’t disappoint us, and turns out an <strong>exact match</strong>. Got you!</p>
-
-<p><img src="/images/view-source-www.topvideo.cc-4w1c85nzsbj0 2014-02-03 04-33-03.png" alt="Match!" class="center" /></p>
-
-<p><em>Tip</em>: <code>jwplayer</code> is a good ⌘F target for a lot of sites. </p>
-
-<p>But… Hm. It’s not nice you know? At this point you can either spot that <code>eval</code> at the beginning, turn it to a <code>console.log</code> and <strong>have the code deobfuscate for you</strong> or be sleep-deprivated as I was at the time and start reversing the thing. (I stopped when <a href="http://jsbeautifier.org/">jsbeautifier.org</a> kindly deobfuscated it for me.)</p>
-
-<p>Aaaaaand, there it is!</p>
-
-<p><img src="/images/Online JavaScript beautifier 2014-02-03 04-47-24.png" alt="De-obfuscated" /></p>
-
-<p>Some Googling will reveal the obfuscator as an old version (?) of <a href="http://dean.edwards.name/packer/">dean.edwards.name/packer/</a> with “Base62 encode” turned on.</p>
-
-<h2 id="ok-lets-write-some-code">Ok, let’s write some code</h2>
-</div>
-    
-    
   
 
   
@@ -524,46 +529,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-04T02:05:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -590,6 +555,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a>
+      </li>
+    
+      <li class="post">
         <a href="/scraping-a-video-out-of-a-more-stubborn-site/">Scraping the hell out of a more stubborn site</a>
       </li>
     
@@ -603,10 +572,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a>
-      </li>
-    
-      <li class="post">
-        <a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a>
       </li>
     
   </ul>

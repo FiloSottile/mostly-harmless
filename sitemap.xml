@@ -2,142 +2,146 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://filippo.io/send-a-head-request-in-python/</loc>
-        <lastmod>2013-10-14T22:36:43+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/taking-retina-screenshots-with-phantomjs/</loc>
-        <lastmod>2013-10-14T22:38:02+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/please-take-this-and-go-signing-those-updates/</loc>
-        <lastmod>2013-10-14T22:37:50+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/</loc>
-        <lastmod>2013-10-14T22:37:37+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/github-checkout-a-pull-request-as-a-branch/</loc>
-        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/automatically-compile-less-and-coffee-files/</loc>
-        <lastmod>2013-02-04T22:52:23+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/archive-your-github-repo-and-data/</loc>
-        <lastmod>2013-10-14T22:37:17+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/why-mega-will-change-the-status-quo/</loc>
-        <lastmod>2013-10-14T22:37:08+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/decompressing-lempel-ziv-stac-in-python/</loc>
-        <lastmod>2013-10-14T22:36:27+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/programming-isnt-always-easy/</loc>
-        <lastmod>2013-02-21T23:19:24+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/offline-storage-on-a-rpi/</loc>
-        <lastmod>2013-10-14T22:35:41+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/claimed-a-recap-aaron-swartz-grant/</loc>
-        <lastmod>2013-04-04T21:52:50+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/a-bug-worth-4200%24/</loc>
-        <lastmod>2013-10-14T22:35:52+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/dumping-the-ios-simulator-memory/</loc>
-        <lastmod>2013-10-14T22:36:03+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/instance-monkey-patching-in-python/</loc>
-        <lastmod>2013-10-07T07:13:37+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/escaping-a-chroot-jail-slash-1/</loc>
-        <lastmod>2013-10-15T22:17:43+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/a-journal-approach-that-actually-works-for-me/</loc>
-        <lastmod>2013-10-16T03:11:57+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/customizing-a-linode-kernel/</loc>
-        <lastmod>2013-10-16T08:26:41+02:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/</loc>
-        <lastmod>2013-11-04T09:08:19+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/analyzing-the-adobe-leaked-passwords/</loc>
-        <lastmod>2013-11-04T18:13:48+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/the-ecb-penguin/</loc>
-        <lastmod>2013-11-11T19:16:52+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/a-python-github-push-webhook-handler/</loc>
-        <lastmod>2013-11-25T01:40:14+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/
         </loc>
-        <lastmod>2013-11-25T17:54:14+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/brainwallets-from-the-password-to-the-address/</loc>
-        <lastmod>2013-12-05T23:47:31+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://filippo.io/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/
         </loc>
-        <lastmod>2013-12-13T02:29:27+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/callback-based-combinations-in-go/</loc>
-        <lastmod>2014-01-16T22:30:16+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/</loc>
-        <lastmod>2014-01-31T19:42:57+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
+    </url>
+    <url>
+        <loc>http://filippo.io/native-scrolling-and-iterm2/</loc>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/archives/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/CV/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/links/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/linux-syscall-table/</loc>
-        <lastmod>2014-02-03T04:51:10+01:00</lastmod>
+        <lastmod>2014-03-13T05:12:47+01:00</lastmod>
     </url>
     <url>
         <loc>http://filippo.io/robots.txt</loc>
-        <lastmod>2013-01-26T11:33:01+01:00</lastmod>
+        <lastmod>2014-03-13T03:14:38+01:00</lastmod>
     </url>
 </urlset>
