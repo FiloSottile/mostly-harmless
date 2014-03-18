@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-03-18T04:43:43+01:00</updated>
+  <updated>2014-03-18T04:47:46+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -115,6 +115,13 @@
 <p>iTerm2 will show me things, <code>mosh</code> will make sure that my connection stays up in all the aforementioned cases and <code>tmux</code> will keep my scrollback and allow me to detach and reattach. <code>mosh</code> and <code>tmux</code> collaborating, finally, will allow me to use my dear touchpad. Done.</p>
 
 <p>NOTE: to select text “on the client side”, in order to copy/paste, you’ll have to hold the Option key.</p>
+
+<h2 id="future-work">Future work</h2>
+
+<ul>
+  <li>Scrolling is way less fluid than native. I have no idea how to fix this.</li>
+  <li>I’d like click+drag not to be relayed so that I don’t have to hold Option to select.</li>
+</ul>
 ]]></content>
     
   </entry>
