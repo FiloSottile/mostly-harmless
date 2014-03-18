@@ -92,3 +92,8 @@ and get my motherfucking shell. Period.
 iTerm2 will show me things, `mosh` will make sure that my connection stays up in all the aforementioned cases and `tmux` will keep my scrollback and allow me to detach and reattach. `mosh` and `tmux` collaborating, finally, will allow me to use my dear touchpad. Done.
 
 NOTE: to select text "on the client side", in order to copy/paste, you'll have to hold the Option key.
+
+## Future work
+
+* Scrolling is way less fluid than native. I have no idea how to fix this.
+* I'd like click+drag not to be relayed so that I don't have to hold Option to select.
