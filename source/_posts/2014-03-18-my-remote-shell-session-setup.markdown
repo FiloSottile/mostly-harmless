@@ -57,6 +57,8 @@ The second enables mouse interactions. This will allow us to scroll with the tou
 
 NOTE: the key combination to detach is `C-b d`.
 
+[Here](https://superuser.com/questions/210125/scroll-shell-output-with-mouse-in-tmux) a decent explanation of `tmux` and mouse scrolling.
+
 ### mosh
 
 The bridge.
@@ -78,6 +80,8 @@ sudo apt-get build-dep mosh
 ./autogen.sh && ./configure && make
 sudo make install
 ```
+
+[Here](https://github.com/keithw/mosh/issues/101) the issue and [here](https://github.com/keithw/mosh/pull/461) the PR about mouse reporting.
 
 ## Result
 
