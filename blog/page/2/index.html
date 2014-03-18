@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="The next step in my playing with chroot escapes is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt &hellip;">
+  <meta name="description" content="On October Adobe reported that some user data, including credit cards and password dumps, got stolen from their servers. Now the passwords dump has &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,6 +120,60 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/analyzing-the-adobe-leaked-passwords/">Analyzing the Adobe leaked passwords</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-04T11:15:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><img src="http://imgs.xkcd.com/comics/encryptic.png" alt="XKCD is on it" class="center" /></p>
+
+<p>On October Adobe reported that some user data, including credit cards and password dumps, got stolen from their servers. Now the passwords dump has leaked, and it’s hilarious.</p>
+
+<p>We (Jari Takkala and I) got hold of the files and are starting to analyze them.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/analyzing-the-adobe-leaked-passwords/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a></h1>
       
     
@@ -145,29 +199,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>The next step in my <a href="/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
-
-<p>By the way, a system call is a function of the kernel invoked by a userspace program and it can be something like writing to a file descriptor, or even exiting. Usually, these are wrapped by C functions in the standard library.</p>
-
-<h3 id="the-system-calls">The system calls</h3>
-
-<p>First, we need to know what system call we want to make, and what arguments it pretends.</p>
-
-<p>A full list is hosted by Apple <a href="http://www.opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master">here</a>. The header also hints at the fact that they are inherited from BSD. Yeah, <a href="https://en.wikipedia.org/wiki/OS_X">that makes sense</a>.</p>
-
-<p>So, to write our proverbial <em>Hello world</em> we will pick the syscall 4</p>
-
-<pre><code>4   AUE_NULL    ALL { user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); }
-</code></pre>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/making-system-calls-from-assembly-in-mac-os-x/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -504,50 +535,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://blog.wizpert.com/programming-help/">Programming isn&#8217;t always easy</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-02-21T23:14:00+01:00" pubdate data-updated="true" class="updated">Feb 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/programming-isnt-always-easy/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -576,6 +563,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
+      </li>
+    
+      <li class="post">
         <a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a>
       </li>
     
@@ -589,10 +580,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-03-13T05:22:52+01:00</updated>
+  <updated>2014-03-18T04:43:43+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    
+      <title type="html"><![CDATA[My remote shell session setup]]></title>
+      <link href="http://filippo.io/my-remote-shell-session-setup/"/>
+    
+    <updated>2014-03-18T04:08:00+01:00</updated>
+    <id>http://filippo.io/my-remote-shell-session-setup</id>
+    
+      <content type="html"><![CDATA[<p>It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like <code>telnet</code>.</p>
+
+<p>After searching for quite a long time, I finally built my dream setup. These were the requirements:</p>
+
+<ul>
+  <li>I want a single window/tab/panel of the terminal I’m using to be dedicated to the remote shell (without any new window, etc.)</li>
+  <li>I want the shell to survive unaffected with no context loss the following events
+    <ul>
+      <li>connection failure</li>
+      <li>route change (like, toggling the VPN or changing Wi-fi)</li>
+      <li>laptop sleep (like, me closing the lid)</li>
+      <li>local terminal restart or laptop reboot</li>
+    </ul>
+  </li>
+  <li>I want to be able to scroll back with my touchpad</li>
+  <li>I want to be able to copy-paste</li>
+  <li>I want colors</li>
+  <li>I want to launch it with a single command</li>
+</ul>
+
+<p>And a unicorn.</p>
+
+<!-- more -->
+
+<p>(Some fellow travelers in search for the same utopia are <a href="">here</a>)</p>
+
+<h2 id="the-setup">The setup</h2>
+
+<p>I managed to get this with the following combination: iTerm2 + mosh + tmux.</p>
+
+<h3 id="iterm2">iTerm2</h3>
+
+<p>The terminal.</p>
+
+<p>I’m on the nightly, but stable should work the same. Just make sure to <em>Enable xterm mouse reporting</em> in the <em>Terminal</em> Profile settings, and set <em>Terminal Type</em> to <code>xterm-256color</code>.</p>
+
+<h3 id="tmux">tmux</h3>
+
+<p>The session manager.</p>
+
+<p><code>tmux</code> is the new <code>screen</code>. It has a ton of features, but I’m using it here just to keep track of my session server side. On 1.8 right now, the one that comes in packages.</p>
+
+<p><code>~/.tmux.conf</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">new-session
+</span><span class="line">set-window-option -g mode-mouse on
+</span><span class="line">set -g history-limit 30000</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The first line makes sure that if I try to attach and no sessions are alive, one is created. This means that I can invoke it like this <code>tmux a</code> all the time.</p>
+
+<p>The second enables mouse interactions. This will allow us to scroll with the touchpad! (See below)</p>
+
+<p>NOTE: the key combination to detach is <code>C-b d</code>.</p>
+
+<h3 id="mosh">mosh</h3>
+
+<p>The bridge.</p>
+
+<p><code>mosh</code> is an awesome piece of software. All network-interacting software should behave like it. It will withstand whatever you throw at it from the network. It will even tell you when and since when your connection went down.</p>
+
+<p>Sadly the latest release is ooooold, and doesn’t support mouse reporting. So no scrolling. Sigh.</p>
+
+<p>So, you have to build from git.</p>
+
+<p>On OS X: <code>brew install --HEAD mobile-shell</code></p>
+
+<p>On the server:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone https://github.com/keithw/mosh.git
+</span><span class="line">cd mosh/
+</span><span class="line">sudo apt-get build-dep mosh
+</span><span class="line">./autogen.sh &amp;&amp; ./configure &amp;&amp; make
+</span><span class="line">sudo make install</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="result">Result</h2>
+
+<p>The result is that I can type</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">mosh HOST -- tmux a</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>and get my motherfucking shell. Period.</p>
+
+<p>iTerm2 will show me things, <code>mosh</code> will make sure that my connection stays up in all the aforementioned cases and <code>tmux</code> will keep my scrollback and allow me to detach and reattach. <code>mosh</code> and <code>tmux</code> collaborating, finally, will allow me to use my dear touchpad. Done.</p>
+
+<p>NOTE: to select text “on the client side”, in order to copy/paste, you’ll have to hold the Option key.</p>
+]]></content>
+    
+  </entry>
   
   <entry>
     
@@ -2042,24 +2148,6 @@ And there are much more examples of data best kept offline…</p>
 <p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
 
 ]]></content>
-    
-  </entry>
-  
-  <entry>
-    
-      <title type="html"><![CDATA[Programming isn't always easy &#10150;]]></title>
-      <link href="http://blog.wizpert.com/programming-help/"/>
-    
-    <updated>2013-02-21T23:14:00+01:00</updated>
-    <id>http://filippo.io/programming-isnt-always-easy</id>
-    
-      <content type="html"><![CDATA[<p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
-
-<p>Here is a guest post on their blog.</p>
-
-<p><em>Some people say that with all the reference documentation available, programming is easy.</em> …</p>
-
-<br><a href="http://filippo.io/programming-isnt-always-easy/">Permalink</a>]]></content>
     
   </entry>
   

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Making system calls from Assembly in Mac OS X | PyTux</title>
+  <title>My remote shell session setup | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="The next step in my playing with chroot escapes is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt &hellip;">
+  <meta name="description" content="It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like telnet. After searching for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/">
+  <link rel="canonical" href="http://filippo.io/my-remote-shell-session-setup/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -115,7 +115,7 @@ MathJax.Hub.Config({
   <header>
     
       
-        <h1 class="entry-title">Making system calls from Assembly in Mac OS X</h1>
+        <h1 class="entry-title">My remote shell session setup</h1>
       
     
     
@@ -133,119 +133,107 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-04T02:05:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+<time datetime="2014-03-18T04:08:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>The next step in my <a href="/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
+  <div class="entry-content"><p>It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like <code>telnet</code>.</p>
 
-<p>By the way, a system call is a function of the kernel invoked by a userspace program and it can be something like writing to a file descriptor, or even exiting. Usually, these are wrapped by C functions in the standard library.</p>
+<p>After searching for quite a long time, I finally built my dream setup. These were the requirements:</p>
 
-<h3 id="the-system-calls">The system calls</h3>
+<ul>
+  <li>I want a single window/tab/panel of the terminal I’m using to be dedicated to the remote shell (without any new window, etc.)</li>
+  <li>I want the shell to survive unaffected with no context loss the following events
+    <ul>
+      <li>connection failure</li>
+      <li>route change (like, toggling the VPN or changing Wi-fi)</li>
+      <li>laptop sleep (like, me closing the lid)</li>
+      <li>local terminal restart or laptop reboot</li>
+    </ul>
+  </li>
+  <li>I want to be able to scroll back with my touchpad</li>
+  <li>I want to be able to copy-paste</li>
+  <li>I want colors</li>
+  <li>I want to launch it with a single command</li>
+</ul>
 
-<p>First, we need to know what system call we want to make, and what arguments it pretends.</p>
-
-<p>A full list is hosted by Apple <a href="http://www.opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master">here</a>. The header also hints at the fact that they are inherited from BSD. Yeah, <a href="https://en.wikipedia.org/wiki/OS_X">that makes sense</a>.</p>
-
-<p>So, to write our proverbial <em>Hello world</em> we will pick the syscall 4</p>
-
-<pre><code>4   AUE_NULL    ALL { user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); }
-</code></pre>
+<p>And a unicorn.</p>
 
 <!-- more -->
 
-<h3 id="bit">32-bit</h3>
+<p>(Some fellow travelers in search for the same utopia are <a href="">here</a>)</p>
 
-<p>Let’s start easy. A cute 32-bit program, written in <a href="http://alien.dowling.edu/~rohit/nasmdoc3.html">NASM assembler language</a>. Compile with <code>nasm</code> or <code>yasm</code>, output format <code>MachO</code>, and link with <code>ld</code>.</p>
+<h2 id="the-setup">The setup</h2>
 
-<p>I’m on a Intel machine, so what we are looking for is the x86 syscall calling conventions for the OS X or BSD platform. They are pretty simple:</p>
+<p>I managed to get this with the following combination: iTerm2 + mosh + tmux.</p>
 
-<ul>
-  <li>arguments passed on the stack, pushed right-to-left</li>
-  <li>stack 16-bytes aligned</li>
-  <li>syscall number in the <code>eax</code> register</li>
-  <li>call by interrupt <code>0x80</code></li>
-</ul>
+<h3 id="iterm2">iTerm2</h3>
 
-<p>So what we have to do to print a “Hello world” is:</p>
+<p>The terminal.</p>
 
-<ul>
-  <li>push the length of the string (<code>int</code>) to the stack</li>
-  <li>push a pointer to the string to the stack</li>
-  <li>push the stdout file descriptor (1) to the stack</li>
-  <li>align the stack by moving the stack pointer 4 more bytes (16 - 4 * 3)</li>
-  <li>set the <code>eax</code> register to the <code>write</code> syscall number (4)</li>
-  <li>interrupt <code>0x80</code></li>
-</ul>
+<p>I’m on the nightly, but stable should work the same. Just make sure to <em>Enable xterm mouse reporting</em> in the <em>Terminal</em> Profile settings, and set <em>Terminal Type</em> to <code>xterm-256color</code>.</p>
 
-<div><script src="https://gist.github.com/7125822.js?file=32.asm"></script>
-<noscript><pre><code>; /usr/local/bin/nasm -f macho 32.asm &amp;&amp; ld -macosx_version_min 10.7.0 -o 32 32.o &amp;&amp; ./32
+<h3 id="tmux">tmux</h3>
 
-global start
+<p>The session manager.</p>
 
-section .text
-start:
-    push    dword msg.len
-    push    dword msg
-    push    dword 1
-    mov     eax, 4
-    sub     esp, 4
-    int     0x80
-    add     esp, 16
+<p><code>tmux</code> is the new <code>screen</code>. It has a ton of features, but I’m using it here just to keep track of my session server side. On 1.8 right now, the one that comes in packages.</p>
 
-    push    dword 0
-    mov     eax, 1
-    sub     esp, 12
-    int     0x80
+<p><code>~/.tmux.conf</code>:</p>
 
-section .data
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">new-session
+</span><span class="line">set-window-option -g mode-mouse on
+</span><span class="line">set -g history-limit 30000</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-msg:    db      &quot;Hello, world!&quot;, 10
-.len:   equ     $ - msg
-</code></pre></noscript></div>
+<p>The first line makes sure that if I try to attach and no sessions are alive, one is created. This means that I can invoke it like this <code>tmux a</code> all the time.</p>
 
-<h3 id="bit-1">64-bit</h3>
+<p>The second enables mouse interactions. This will allow us to scroll with the touchpad! (See below)</p>
 
-<p>64-bit is a bit cleaner, but completely different: OS X (and GNU/Linux and everyone except Windows) on 64 architectures adopt the <a href="http://x86-64.org/documentation/abi.pdf">System V AMD64 ABI reference</a>. Jump to section <strong>A.2.1</strong> for the syscall calling convention.</p>
+<p>NOTE: the key combination to detach is <code>C-b d</code>.</p>
 
-<ul>
-  <li>arguments are passed on the registers <code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>r10</code>, <code>r8</code> and <code>r9</code></li>
-  <li>syscall number in the <code>rax</code> register</li>
-  <li>the call is done via the <code>syscall</code> instruction</li>
-  <li>what OS X contributes to the mix is that you have to add <code>0x20000000</code> to the syscall number (still have to figure out why)</li>
-</ul>
+<h3 id="mosh">mosh</h3>
 
-<p>So, here is the (IMHO) much more clean 64-bit “Hello world”. Ah, if you want to do this at home and have it actually run, generate a <code>macho64</code> object with <strong>a new version of</strong> NASM or with YASM, and link with <code>ld</code> as usual.</p>
+<p>The bridge.</p>
 
-<div><script src="https://gist.github.com/7125822.js?file=64.asm"></script>
-<noscript><pre><code>; /usr/local/bin/nasm -f macho64 64.asm &amp;&amp; ld -macosx_version_min 10.7.0 -lSystem -o 64 64.o &amp;&amp; ./64
+<p><code>mosh</code> is an awesome piece of software. All network-interacting software should behave like it. It will withstand whatever you throw at it from the network. It will even tell you when and since when your connection went down.</p>
 
-global start
+<p>Sadly the latest release is ooooold, and doesn’t support mouse reporting. So no scrolling. Sigh.</p>
 
+<p>So, you have to build from git.</p>
 
-section .text
+<p>On OS X: <code>brew install --HEAD mobile-shell</code></p>
 
-start:
-    mov     rax, 0x2000004 ; write
-    mov     rdi, 1 ; stdout
-    mov     rsi, msg
-    mov     rdx, msg.len
-    syscall
+<p>On the server:</p>
 
-    mov     rax, 0x2000001 ; exit
-    mov     rdi, 0
-    syscall
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone https://github.com/keithw/mosh.git
+</span><span class="line">cd mosh/
+</span><span class="line">sudo apt-get build-dep mosh
+</span><span class="line">./autogen.sh &amp;&amp; ./configure &amp;&amp; make
+</span><span class="line">sudo make install</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h2 id="result">Result</h2>
 
-section .data
+<p>The result is that I can type</p>
 
-msg:    db      &quot;Hello, world!&quot;, 10
-.len:   equ     $ - msg
-</code></pre></noscript></div>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">mosh HOST -- tmux a</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>and get my motherfucking shell. Period.</p>
+
+<p>iTerm2 will show me things, <code>mosh</code> will make sure that my connection stays up in all the aforementioned cases and <code>tmux</code> will keep my scrollback and allow me to detach and reattach. <code>mosh</code> and <code>tmux</code> collaborating, finally, will allow me to use my dear touchpad. Done.</p>
+
+<p>NOTE: to select text “on the client side”, in order to copy/paste, you’ll have to hold the Option key.</p>
 </div>
 
   
@@ -271,7 +259,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
 
 
 
-<time datetime="2013-11-04T02:05:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+<time datetime="2014-03-18T04:08:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
       
 
 
@@ -279,7 +267,7 @@ msg:    db      &quot;Hello, world!&quot;, 10
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/" data-via="FiloSottile" data-counturl="http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/my-remote-shell-session-setup/" data-via="FiloSottile" data-counturl="http://filippo.io/my-remote-shell-session-setup/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -293,10 +281,8 @@ msg:    db      &quot;Hello, world!&quot;, 10
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/customizing-a-linode-kernel/" title="Previous Post: Customizing a Linode kernel">&laquo; Customizing a Linode kernel</a>
+        <a class="basic-alignment left" href="/native-scrolling-and-iterm2/" title="Previous Post: Native scrolling and iTerm2">&laquo; Native scrolling and iTerm2</a>
       
-      
-        <a class="basic-alignment right" href="/analyzing-the-adobe-leaked-passwords/" title="Next Post: Analyzing the Adobe leaked passwords">Analyzing the Adobe leaked passwords &raquo;</a>
       
     </p>
   </footer>
@@ -490,8 +476,8 @@ msg:    db      &quot;Hello, world!&quot;, 10
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/';
-        var disqus_url = 'http://filippo.io/making-system-calls-from-assembly-in-mac-os-x/';
+        var disqus_identifier = 'http://filippo.io/my-remote-shell-session-setup/';
+        var disqus_url = 'http://filippo.io/my-remote-shell-session-setup/';
         var disqus_script = 'embed.js';
       
     (function () {
