@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="http://filippo.io/atom.xml" rel="self"/>
   <link href="http://filippo.io/"/>
-  <updated>2014-03-18T04:47:46+01:00</updated>
+  <updated>2014-03-18T12:58:55+01:00</updated>
   <id>http://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -78,6 +78,8 @@
 
 <p>NOTE: the key combination to detach is <code>C-b d</code>.</p>
 
+<p><a href="https://superuser.com/questions/210125/scroll-shell-output-with-mouse-in-tmux">Here</a> a decent explanation of <code>tmux</code> and mouse scrolling.</p>
+
 <h3 id="mosh">mosh</h3>
 
 <p>The bridge.</p>
@@ -102,6 +104,8 @@
 </span><span class="line">sudo apt-get build-dep mosh
 </span><span class="line">./autogen.sh &amp;&amp; ./configure &amp;&amp; make
 </span><span class="line">sudo make install</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><a href="https://github.com/keithw/mosh/issues/101">Here</a> the issue and <a href="https://github.com/keithw/mosh/pull/461">here</a> the PR about mouse reporting.</p>
 
 <h2 id="result">Result</h2>
 
