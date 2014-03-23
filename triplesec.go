@@ -175,3 +175,93 @@ func generate_macs(data, keys []byte) []byte {
 
 	return res
 }
+
+func (c *Cipher) Decrypt(dst, ciphertext []byte) error {
+	if len(ciphertext) <= Overhead {
+		return fmt.Errorf("the ciphertext is too short to be a TripleSec ciphertext")
+	}
+	if len(dst) < len(ciphertext)-Overhead {
+		return fmt.Errorf("the dst buffer is too short to hold the plaintext")
+	}
+
+	if !bytes.Equal(ciphertext[:4], MagicBytes) {
+		return fmt.Errorf("the ciphertext does not look like a TripleSec ciphertext")
+	}
+
+	v := make([]byte, 4)
+	v_b := bytes.NewBuffer(v[:0])
+	err := binary.Write(v_b, binary.BigEndian, uint32(3))
+	if err != nil {
+		return err
+	}
+	if !bytes.Equal(ciphertext[4:8], v) {
+		return fmt.Errorf("unknown version")
+	}
+
+	salt := ciphertext[8:24]
+	dk, err := scrypt.Key(c.passphrase, salt, 32768, 8, 1, dkSize)
+	if err != nil {
+		return err
+	}
+	macKeys := dk[:macKeyLen*2]
+	cipherKeys := dk[macKeyLen*2:]
+
+	macs := ciphertext[24 : 24+64*2]
+	encryptedData := ciphertext[24+64*2:]
+
+	authenticatedData := make([]byte, 0, 24+len(encryptedData))
+	authenticatedData = append(authenticatedData, ciphertext[:24]...)
+	authenticatedData = append(authenticatedData, encryptedData...)
+
+	if !hmac.Equal(macs, generate_macs(authenticatedData, macKeys)) {
+		return fmt.Errorf("TripleSec ciphertext authentication FAILED")
+	}
+
+	err = decrypt_data(dst, encryptedData, cipherKeys)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func decrypt_data(dst, data, keys []byte) error {
+	var iv, key []byte
+	var block cipher.Block
+	var stream cipher.Stream
+	var err error
+
+	buffer := append([]byte{}, data...)
+
+	iv_offset := 16
+	iv = buffer[:iv_offset]
+	key = keys[:cipherKeyLen]
+	block, err = aes.NewCipher(key)
+	if err != nil {
+		return err
+	}
+	stream = cipher.NewCTR(block, iv)
+	stream.XORKeyStream(buffer[iv_offset:], buffer[iv_offset:])
+
+	iv_offset += 16
+	iv = buffer[iv_offset-16 : iv_offset]
+	key = keys[cipherKeyLen : cipherKeyLen*2]
+	block, err = twofish.NewCipher(key)
+	if err != nil {
+		return err
+	}
+	stream = cipher.NewCTR(block, iv)
+	stream.XORKeyStream(buffer[iv_offset:], buffer[iv_offset:])
+
+	iv_offset += 24
+	iv = buffer[iv_offset-24 : iv_offset]
+	key_array := new([32]byte)
+	copy(key_array[:], keys[cipherKeyLen*2:])
+	salsa20.XORKeyStream(dst, buffer[iv_offset:], iv, key_array)
+
+	if len(buffer[iv_offset:]) != len(data)-(16+16+24) {
+		panic(fmt.Errorf("something went terribly wrong: buffer size is not consistent"))
+	}
+
+	return nil
+}
