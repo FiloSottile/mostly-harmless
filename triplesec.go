@@ -2,11 +2,9 @@
 // This Go implementation is (C) Filippo Valsorda 2014
 // Use of this source code is governed by the MIT License
 
-/*
-Package triplesec implements the TripleSec v3 encryption and authentication scheme.
-
-For details on TripleSec, go to https://keybase.io/triplesec/
-*/
+// Package triplesec implements the TripleSec v3 encryption and authentication scheme.
+//
+// For details on TripleSec, go to https://keybase.io/triplesec/
 package triplesec
 
 import (
