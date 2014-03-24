@@ -1,3 +1,7 @@
+// The design and name of TripleSec is (C) Keybase 2013
+// This Go implementation is (C) Filippo Valsorda 2014
+// Use of this source code is governed by the MIT License
+
 package triplesec
 
 import (
@@ -7,15 +11,13 @@ import (
 
 func TestCycle(t *testing.T) {
 	plaintext := []byte("1234567890-")
+	password := []byte("42")
 
-	c, err := NewCipher([]byte("42"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	c := NewCipher(password)
 
 	orig_plaintext := append([]byte{}, plaintext...)
 	ciphertext := make([]byte, len(plaintext)+Overhead)
-	err = c.Encrypt(ciphertext, plaintext)
+	err := c.Encrypt(ciphertext, plaintext)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,5 +37,8 @@ func TestCycle(t *testing.T) {
 	}
 	if !bytes.Equal(orig_ciphertext, ciphertext) {
 		t.Error("orig_ciphertext != ciphertext")
+	}
+	if !bytes.Equal(password, []byte("42")) {
+		t.Error("password changed")
 	}
 }

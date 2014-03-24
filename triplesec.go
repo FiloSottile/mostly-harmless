@@ -1,3 +1,12 @@
+// The design and name of TripleSec is (C) Keybase 2013
+// This Go implementation is (C) Filippo Valsorda 2014
+// Use of this source code is governed by the MIT License
+
+/*
+Package triplesec implements the TripleSec v3 encryption and authentication scheme.
+
+For details on TripleSec, go to https://keybase.io/triplesec/
+*/
 package triplesec
 
 import (
@@ -15,13 +24,19 @@ import (
 	"fmt"
 )
 
+// A Cipher is an instance of TripleSec using a particular key.
 type Cipher struct {
 	passphrase []byte
 }
 
-// magic bytes + version + salt + 2 * MACs + 3 * IVS
-var Overhead = 4 + 4 + 16 + 64 + 64 + 16 + 16 + 24
-var MagicBytes = []byte("\x1c\x94\xd7\xde")
+// Overhead is the amount of bytes added to a TripleSec ciphertext.
+// 	len(plaintext) + Overhead = len(ciphertext)
+// It consists of: magic bytes + version + salt + 2 * MACs + 3 * IVS.
+const Overhead = 4 + 4 + 16 + 64 + 64 + 16 + 16 + 24
+
+// The MagicBytes are the four bytes prefixed to every TripleSec
+// ciphertext, 1c 94 d7 de.
+const MagicBytes = "\x1c\x94\xd7\xde"
 
 var (
 	saltSize     = 16
@@ -30,28 +45,33 @@ var (
 	dkSize       = 2*macKeyLen + 3*cipherKeyLen
 )
 
-func NewCipher(passphrase []byte) (*Cipher, error) {
-	if len(passphrase) < 1 {
-		return nil, fmt.Errorf("the passphrase cannot be empty")
-	}
-
+// NewCipher creates and returns a Cipher.
+// The passphrase can be a human passphrase, and is stretched with scrypt
+// and a random salt. However, a long passphrase is strongly recommended.
+// There are no limits on passphrase length.
+func NewCipher(passphrase []byte) *Cipher {
 	c := new(Cipher)
 	c.passphrase = append(c.passphrase, passphrase...)
 
-	return c, nil
+	return c
 }
 
-func (c *Cipher) Encrypt(dst, plain []byte) error {
-	if len(plain) < 1 {
+// Encrypt encrypts and signs a plaintext message with TripleSec using a random
+// salt and the Cipher passphrase. The dst buffer size must be at least len(src)
+// + Overhead. dst and src can not overlap. src is left untouched.
+//
+// Encrypt returns a error on memory or RNG failures.
+func (c *Cipher) Encrypt(dst, src []byte) error {
+	if len(src) < 1 {
 		return fmt.Errorf("the plaintext cannot be empty")
 	}
-	if len(dst) < len(plain)+Overhead {
+	if len(dst) < len(src)+Overhead {
 		return fmt.Errorf("the destination is shorter than the plaintext plus Overhead")
 	}
 
 	buf := bytes.NewBuffer(dst[:0])
 
-	_, err := buf.Write(MagicBytes)
+	_, err := buf.Write([]byte(MagicBytes))
 	if err != nil {
 		return err
 	}
@@ -80,7 +100,7 @@ func (c *Cipher) Encrypt(dst, plain []byte) error {
 	cipherKeys := dk[macKeyLen*2:]
 
 	// The allocation over here can be made better
-	encryptedData, err := encrypt_data(plain, cipherKeys)
+	encryptedData, err := encrypt_data(src, cipherKeys)
 	if err != nil {
 		return err
 	}
@@ -99,7 +119,7 @@ func (c *Cipher) Encrypt(dst, plain []byte) error {
 		return err
 	}
 
-	if buf.Len() != len(plain)+Overhead {
+	if buf.Len() != len(src)+Overhead {
 		panic(fmt.Errorf("something went terribly wrong: output size is not consistent"))
 	}
 
@@ -176,15 +196,21 @@ func generate_macs(data, keys []byte) []byte {
 	return res
 }
 
-func (c *Cipher) Decrypt(dst, ciphertext []byte) error {
-	if len(ciphertext) <= Overhead {
+// Decrypt decrypts a TripleSec ciphertext using the Cipher passphrase.
+// The dst buffer size must be at least len(src) - Overhead.
+// dst and src can not overlap. src is left untouched.
+//
+// Encrypt returns a error if the ciphertext is not recognized, if
+// authentication fails or on memory failures.
+func (c *Cipher) Decrypt(dst, src []byte) error {
+	if len(src) <= Overhead {
 		return fmt.Errorf("the ciphertext is too short to be a TripleSec ciphertext")
 	}
-	if len(dst) < len(ciphertext)-Overhead {
+	if len(dst) < len(src)-Overhead {
 		return fmt.Errorf("the dst buffer is too short to hold the plaintext")
 	}
 
-	if !bytes.Equal(ciphertext[:4], MagicBytes) {
+	if !bytes.Equal(src[:4], []byte(MagicBytes)) {
 		return fmt.Errorf("the ciphertext does not look like a TripleSec ciphertext")
 	}
 
@@ -194,11 +220,11 @@ func (c *Cipher) Decrypt(dst, ciphertext []byte) error {
 	if err != nil {
 		return err
 	}
-	if !bytes.Equal(ciphertext[4:8], v) {
+	if !bytes.Equal(src[4:8], v) {
 		return fmt.Errorf("unknown version")
 	}
 
-	salt := ciphertext[8:24]
+	salt := src[8:24]
 	dk, err := scrypt.Key(c.passphrase, salt, 32768, 8, 1, dkSize)
 	if err != nil {
 		return err
@@ -206,11 +232,11 @@ func (c *Cipher) Decrypt(dst, ciphertext []byte) error {
 	macKeys := dk[:macKeyLen*2]
 	cipherKeys := dk[macKeyLen*2:]
 
-	macs := ciphertext[24 : 24+64*2]
-	encryptedData := ciphertext[24+64*2:]
+	macs := src[24 : 24+64*2]
+	encryptedData := src[24+64*2:]
 
 	authenticatedData := make([]byte, 0, 24+len(encryptedData))
-	authenticatedData = append(authenticatedData, ciphertext[:24]...)
+	authenticatedData = append(authenticatedData, src[:24]...)
 	authenticatedData = append(authenticatedData, encryptedData...)
 
 	if !hmac.Equal(macs, generate_macs(authenticatedData, macKeys)) {
