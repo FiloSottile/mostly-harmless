@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like telnet. After searching for &hellip;">
+  <meta name="description" content="This is a enthusiast blog post. I’m not even gonna speak about how concurrency comes easy with Go. Honestly, I’m not good enough to speak about it. I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,6 +120,69 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-26T18:16:00+01:00" pubdate data-updated="true" class="updated">Mar 26<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>This is a enthusiast blog post. I’m not even gonna speak about how concurrency comes easy with Go. Honestly, I’m not good enough to speak about it. I’ll just speak about how using Go in my everyday programming makes me happy.</p>
+
+<p>Go has elegance, good tools and has had the possibility to start designing from scratch.</p>
+
+<p>The following should not be a list but a tree, since good design decisions enable other good design decision. But I’ll go over them as they come to my mind.</p>
+
+<h3 id="every-package-has-a-unique-name-in-the-universe">Every package has a unique name in the universe</h3>
+<p>If you write a package, it will have a name. A unique one. In all the universe. Like, <code>github.com/FiloSottile/TripleSec</code> or <code>filippo.io/foobar</code>.</p>
+
+<p>This is <strong>awesome</strong>. First and most obviously, <code>import</code> statements are sure, clear things. You import packages by their full name and you know what you are importing. No need for <code>bundler</code> or <code>requirements.txt</code>.</p>
+
+<p>Second, you can keep a tree of the packages you use or develop on your disk, and it remains tidy by itself. You just put them in <code>$GOPATH/THEIR/FULL/NAME</code> and both you and the toolkit always know where they are.</p>
+
+<p>Finally, most of the times the name will tell you <em>and your toolkit</em> where to get that package. If the package name starts with <em>bitbucket.com</em>, <em>github.com</em> or <em>code.google.com</em> then you just need to run <code>go get NAME</code> and it will get downloaded for you. Automatically.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/why-go-is-elegant-and-makes-my-code-elegant/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/my-remote-shell-session-setup/">My remote shell session setup</a></h1>
       
     
@@ -145,36 +208,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like <code>telnet</code>.</p>
-
-<p>After searching for quite a long time, I finally built my dream setup. These were the requirements:</p>
-
-<ul>
-  <li>I want a single window/tab/panel of the terminal I’m using to be dedicated to the remote shell (without any new window, etc.)</li>
-  <li>I want the shell to survive unaffected with no context loss the following events
-    <ul>
-      <li>connection failure</li>
-      <li>route change (like, toggling the VPN or changing Wi-fi)</li>
-      <li>laptop sleep (like, me closing the lid)</li>
-      <li>local terminal restart or laptop reboot</li>
-    </ul>
-  </li>
-  <li>I want to be able to scroll back with my touchpad</li>
-  <li>I want to be able to copy-paste</li>
-  <li>I want colors</li>
-  <li>I want to launch it with a single command</li>
-</ul>
-
-<p>And a unicorn.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/my-remote-shell-session-setup/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -503,46 +536,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/the-ecb-penguin/">The ECB Penguin</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-10T19:54:00+01:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -569,6 +562,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
+      </li>
+    
+      <li class="post">
         <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
       </li>
     
@@ -582,10 +579,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a>
-      </li>
-    
-      <li class="post">
-        <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
       </li>
     
   </ul>

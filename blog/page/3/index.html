@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Since about a month now I’m using the Wizpert platform to help people out with their programming problems. It has been a greatly gratifying &hellip;">
+  <meta name="description" content="The only really secure place for data is an offline computer. A couple of use cases: store your primary GPG key offline, without expire date, then &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,64 @@ MathJax.Hub.Config({
   <header>
     
       
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/offline-storage-on-a-rpi/">Offline storage on a RPi</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-02-22T23:21:00+01:00" pubdate data-updated="true" class="updated">Feb 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>The only really secure place for data is <strong>an <a href="https://en.wikipedia.org/wiki/Air_gap_(networking)">offline</a> computer</strong>.</p>
+
+<p>A couple of use cases: <a href="http://wiki.debian.org/subkeys">store your primary <strong>GPG key</strong> offline</a>, without expire date, then generate a couple of subkeys with 1y expiration and use them day to day. This way you will need your primary key only to issue/revoke subkeys or to sign other people keys (and no need to waste all your signatures every time your key expire).
+Or, <a href="http://bitcoinarmory.com/using-offline-wallets-in-armory/">create a cold wallet for <strong>Bitcoin</strong> with Armory</a> and authorize all transactions from the offline machine while monitoring them from the online one.
+And there are much more examples of data best kept offline…</p>
+
+<p>But not everybody has money and space to keep a rarely used computer around only to store a couple of keys.</p>
+
+<p>My solution is to use a <strong>Raspberry Pi</strong> with a <em>dedicated SD card</em>. Budget: <strong>10$</strong> for the SD (every good nerd already has a RPi, right?). Space: negligible.</p>
+
+<p>If you don’t know what a RPi is, <a href="http://www.raspberrypi.org/faqs">it is a credit card sized computer with Ethernet, USB, HDMI that costs 35$</a>. Now you either want to buy one or you stumbled here by accident.</p>
+
+<p>It’s simple: just download <a href="http://www.raspbian.org/">Raspbian</a>, <strong>unplug Ethernet</strong>, install Gnupg and <a href="https://gist.github.com/FiloSottile/3646033">Armory</a> and transfer data with any USB key! <em>Finish!</em> And now you have highest grade security on the cheap.</p>
+
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
         <!-- This defines how Octopress will use posts with external-url. -->
         <h1 class="entry-title"><a class="external-link" href="http://blog.wizpert.com/programming-help/">Programming isn&#8217;t always easy</a></h1>
       
@@ -145,16 +203,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>Since about a month now I’m using the <a href="https://wizpert.com/filippovalsorda">Wizpert</a> platform to help people out with their programming problems. It has been a greatly gratifying experience.</p>
-
-<p>Here is a guest post on their blog.</p>
-
-<p><em>Some people say that with all the reference documentation available, programming is easy.</em> …</p>
-
-</div>
-    
-    
   
 
   
@@ -491,47 +539,9 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/send-a-head-request-in-python/">Send a HEAD request in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2012-03-18T17:53:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
     
     <a href="/archives">Blog Archives</a>
     
@@ -557,6 +567,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
+      </li>
+    
+      <li class="post">
         <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
       </li>
     
@@ -570,10 +584,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a>
-      </li>
-    
-      <li class="post">
-        <a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a>
       </li>
     
   </ul>

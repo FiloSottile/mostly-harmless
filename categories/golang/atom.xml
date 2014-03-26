@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Golang | PyTux]]></title>
+  <link href="http://filippo.io/categories/golang/atom.xml" rel="self"/>
+  <link href="http://filippo.io/"/>
+  <updated>2014-03-26T20:19:32+01:00</updated>
+  <id>http://filippo.io/</id>
+  <author>
+    <name><![CDATA[Filippo Valsorda]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Why Go is elegant and makes my code elegant]]></title>
+    <link href="http://filippo.io/why-go-is-elegant-and-makes-my-code-elegant/"/>
+    <updated>2014-03-26T18:16:00+01:00</updated>
+    <id>http://filippo.io/why-go-is-elegant-and-makes-my-code-elegant</id>
+    <content type="html"><![CDATA[<p>This is a enthusiast blog post. I’m not even gonna speak about how concurrency comes easy with Go. Honestly, I’m not good enough to speak about it. I’ll just speak about how using Go in my everyday programming makes me happy.</p>
+
+<p>Go has elegance, good tools and has had the possibility to start designing from scratch.</p>
+
+<p>The following should not be a list but a tree, since good design decisions enable other good design decision. But I’ll go over them as they come to my mind.</p>
+
+<h3 id="every-package-has-a-unique-name-in-the-universe">Every package has a unique name in the universe</h3>
+<p>If you write a package, it will have a name. A unique one. In all the universe. Like, <code>github.com/FiloSottile/TripleSec</code> or <code>filippo.io/foobar</code>.</p>
+
+<p>This is <strong>awesome</strong>. First and most obviously, <code>import</code> statements are sure, clear things. You import packages by their full name and you know what you are importing. No need for <code>bundler</code> or <code>requirements.txt</code>.</p>
+
+<p>Second, you can keep a tree of the packages you use or develop on your disk, and it remains tidy by itself. You just put them in <code>$GOPATH/THEIR/FULL/NAME</code> and both you and the toolkit always know where they are.</p>
+
+<p>Finally, most of the times the name will tell you <em>and your toolkit</em> where to get that package. If the package name starts with <em>bitbucket.com</em>, <em>github.com</em> or <em>code.google.com</em> then you just need to run <code>go get NAME</code> and it will get downloaded for you. Automatically.</p>
+
+<!-- more -->
+
+<h3 id="godoc">GoDoc</h3>
+
+<p>Go has a <a href="http://blog.golang.org/godoc-documenting-go-code">clear, easy, multi-output documentation style</a>. You just write comments and there’s a tool that will write txt, man pages and HTML for you.</p>
+
+<p>Mix this and the above and you get <a href="godoc.org">godoc.org</a>. The site will index all the packages it can crawl, generate docs for them and provide them to you at <em>http://godoc.org/PACKAGE_NAME</em>. All of the docs, in the same place, automatically. <strong>You literally just have to write comments and push and it’s like you registered the package on PyPi, generated the docs and uploaded them</strong>.</p>
+
+<h3 id="compiling-and-static-binaries--with-easy-cross-compiling">Compiling and static binaries (+ with easy cross-compiling)</h3>
+
+<p>Go is compiled. This has a number of advantages, first being all the errors that can be detected by the compiler, and speed. But usually there’s a tradeoff: Makefiles get messy, dynamic libraries requirements on the target machines.</p>
+
+<p>Go solves all these: there are no Makefiles at all (or requirements.txt or metadata whatsoever), just imports and at most build inclusion/exclusion statements at top of the file; the binaries are static.</p>
+
+<p>You just compile a binary with the libraries you have on your system (see point 1) and ship it to the machine that runs it. No dependencies. No interpreter versions.</p>
+
+<p>Or if you just want to solve that Project Euler problem, <code>go run solution.go</code>. I don’t miss Python anymore.</p>
+
+<p>And by mixing good design, good tools and good community, you get <a href="https://github.com/laher/goxc">cross-compilation for free</a>.</p>
+
+<h3 id="static-types-that-i-have-to-type-only-once">Static types, that I have to type only once</h3>
+
+<p>Static types are good, if they don’t slow me down. Go simply figured out that you just have to define them for functions parameters and return values. Think about it, (almost) all variables are parameters, receive a return value from a function or are defined as an explicit value.</p>
+
+<p>When I happen to explicitly define a type, I’m probably doing something complex enough that static types are only gonna be helpful anyway.</p>
+
+<h3 id="a-unique-documented-style">A unique, documented style</h3>
+
+<p>Go code has an official style. It’s part of the language. It’s documented. And patterns are made explicit in the <a href="http://blog.golang.org/">blog posts</a>, that are committed to the same repositories as the Go tools.</p>
+
+<p>And also here there’s an awesome tool. <code>go fmt</code> will take your source code and format it according to the style. No more “personal preferences” and discussions.</p>
+
+<p>This makes reading Go code easier, whoever wrote it and whatever the project.</p>
+
+<!-- As Linus Torvalds put it in the kernel [`CodingStyle`][codingstyle]: -->
+
+<h3 id="pleasant-conventions">Pleasant conventions</h3>
+
+<p>Go has some conventions that affect the behavior of your programs. These are easy and natural, and simplify the language without adding confusion.</p>
+
+<ul>
+  <li>Anything that starts with an upper case letter is exported. Everything else is not.</li>
+  <li>If you have tests and benchmarks (you better have them, Go makes it so easy to write them), you put them in <code>*_test.go</code>.</li>
+  <li>You write some Assembly, just put it in a file named like <code>*_amd64.s</code></li>
+</ul>
+
+<h3 id="control-flow-is-explicit-and-in-your-hands">Control flow is explicit and in your hands</h3>
+
+<p>There are no exceptions that can traverse your code up to who knows where. Functions return a error, you handle it, or just return it.</p>
+
+<p>Tests follow the same philosophy: you explicitly check for errors or expected states and <code>.Fail</code> the test if you want.</p>
+
+<h3 id="even-if-its-young-it-has-a-decent-library">Even if it’s young it has a decent library</h3>
+
+<p>I wrote <a href="https://github.com/FiloSottile/TripleSec/">Golang TripleSec</a> using only standard and <code>go.crypto</code> libraries. And they are fast and pretty. (Ok, I’m cheating, there’s Adam writing Go crypto libs, but also the rest is good!)</p>
+
+<p>Also, thanks to point 1, it’s seamless to use external libraries, obviously.</p>
+
+<h3 id="theres-no-pointer-arithmetics-but-no-flexibility-is-lost">There’s no pointer arithmetics but no flexibility is lost</h3>
+
+<p>Go has no low-level memory arithmetics, but pointers, <code>&amp;</code> and <code>*</code> are still there for your usual pass-by-pointer needs. This alone kills a lot of complexity and potential bugs.</p>
+
+<p>However flexible array pointers are still there, on disguise: they are called <strong>slices</strong>, actually just a struct of a pointer, a own length and a length of the underlying allocated memory (<em>capacity</em>). The built-in length means that APIs don’t need to explicitly pass it around and built-in capacity means no more silent overflows and segfaults. A bunch of built-ins come bundled to seamlessly handle length, capacity, copying and reallocation.</p>
+
+<p>It’s how C arrays should have always worked if performance wasn’t prioritized over simplicity, security… everything, actually.</p>
+
+<hr />
+
+<p>So, this is a quick recap of what I loved about programming in Go. I probably missed something and will be adding things over time.</p>
+
+<p>If you want to share your opinion on Go, I’m <a href="https://twitter.com/FiloSottile">@FiloSottile</a> on Twitter. And if you’ve never tried Go, give it a shot! It’s not only about concurrency!</p>
+]]></content>
+  </entry>
+  
+</feed>
