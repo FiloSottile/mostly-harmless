@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PyTux | Trips of a curious penguin</title>
+  <title>On Keybase.io and encrypted private key uploading | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://filippo.io/">
+  <link rel="canonical" href="http://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -109,18 +109,13 @@ MathJax.Hub.Config({
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    
-    <article>
-      
   <header>
     
       
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a></h1>
+        <h1 class="entry-title">On Keybase.io and encrypted private key uploading</h1>
       
     
     
@@ -145,8 +140,7 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>One thing in particular of Keybase.io attracts a lot heat recently: they support uploading your encrypted key on their servers. This usually is pointed at as a mortal sin.</p>
+  <div class="entry-content"><p>One thing in particular of Keybase.io attracts a lot heat recently: they support uploading your encrypted key on their servers. This usually is pointed at as a mortal sin.</p>
 
 <p>Well, here is my private key, the untouched output of <code>gpg --armor --export-secret-keys filippo.io | gpg --armor --clearsign</code>.</p>
 
@@ -569,389 +563,93 @@ MathJax.Hub.Config({
 
 <p>If this is indeed dangerous you will see shortly messages signed by saying that I stink, and immediately after me waving revocation certificates in the air. But it’s not going to happen, because decrypting the above is arguably as difficult as computing my secret key from the public one.</p>
 
+<!-- more -->
+
+<h2 id="the-sensible-argument">The sensible argument</h2>
+
+<p>There is however a more informed point that is made against uploading your key: “what if they start serving a keylogger on their site?”</p>
+
+<p>However here the issue <strong>is not</strong> having uploaded the private key to the Keybase servers <strong>but using the in-browser client</strong>. If the server turns malicious and you are doing crypto in the browser, you are pwn’d, otherwise you are not.</p>
+
+<p>Let’s look at the threat models.</p>
+
+<h3 id="keybase-is-compromised-you-use-the-website-to-do-crypto">Keybase is compromised; you use the website to do crypto</h3>
+
+<p>The attacker does not need to upload any keylogger, they just modify the code to catch your decrypted private key while you use it and send it hidden in the next upload. The End.</p>
+
+<h3 id="keybase-is-compromised-you-use-the-cli-client-uncompromised">Keybase is compromised; you use the CLI client (uncompromised)</h3>
+
+<p>Here the attacker has only an encryption of the private key as the one above, you keep using your client happily and when he desperately upload a keylogger to the site you just go like “WTF!? I don’t do crypto in the browser, why is it asking me some password? MAX!”</p>
+
+<h3 id="the-cli-client-is-compromised">The CLI client is compromised</h3>
+
+<p>Goodbye. Your computer is compromised, don’t even try. But this holds true of any tool, even the very GnuPG.</p>
+
+<hr />
+
+<p><a href="">Discuss (or post messages signed by me) on HN</a></p>
 </div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">Read on &rarr;</a>
-      </footer>
-    
-  
 
   
 
 
-    </article>
-    
-  
-    
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
       
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a></h1>
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-31T21:15:00+02:00" pubdate data-updated="true" class="updated">Mar 31<span>st</span>, 2014</time>
       
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
-
-
-
-<time datetime="2014-03-26T18:16:00+01:00" pubdate data-updated="true" class="updated">Mar 26<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
+    <a class='category' href='/categories/crypto/'>crypto</a>
   
+</span>
 
+
+    </p>
+    
+      <div class="sharing">
   
-
-
-    </article>
-    
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/" data-via="FiloSottile" data-counturl="http://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/" >Tweet</a>
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/my-remote-shell-session-setup/">My remote shell session setup</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
-
-
-
-<time datetime="2014-03-18T04:08:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
+  <div class="g-plusone" data-size="medium"></div>
   
-
   
-
-
-    </article>
-    
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
   
-
-
-
-<time datetime="2014-03-13T03:15:00+01:00" pubdate data-updated="true" class="updated">Mar 13<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/scraping-a-video-out-of-a-more-stubborn-site/">Scraping the hell out of a more stubborn site</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2014-02-03T03:47:00+01:00" pubdate data-updated="true" class="updated">Feb 3<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2014-01-27T02:12:00+01:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2014-01-16T15:20:00+01:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-12-12T17:52:00+01:00" pubdate data-updated="true" class="updated">Dec 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-12-05T17:43:00+01:00" pubdate data-updated="true" class="updated">Dec 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-25T10:52:00+01:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/archives">Blog Archives</a>
-    
-  </div>
 </div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/why-go-is-elegant-and-makes-my-code-elegant/" title="Previous Post: Why Go is elegant and makes my code elegant">&laquo; Why Go is elegant and makes my code elegant</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
 <aside class="sidebar">
   
     <section class="aboutme">
@@ -996,7 +694,7 @@ MathJax.Hub.Config({
   <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
   src="http://api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
   <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
 
   <script type="text/javascript">
@@ -1055,7 +753,7 @@ MathJax.Hub.Config({
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
@@ -1096,7 +794,7 @@ MathJax.Hub.Config({
 
 <section>
   <h1>My Pinboard</h1>
-  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
   <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
 </section>
 <script type="text/javascript">
@@ -1116,6 +814,7 @@ MathJax.Hub.Config({
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -1125,19 +824,6 @@ MathJax.Hub.Config({
 
 </footer>
   
-
-<script type="text/javascript">
-      var disqus_shortname = 'pytux';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
 
 
 

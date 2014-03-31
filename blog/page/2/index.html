@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of &hellip;">
+  <meta name="description" content="GitHub offers a number of Service Hooks that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,6 +120,114 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-24T19:23:00+01:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
+
+<p>There is a official Rack handler somewhere, and maybe a Django one, but nothing in pure Python. So here is it.</p>
+
+<p>It’s pretty simple and self-contained, start it with the IP address and port to listen on as arguments, and it will pass a function - <code>handle_hook()</code> - the payload received on each push as a Python dictionary. It also checks that the originating IP is actually GH.</p>
+
+<p>Then simply enter the address of your server on the GH Service Hooks repo Admin page, and you’re all set.</p>
+
+<p><img src="/images/Service Hooks 2013-11-24 00-54-05.png" alt="The Webhooks admin page" /></p>
+
+<p>For reference on what’s inside the payload, <a href="https://help.github.com/articles/post-receive-hooks">RTFM</a>.</p>
+
+<div><script src="https://gist.github.com/7634541.js?file=HookHandler.py"></script>
+<noscript><pre><code>#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+import BaseHTTPServer
+import sys
+import time
+import urlparse
+import json
+
+
+HOST_NAME = sys.argv[1]
+PORT_NUMBER = int(sys.argv[2])
+
+
+def handle_hook(payload):
+    pass
+
+
+class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    server_version = &quot;HookHandler/0.1&quot;
+    def do_GET(s):
+        s.send_response(200)
+        s.wfile.write('Hello!')
+
+    def do_POST(s):
+        # Check that the IP is within the GH ranges
+        if not any(s.client_address[0].startswith(IP)
+                   for IP in ('192.30.252', '192.30.253', '192.30.254', '192.30.255')):
+            s.send_error(403)
+
+        length = int(s.headers['Content-Length'])
+        post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
+        payload = json.loads(post_data['payload'][0])
+
+        handle_hook(payload)
+
+        s.send_response(200)
+
+
+if __name__ == '__main__':
+    server_class = BaseHTTPServer.HTTPServer
+    httpd = server_class((HOST_NAME, PORT_NUMBER), HookHandler)
+    print time.asctime(), &quot;Server Starts - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
+    print time.asctime(), &quot;Server Stops - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
+</code></pre></noscript></div>
+
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/the-ecb-penguin/">The ECB Penguin</a></h1>
       
     
@@ -145,21 +253,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
-
-<p>This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of the <a href="https://commons.wikimedia.org/wiki/File:Tux.jpg">Tux Linux mascot</a> encrypted with a block cipher in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29">ECB mode</a> that still shows clearly the outline of the original.</p>
-
-<div class="reset-zoom"><blockquote class="twitter-tweet" data-conversation="none" align="center" data-dnt="true"><p>.<a href="https://twitter.com/solardiz">@solardiz</a> <a href="https://twitter.com/ErrataRob">@ErrataRob</a> ECB mode strikes again, I see. It&#39;s hard to believe there&#39;s anyone left who hasn&#39;t seen the penguin.</p>&mdash; Andrea (@puellavulnerata) <a href="https://twitter.com/puellavulnerata/statuses/396863689602519041">November 3, 2013</a></blockquote>
-<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/the-ecb-penguin/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -492,50 +585,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/">Claimed a RECAP Aaron Swartz grant</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-04-04T21:40:00+02:00" pubdate data-updated="true" class="updated">Apr 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/claimed-a-recap-aaron-swartz-grant/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -564,6 +613,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
+      </li>
+    
+      <li class="post">
         <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
@@ -577,10 +630,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/scraping-a-video-out-of-a-more-stubborn-site/">Scraping the hell out of a more stubborn site</a>
-      </li>
-    
-      <li class="post">
-        <a href="/add-support-for-a-new-video-site-to-youtube-dl/">Add support for a new video site to youtube-dl</a>
       </li>
     
   </ul>
