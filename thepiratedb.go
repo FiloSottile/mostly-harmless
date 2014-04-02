@@ -1,3 +1,5 @@
+// TODO: update mode, downloading from old latest
+
 package main
 
 import (
@@ -166,7 +168,7 @@ func runner(ci chan int, wg *sync.WaitGroup) {
 		resp, err := client.Get(url)
 		if err != nil {
 			if DEBUG {
-				log.Printf("Retry %d, %d-th time", i, tries)
+				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
 			goto start
 		}
@@ -180,7 +182,7 @@ func runner(ci chan int, wg *sync.WaitGroup) {
 		resp.Body.Close()
 		if !bytes.HasPrefix(body, doctype) {
 			if DEBUG {
-				log.Printf("Retry %d, %d-th time", i, tries)
+				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
 			goto start
 		}
@@ -207,7 +209,7 @@ func runner(ci chan int, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func main() {
+func getLatest() int {
 	torrentLink := regexp.MustCompile(`<a href="/torrent/(\d+)/`)
 
 	resp, err := http.Get("https://thepiratebay.se/recent")
@@ -224,6 +226,12 @@ func main() {
 		log.Fatal("latestMatch failed")
 	}
 	latest, _ := strconv.Atoi(string(latestMatch[1]))
+
+	return latest
+}
+
+func main() {
+	latest := getLatest()
 
 	if DEBUG {
 		log.Printf("Latest was %d", latest)
