@@ -4,20 +4,21 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"sync"
 	"time"
 )
 
-const runnersNum = 5
-const maxTries = 3
 const DEBUG = true
 
 var notFoundText = []byte(`<title>Not Found | The Pirate Bay - The world's most resilient BitTorrent site</title>`)
@@ -27,17 +28,17 @@ var LOG_INTERVAL = 10000
 var START_OFFSET = 0
 
 type Torrent struct {
-	num         int
-	title       string
-	category    string
-	size        int64
-	seeders     int
-	leechers    int
-	uploaded    time.Time
-	uploader    string
-	files_num   int
-	description string
-	magnet      string
+	Id          int
+	Title       string
+	Category    string
+	Size        int64
+	Seeders     int
+	Leechers    int
+	Uploaded    time.Time
+	Uploader    string
+	Files_num   int
+	Description string
+	Magnet      string
 }
 
 var regexes = struct {
@@ -59,6 +60,26 @@ var regexes = struct {
 	regexp.MustCompile(`href="(magnet:.+?)" title="Get this torrent"`),
 }
 
+const sqlInit = `
+CREATE TABLE "Torrents" (
+"Id" INTEGER PRIMARY KEY,
+"Title" TEXT,
+"Category" TEXT,
+"Size" INTEGER,
+"Seeders" INTEGER,
+"Leechers" INTEGER,
+"Uploaded" TEXT,
+"Uploader" TEXT,
+"Files_num" INTEGER,
+"Description" TEXT,
+"Magnet" TEXT
+);`
+const sqlIndex = `
+CREATE INDEX "TITLE" ON "Torrents" ("Title");`
+const sqlInsert = `
+INSERT INTO "Torrents" VALUES
+(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
 var stripTagsRegexp = regexp.MustCompile(`(?s)<.+?>`)
 
 func stripTags(s string) string {
@@ -72,19 +93,19 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("title not found")
 	}
-	t.title = html.UnescapeString(string(match[1]))
+	t.Title = html.UnescapeString(string(match[1]))
 
 	match = regexes.category.FindSubmatch(data)
 	if match == nil {
 		return errors.New("category not found")
 	}
-	t.category = html.UnescapeString(string(match[1]))
+	t.Category = html.UnescapeString(string(match[1]))
 
 	match = regexes.size.FindSubmatch(data)
 	if match == nil {
 		return errors.New("size not found")
 	}
-	t.size, err = strconv.ParseInt(string(match[1]), 10, 64)
+	t.Size, err = strconv.ParseInt(string(match[1]), 10, 64)
 	if err != nil {
 		return errors.New("size malformed")
 	}
@@ -93,7 +114,7 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("seeders not found")
 	}
-	t.seeders, err = strconv.Atoi(string(match[1]))
+	t.Seeders, err = strconv.Atoi(string(match[1]))
 	if err != nil {
 		return errors.New("seeders malformed")
 	}
@@ -102,7 +123,7 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("leechers not found")
 	}
-	t.leechers, err = strconv.Atoi(string(match[1]))
+	t.Leechers, err = strconv.Atoi(string(match[1]))
 	if err != nil {
 		return errors.New("leechers malformed")
 	}
@@ -111,7 +132,7 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("uploaded not found")
 	}
-	t.uploaded, err = time.Parse("2006-01-02 15:04:05 MST", string(match[1]))
+	t.Uploaded, err = time.Parse("2006-01-02 15:04:05 MST", string(match[1]))
 	if err != nil {
 		return errors.New("uploaded malformed")
 	}
@@ -120,13 +141,13 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("uploader not found")
 	}
-	t.uploader = string(match[1])
+	t.Uploader = string(match[1])
 
 	match = regexes.files_num.FindSubmatch(data)
 	if match == nil {
 		return errors.New("files_num not found")
 	}
-	t.files_num, err = strconv.Atoi(string(match[1]))
+	t.Files_num, err = strconv.Atoi(string(match[1]))
 	if err != nil {
 		return errors.New("files_num malformed")
 	}
@@ -135,18 +156,18 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	if match == nil {
 		return errors.New("description not found")
 	}
-	t.description = html.UnescapeString(stripTags(string(match[1])))
+	t.Description = html.UnescapeString(stripTags(string(match[1])))
 
 	match = regexes.magnet.FindSubmatch(data)
 	if match == nil {
 		return errors.New("magnet not found")
 	}
-	t.magnet = string(match[1])
+	t.Magnet = string(match[1])
 
 	return nil
 }
 
-func runner(ci chan int, wg *sync.WaitGroup) {
+func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup) {
 	// Instantiate a client to keep a connection open
 	client := &http.Client{}
 
@@ -160,7 +181,11 @@ func runner(ci chan int, wg *sync.WaitGroup) {
 	start:
 		tries += 1
 		if tries > maxTries {
-			log.Printf("Failed torrent %d", i)
+			if DEBUG {
+				log.Fatalf("Failed torrent %d", i)
+			} else {
+				log.Printf("Failed torrent %d", i)
+			}
 			continue
 		}
 
@@ -192,17 +217,30 @@ func runner(ci chan int, wg *sync.WaitGroup) {
 		}
 
 		t := new(Torrent)
-		t.num = i
+		t.Id = i
 		err = ParseTorrent(body, t)
 		if err != nil {
 			if DEBUG {
 				log.Fatal(i, err)
 			} else {
-				log.Printf("torrent %d error %v", i, err)
+				log.Printf("ERROR: torrent %d: %v", i, err)
 			}
 		}
 
-		log.Printf("%+v", t)
+		_, err = insertQuery.Exec(
+			t.Id, t.Title, t.Category, t.Size,
+			t.Seeders, t.Leechers, t.Uploaded, t.Uploader,
+			t.Files_num, t.Description, t.Magnet,
+		)
+		if err != nil {
+			if DEBUG {
+				log.Fatal(i, err)
+			} else {
+				log.Printf("ERROR: torrent %d: sql %v", i, err)
+			}
+		}
+
+		// log.Printf("%+v", t)
 	}
 
 	log.Printf("Goroutine done.")
@@ -230,7 +268,53 @@ func getLatest() int {
 	return latest
 }
 
+func openDb() (*sql.DB, *sql.Stmt) {
+	os.Remove("./thepirate.db")
+
+	db, err := sql.Open("sqlite3", "./thepirate.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(sqlInit)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = db.Exec(sqlIndex)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	insertQuery, err := db.Prepare(sqlInsert)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return db, insertQuery
+}
+
+func parseArgs() (maxTries int, runnersNum int) {
+	if len(os.Args) != 3 {
+		log.Fatal("usage: thepiratedb runnersNum maxTries")
+	}
+
+	runnersNum, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		log.Fatal("usage: thepiratedb runnersNum maxTries")
+	}
+
+	maxTries, err = strconv.Atoi(os.Args[2])
+	if err != nil {
+		log.Fatal("usage: thepiratedb runnersNum maxTries")
+	}
+
+	return
+}
+
 func main() {
+	maxTries, runnersNum := parseArgs()
+	db, insertQuery := openDb()
+	defer db.Close()
 	latest := getLatest()
 
 	if DEBUG {
@@ -244,7 +328,7 @@ func main() {
 	ci := make(chan int)
 	for i := 0; i < runnersNum; i++ {
 		wg.Add(1)
-		go runner(ci, &wg)
+		go runner(ci, insertQuery, maxTries, &wg)
 	}
 	for i := 1 + START_OFFSET; i <= latest+START_OFFSET; i++ {
 		ci <- i
