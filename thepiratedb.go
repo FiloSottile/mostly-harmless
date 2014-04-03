@@ -1,5 +1,3 @@
-// TODO: update mode, downloading from old latest
-
 package main
 
 import (
@@ -13,19 +11,19 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"regexp"
 	"strconv"
 	"sync"
 	"time"
 )
 
-const DEBUG = true
+var DEBUG = os.Getenv("DEBUG") != ""
 
 var notFoundText = []byte(`<title>Not Found | The Pirate Bay - The world's most resilient BitTorrent site</title>`)
 var doctype = []byte(`<!DOCTYPE html PUBLIC`)
 
 var LOG_INTERVAL = 10000
-var START_OFFSET = 0
 
 type Torrent struct {
 	Id          int
@@ -195,6 +193,7 @@ func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup
 			if DEBUG {
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
+			time.Sleep(time.Duration(tries) * time.Second)
 			goto start
 		}
 		body, err := ioutil.ReadAll(resp.Body)
@@ -202,6 +201,7 @@ func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup
 			if DEBUG {
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
+			time.Sleep(time.Duration(tries) * time.Second)
 			goto start
 		}
 		resp.Body.Close()
@@ -209,6 +209,7 @@ func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup
 			if DEBUG {
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
+			time.Sleep(time.Duration(tries) * time.Second)
 			goto start
 		}
 
@@ -268,21 +269,25 @@ func getLatest() int {
 	return latest
 }
 
-func openDb() (*sql.DB, *sql.Stmt) {
-	os.Remove("./thepirate.db")
+func openDb(new bool) (*sql.DB, *sql.Stmt) {
+	if new {
+		os.Remove("./thepirate.db")
+	}
 
 	db, err := sql.Open("sqlite3", "./thepirate.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec(sqlInit)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = db.Exec(sqlIndex)
-	if err != nil {
-		log.Fatal(err)
+	if new {
+		_, err = db.Exec(sqlInit)
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = db.Exec(sqlIndex)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	insertQuery, err := db.Prepare(sqlInsert)
@@ -293,36 +298,51 @@ func openDb() (*sql.DB, *sql.Stmt) {
 	return db, insertQuery
 }
 
-func parseArgs() (maxTries int, runnersNum int) {
-	if len(os.Args) != 3 {
-		log.Fatal("usage: thepiratedb runnersNum maxTries")
+func parseArgs() (maxTries int, runnersNum int, startOffset int) {
+	if len(os.Args) < 3 {
+		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
 	}
 
 	runnersNum, err := strconv.Atoi(os.Args[1])
 	if err != nil {
-		log.Fatal("usage: thepiratedb runnersNum maxTries")
+		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
 	}
 
 	maxTries, err = strconv.Atoi(os.Args[2])
 	if err != nil {
-		log.Fatal("usage: thepiratedb runnersNum maxTries")
+		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
+	}
+
+	if len(os.Args) > 3 {
+		startOffset, err = strconv.Atoi(os.Args[3])
+		if err != nil {
+			log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
+		}
+	} else {
+		startOffset = 0
 	}
 
 	return
 }
 
 func main() {
-	maxTries, runnersNum := parseArgs()
-	db, insertQuery := openDb()
+	maxTries, runnersNum, startOffset := parseArgs()
+	db, insertQuery := openDb(startOffset == 0)
 	defer db.Close()
 	latest := getLatest()
 
 	if DEBUG {
 		log.Printf("Latest was %d", latest)
-		latest = 1000
+		latest = 50000
 		LOG_INTERVAL = 10
-		START_OFFSET = 9850000
 	}
+
+	go func(db *sql.DB) {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt, os.Kill)
+		_ = <-c
+		db.Close()
+	}(db)
 
 	var wg sync.WaitGroup
 	ci := make(chan int)
@@ -330,7 +350,7 @@ func main() {
 		wg.Add(1)
 		go runner(ci, insertQuery, maxTries, &wg)
 	}
-	for i := 1 + START_OFFSET; i <= latest+START_OFFSET; i++ {
+	for i := 1 + startOffset; i <= latest+startOffset; i++ {
 		ci <- i
 	}
 	close(ci)
