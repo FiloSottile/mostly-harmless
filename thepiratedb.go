@@ -165,7 +165,7 @@ func ParseTorrent(data []byte, t *Torrent) error {
 	return nil
 }
 
-func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup) {
+func runner(ci chan int, dbChan chan *Torrent, maxTries int, wg *sync.WaitGroup) {
 	// Instantiate a client to keep a connection open
 	client := &http.Client{}
 
@@ -228,18 +228,7 @@ func runner(ci chan int, insertQuery *sql.Stmt, maxTries int, wg *sync.WaitGroup
 			}
 		}
 
-		_, err = insertQuery.Exec(
-			t.Id, t.Title, t.Category, t.Size,
-			t.Seeders, t.Leechers, t.Uploaded, t.Uploader,
-			t.Files_num, t.Description, t.Magnet,
-		)
-		if err != nil {
-			if DEBUG {
-				log.Fatal(i, err)
-			} else {
-				log.Printf("ERROR: torrent %d: sql %v", i, err)
-			}
-		}
+		dbChan <- t
 
 		// log.Printf("%+v", t)
 	}
@@ -325,6 +314,25 @@ func parseArgs() (maxTries int, runnersNum int, startOffset int) {
 	return
 }
 
+func writer(dbChan chan *Torrent, insertQuery *sql.Stmt, lock *sync.Mutex) {
+	for t := range dbChan {
+		_, err := insertQuery.Exec(
+			t.Id, t.Title, t.Category, t.Size,
+			t.Seeders, t.Leechers, t.Uploaded, t.Uploader,
+			t.Files_num, t.Description, t.Magnet,
+		)
+		if err != nil {
+			if DEBUG {
+				log.Fatal(t.Id, err)
+			} else {
+				log.Printf("ERROR: torrent %d: sql %v", t.Id, err)
+			}
+		}
+	}
+
+	lock.Unlock()
+}
+
 func main() {
 	maxTries, runnersNum, startOffset := parseArgs()
 	db, insertQuery := openDb(startOffset == 0)
@@ -342,19 +350,28 @@ func main() {
 		signal.Notify(c, os.Interrupt, os.Kill)
 		_ = <-c
 		db.Close()
+		os.Exit(0)
 	}(db)
+
+	writerLock := new(sync.Mutex)
+	writerLock.Lock()
+	dbChan := make(chan *Torrent)
+	go writer(dbChan, insertQuery, writerLock)
 
 	var wg sync.WaitGroup
 	ci := make(chan int)
 	for i := 0; i < runnersNum; i++ {
 		wg.Add(1)
-		go runner(ci, insertQuery, maxTries, &wg)
+		go runner(ci, dbChan, maxTries, &wg)
 	}
 	for i := 1 + startOffset; i <= latest+startOffset; i++ {
 		ci <- i
 	}
 	close(ci)
 	wg.Wait()
+
+	close(dbChan)
+	writerLock.Lock()
 
 	log.Print("Done.")
 }
