@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"errors"
+	"flag"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"html"
@@ -287,28 +288,19 @@ func openDb(new bool) (*sql.DB, *sql.Stmt) {
 	return db, insertQuery
 }
 
-func parseArgs() (maxTries int, runnersNum int, startOffset int) {
-	if len(os.Args) < 3 {
-		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
+func parseArgs() (maxTries int, runnersNum int) {
+	if flag.NArg() < 3 {
+		flag.Usage()
 	}
 
-	runnersNum, err := strconv.Atoi(os.Args[1])
+	runnersNum, err := strconv.Atoi(flag.Arg(1))
 	if err != nil {
-		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
+		flag.Usage()
 	}
 
-	maxTries, err = strconv.Atoi(os.Args[2])
+	maxTries, err = strconv.Atoi(flag.Arg(2))
 	if err != nil {
-		log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
-	}
-
-	if len(os.Args) > 3 {
-		startOffset, err = strconv.Atoi(os.Args[3])
-		if err != nil {
-			log.Fatal("usage: thepiratedb runnersNum maxTries [start]")
-		}
-	} else {
-		startOffset = 0
+		flag.Usage()
 	}
 
 	return
@@ -349,7 +341,15 @@ func writer(dbChan chan *Torrent, insertQuery *sql.Stmt, lock *sync.Mutex) {
 }
 
 func main() {
-	maxTries, runnersNum, startOffset := parseArgs()
+	var startOffset = *flag.Int("start", 0, "the starting torrent number")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] runnersNum maxTries\n", os.Args[0])
+		flag.PrintDefaults()
+		os.Exit(2)
+	}
+	flag.Parse()
+	maxTries, runnersNum := parseArgs()
+
 	db, insertQuery := openDb(startOffset == 0)
 	defer db.Close()
 	latest := getLatest()
