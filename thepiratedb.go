@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"database/sql"
 	"errors"
@@ -342,6 +343,7 @@ func writer(dbChan chan *Torrent, insertQuery *sql.Stmt, lock *sync.Mutex) {
 
 func main() {
 	var startOffset = *flag.Int("start", 0, "the starting torrent number")
+	var fromLog = *flag.Bool("log", false, "read the numbers from stdin")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] runnersNum maxTries\n", os.Args[0])
 		flag.PrintDefaults()
@@ -379,9 +381,27 @@ func main() {
 		wg.Add(1)
 		go runner(ci, dbChan, maxTries, &wg)
 	}
-	for i := 1 + startOffset; i <= latest+startOffset; i++ {
-		ci <- i
+
+	if fromLog {
+		// egrep -v "(Processing torrent|sql UNIQUE constraint failed)" thepirate.log |
+		// egrep "^2014/04" | egrep -o "[0-9]{5,}" | thepiratedb -log
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			i, err := strconv.Atoi(scanner.Text())
+			if err != nil {
+				log.Fatal("log malformed")
+			}
+			ci <- i
+		}
+		if err := scanner.Err(); err != nil {
+			log.Fatal("reading standard input:", err)
+		}
+	} else {
+		for i := 1 + startOffset; i <= latest+startOffset; i++ {
+			ci <- i
+		}
 	}
+
 	close(ci)
 	wg.Wait()
 
