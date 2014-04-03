@@ -176,7 +176,7 @@ func runner(ci chan int, dbChan chan *Torrent, maxTries int, wg *sync.WaitGroup)
 
 		tries := 0
 
-	start:
+	retry:
 		tries += 1
 		if tries > maxTries {
 			if DEBUG {
@@ -194,7 +194,7 @@ func runner(ci chan int, dbChan chan *Torrent, maxTries int, wg *sync.WaitGroup)
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
 			time.Sleep(time.Duration(tries) * time.Second)
-			goto start
+			goto retry
 		}
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -202,7 +202,7 @@ func runner(ci chan int, dbChan chan *Torrent, maxTries int, wg *sync.WaitGroup)
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
 			time.Sleep(time.Duration(tries) * time.Second)
-			goto start
+			goto retry
 		}
 		resp.Body.Close()
 		if !bytes.HasPrefix(body, doctype) {
@@ -210,7 +210,7 @@ func runner(ci chan int, dbChan chan *Torrent, maxTries int, wg *sync.WaitGroup)
 				log.Printf("Retry torrent %d (%d)", i, tries)
 			}
 			time.Sleep(time.Duration(tries) * time.Second)
-			goto start
+			goto retry
 		}
 
 		if bytes.Index(body[:300], notFoundText) >= 0 {
@@ -315,18 +315,33 @@ func parseArgs() (maxTries int, runnersNum int, startOffset int) {
 }
 
 func writer(dbChan chan *Torrent, insertQuery *sql.Stmt, lock *sync.Mutex) {
+	var err error
+
 	for t := range dbChan {
-		_, err := insertQuery.Exec(
-			t.Id, t.Title, t.Category, t.Size,
-			t.Seeders, t.Leechers, t.Uploaded, t.Uploader,
-			t.Files_num, t.Description, t.Magnet,
-		)
-		if err != nil {
+		tries := 0
+
+	retry:
+		tries += 1
+		if tries > 3 {
 			if DEBUG {
 				log.Fatal(t.Id, err)
 			} else {
 				log.Printf("ERROR: torrent %d: sql %v", t.Id, err)
 			}
+			continue
+		}
+
+		_, err = insertQuery.Exec(
+			t.Id, t.Title, t.Category, t.Size,
+			t.Seeders, t.Leechers, t.Uploaded, t.Uploader,
+			t.Files_num, t.Description, t.Magnet,
+		)
+		if err != nil && err.Error() == "UNIQUE constraint failed: Torrents.Id" {
+			continue
+		}
+		if err != nil {
+			time.Sleep(time.Duration(tries) * time.Second)
+			goto retry
 		}
 	}
 
