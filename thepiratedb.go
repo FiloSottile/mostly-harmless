@@ -1,3 +1,10 @@
+// Copyright © 2014 Filippo Valsorda, FiloSottile <fv@filippo.io>
+// This source is released under the MIT License
+// http://filosottile.mit-license.org/2014
+
+// thepiratedb: Download your SQLite mirror of The Pirate Bay
+// using multiple concurrent keep-alive HTTPS connections.
+// https://github.com/FiloSottile/thepiratedb
 package main
 
 import (
