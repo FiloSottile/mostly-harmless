@@ -48,7 +48,7 @@ var regexes = struct {
 	files_num, description,
 	magnet *regexp.Regexp
 }{
-	regexp.MustCompile(`<div id="title">\s*(.+?)\s*</div>`),
+	regexp.MustCompile(`(?s)<div id="title">\s*(.+?)\s*</div>`),
 	regexp.MustCompile(`<dt>Type:</dt>\s*<dd><a[^>]*>(.+?)</a></dd>`),
 	regexp.MustCompile(`(?s)<dt>Size:</dt>.*?\((\d+)&nbsp;Bytes\)</dd>`),
 	regexp.MustCompile(`(?s)<dt>Seeders:</dt>.*?(\d+)</dd>`),
@@ -290,16 +290,16 @@ func openDb(new bool) (*sql.DB, *sql.Stmt) {
 }
 
 func parseArgs() (maxTries int, runnersNum int) {
-	if flag.NArg() < 3 {
+	if flag.NArg() < 2 {
 		flag.Usage()
 	}
 
-	runnersNum, err := strconv.Atoi(flag.Arg(1))
+	runnersNum, err := strconv.Atoi(flag.Arg(0))
 	if err != nil {
 		flag.Usage()
 	}
 
-	maxTries, err = strconv.Atoi(flag.Arg(2))
+	maxTries, err = strconv.Atoi(flag.Arg(1))
 	if err != nil {
 		flag.Usage()
 	}
@@ -342,8 +342,11 @@ func writer(dbChan chan *Torrent, insertQuery *sql.Stmt, lock *sync.Mutex) {
 }
 
 func main() {
-	var startOffset = *flag.Int("start", 0, "the starting torrent number")
-	var fromLog = *flag.Bool("log", false, "read the numbers from stdin")
+	// sqlite3 thepirate.db "SELECT Id FROM Torrents ORDER BY Id DESC LIMIT 1;"
+	var startOffset = flag.Int("start", 0, "the starting torrent number")
+	// egrep -v "(Processing torrent|sql UNIQUE constraint failed)" thepirate.log |
+	// egrep "^2014/04" | egrep -o "[0-9]{5,}" | thepiratedb -log
+	var fromLog = flag.Bool("log", false, "read the numbers from stdin")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] runnersNum maxTries\n", os.Args[0])
 		flag.PrintDefaults()
@@ -352,13 +355,13 @@ func main() {
 	flag.Parse()
 	maxTries, runnersNum := parseArgs()
 
-	db, insertQuery := openDb(startOffset == 0)
+	db, insertQuery := openDb(*startOffset == 0 && !*fromLog)
 	defer db.Close()
 	latest := getLatest()
 
 	if DEBUG {
-		log.Printf("Latest was %d", latest)
-		latest = 50000
+		// log.Printf("Latest was %d", latest)
+		// latest = 50000
 		LOG_INTERVAL = 10
 	}
 
@@ -382,9 +385,10 @@ func main() {
 		go runner(ci, dbChan, maxTries, &wg)
 	}
 
-	if fromLog {
-		// egrep -v "(Processing torrent|sql UNIQUE constraint failed)" thepirate.log |
-		// egrep "^2014/04" | egrep -o "[0-9]{5,}" | thepiratedb -log
+	if *fromLog {
+		if DEBUG {
+			log.Print("Reading from log...")
+		}
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			i, err := strconv.Atoi(scanner.Text())
@@ -397,7 +401,7 @@ func main() {
 			log.Fatal("reading standard input:", err)
 		}
 	} else {
-		for i := 1 + startOffset; i <= latest+startOffset; i++ {
+		for i := 1 + *startOffset; i <= latest; i++ {
 			ci <- i
 		}
 	}
