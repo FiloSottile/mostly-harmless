@@ -194,3 +194,41 @@ article hr {
 	height: 400px;
 	overflow: scroll;
 }
+
+div.heartbleed {
+position: absolute;
+top: 55px;
+font-size: 1em;
+color: #f2f2f2;
+font-weight: normal;
+font-family: vallimedium;
+right: 130px;
+width: 250px;
+}
+img.heartbleed {
+position: absolute;
+right: 400px;
+width: 100px;
+top: 30px;
+}
+
+@media only screen
+and (max-width : 991px) {
+  img.heartbleed {
+  	width: 70px;
+  }
+  div.heartbleed {
+  	right: 30px;
+  	width: 350px;
+  }
+}
+
+@media only screen
+and (max-width : 650px) {
+  img.heartbleed {
+  	display: none;
+  }
+  div.heartbleed {
+  	display: none;
+  }
+}
