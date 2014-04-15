@@ -6,7 +6,7 @@ comments: true
 categories: security
 ---
 
-![XKCD is on it](http://imgs.xkcd.com/comics/encryptic.png){:.center}
+![XKCD is on it](https://imgs.xkcd.com/comics/encryptic.png){:.center}
 
 On October Adobe reported that some user data, including credit cards and password dumps, got stolen from their servers. Now the passwords dump has leaked, and it's hilarious.
 
