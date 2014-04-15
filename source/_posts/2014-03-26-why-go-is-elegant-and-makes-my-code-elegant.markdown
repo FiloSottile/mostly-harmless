@@ -27,7 +27,7 @@ Finally, most of the times the name will tell you *and your toolkit* where to ge
 
 Go has a [clear, easy, multi-output documentation style][doc_blog]. You just write comments and there's a tool that will write txt, man pages and HTML for you.
 
-Mix this and the above and you get [godoc.org](godoc.org). The site will index all the packages it can crawl, generate docs for them and provide them to you at *http://godoc.org/PACKAGE_NAME*. All of the docs, in the same place, automatically. **You literally just have to write comments and push and it's like you registered the package on PyPi, generated the docs and uploaded them**.
+Mix this and the above and you get [godoc.org](http://godoc.org). The site will index all the packages it can crawl, generate docs for them and provide them to you at *http://godoc.org/PACKAGE_NAME*. All of the docs, in the same place, automatically. **You literally just have to write comments and push and it's like you registered the package on PyPi, generated the docs and uploaded them**.
 
 [doc_blog]: http://blog.golang.org/godoc-documenting-go-code
 
@@ -93,6 +93,12 @@ Go has no low-level memory arithmetics, but pointers, `&` and `*` are still ther
 However flexible array pointers are still there, on disguise: they are called **slices**, actually just a struct of a pointer, a own length and a length of the underlying allocated memory (*capacity*). The built-in length means that APIs don't need to explicitly pass it around and built-in capacity means no more silent overflows and segfaults. A bunch of built-ins come bundled to seamlessly handle length, capacity, copying and reallocation.
 
 It's how C arrays should have always worked if performance wasn't prioritized over simplicity, security... everything, actually.
+
+### It made the Heartbleed checker possible
+
+A new one: thanks to the crypto/tls library I wrote [the Heartbleed checker](http://filippo.io/Heartbleed/) in one hour, plus a couple for the web side (but I'm just a bad web developer).
+
+Then rewriting the backed entirely in Go allowed me to scale to 12,000 requests a minute over 40 machines, each of them requiring me to open a HTTPS connection and potentially wait some seconds.
 
 ---
 
