@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: iOS | PyTux]]></title>
-  <link href="http://filippo.io/categories/ios/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/ios/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Dumping the iOS simulator memory]]></title>
-    <link href="http://filippo.io/dumping-the-ios-simulator-memory/"/>
+    <link href="https://filippo.io/dumping-the-ios-simulator-memory/"/>
     <updated>2013-09-12T18:26:00+02:00</updated>
-    <id>http://filippo.io/dumping-the-ios-simulator-memory</id>
+    <id>https://filippo.io/dumping-the-ios-simulator-memory</id>
     <content type="html"><![CDATA[<p>To audit memory or to debug with external tools it can be useful to get a <strong>dump of the running memory of an app</strong>.</p>
 
 <p>To do so on a device you’ll need a Jailbreak, SSH access, and <code>gdb</code>. See <a href="https://www.soldierx.com/tutorials/iPhone-Dumping-Game-Memory-and-Injecting-Custom-Code-into-Games">this</a> or <a href="http://rce64.wordpress.com/2013/01/26/decrypting-apps-on-ios-6-single-architecture-no-pieaslr/">this</a>.</p>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: python | PyTux]]></title>
-  <link href="http://filippo.io/categories/python/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/python/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
-    <link href="http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
+    <link href="https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
     <updated>2014-02-03T03:47:00+01:00</updated>
-    <id>http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
+    <id>https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
     <content type="html"><![CDATA[<p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
 
 <p>So as promised let’s have a look at something a bit more uncooperative: <strong>TopVideo.cc</strong>.</p>
@@ -70,9 +70,9 @@
   
   <entry>
     <title type="html"><![CDATA[Add support for a new video site to youtube-dl]]></title>
-    <link href="http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
+    <link href="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
     <updated>2014-01-27T02:12:00+01:00</updated>
-    <id>http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
+    <id>https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
     <content type="html"><![CDATA[<p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
 
 <p>What makes this possible is the structure of ytdl and its awesome community: all the common stuff (CLI, Downloading, Postprocessing) is in the core, and websites support is added in a plugin fashion (with a lot of helper functions available). So anyone can add support for its favorite video site by using another plugin as a template, with no need to understand the whole codebase. And a lot of people indeed did: <a href="https://github.com/rg3/youtube-dl/pulls">we’re nearing <strong>500 Pull Requests</strong></a>!</p>
@@ -331,9 +331,9 @@ __________ summary __________
   
   <entry>
     <title type="html"><![CDATA[Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round]]></title>
-    <link href="http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/"/>
+    <link href="https://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/"/>
     <updated>2013-11-25T10:52:00+01:00</updated>
-    <id>http://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round</id>
+    <id>https://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round</id>
     <content type="html"><![CDATA[<p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
 
 <p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
@@ -549,9 +549,9 @@ for t in range(1, T + 1):
   
   <entry>
     <title type="html"><![CDATA[A Python GitHub Push WebHook Handler]]></title>
-    <link href="http://filippo.io/a-python-github-push-webhook-handler/"/>
+    <link href="https://filippo.io/a-python-github-push-webhook-handler/"/>
     <updated>2013-11-24T19:23:00+01:00</updated>
-    <id>http://filippo.io/a-python-github-push-webhook-handler</id>
+    <id>https://filippo.io/a-python-github-push-webhook-handler</id>
     <content type="html"><![CDATA[<p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
 
 <p>There is a official Rack handler somewhere, and maybe a Django one, but nothing in pure Python. So here is it.</p>
@@ -621,9 +621,9 @@ if __name__ == '__main__':
   
   <entry>
     <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
-    <link href="http://filippo.io/instance-monkey-patching-in-python/"/>
+    <link href="https://filippo.io/instance-monkey-patching-in-python/"/>
     <updated>2013-10-07T00:19:00+02:00</updated>
-    <id>http://filippo.io/instance-monkey-patching-in-python</id>
+    <id>https://filippo.io/instance-monkey-patching-in-python</id>
     <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
 
 <p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: youtube-dl | PyTux]]></title>
-  <link href="http://filippo.io/categories/youtube-dl/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/youtube-dl/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
-    <link href="http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
+    <link href="https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
     <updated>2014-02-03T03:47:00+01:00</updated>
-    <id>http://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
+    <id>https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
     <content type="html"><![CDATA[<p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
 
 <p>So as promised let’s have a look at something a bit more uncooperative: <strong>TopVideo.cc</strong>.</p>
@@ -70,9 +70,9 @@
   
   <entry>
     <title type="html"><![CDATA[Add support for a new video site to youtube-dl]]></title>
-    <link href="http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
+    <link href="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
     <updated>2014-01-27T02:12:00+01:00</updated>
-    <id>http://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
+    <id>https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
     <content type="html"><![CDATA[<p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
 
 <p>What makes this possible is the structure of ytdl and its awesome community: all the common stuff (CLI, Downloading, Postprocessing) is in the core, and websites support is added in a plugin fashion (with a lot of helper functions available). So anyone can add support for its favorite video site by using another plugin as a template, with no need to understand the whole codebase. And a lot of people indeed did: <a href="https://github.com/rg3/youtube-dl/pulls">we’re nearing <strong>500 Pull Requests</strong></a>!</p>

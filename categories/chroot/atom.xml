@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: chroot | PyTux]]></title>
-  <link href="http://filippo.io/categories/chroot/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/chroot/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
-    <link href="http://filippo.io/escaping-a-chroot-jail-slash-1/"/>
+    <link href="https://filippo.io/escaping-a-chroot-jail-slash-1/"/>
     <updated>2013-10-14T10:00:00+02:00</updated>
-    <id>http://filippo.io/escaping-a-chroot-jail-slash-1</id>
+    <id>https://filippo.io/escaping-a-chroot-jail-slash-1</id>
     <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
 
 <!-- more -->

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: crypto | PyTux]]></title>
-  <link href="http://filippo.io/categories/crypto/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/crypto/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[On Keybase.io and encrypted private key uploading]]></title>
-    <link href="http://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/"/>
+    <link href="https://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/"/>
     <updated>2014-03-31T21:15:00+02:00</updated>
-    <id>http://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing</id>
+    <id>https://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing</id>
     <content type="html"><![CDATA[<p>One thing in particular of Keybase.io attracts a lot heat recently: they support uploading your encrypted key on their servers. This usually is pointed at as a mortal sin.</p>
 
 <p>Well, here is my private key, the untouched output of <code>gpg --armor --export-secret-keys filippo.io | gpg --armor --clearsign</code>.</p>
@@ -268,15 +268,15 @@ FC/2wKJZYDLLuFFqMwi8fsX1vfsll/eAlb++vbel4pdunqqG4eW0C69jqe+RMyNK
   
   <entry>
     <title type="html"><![CDATA[The ECB Penguin]]></title>
-    <link href="http://filippo.io/the-ecb-penguin/"/>
+    <link href="https://filippo.io/the-ecb-penguin/"/>
     <updated>2013-11-10T19:54:00+01:00</updated>
-    <id>http://filippo.io/the-ecb-penguin</id>
+    <id>https://filippo.io/the-ecb-penguin</id>
     <content type="html"><![CDATA[<p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
 
 <p>This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of the <a href="https://commons.wikimedia.org/wiki/File:Tux.jpg">Tux Linux mascot</a> encrypted with a block cipher in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29">ECB mode</a> that still shows clearly the outline of the original.</p>
 
 <div class="reset-zoom"><blockquote class="twitter-tweet" data-conversation="none" align="center" data-dnt="true"><p>.<a href="https://twitter.com/solardiz">@solardiz</a> <a href="https://twitter.com/ErrataRob">@ErrataRob</a> ECB mode strikes again, I see. It&#39;s hard to believe there&#39;s anyone left who hasn&#39;t seen the penguin.</p>&mdash; Andrea (@puellavulnerata) <a href="https://twitter.com/puellavulnerata/statuses/396863689602519041">November 3, 2013</a></blockquote>
-<script async="" src="http://filippo.io//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
+<script async="" src="https://filippo.io//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
 
 <!-- more -->
 
@@ -334,9 +334,9 @@ cat header.txt body.ecb.bin &gt; Tux.ecb.ppm
   
   <entry>
     <title type="html"><![CDATA[Please take this and go signing those updates]]></title>
-    <link href="http://filippo.io/please-take-this-and-go-signing-those-updates/"/>
+    <link href="https://filippo.io/please-take-this-and-go-signing-those-updates/"/>
     <updated>2012-12-19T20:47:00+01:00</updated>
-    <id>http://filippo.io/please-take-this-and-go-signing-those-updates</id>
+    <id>https://filippo.io/please-take-this-and-go-signing-those-updates</id>
     <content type="html"><![CDATA[<p>If your program does any sort of self-updating, it is <em>fundamental</em> that you <strong>check the update payload integrity</strong>. And no, fetching it over HTTPS might <a href="http://docs.python.org/2/library/urllib2.html">not</a> <a href="http://docs.python.org/3.3/library/urllib.request.html">be</a> <a href="http://www.rubyinside.com/how-to-cure-nethttps-risky-default-https-behavior-4010.html">enough</a>.</p>
 
 <p>Otherwise, anyone who can tamper with the traffic of your users, like anyone on their same network, or their ISP, can trivially get <strong>code execution</strong> by modifying the update while your program downloads it. And yes, <a href="http://www.infobytesec.com/down/isr-evilgrade-Readme.txt">it is exploited in the wild and it is easy</a>.</p>

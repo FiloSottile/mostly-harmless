@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Go | PyTux]]></title>
-  <link href="http://filippo.io/categories/go/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/go/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Callback-based combinations (in Go)]]></title>
-    <link href="http://filippo.io/callback-based-combinations-in-go/"/>
+    <link href="https://filippo.io/callback-based-combinations-in-go/"/>
     <updated>2014-01-16T15:20:00+01:00</updated>
-    <id>http://filippo.io/callback-based-combinations-in-go</id>
+    <id>https://filippo.io/callback-based-combinations-in-go</id>
     <content type="html"><![CDATA[<p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
 
 <p>An example of an application: if you are bruteforcing two misspellings in a password, the optimal set of couples of characters to bruteforce at the same time is the set of all the combinations of 2 characters out of the password.</p>

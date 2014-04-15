@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: commentary | PyTux]]></title>
-  <link href="http://filippo.io/categories/commentary/atom.xml" rel="self"/>
-  <link href="http://filippo.io/"/>
-  <updated>2014-04-10T00:27:26+02:00</updated>
-  <id>http://filippo.io/</id>
+  <link href="https://filippo.io/categories/commentary/atom.xml" rel="self"/>
+  <link href="https://filippo.io/"/>
+  <updated>2014-04-15T13:55:53+02:00</updated>
+  <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Why Mega WILL change the status quo]]></title>
-    <link href="http://filippo.io/why-mega-will-change-the-status-quo/"/>
+    <link href="https://filippo.io/why-mega-will-change-the-status-quo/"/>
     <updated>2013-01-19T19:23:00+01:00</updated>
-    <id>http://filippo.io/why-mega-will-change-the-status-quo</id>
+    <id>https://filippo.io/why-mega-will-change-the-status-quo</id>
     <content type="html"><![CDATA[<p><em>A response to <a href="https://dl.dropbox.com/u/4374976/random/megaless.html">this</a>
 on the newly launched <a href="https://mega.co.nz">Mega</a>.</em></p>
 
