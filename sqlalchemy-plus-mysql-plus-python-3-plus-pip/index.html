@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PyTux | Trips of a curious penguin</title>
+  <title>SQLAlchemy + MySQL + Python 3 + pip | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Facebook organizes this cool competition called the Hacker Cup. Yesterday the Qualification Round finished, and the user solutions got published. So &hellip;">
+  <meta name="description" content="A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip. tl;dr: pip https:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="https://filippo.io/blog/page/2/">
+  <link rel="canonical" href="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -114,18 +114,13 @@ MathJax.Hub.Config({
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    
-    <article>
-      
   <header>
     
       
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a></h1>
+        <h1 class="entry-title">SQLAlchemy + MySQL + Python 3 + pip</h1>
       
     
     
@@ -143,415 +138,112 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-25T10:52:00+01:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
+<time datetime="2014-05-02T00:40:00+02:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
         
       </p>
     
   </header>
 
 
+  <div class="entry-content"><p>A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip.</p>
+
+<p><strong>tl;dr</strong>: pip <code>https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</code>, connection string <code>mysql+oursql://</code> and Unicode everywhere.</p>
+
+<p>This is a common pain of the Python 3 adopter: even if a project supports it, add-ons and testing are falling behind.</p>
+
+<p>SQLAlchemy supports <a href="http://docs.sqlalchemy.org/en/rel_0_9/dialects/mysql.html">a number of MySQL interfaces</a>. Most of them don’t work on Python 3 (the common MySQLdb/mysql-python will error out with <code>ImportError: No module named 'ConfigParser'</code>) or only come as a DMG (mysql-connector – ugh).</p>
+
+<!-- more -->
+
+<p><a href="https://launchpad.net/oursql/">OurSQL</a> advertises Python 3 support, and seems an elegant/modern implementation, but installing it with pip will fail with an error that smells of Python 3 incompatibility:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">print "cython not found, using previously-cython'd .c file."
+</span><span class="line">                                                           ^
+</span><span class="line">SyntaxError: invalid syntax</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Turns out they maintain <a href="https://launchpad.net/oursql/py3k/">a branch</a> for Python 3 support, so pointing pip at the zip below will work.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A note on Unicode: disabling Unicode or setting a charset simply won’t work (they do things as <code>'foo' in returned_value</code> that breaks with Python 3 strings). Just use Unicode, it’s what you should be doing on Python 3 anyway.</p>
+</div>
+
   
-    <div class="entry-content"><p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
 
-<p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
 
-<p><em>NOTE: if for some reason I misunderstood and I wasn’t allowed to do this, please get in contact with me ASAP and I’ll take this down.</em></p>
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-02T00:40:00+02:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/python/'>python</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/" data-via="FiloSottile" data-counturl="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/on-keybase-dot-io-and-encrypted-private-key-sharing/" title="Previous Post: On Keybase.io and encrypted private key uploading">&laquo; On Keybase.io and encrypted private key uploading</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Read on &rarr;</a>
-      </footer>
-    
-  
 
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/a-python-github-push-webhook-handler/">A Python GitHub Push WebHook Handler</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-24T19:23:00+01:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/the-ecb-penguin/">The ECB Penguin</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-10T19:54:00+01:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/analyzing-the-adobe-leaked-passwords/">Analyzing the Adobe leaked passwords</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-04T11:15:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/making-system-calls-from-assembly-in-mac-os-x/">Making system calls from Assembly in Mac OS X</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-11-04T02:05:00+01:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/customizing-a-linode-kernel/">Customizing a Linode kernel</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-15T23:15:00+02:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- This defines how Octopress will use posts with external-url. -->
-        <h1 class="entry-title"><a class="external-link" href="http://www.bulletjournal.com/">A journal approach that actually works for me</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-15T20:57:00+02:00" pubdate data-updated="true" class="updated">Oct 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-    <footer>
-      <a class="permalink" href="/a-journal-approach-that-actually-works-for-me/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/escaping-a-chroot-jail-slash-1/">Escaping a chroot jail/1</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-14T10:00:00+02:00" pubdate data-updated="true" class="updated">Oct 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/instance-monkey-patching-in-python/">Instance monkey-patching in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-07T00:19:00+02:00" pubdate data-updated="true" class="updated">Oct 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/dumping-the-ios-simulator-memory/">Dumping the iOS simulator memory</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-09-12T18:26:00+02:00" pubdate data-updated="true" class="updated">Sep 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/3/">&larr; Older</a>
-    
-    <a href="/archives">Blog Archives</a>
-    
-    <a class="next" href="/">Newer &rarr;</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section class="aboutme">
   <h1>About Me</h1>
   <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python, Go and maths.
-  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I attended <a href="http://hackerschool.com">Hacker School</a> in NYC. Now I&#8217;m in Milan.</p>
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I attended <a href="http://hackerschool.com">Hacker School</a> in NYC. Now I'm in Milan.</p>
 
   <p><span style="cursor: pointer" onclick="this.textContent = ('hi' + '@filippo' + String.fromCharCode(46) + 'io'); this.onclick = null; this.style.cursor='default'">Click here to reveal my email.</span></p>
 
@@ -590,7 +282,7 @@ MathJax.Hub.Config({
   <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
   src="//api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
   <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
 
   <script type="text/javascript">
@@ -649,7 +341,7 @@ MathJax.Hub.Config({
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
@@ -690,7 +382,7 @@ MathJax.Hub.Config({
 
 <section>
   <h1>My Pinboard</h1>
-  <ul id="pinboard_linkroll">Fetching linkroll&#8230;</ul>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
   <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
 </section>
 <script type="text/javascript">
@@ -710,6 +402,7 @@ MathJax.Hub.Config({
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -724,7 +417,10 @@ MathJax.Hub.Config({
       var disqus_shortname = 'pytux';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/';
+        var disqus_url = 'https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

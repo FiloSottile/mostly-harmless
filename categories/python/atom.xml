@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python | PyTux]]></title>
   <link href="https://filippo.io/categories/python/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-04-15T14:51:27+02:00</updated>
+  <updated>2014-05-02T01:12:29+02:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -12,6 +12,39 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SQLAlchemy + MySQL + Python 3 + pip]]></title>
+    <link href="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/"/>
+    <updated>2014-05-02T00:40:00+02:00</updated>
+    <id>https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip</id>
+    <content type="html"><![CDATA[<p>A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip.</p>
+
+<p><strong>tl;dr</strong>: pip <code>https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</code>, connection string <code>mysql+oursql://</code> and Unicode everywhere.</p>
+
+<p>This is a common pain of the Python 3 adopter: even if a project supports it, add-ons and testing are falling behind.</p>
+
+<p>SQLAlchemy supports <a href="http://docs.sqlalchemy.org/en/rel_0_9/dialects/mysql.html">a number of MySQL interfaces</a>. Most of them don’t work on Python 3 (the common MySQLdb/mysql-python will error out with <code>ImportError: No module named 'ConfigParser'</code>) or only come as a DMG (mysql-connector – ugh).</p>
+
+<!-- more -->
+
+<p><a href="https://launchpad.net/oursql/">OurSQL</a> advertises Python 3 support, and seems an elegant/modern implementation, but installing it with pip will fail with an error that smells of Python 3 incompatibility:</p>
+
+<p><code>
+    print "cython not found, using previously-cython'd .c file."
+                                                               ^
+SyntaxError: invalid syntax
+</code></p>
+
+<p>Turns out they maintain <a href="https://launchpad.net/oursql/py3k/">a branch</a> for Python 3 support, so pointing pip at the zip below will work.</p>
+
+<p><code>
+https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip
+</code></p>
+
+<p>A note on Unicode: disabling Unicode or setting a charset simply won’t work (they do things as <code>'foo' in returned_value</code> that breaks with Python 3 strings). Just use Unicode, it’s what you should be doing on Python 3 anyway.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
@@ -616,106 +649,6 @@ if __name__ == '__main__':
     print time.asctime(), &quot;Server Stops - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
 </code></pre></noscript></div>
 </p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Instance monkey-patching in Python]]></title>
-    <link href="https://filippo.io/instance-monkey-patching-in-python/"/>
-    <updated>2013-10-07T00:19:00+02:00</updated>
-    <id>https://filippo.io/instance-monkey-patching-in-python</id>
-    <content type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
-
-<p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>
-
-<p><strong>Class methods</strong> monkey patching in Python is really easy, as you can freely assign function to class method names:</p>
-
-<p><code>python
-&gt;&gt;&gt; class Class():
-...    def add(self, x, y):
-...       return x + y
-...
-&gt;&gt;&gt; inst = Class()
-&gt;&gt;&gt; def not_exactly_add(self, x, y):
-...    return x * y
-...
-&gt;&gt;&gt; Class.add = not_exactly_add
-&gt;&gt;&gt; inst.add(3, 3)
-9
-</code></p>
-
-<!-- more -->
-
-<p>This way <strong>all the instances</strong> of the target class will have the method monkey-patched and there is no problem with arguments, bindings… Everything really straight-forward.</p>
-
-<p>We can also call the old existing method, to handle only some cases or to add some functionality while not repeating code (<a href="https://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>):</p>
-
-<p><code>python
-&gt;&gt;&gt; class Class():
-...    def add(self, x, y):
-...       return x + y
-...
-&gt;&gt;&gt; old_boring_add = Class.add
-&gt;&gt;&gt; def add_is_not_enough(self, x, y):
-...    return old_boring_add(self, x, y) + 1
-...
-&gt;&gt;&gt; inst = Class()
-&gt;&gt;&gt; inst.add(3, 3)
-6
-&gt;&gt;&gt; Class.add = add_is_not_enough
-&gt;&gt;&gt; inst.add(3, 3)
-7
-</code></p>
-
-<!-- Finally, we might want to monkey-patch repeatedly, maybe dinamically, and so have each monkey-patch to **build on top of the previous one**. Easy done,  -->
-
-<p>But what if we wanted to do the same, patching <strong>just a single instance</strong>?</p>
-
-<p>To recap, the requirements are:</p>
-
-<ul>
-  <li>we want just the current instance to be patched;</li>
-  <li>we want to build something on top of the existing method, not to replace it entirely;</li>
-  <li>we want each monkey-patch not to rollback all the previous ones (so no <a href="http://docs.python.org/2/library/functions.html#super"><code>super()</code></a> or class method call);</li>
-  <li>we want to be able to do so also from inside a method.</li>
-</ul>
-
-<p>The trick is to save and use the existing method as we did above, and then <strong>bind the new function to the instance</strong> with <a href="http://docs.python.org/2/library/types.html#types.MethodType"><code>types.MethodType</code></a> before assigning it to the method name.</p>
-
-<p>The binding is the magic that causes the instance to be passed as first argument (<code>self</code>) each time the method is called. See <a href="http://stackoverflow.com/questions/114214/class-method-differences-in-python-bound-unbound-and-static">these</a> <a href="http://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python">two</a> StackOverflow questions to get an idea.</p>
-
-<p><code>python
-&gt;&gt;&gt; import types
-&gt;&gt;&gt; class Class():
-...    def add(self, x, y):
-...       return x + y
-...    def become_more_powerful(self):
-...       old_add = self.add
-...       def more_powerful_add(self, x, y):
-...          return old_add(x, y) + 1
-...       self.add = types.MethodType(more_powerful_add, self)
-...
-&gt;&gt;&gt; inst = Class()
-&gt;&gt;&gt; inst.add(3, 3)
-6
-&gt;&gt;&gt; inst.become_more_powerful()
-&gt;&gt;&gt; inst.add(3, 3)
-7
-&gt;&gt;&gt; inst.become_more_powerful()
-&gt;&gt;&gt; inst.become_more_powerful()
-&gt;&gt;&gt; inst.become_more_powerful()
-&gt;&gt;&gt; inst.add(3, 3)
-10
-</code></p>
-
-<p>And here we go!</p>
-
-<h2 id="a-practical-example">A practical example</h2>
-
-<p>You can see this technique being used in <a href="https://github.com/rg3/youtube-dl"><em>youtube-dl</em></a> to silence expected warnings in <a href="https://github.com/rg3/youtube-dl/commit/00fcc17aeeab11ce694699bf183d33a3af75aab6">this commit</a>.</p>
-
-<p>The monkey-patching of the instance is done on itself by a method of a testing subclass of the downloader.</p>
-
 ]]></content>
   </entry>
   
