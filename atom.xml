@@ -4,7 +4,7 @@
   <title><![CDATA[PyTux]]></title>
   <link href="https://filippo.io/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-05-29T00:15:09+02:00</updated>
+  <updated>2014-05-29T00:34:24+02:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -23,7 +23,7 @@
     
       <content type="html"><![CDATA[<p>Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?</p>
 
-<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>.</p>
+<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>. (On top of what you are already doing, obviously.)</p>
 
 <p>That is, do something like:</p>
 
