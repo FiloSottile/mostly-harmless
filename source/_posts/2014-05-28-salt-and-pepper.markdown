@@ -8,7 +8,7 @@ categories:
 
 Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?
 
-The concept of peppering is simple: **add a extra fixed, hardcoded salt**.
+The concept of peppering is simple: **add a extra fixed, hardcoded salt**. (On top of what you are already doing, obviously.)
 
 That is, do something like:
 
