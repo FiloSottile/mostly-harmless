@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Facebook organizes this cool competition called the Hacker Cup. Yesterday the Qualification Round finished, and the user solutions got published. So &hellip;">
+  <meta name="description" content="Brainwallets are Bitcoin wallets generated uniquely from a passphrase that the users keeps in his mind so that it is required and sufficient to move &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -125,6 +125,62 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-12-05T17:43:00+01:00" pubdate data-updated="true" class="updated">Dec 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p><a href="https://en.bitcoin.it/wiki/Brainwallet">Brainwallets</a> are Bitcoin wallets generated uniquely from a passphrase that the users keeps in his mind so that it is required and sufficient to move the funds.</p>
+
+<p>But what is actually the process that takes a password and spits a Bitcoin wallet address? Let’s dissect it.</p>
+
+<h3 id="from-a-password-to-a-secret-value">1. From a password to a secret value</h3>
+
+<p>So, we have a password, but we need a fixed-size (256-bit) secret value to make our private key. This step can be done in a number of ways as it boils down to hashing the password but is crucial to the strength of the resulting brainwallet.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/brainwallets-from-the-password-to-the-address/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</a></h1>
       
     
@@ -150,20 +206,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
-
-<p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
-
-<p><em>NOTE: if for some reason I misunderstood and I wasn’t allowed to do this, please get in contact with me ASAP and I’ll take this down.</em></p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -496,46 +538,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/dumping-the-ios-simulator-memory/">Dumping the iOS simulator memory</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-09-12T18:26:00+02:00" pubdate data-updated="true" class="updated">Sep 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -564,6 +566,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
+      </li>
+    
+      <li class="post">
         <a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a>
       </li>
     
@@ -577,10 +583,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a>
       </li>
     
   </ul>

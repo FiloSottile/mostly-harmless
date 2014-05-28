@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Claimed a RECAP Aaron Swartz grant | PyTux</title>
+  <title>Salt &amp; Pepper, please: a note on password storage | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the RECAP extension to the Appellate Courts documents and win &hellip;">
+  <meta name="description" content="Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="https://filippo.io/claimed-a-recap-aaron-swartz-grant/">
+  <link rel="canonical" href="https://filippo.io/salt-and-pepper/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -120,7 +120,7 @@ MathJax.Hub.Config({
   <header>
     
       
-        <h1 class="entry-title"><a class="external-link" href="https://www.recapthelaw.org/2013/04/02/two-recap-grants-awarded-in-memory-of-aaron-swartz/">Claimed a RECAP Aaron Swartz grant</a></h1>
+        <h1 class="entry-title">Salt &amp; Pepper, please: a note on password storage</h1>
       
     
     
@@ -138,25 +138,34 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-04-04T21:40:00+02:00" pubdate data-updated="true" class="updated">Apr 4<span>th</span>, 2013</time>
+<time datetime="2014-05-28T19:50:00+02:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>I’ve recently teamed up with a friend of mine, Alessio Palmero, to extend the reach of the <a href="https://www.recapthelaw.org/">RECAP</a> extension to the Appellate Courts documents and win a <a href="http://www.plainsite.org/aaronsw/index.html">grant</a> offered by PlainSite in memory of <a href="http://www.aaronsw.com/">Aaron Swartz</a>.</p>
+  <div class="entry-content"><p>Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?</p>
 
-<p>The Firefox (and now Chrome) extension intercepts public domain documents downloaded from the pay-walled legal archive <a href="http://www.pacer.gov/">PACER</a> and uploads them to the <a href="http://archive.org/">Internet Archive</a>. Freely available documents are then marked as such for the sake of a juster access to public records.</p>
+<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>.</p>
 
-<p>Details and comments in the linked blog post.</p>
+<p>That is, do something like:</p>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">salt</span> <span class="o">=</span> <span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</span><span class="line"><span class="n">pepper</span> <span class="o">=</span> <span class="s">&quot;oFMLjbFr2Bb3XR)aKKst@kBF}tHD9q&quot;</span>  <span class="c"># or, getenv(&#39;PEPPER&#39;)</span>
+</span><span class="line"><span class="n">hashed_password</span> <span class="o">=</span> <span class="n">scrypt</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">pepper</span><span class="p">)</span>
+</span><span class="line"><span class="n">store</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Does this seem useless? Well if you think about it, most password leaks happen because of database leaks (SQL injection, DB credential compromise, DB auth bypass…) and attackers might not necessarily get access to the webserver. In that case, the hashes would be <em>completely useless</em>.</p>
+
+<p>Yes, this is not sureproof, attackers might also get access to your webserver, but security is all about layers and raising cost, no? Who knows, maybe the eBay leaked hashes would have been useless to the attackers were they peppered.</p>
 </div>
 
-  
-    <footer>
-      <a class="permalink" href="/claimed-a-recap-aaron-swartz-grant/">Permalink</a>
-    </footer>
   
 
 
@@ -180,7 +189,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-04-04T21:40:00+02:00" pubdate data-updated="true" class="updated">Apr 4<span>th</span>, 2013</time>
+<time datetime="2014-05-28T19:50:00+02:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
       
 
 
@@ -188,7 +197,7 @@ MathJax.Hub.Config({
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/claimed-a-recap-aaron-swartz-grant/" data-via="FiloSottile" data-counturl="https://filippo.io/claimed-a-recap-aaron-swartz-grant/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/salt-and-pepper/" data-via="FiloSottile" data-counturl="https://filippo.io/salt-and-pepper/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -202,10 +211,8 @@ MathJax.Hub.Config({
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/offline-storage-on-a-rpi/" title="Previous Post: Offline storage on a RPi">&laquo; Offline storage on a RPi</a>
+        <a class="basic-alignment left" href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/" title="Previous Post: SQLAlchemy + MySQL + Python 3 + pip">&laquo; SQLAlchemy + MySQL + Python 3 + pip</a>
       
-      
-        <a class="basic-alignment right" href="/a-bug-worth-4200%24/" title="Next Post: A bug worth 4200$">A bug worth 4200$ &raquo;</a>
       
     </p>
   </footer>
@@ -399,8 +406,8 @@ MathJax.Hub.Config({
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'https://filippo.io/claimed-a-recap-aaron-swartz-grant/';
-        var disqus_url = 'https://filippo.io/claimed-a-recap-aaron-swartz-grant/';
+        var disqus_identifier = 'https://filippo.io/salt-and-pepper/';
+        var disqus_url = 'https://filippo.io/salt-and-pepper/';
         var disqus_script = 'embed.js';
       
     (function () {

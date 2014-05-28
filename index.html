@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip. tl;dr: pip https:// &hellip;">
+  <meta name="description" content="Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -125,6 +125,69 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-28T19:50:00+02:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?</p>
+
+<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>.</p>
+
+<p>That is, do something like:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">salt</span> <span class="o">=</span> <span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</span><span class="line"><span class="n">pepper</span> <span class="o">=</span> <span class="s">&quot;oFMLjbFr2Bb3XR)aKKst@kBF}tHD9q&quot;</span>  <span class="c"># or, getenv(&#39;PEPPER&#39;)</span>
+</span><span class="line"><span class="n">hashed_password</span> <span class="o">=</span> <span class="n">scrypt</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">pepper</span><span class="p">)</span>
+</span><span class="line"><span class="n">store</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Does this seem useless? Well if you think about it, most password leaks happen because of database leaks (SQL injection, DB credential compromise, DB auth bypass…) and attackers might not necessarily get access to the webserver. In that case, the hashes would be <em>completely useless</em>.</p>
+
+<p>Yes, this is not sureproof, attackers might also get access to your webserver, but security is all about layers and raising cost, no? Who knows, maybe the eBay leaked hashes would have been useless to the attackers were they peppered.</p>
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a></h1>
       
     
@@ -150,22 +213,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip.</p>
-
-<p><strong>tl;dr</strong>: pip <code>https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</code>, connection string <code>mysql+oursql://</code> and Unicode everywhere.</p>
-
-<p>This is a common pain of the Python 3 adopter: even if a project supports it, add-ons and testing are falling behind.</p>
-
-<p>SQLAlchemy supports <a href="http://docs.sqlalchemy.org/en/rel_0_9/dialects/mysql.html">a number of MySQL interfaces</a>. Most of them don’t work on Python 3 (the common MySQLdb/mysql-python will error out with <code>ImportError: No module named 'ConfigParser'</code>) or only come as a DMG (mysql-connector – ugh).</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -494,46 +541,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-12-05T17:43:00+01:00" pubdate data-updated="true" class="updated">Dec 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -560,6 +567,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
+      </li>
+    
+      <li class="post">
         <a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a>
       </li>
     
@@ -573,10 +584,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/native-scrolling-and-iterm2/">Native scrolling and iTerm2</a>
       </li>
     
   </ul>
