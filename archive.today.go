@@ -5,6 +5,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -35,10 +36,47 @@ func commit(target string) string {
 	return h[6:]
 }
 
-func download(archiveURL string) {
+var loadingGif = []byte("https://archive.today/loading.gif")
+
+func fetchZip(archiveURL string) (int64, io.ReadCloser, error) {
 	zipURL := archiveURL + ".zip"
-	tokens := strings.Split(zipURL, "/")
-	fileName := tokens[len(tokens)-1]
+
+	for {
+		resp, err := http.Get(archiveURL)
+		if err != nil {
+			log.Fatal("Error while checking", zipURL, "-", err)
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		resp.Body.Close()
+		if bytes.Index(body, loadingGif) > -1 {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		resp, err = http.Get(zipURL)
+		if err != nil {
+			log.Fatal("Error while downloading", zipURL, "-", err)
+		}
+		if resp.StatusCode == 404 {
+			resp.Body.Close()
+			return 0, nil, errors.New("archive.today error")
+		}
+
+		size, err := strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return size, resp.Body, nil
+	}
+}
+
+func download(archiveURL string) {
+	tokens := strings.Split(archiveURL, "/")
+	fileName := tokens[len(tokens)-1] + ".zip"
 
 	output, err := os.Create(fileName)
 	if err != nil {
@@ -46,24 +84,16 @@ func download(archiveURL string) {
 	}
 	defer output.Close()
 
-	for {
-		resp, err := http.Get(zipURL)
-		if err != nil {
-			log.Fatal("Error while downloading", zipURL, "-", err)
-		}
-		if resp.StatusCode == 404 {
-			resp.Body.Close()
-			time.Sleep(1 * time.Second)
-			continue
-		}
-		defer resp.Body.Close()
+	_, respBody, err := fetchZip(archiveURL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "archive.today failed to create an archive - check %s\n", archiveURL)
+		return
+	}
+	defer respBody.Close()
 
-		_, err = io.Copy(output, resp.Body)
-		if err != nil {
-			log.Fatal("Error while downloading", zipURL, "-", err)
-		}
-
-		break
+	_, err = io.Copy(output, respBody)
+	if err != nil {
+		log.Fatal("Error while downloading", archiveURL, "-", err)
 	}
 }
 
@@ -95,33 +125,21 @@ func bundle(archiveURLs [][2]string) {
 		archiveURL := URLs[0]
 		originalURL := URLs[1]
 
-		zipURL := archiveURL + ".zip"
 		tokens := strings.Split(archiveURL, "/")
 		id := tokens[len(tokens)-1]
 
-		var body []byte
-		var size int64
-		for {
-			resp, err := http.Get(zipURL)
-			if err != nil {
-				log.Fatal("Error while downloading", zipURL, "-", err)
-			}
-			if resp.StatusCode == 404 {
-				resp.Body.Close()
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			size, err = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			body, err = ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			resp.Body.Close()
-			break
+		size, respBody, err := fetchZip(archiveURL)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "archive.today failed to create an archive - check %s\n", archiveURL)
+			continue
 		}
+
+		body, err := ioutil.ReadAll(respBody)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		respBody.Close()
 
 		r, err := zip.NewReader(bytes.NewReader(body), size)
 		if err != nil {
@@ -202,7 +220,7 @@ Options:
   -h --help     Show this screen.
   --version     Show version.`
 
-	arguments, _ := docopt.Parse(usage, nil, true, "archive.today 0.1", false)
+	arguments, _ := docopt.Parse(usage, nil, true, "archive.today 0.2", false)
 
 	urls := make(chan string)
 	go func() {
