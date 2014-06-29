@@ -3,7 +3,7 @@ layout: post
 title: "Callback-based combinations (in Go)"
 date: 2014-01-16 15:20
 comments: true
-categories: Go
+categories: golang
 ---
 
 Let's have a look at this task: generate all the **combinations of *k* elements out of *N***. That is, all the *unordered k-tuples* made of elements from a pool of length N. [See Wikipedia](https://en.wikipedia.org/wiki/Combination) for more.

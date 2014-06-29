@@ -3,7 +3,7 @@ layout: post
 title: "Why Go is elegant and makes my code elegant"
 date: 2014-03-26 18:16
 comments: true
-categories: Golang
+categories: golang
 ---
 
 This is a enthusiast blog post. I'm not even gonna speak about how concurrency comes easy with Go. Honestly, I'm not good enough to speak about it. I'll just speak about how using Go in my everyday programming makes me happy.
