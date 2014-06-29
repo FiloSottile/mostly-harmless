@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>A bug worth 4200$ | PyTux</title>
+  <title>Category: talks | PyTux</title>
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="tl;dr I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated &hellip;">
+  <meta name="description" content="Category: talks">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="https://filippo.io/a-bug-worth-4200%24/">
+  <link rel="canonical" href="https://filippo.iocategories/talks/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -115,187 +115,37 @@ MathJax.Hub.Config({
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      
-        <h1 class="entry-title">A bug worth 4200$</h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-04-26T13:04:00+02:00" pubdate data-updated="true" class="updated">Apr 26<span>th</span>, 2013</time>
-        
-      </p>
+    <h1 class="entry-title">Category: talks</h1>
     
   </header>
-
-
-  <div class="entry-content"><p><strong>tl;dr</strong> I found a vulnerability in Facebook that allowed anyone to see the “strength” of all his friends’ friendships via a FQL query authenticated with an iOS app access token. The reporting experience has been smooth and not too slow, and the bounty generous.</p>
-
-<p class="img_right"><a href="https://www.facebook.com/BugBounty"><img src="/images/BugBounty.png" alt="Facebook Bug Bounty" /></a></p>
-
-<p>Early this year Facebook started showing “<em>last active</em>” times above chats in the iOS app but not on the website (they now have rolled out it also in the website) and I started wondering if I could get that info also from my browser and maybe wrap it up in a extension or something (turns out visiting <code>m.facebook.com</code> would have been enough, but emh…). So, I started <a href="http://portswigger.net/burp/proxy.html">Burp Proxy</a> with SSL interception, trusted the Burp CA on my iPad and started inspecting the Facebook iOS app calls.</p>
-
-<!-- more -->
-
-<p>They are mainly <a href="https://developers.facebook.com/docs/technical-guides/fql/"><strong>FQL multiqueries</strong></a>, and one in particular caught my eye (<code>queries</code> parameter URLDecoded for readability):</p>
-
-<pre><code>GET /method/fql.multiquery?sdk=ios&amp;queries={"top_friends":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me() order by communication_rank desc LIMIT 15)","online":"SELECT uid, is_pushable, has_messenger FROM user WHERE online_presence ='active' AND uid IN (SELECT uid2 FROM friend WHERE uid1=me())","favorites":"SELECT uid, online_presence, is_pushable, has_messenger, last_active FROM user WHERE uid in (SELECT favorite_id FROM messaging_favorite WHERE uid=me())","favoriteRanking":"SELECT favorite_id, ordering FROM messaging_favorite WHERE uid=me()"}&amp;sdk_version=2&amp;access_token=REDACTED&amp;format=json&amp;locale=it_IT
-</code></pre>
-
-<p>These are a bunch of queries against the <code>user</code> table based on JOINs on the <code>messaging_favorite</code> and <code>friend</code> tables. This <code>friend</code> table is interesting: it holds all the friendships with their details, for example <strong><code>communication_rank</code></strong>. By fiddling around a bit with it I guessed that it is a rank of the <em>“strength”</em> of <code>uid1</code>’s friendship with <code>uid2</code>, probably the thing that decides who’s shown in your chat sidebar even when he’s offline.</p>
-
-<p>The <a href="https://developers.facebook.com/docs/reference/fql/friend">docs</a> tell us that “[the access token owner is] the only user that this table can be queried for, the friends of friends cannot be retrieved”. Hmm. Should we trust the docs? Turns out, <strong>NO</strong>! ;)</p>
-
-<p>Authenticating with our iOS app access token we can issue queries like</p>
-
-<pre><code>SELECT uid2, communication_rank FROM friend WHERE uid1=1289695510 ORDER BY communication_rank DESC
-</code></pre>
-
-<p>for an arbitrary friend’s <code>uid1</code> (the above is the one of my favorite guinea pig, Anna) instead of just for ours. That queries return output like</p>
-
-<pre><code>{ "uid2": "1234567890", "communication_rank": "2.4456558227539" },
-{ "uid2": "4242424242", "communication_rank": "1.68115234375" },
-{ "uid2": "1337133713", "communication_rank": "1.602783203125" },
-...
-</code></pre>
-
-<p>that tells us with which users the target contacts most, maybe the most interesting and private bit of information after message logs. We don’t even need to be friends of that users!</p>
-
-<h2 id="reporting-and-patching">Reporting and patching</h2>
-
-<p>The first time I reported the issue through <a href="https://www.facebook.com/whitehat/report/">their form</a> it got dismissed, probably also because I didn’t explain it very well. After offering a real world example they confirmed and quickly patched it.</p>
-
-<p>The report netted me a generous 4200$ bounty (delivered as a cool prepaid card, that is worth the withdrawal fee) and a mention on <a href="https://www.facebook.com/whitehat/thanks/">their thanks page</a> (a great, great CV builder), plus some pleasant compliments.</p>
-
-<p class="img_center"><img src="/images/whitehat.png" alt="White Hat Bounty" /></p>
-
-<p>Facebook offers a great example of how to run a Bug Bounty Program: assure the researcher that he’s being heard, offer him a direct contact (you get ticket-bound <em>Reply-To</em>s) by skilled people, reward him generously (even if, believe me or not, this is the most optional point), publicly thank him and finally let him feel that his work is appreciated.</p>
-
-<h2 id="vulnerability-timeline">Vulnerability timeline</h2>
-
-<table>
-  <tbody>
-    <tr>
-      <td>1 gen 2013</td>
-      <td><strong>Vulnerability discovered and bug report filed</strong></td>
-    </tr>
-    <tr>
-      <td>7 gen 2013</td>
-      <td>Test accounts POC sent</td>
-    </tr>
-    <tr>
-      <td>18 gen 2013</td>
-      <td>First dismissing reply received</td>
-    </tr>
-    <tr>
-      <td>19 gen 2013</td>
-      <td><strong>Better explanation and real-users POC sent</strong></td>
-    </tr>
-    <tr>
-      <td>28 gen 2013</td>
-      <td>Vulnerability confirmed and acknowledged</td>
-    </tr>
-    <tr>
-      <td>~ 30 gen 2013</td>
-      <td><strong>Vulnerability fixed</strong></td>
-    </tr>
-    <tr>
-      <td>1 feb 2013</td>
-      <td>Bounty awarded</td>
-    </tr>
-    <tr>
-      <td>18 mar 2013</td>
-      <td>Bounty paid</td>
-    </tr>
-    <tr>
-      <td>26 apr 2013</td>
-      <td>This public disclosure</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
   
-
-
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2014</h2>
+
+<article>
+  
+<h1><a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+</a></h1>
+<time datetime="2014-06-29T01:59:00+02:00" pubdate><span class='month'>Jun</span> <span class='day'>29</span> <span class='year'>2014</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/categories/talks/'>talks</a></span>
+</footer>
 
 
-
-<time datetime="2013-04-26T13:04:00+02:00" pubdate data-updated="true" class="updated">Apr 26<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/categories/security/'>security</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/a-bug-worth-4200%24/" data-via="FiloSottile" data-counturl="https://filippo.io/a-bug-worth-4200%24/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-  
-  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/claimed-a-recap-aaron-swartz-grant/" title="Previous Post: Claimed a RECAP Aaron Swartz grant">&laquo; Claimed a RECAP Aaron Swartz grant</a>
-      
-      
-        <a class="basic-alignment right" href="/dumping-the-ios-simulator-memory/" title="Next Post: Dumping the iOS simulator memory">Dumping the iOS simulator memory &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -479,10 +329,7 @@ MathJax.Hub.Config({
       var disqus_shortname = 'pytux';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'https://filippo.io/a-bug-worth-4200%24/';
-        var disqus_url = 'https://filippo.io/a-bug-worth-4200%24/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

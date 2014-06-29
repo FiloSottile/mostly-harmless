@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Brainwallets are Bitcoin wallets generated uniquely from a passphrase that the users keeps in his mind so that it is required and sufficient to move &hellip;">
+  <meta name="description" content="Google recently announced that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -125,6 +125,62 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-12-12T17:52:00+01:00" pubdate data-updated="true" class="updated">Dec 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>Google <a href="http://gmailblog.blogspot.com/2013/12/images-now-showing.html">recently announced</a> that images in emails will be displayed automatically by default to Gmail users, thanks to an anonymizing proxy operated by them.</p>
+
+<p>This, they say, will actually <em>benefit</em> users privacy.</p>
+
+<p>This might very well be true if images are prefetched when an email is received. The <a href="https://support.google.com/mail/answer/145919?p=display_images&amp;rd=1">help page</a> however does not make it seem like so (and states that images are transcoded, interesting).</p>
+
+<p>Since this feature has already been rolled out to me, I thought to check out how it actually works.</p>
+
+</div>
+    
+    
+      <footer>
+        <a rel="full-article" href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">Read on &rarr;</a>
+      </footer>
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/brainwallets-from-the-password-to-the-address/">Brainwallets: from the password to the address</a></h1>
       
     
@@ -150,22 +206,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p><a href="https://en.bitcoin.it/wiki/Brainwallet">Brainwallets</a> are Bitcoin wallets generated uniquely from a passphrase that the users keeps in his mind so that it is required and sufficient to move the funds.</p>
-
-<p>But what is actually the process that takes a password and spits a Bitcoin wallet address? Let’s dissect it.</p>
-
-<h3 id="from-a-password-to-a-secret-value">1. From a password to a secret value</h3>
-
-<p>So, we have a password, but we need a fixed-size (256-bit) secret value to make our private key. This step can be done in a number of ways as it boils down to hashing the password but is crucial to the strength of the resulting brainwallet.</p>
-
-</div>
-    
-    
-      <footer>
-        <a rel="full-article" href="/brainwallets-from-the-password-to-the-address/">Read on &rarr;</a>
-      </footer>
-    
   
 
   
@@ -498,46 +538,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/instance-monkey-patching-in-python/">Instance monkey-patching in Python</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-10-07T00:19:00+02:00" pubdate data-updated="true" class="updated">Oct 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -566,6 +566,11 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] &#8220;The Heartbleed Test&#8221; @ OWASP / NYU Poly
+</a>
+      </li>
+    
+      <li class="post">
         <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
       </li>
     
@@ -579,10 +584,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
-      </li>
-    
-      <li class="post">
-        <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
       </li>
     
   </ul>

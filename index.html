@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to &hellip;">
+  <meta name="description" content="OWASP invited me to give a talk at NYU Polytechnic on Tue, June 24th 2014 about the story behind the https://filippo.io/Heartbleed test, how it &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -125,6 +125,59 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] &#8220;The Heartbleed Test&#8221; @ OWASP / NYU Poly
+</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-06-29T01:59:00+02:00" pubdate data-updated="true" class="updated">Jun 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>OWASP invited me to give a talk at NYU Polytechnic on Tue, June 24th 2014 about the story behind the <a href="https://filippo.io/Heartbleed">https://filippo.io/Heartbleed</a> test, how it worked and how it scaled from zero to performing 200 millions tests the first two weeks.</p>
+
+<p>Recording and slide deck are available.</p>
+
+<iframe src="//player.vimeo.com/video/99428593?title=0&amp;byline=0&amp;portrait=0" width="780" height="438" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<script async="" class="speakerdeck-embed" data-id="37a70380e131013127846a55ea797aa7" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a></h1>
       
     
@@ -150,29 +203,6 @@ MathJax.Hub.Config({
   </header>
 
 
-  
-    <div class="entry-content"><p>Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?</p>
-
-<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>. (On top of what you are already doing, obviously.)</p>
-
-<p>That is, do something like:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">salt</span> <span class="o">=</span> <span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-</span><span class="line"><span class="n">pepper</span> <span class="o">=</span> <span class="s">&quot;oFMLjbFr2Bb3XR)aKKst@kBF}tHD9q&quot;</span>  <span class="c"># or, getenv(&#39;PEPPER&#39;)</span>
-</span><span class="line"><span class="n">hashed_password</span> <span class="o">=</span> <span class="n">scrypt</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">pepper</span><span class="p">)</span>
-</span><span class="line"><span class="n">store</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Does this seem useless? Well if you think about it, most password leaks happen because of database leaks (SQL injection, DB credential compromise, DB auth bypass…) and attackers might not necessarily get access to the webserver. In that case, the hashes would be <em>completely useless</em>.</p>
-
-<p>Yes, this is not sureproof, attackers might also get access to your webserver, but security is all about layers and raising cost, no? Who knows, maybe the eBay leaked hashes would have been useless to the attackers were they peppered.</p>
-</div>
-    
-    
   
 
   
@@ -501,46 +531,6 @@ MathJax.Hub.Config({
     </article>
     
   
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/">How the new Gmail image proxy actually works and what does this mean for you</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2013-12-12T17:52:00+01:00" pubdate data-updated="true" class="updated">Dec 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -567,6 +557,11 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] &#8220;The Heartbleed Test&#8221; @ OWASP / NYU Poly
+</a>
+      </li>
+    
+      <li class="post">
         <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
       </li>
     
@@ -580,10 +575,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
-      </li>
-    
-      <li class="post">
-        <a href="/my-remote-shell-session-setup/">My remote shell session setup</a>
       </li>
     
   </ul>
