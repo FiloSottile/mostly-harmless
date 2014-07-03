@@ -19,16 +19,26 @@ Usage: thepiratedb [options] runnersNum maxTries
   -start=0: the starting torrent number
 ```
 
-* `runnersNum`: number of downloading goroutines
-* `maxTries`: retry attempts before skipping a torrent
+* `runnersNum`: number of downloading goroutines (suggested 500 on a 1Gbit connection)
+* `maxTries`: retry attempts before skipping a torrent (suggested 5)
 * `log`: download the torrent numbers received on stdin, to go over failed torrents in the log
-  `egrep -v "(Processing torrent|sql UNIQUE constraint failed)" thepirate.log | egrep "^2014/04" | egrep -o "[0-9]{5,}" | thepiratedb -log`
 * `start`: the torrent number to start from, for resuming and updating
-  `sqlite3 thepirate.db "SELECT Id FROM Torrents ORDER BY Id DESC LIMIT 1;"`
 
-If `-start` and `-log` are not set will truncate the database starting.
+If `-start` and `-log` are not set the database will be truncated.
 
 Env var `DEBUG` enables a verbose exit-on-error mode.
+
+An example `-log` invocation:
+
+```
+egrep -v "(Processing torrent|sql UNIQUE constraint failed)" thepirate.log | egrep "^2014/04" | egrep -o "[0-9]{5,}" | thepiratedb -log 500 5
+```
+
+An example `-start` invocation:
+
+```
+thepiratedb -start=$(sqlite3 thepirate.db "SELECT MAX(Id) FROM Torrents;") 500 5
+```
 
 Example row
 ------
