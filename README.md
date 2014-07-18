@@ -32,3 +32,4 @@ Here are just some ideas on how to build it. Have a better idea? [Share it](http
 * Blacklist sites - regexes
 * Fetch whole site (Readthedocs, ...)
 * Repo cloning (GitHub, ...)
+* Run Readability and store/index the result
