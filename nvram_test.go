@@ -3,12 +3,6 @@ package nvram
 import "log"
 
 func Example() {
-	err := Setup()
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	defer Teardown()
-
 	res, err := Get("filippo")
 	if err != nil {
 		log.Fatalln(err.Error())
@@ -16,7 +10,7 @@ func Example() {
 
 	log.Printf("% x\n", res)
 
-	err = Set("filippo", "\x0042è\x00\xff")
+	err = Set("filippo", "\xff\x0042è\x00\xff")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

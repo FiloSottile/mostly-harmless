@@ -31,43 +31,41 @@ cc -o nvram nvram.c -framework CoreFoundation -framework IOKit -Wall
 #include <mach/mach_error.h>
 
 // Prototypes
-int Setup(char **error);
-void Teardown(void);
-int Get(char *name, char **value, char **error);
-int Set(char *name, char *value, int length, char **error);
-int Delete(char *name, char **error);
-
-// Global Variables
-static io_registry_entry_t gOptionsRef;
+unsigned int Setup(char **error);
+void Teardown(unsigned int gOptionsRef);
+int Get(char *name, char **value, char **error, unsigned int gOptionsRef);
+int Set(char *name, char *value, int length, char **error, unsigned int gOptionsRef);
+int Delete(char *name, char **error, unsigned int gOptionsRef);
 
 
-int Setup(char **error)
+unsigned int Setup(char **error)
 {
+  io_registry_entry_t gOptionsRef;
   kern_return_t       result;
   mach_port_t         masterPort;
   
   result = IOMasterPort(bootstrap_port, &masterPort);
   if (result != KERN_SUCCESS) {
     asprintf(error, "Error getting the IOMaster port: %s", mach_error_string(result));
-    return -1;
+    return 0;
   }
   
   gOptionsRef = IORegistryEntryFromPath(masterPort, "IODeviceTree:/options");
   if (gOptionsRef == 0) {
     asprintf(error, "nvram is not supported on this system");
-    return -1;
+    return 0;
   }
 
-  return 0;
+  return gOptionsRef;
 }
 
-void Teardown()
+void Teardown(unsigned int gOptionsRef)
 {
   IOObjectRelease(gOptionsRef);
 }
 
 
-int Get(char *name, char **value, char **error)
+int Get(char *name, char **value, char **error, unsigned int gOptionsRef)
 {
   CFStringRef   nameRef;
   CFTypeRef     valueRef;
@@ -80,7 +78,8 @@ int Get(char *name, char **value, char **error)
     return -1;
   }
   
-  valueRef = IORegistryEntryCreateCFProperty(gOptionsRef, nameRef, 0, 0);
+  valueRef = IORegistryEntryCreateCFProperty(
+    gOptionsRef, nameRef, 0, 0);
   if (valueRef == 0) return -2; // kIOReturnNotFound
 
   length = CFDataGetLength(valueRef);
@@ -98,7 +97,7 @@ int Get(char *name, char **value, char **error)
 }
 
 
-int set(char *name, char *value, int length, char **error)
+int set(char *name, char *value, int length, char **error, unsigned int gOptionsRef)
 {
   CFStringRef   nameRef;
   CFTypeRef     valueRef;
@@ -117,31 +116,33 @@ int set(char *name, char *value, int length, char **error)
     asprintf(error, "Error creating CF buffer");
     return -1;
   }
-  result = IORegistryEntrySetCFProperty(gOptionsRef, nameRef, valueRef);
+  result = IORegistryEntrySetCFProperty(
+    gOptionsRef, nameRef, valueRef);
 
   CFRelease(nameRef);
 
   if (result != KERN_SUCCESS) {
-    asprintf(error, "Error setting variable - '%s': %s", name, mach_error_string(result));
+    asprintf(error, "Error setting variable - '%s': %s",
+      name, mach_error_string(result));
     return -1;
   }
 
   return 0;
 }
 
-int Set(char *name, char *value, int length, char **error)
+int Set(char *name, char *value, int length, char **error, unsigned int gOptionsRef)
 {
-  int res = set(name, value, length, error);
+  int res = set(name, value, length, error, gOptionsRef);
   if (res != 0) return res;
 
   // Try syncing the new data to device, best effort!
-  return set(kIONVRAMSyncNowPropertyKey, name, strlen(name), error);
+  return set(kIONVRAMSyncNowPropertyKey, name, strlen(name), error, gOptionsRef);
 }
 
 
-int Delete(char *name, char **error)
+int Delete(char *name, char **error, unsigned int gOptionsRef)
 {
-  return set(kIONVRAMDeletePropertyKey, name, strlen(name), error);
+  return set(kIONVRAMDeletePropertyKey, name, strlen(name), error, gOptionsRef);
 }
 
 
