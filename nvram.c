@@ -34,7 +34,7 @@ cc -o nvram nvram.c -framework CoreFoundation -framework IOKit -Wall
 void setup(void);
 void teardown(void);
 static kern_return_t GetOFVariable(char *name, CFStringRef *nameRef,
-				   CFTypeRef *valueRef);
+                                   CFTypeRef *valueRef);
 static kern_return_t SetOFVariable(char *name, char *value);
 static void DeleteOFVariable(char *name);
 void PrintOFVariables(void);
@@ -125,10 +125,10 @@ static void SetOrGetOFVariable(char *str)
 //   Return it and it's symbol in valueRef and nameRef.
 //
 static kern_return_t GetOFVariable(char *name, CFStringRef *nameRef,
-				   CFTypeRef *valueRef)
+                                   CFTypeRef *valueRef)
 {
   *nameRef = CFStringCreateWithCString(kCFAllocatorDefault, name,
-				       kCFStringEncodingUTF8);
+                                       kCFStringEncodingUTF8);
   if (*nameRef == 0) {
     errx(1, "Error creating CFString for key %s", name);
   }
@@ -148,10 +148,10 @@ static kern_return_t SetOFVariable(char *name, char *value)
 {
   CFStringRef   nameRef;
   CFTypeRef     valueRef;
-  kern_return_t result = KERN_SUCCESS;
+   kern_return_t result = KERN_SUCCESS;
   
   nameRef = CFStringCreateWithCString(kCFAllocatorDefault, name,
-				      kCFStringEncodingUTF8);
+                                      kCFStringEncodingUTF8);
   if (nameRef == 0) {
     errx(1, "Error creating CFString for key %s", name);
   }
