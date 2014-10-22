@@ -1,4 +1,13 @@
-package main
+// Package nvram provides an interface to the Mac NVRAM chips on OS X.
+//
+// It's built upon the heavily stripped C code of the native nvram tool.
+//
+// The only type supported for the values is data (arbitrary strings in Go)
+// both reading and writing. Names must be alphanumeric.
+//
+// The caller needs to invoke Setup() before any other function, and Teardown()
+// once done. Setting requires superuser privileges.
+package nvram
 
 /*
 #cgo LDFLAGS: -framework CoreFoundation -framework IOKit
@@ -15,53 +24,12 @@ import "C"
 
 import (
 	"errors"
-	"log"
 	"unsafe"
 )
 
-func main() {
-	err := Setup()
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	defer Teardown()
-
-	res, err := Get("filippo")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Printf("% x\n", res)
-
-	err = Set("filippo", "42è\x00\xff")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Println("Set done")
-
-	res, err = Get("filippo")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Printf("% x\n", res)
-
-	err = Delete("filippo")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Println("Delete done")
-
-	res, err = Get("filippo")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Printf("% x\n", res)
-}
-
+// Setup opens the connection to the system service.
+//
+// It must be called before performing any other operation.
 func Setup() error {
 	var errStr *C.char
 	fail := C.Setup(&errStr)
@@ -73,10 +41,16 @@ func Setup() error {
 	return nil
 }
 
+// Teardown closes the connection to the system service.
+//
+// It must be the last operation performed.
 func Teardown() {
 	C.Teardown()
 }
 
+// Get retrieves a value stored with a given name from the NVRAM. The value is
+// returned as a string of bytes, as stored. An emptry string is returned if a
+// value with that name is not found.
 func Get(name string) (string, error) {
 	nameStr := C.CString(name)
 	defer C.free(unsafe.Pointer(nameStr))
@@ -100,6 +74,8 @@ func Get(name string) (string, error) {
 	return result, nil
 }
 
+// Set stores a value under the given name. Value can be an arbitrary string,
+// name must be alphanumeric.
 func Set(name string, value string) error {
 	nameStr := C.CString(name)
 	defer C.free(unsafe.Pointer(nameStr))
