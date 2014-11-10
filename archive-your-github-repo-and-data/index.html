@@ -139,7 +139,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-01-14T23:17:00+01:00" pubdate data-updated="true" class="updated">Jan 14<span>th</span>, 2013</time>
+<time datetime="2013-01-14T23:17:00+00:00" pubdate data-updated="true" class="updated">Jan 14<span>th</span>, 2013</time>
         
       </p>
     
@@ -156,16 +156,16 @@ Be warned, it only fetches public repos and data and there’s no error checking
 <div><script src="https://gist.github.com/4710058.js?file=usage.txt"></script>
 <noscript><pre><code>usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
 
-Dump an user's public GitHub data into current directory.
+Dump an user&#39;s public GitHub data into current directory.
 
 positional arguments:
   username       the GH username
 
 optional arguments:
   -h, --help     show this help message and exit
-  --forks        git clone also forks (default is don't)
-  --no-gist      don't download user gists (default is do)
-  --no-metadata  don't download user metadata (default is do)</code></pre></noscript></div>
+  --forks        git clone also forks (default is don&#39;t)
+  --no-gist      don&#39;t download user gists (default is do)
+  --no-metadata  don&#39;t download user metadata (default is do)</code></pre></noscript></div>
 
 <div><script src="https://gist.github.com/4710058.js?file=archive_GH.py"></script>
 <noscript><pre><code>#!/usr/bin/env python3
@@ -202,55 +202,55 @@ import json
 import re
 import os.path
 
-parser = argparse.ArgumentParser(description='Dump an user\'s public GitHub data into current directory.')
-parser.add_argument('user', metavar='username',
-                   help='the GH username')
-parser.add_argument('--forks', dest='forks', action='store_true',
-                   help='git clone also forks (default is don\'t)')
-parser.add_argument('--no-gist', dest='gists', action='store_false',
-                   help='don\'t download user gists (default is do)')
-parser.add_argument('--no-metadata', dest='metadata', action='store_false',
-                   help='don\'t download user metadata (default is do)')
+parser = argparse.ArgumentParser(description=&#39;Dump an user\&#39;s public GitHub data into current directory.&#39;)
+parser.add_argument(&#39;user&#39;, metavar=&#39;username&#39;,
+                   help=&#39;the GH username&#39;)
+parser.add_argument(&#39;--forks&#39;, dest=&#39;forks&#39;, action=&#39;store_true&#39;,
+                   help=&#39;git clone also forks (default is don\&#39;t)&#39;)
+parser.add_argument(&#39;--no-gist&#39;, dest=&#39;gists&#39;, action=&#39;store_false&#39;,
+                   help=&#39;don\&#39;t download user gists (default is do)&#39;)
+parser.add_argument(&#39;--no-metadata&#39;, dest=&#39;metadata&#39;, action=&#39;store_false&#39;,
+                   help=&#39;don\&#39;t download user metadata (default is do)&#39;)
 
 args = parser.parse_args()
 
 def clear_url(url):
-    return re.sub(r'\{[^\}]*\}', '', url)
+    return re.sub(r&#39;\{[^\}]*\}&#39;, &#39;&#39;, url)
 
-data = urlopen('https://api.github.com/users/' + args.user).read()
-user = json.loads(data.decode('utf-8'))
+data = urlopen(&#39;https://api.github.com/users/&#39; + args.user).read()
+user = json.loads(data.decode(&#39;utf-8&#39;))
 if args.metadata:
-    with open('user.json', 'wb') as f:
+    with open(&#39;user.json&#39;, &#39;wb&#39;) as f:
         f.write(data)
 
-data = urlopen(clear_url(user['repos_url'])).read()
-repos = json.loads(data.decode('utf-8'))
+data = urlopen(clear_url(user[&#39;repos_url&#39;])).read()
+repos = json.loads(data.decode(&#39;utf-8&#39;))
 if args.metadata:
-    with open('repos.json', 'wb') as f:
+    with open(&#39;repos.json&#39;, &#39;wb&#39;) as f:
         f.write(data)
 for repo in repos:
-    if not repo['fork']:
-        call(['git', 'clone', repo['clone_url']])
+    if not repo[&#39;fork&#39;]:
+        call([&#39;git&#39;, &#39;clone&#39;, repo[&#39;clone_url&#39;]])
     elif args.forks:
-        if not os.path.exists('forks'):
-            os.makedirs('forks')
-        call(['git', 'clone', repo['clone_url'], os.path.join('forks', repo['name'])])
+        if not os.path.exists(&#39;forks&#39;):
+            os.makedirs(&#39;forks&#39;)
+        call([&#39;git&#39;, &#39;clone&#39;, repo[&#39;clone_url&#39;], os.path.join(&#39;forks&#39;, repo[&#39;name&#39;])])
 
-data = urlopen(clear_url(user['gists_url'])).read()
-gists = json.loads(data.decode('utf-8'))
+data = urlopen(clear_url(user[&#39;gists_url&#39;])).read()
+gists = json.loads(data.decode(&#39;utf-8&#39;))
 if args.metadata:
-    with open('gists.json', 'wb') as f:
+    with open(&#39;gists.json&#39;, &#39;wb&#39;) as f:
         f.write(data)
 if args.gists:
-    if not os.path.exists('gists'):
-        os.makedirs('gists')
+    if not os.path.exists(&#39;gists&#39;):
+        os.makedirs(&#39;gists&#39;)
     for gist in gists:
-        call(['git', 'clone', gist['git_pull_url'], os.path.join('gists', gist['id'])])
+        call([&#39;git&#39;, &#39;clone&#39;, gist[&#39;git_pull_url&#39;], os.path.join(&#39;gists&#39;, gist[&#39;id&#39;])])
 
 if args.metadata:
-    for name in ['received_events', 'events', 'organizations', 'followers', 'starred', 'following', 'subscriptions']:
-        data = urlopen(clear_url(user[name + '_url'])).read()
-        with open(name + '.json', 'wb') as f:
+    for name in [&#39;received_events&#39;, &#39;events&#39;, &#39;organizations&#39;, &#39;followers&#39;, &#39;starred&#39;, &#39;following&#39;, &#39;subscriptions&#39;]:
+        data = urlopen(clear_url(user[name + &#39;_url&#39;])).read()
+        with open(name + &#39;.json&#39;, &#39;wb&#39;) as f:
             f.write(data)</code></pre></noscript></div>
 
 <p><em>I wrote and used this to archive Aaron Swartz GitHub account on <a href="https://archive.org/details/aaronswGHarchive">archive.org</a>. R.I.P.</em></p>
@@ -279,7 +279,7 @@ if args.metadata:
 
 
 
-<time datetime="2013-01-14T23:17:00+01:00" pubdate data-updated="true" class="updated">Jan 14<span>th</span>, 2013</time>
+<time datetime="2013-01-14T23:17:00+00:00" pubdate data-updated="true" class="updated">Jan 14<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -338,6 +338,10 @@ if args.metadata:
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 </a>
       </li>
@@ -352,10 +356,6 @@ if args.metadata:
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

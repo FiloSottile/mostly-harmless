@@ -4,7 +4,7 @@
   <title><![CDATA[Category: golang | PyTux]]></title>
   <link href="https://filippo.io/categories/golang/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Why Go is elegant and makes my code elegant]]></title>
     <link href="https://filippo.io/why-go-is-elegant-and-makes-my-code-elegant/"/>
-    <updated>2014-03-26T18:16:00+01:00</updated>
+    <updated>2014-03-26T18:16:00+00:00</updated>
     <id>https://filippo.io/why-go-is-elegant-and-makes-my-code-elegant</id>
     <content type="html"><![CDATA[<p>This is a enthusiast blog post. I’m not even gonna speak about how concurrency comes easy with Go. Honestly, I’m not good enough to speak about it. I’ll just speak about how using Go in my everyday programming makes me happy.</p>
 
@@ -116,7 +116,7 @@
   <entry>
     <title type="html"><![CDATA[Callback-based combinations (in Go)]]></title>
     <link href="https://filippo.io/callback-based-combinations-in-go/"/>
-    <updated>2014-01-16T15:20:00+01:00</updated>
+    <updated>2014-01-16T15:20:00+00:00</updated>
     <id>https://filippo.io/callback-based-combinations-in-go</id>
     <content type="html"><![CDATA[<p>Let’s have a look at this task: generate all the <strong>combinations of <em>k</em> elements out of <em>N</em></strong>. That is, all the <em>unordered k-tuples</em> made of elements from a pool of length N. <a href="https://en.wikipedia.org/wiki/Combination">See Wikipedia</a> for more.</p>
 

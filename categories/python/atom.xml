@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python | PyTux]]></title>
   <link href="https://filippo.io/categories/python/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[SQLAlchemy + MySQL + Python 3 + pip]]></title>
     <link href="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/"/>
-    <updated>2014-05-02T00:40:00+02:00</updated>
+    <updated>2014-05-02T00:40:00+01:00</updated>
     <id>https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip</id>
     <content type="html"><![CDATA[<p>A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip.</p>
 
@@ -49,7 +49,7 @@ https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip
   <entry>
     <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
     <link href="https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
-    <updated>2014-02-03T03:47:00+01:00</updated>
+    <updated>2014-02-03T03:47:00+00:00</updated>
     <id>https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
     <content type="html"><![CDATA[<p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
 
@@ -104,7 +104,7 @@ https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip
   <entry>
     <title type="html"><![CDATA[Add support for a new video site to youtube-dl]]></title>
     <link href="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
-    <updated>2014-01-27T02:12:00+01:00</updated>
+    <updated>2014-01-27T02:12:00+00:00</updated>
     <id>https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
     <content type="html"><![CDATA[<p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
 
@@ -365,7 +365,7 @@ __________ summary __________
   <entry>
     <title type="html"><![CDATA[Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round]]></title>
     <link href="https://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/"/>
-    <updated>2013-11-25T10:52:00+01:00</updated>
+    <updated>2013-11-25T10:52:00+00:00</updated>
     <id>https://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round</id>
     <content type="html"><![CDATA[<p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
 
@@ -395,35 +395,35 @@ for t in range(1, T + 1):
 
     # Find the the upper-left corner (J, I) and the edge K
     for I, row in enumerate(GRID):
-        if not '#' in row: continue
+        if not &#39;#&#39; in row: continue
         K = 0
-        J = row.index('#')
+        J = row.index(&#39;#&#39;)
         for x in range(J, N):
-            if row[x] == '#': K += 1
+            if row[x] == &#39;#&#39;: K += 1
             else: break
         break
 
     # If the square would not fit, fail
     if I + K &gt; N:
-        print('Case #%i: NO' % t)
+        print(&#39;Case #%i: NO&#39; % t)
         continue
     
     # Build a module of how a row including the square should look like
-    MOD = (J * '.' + K * '#').ljust(N, '.')
+    MOD = (J * &#39;.&#39; + K * &#39;#&#39;).ljust(N, &#39;.&#39;)
 
     # Check that the grid looks like what it should
     for i, row in enumerate(GRID):
         if i &gt;= I and i &lt; I + K:
             if row != MOD: break
         else:
-            if row != N * '.': break
+            if row != N * &#39;.&#39;: break
     else:
-        # Reached if we didn't break out of the loop
-        # Ok, I'll admit that for-else is not that clear
-        print('Case #%i: YES' % t)
+        # Reached if we didn&#39;t break out of the loop
+        # Ok, I&#39;ll admit that for-else is not that clear
+        print(&#39;Case #%i: YES&#39; % t)
         continue
 
-    print('Case #%i: NO' % t)
+    print(&#39;Case #%i: NO&#39; % t)
 </code></pre></noscript></div>
 </p>
 
@@ -450,11 +450,11 @@ class Player():
 T = int(INPUT.readline().strip())
 
 for t in range(1, T + 1):
-    N, M, P = [int(x) for x in INPUT.readline().strip().split(' ')]
+    N, M, P = [int(x) for x in INPUT.readline().strip().split(&#39; &#39;)]
     PLAYERS = []
     for _ in range(N):
         player = Player()
-        player.name, s, h = INPUT.readline().strip().split(' ')
+        player.name, s, h = INPUT.readline().strip().split(&#39; &#39;)
         player.shot_percentage, player.height = int(s), int(h)
         PLAYERS.append(player)
 
@@ -485,7 +485,7 @@ for t in range(1, T + 1):
             BENCH.remove(entering)
             BENCH.append(leaving)
 
-    print('Case #%i: ' % t + ' '.join(sorted(p.name for p in PLAYING_A + PLAYING_B)))
+    print(&#39;Case #%i: &#39; % t + &#39; &#39;.join(sorted(p.name for p in PLAYING_A + PLAYING_B)))
 
 </code></pre></noscript></div>
 </p>
@@ -513,7 +513,7 @@ T = int(sys.stdin.readline().strip())
 
 TEST_CASES = []
 for t in range(1, T + 1):
-    l = sys.stdin.readline().strip().split(' ')
+    l = sys.stdin.readline().strip().split(&#39; &#39;)
     K = int(l[0])
     ps, pr, pi, pu, pw, pd, pl = (float(x) for x in l[1:])
     won, lost = 0, 0
@@ -521,13 +521,13 @@ for t in range(1, T + 1):
 
 def do(x):
     r = play_a_set(*x[1:])
-    sys.stderr.write('#{}: {:f}\n'.format(x[0], r))
+    sys.stderr.write(&#39;#{}: {:f}\n&#39;.format(x[0], r))
     return r
 pool = Pool(processes=8)
 RESULTS = pool.map(do, TEST_CASES, chunksize=1)
 
 for t in range(1, T + 1):
-    print('Case #{}: {:f}'.format(t, RESULTS[t-1]))
+    print(&#39;Case #{}: {:f}&#39;.format(t, RESULTS[t-1]))
 </code></pre></noscript></div>
 
 <div><script src='https://gist.github.com/7643628.js?file=fast_Tennison.pyx'></script>
@@ -583,7 +583,7 @@ for t in range(1, T + 1):
   <entry>
     <title type="html"><![CDATA[A Python GitHub Push WebHook Handler]]></title>
     <link href="https://filippo.io/a-python-github-push-webhook-handler/"/>
-    <updated>2013-11-24T19:23:00+01:00</updated>
+    <updated>2013-11-24T19:23:00+00:00</updated>
     <id>https://filippo.io/a-python-github-push-webhook-handler</id>
     <content type="html"><![CDATA[<p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
 
@@ -620,24 +620,24 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     server_version = &quot;HookHandler/0.1&quot;
     def do_GET(s):
         s.send_response(200)
-        s.wfile.write('Hello!')
+        s.wfile.write(&#39;Hello!&#39;)
 
     def do_POST(s):
         # Check that the IP is within the GH ranges
         if not any(s.client_address[0].startswith(IP)
-                   for IP in ('192.30.252', '192.30.253', '192.30.254', '192.30.255')):
+                   for IP in (&#39;192.30.252&#39;, &#39;192.30.253&#39;, &#39;192.30.254&#39;, &#39;192.30.255&#39;)):
             s.send_error(403)
 
-        length = int(s.headers['Content-Length'])
-        post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
-        payload = json.loads(post_data['payload'][0])
+        length = int(s.headers[&#39;Content-Length&#39;])
+        post_data = urlparse.parse_qs(s.rfile.read(length).decode(&#39;utf-8&#39;))
+        payload = json.loads(post_data[&#39;payload&#39;][0])
 
         handle_hook(payload)
 
         s.send_response(200)
 
 
-if __name__ == '__main__':
+if __name__ == &#39;__main__&#39;:
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST_NAME, PORT_NUMBER), HookHandler)
     print time.asctime(), &quot;Server Starts - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)

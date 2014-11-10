@@ -4,7 +4,7 @@
   <title><![CDATA[Category: chroot | PyTux]]></title>
   <link href="https://filippo.io/categories/chroot/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Escaping a chroot jail/1]]></title>
     <link href="https://filippo.io/escaping-a-chroot-jail-slash-1/"/>
-    <updated>2013-10-14T10:00:00+02:00</updated>
+    <updated>2013-10-14T10:00:00+01:00</updated>
     <id>https://filippo.io/escaping-a-chroot-jail-slash-1</id>
     <content type="html"><![CDATA[<p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
 

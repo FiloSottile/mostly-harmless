@@ -138,7 +138,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true" class="updated">Dec 19<span>th</span>, 2012</time>
+<time datetime="2012-12-19T20:47:00+00:00" pubdate data-updated="true" class="updated">Dec 19<span>th</span>, 2012</time>
         
       </p>
     
@@ -155,12 +155,12 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
 <div><script src="https://gist.github.com/4340076.js?file=rsa_verify.py"></script>
 <noscript><pre><code>def rsa_verify(message, signature, key):
     from struct import pack
-    from hashlib import sha256 # You'll need the backport for 2.4 http://code.krypto.org/python/hashlib/
+    from hashlib import sha256 # You&#39;ll need the backport for 2.4 http://code.krypto.org/python/hashlib/
     from sys import version_info
     def b(x):
         if version_info[0] == 2: return x
-        else: return x.encode('latin1')
-    assert(type(message) == type(b('')))
+        else: return x.encode(&#39;latin1&#39;)
+    assert(type(message) == type(b(&#39;&#39;)))
     block_size = 0
     n = key[0]
     while n:
@@ -171,12 +171,12 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
     while signature:
         raw_bytes.insert(0, pack(&quot;B&quot;, signature &amp; 0xFF))
         signature &gt;&gt;= 8
-    signature = (block_size - len(raw_bytes)) * b('\x00') + b('').join(raw_bytes)
-    if signature[0:2] != b('\x00\x01'): return False
+    signature = (block_size - len(raw_bytes)) * b(&#39;\x00&#39;) + b(&#39;&#39;).join(raw_bytes)
+    if signature[0:2] != b(&#39;\x00\x01&#39;): return False
     signature = signature[2:]
-    if not b('\x00') in signature: return False
-    signature = signature[signature.index(b('\x00'))+1:]
-    if not signature.startswith(b('\x30\x31\x30\x0D\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20')): return False
+    if not b(&#39;\x00&#39;) in signature: return False
+    signature = signature[signature.index(b(&#39;\x00&#39;))+1:]
+    if not signature.startswith(b(&#39;\x30\x31\x30\x0D\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20&#39;)): return False
     signature = signature[19:]
     if signature != sha256(message).digest(): return False
     return True</code></pre></noscript></div>
@@ -212,7 +212,7 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
 
 
 
-<time datetime="2012-12-19T20:47:00+01:00" pubdate data-updated="true" class="updated">Dec 19<span>th</span>, 2012</time>
+<time datetime="2012-12-19T20:47:00+00:00" pubdate data-updated="true" class="updated">Dec 19<span>th</span>, 2012</time>
       
 
 <span class="categories">
@@ -271,6 +271,10 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 </a>
       </li>
@@ -285,10 +289,6 @@ Then, <strong>take this</strong>! It’s a drop-in, <em>zero-dependency</em> <st
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

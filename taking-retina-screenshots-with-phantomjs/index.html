@@ -138,7 +138,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2012-05-12T16:44:00+02:00" pubdate data-updated="true" class="updated">May 12<span>th</span>, 2012</time>
+<time datetime="2012-05-12T16:44:00+01:00" pubdate data-updated="true" class="updated">May 12<span>th</span>, 2012</time>
         
       </p>
     
@@ -153,19 +153,19 @@ MathJax.Hub.Config({
 <!--more-->
 Here is a modified version of the rasterize.js example to output Retina screenshots.</p>
 <div><script src="https://gist.github.com/2667199.js?file=rasterize.js"></script>
-<noscript><pre><code>var page = require('webpage').create(),
+<noscript><pre><code>var page = require(&#39;webpage&#39;).create(),
     address, output, size;
 
 if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
-    console.log('Usage: rasterize.js URL filename');
+    console.log(&#39;Usage: rasterize.js URL filename&#39;);
     phantom.exit();
 } else {
     address = phantom.args[0];
     output = phantom.args[1];
     page.viewportSize = { width: 1280, height: 1024 };
     page.open(address, function (status) {
-        if (status !== 'success') {
-            console.log('Unable to load the address!');
+        if (status !== &#39;success&#39;) {
+            console.log(&#39;Unable to load the address!&#39;);
         } else {
             page.evaluate(function () {
                 /* scale the whole body */
@@ -224,7 +224,7 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
 
 
 
-<time datetime="2012-05-12T16:44:00+02:00" pubdate data-updated="true" class="updated">May 12<span>th</span>, 2012</time>
+<time datetime="2012-05-12T16:44:00+01:00" pubdate data-updated="true" class="updated">May 12<span>th</span>, 2012</time>
       
 
 <span class="categories">
@@ -283,6 +283,10 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 </a>
       </li>
@@ -297,10 +301,6 @@ Well, have a look at <a href="https://developer.mozilla.org/en/DOM/element.getBo
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

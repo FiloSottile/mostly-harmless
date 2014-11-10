@@ -138,7 +138,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2013-11-24T19:23:00+01:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+<time datetime="2013-11-24T19:23:00+00:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
         
       </p>
     
@@ -180,24 +180,24 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     server_version = &quot;HookHandler/0.1&quot;
     def do_GET(s):
         s.send_response(200)
-        s.wfile.write('Hello!')
+        s.wfile.write(&#39;Hello!&#39;)
 
     def do_POST(s):
         # Check that the IP is within the GH ranges
         if not any(s.client_address[0].startswith(IP)
-                   for IP in ('192.30.252', '192.30.253', '192.30.254', '192.30.255')):
+                   for IP in (&#39;192.30.252&#39;, &#39;192.30.253&#39;, &#39;192.30.254&#39;, &#39;192.30.255&#39;)):
             s.send_error(403)
 
-        length = int(s.headers['Content-Length'])
-        post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
-        payload = json.loads(post_data['payload'][0])
+        length = int(s.headers[&#39;Content-Length&#39;])
+        post_data = urlparse.parse_qs(s.rfile.read(length).decode(&#39;utf-8&#39;))
+        payload = json.loads(post_data[&#39;payload&#39;][0])
 
         handle_hook(payload)
 
         s.send_response(200)
 
 
-if __name__ == '__main__':
+if __name__ == &#39;__main__&#39;:
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST_NAME, PORT_NUMBER), HookHandler)
     print time.asctime(), &quot;Server Starts - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
@@ -234,7 +234,7 @@ if __name__ == '__main__':
 
 
 
-<time datetime="2013-11-24T19:23:00+01:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+<time datetime="2013-11-24T19:23:00+00:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -293,6 +293,10 @@ if __name__ == '__main__':
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 </a>
       </li>
@@ -307,10 +311,6 @@ if __name__ == '__main__':
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

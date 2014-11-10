@@ -138,7 +138,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2012-03-18T17:53:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2012</time>
+<time datetime="2012-03-18T17:53:00+00:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2012</time>
         
       </p>
     
@@ -163,7 +163,7 @@ class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
     &quot;&quot;&quot;
     def redirect_request(self, req, fp, code, msg, headers, newurl): 
         if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
+            newurl = newurl.replace(&#39; &#39;, &#39;%20&#39;) 
             return HeadRequest(newurl, 
                                headers=req.headers, 
                                origin_req_host=req.get_origin_req_host(), 
@@ -208,7 +208,7 @@ class HEADRedirectHandler(urllib2.HTTPRedirectHandler):
     &quot;&quot;&quot;
     def redirect_request(self, req, fp, code, msg, headers, newurl): 
         if code in (301, 302, 303, 307):
-            newurl = newurl.replace(' ', '%20') 
+            newurl = newurl.replace(&#39; &#39;, &#39;%20&#39;) 
             newheaders = dict((k,v) for k,v in req.headers.items()
                               if k.lower() not in (&quot;content-length&quot;, &quot;content-type&quot;))
             return HeadRequest(newurl, 
@@ -269,7 +269,7 @@ print response.geturl()</code></pre></noscript></div>
 
 
 
-<time datetime="2012-03-18T17:53:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2012</time>
+<time datetime="2012-03-18T17:53:00+00:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2012</time>
       
 
 <span class="categories">
@@ -326,6 +326,10 @@ print response.geturl()</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 </a>
       </li>
@@ -340,10 +344,6 @@ print response.geturl()</code></pre></noscript></div>
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

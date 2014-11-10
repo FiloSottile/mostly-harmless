@@ -4,7 +4,7 @@
   <title><![CDATA[Category: talks | PyTux]]></title>
   <link href="https://filippo.io/categories/talks/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -17,7 +17,7 @@
     <title type="html"><![CDATA[[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
 ]]></title>
     <link href="https://filippo.io/the-heartbleed-test-at-owasp-slash-nyu-poly/"/>
-    <updated>2014-06-29T01:59:00+02:00</updated>
+    <updated>2014-06-29T01:59:00+01:00</updated>
     <id>https://filippo.io/the-heartbleed-test-at-owasp-slash-nyu-poly</id>
     <content type="html"><![CDATA[<p>OWASP invited me to give a talk at NYU Polytechnic on Tue, June 24th 2014 about the story behind the <a href="https://filippo.io/Heartbleed">https://filippo.io/Heartbleed</a> test, how it worked and how it scaled from zero to performing 200 millions tests the first two weeks.</p>
 

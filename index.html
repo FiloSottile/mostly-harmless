@@ -9,7 +9,7 @@
   <meta name="author" content="Filippo Valsorda">
 
   
-  <meta name="description" content="OWASP invited me to give a talk at NYU Polytechnic on Tue, June 24th 2014 about the story behind the https://filippo.io/Heartbleed test, how it &hellip;">
+  <meta name="description" content="I want you to do a quick inventory of all the boxes, VPS, servers etc. you have root on. Ok, now tell me, when is the last time you updated the one &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -125,6 +125,130 @@ MathJax.Hub.Config({
     
       
         <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
+        <h1 class="entry-title"><a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-11-10T15:32:00+00:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  
+    <div class="entry-content"><p>I want you to do a quick inventory of all the boxes, VPS, servers etc. you have root on.</p>
+
+<p>Ok, now tell me, when is the last time you updated the one you almost forgot about? Is it vulnerable to ShellShock? Is it vulnerable to Heartbleed?</p>
+
+<p>Go patch it now, I’ll wait.</p>
+
+<p>Now, <strong>turn on automatic security updates on all the boxes you don’t log into at least every few days</strong>. (If I convinced you already, just skip at the bottom of this post to read how.)</p>
+
+<p>It does not matter if you don’t care about those boxes. They WILL get owned and <a href="http://status.ovh.net/?do=details&amp;id=8120">turned into a botnet</a> that will make all of us on the Internet less secure. It’s a <strong>responsibility</strong> you have for managing a server on our Internet, together with making sure your mail server is not an open remailer and your DNS server can’t be used for DDoS reflection.</p>
+
+<p><em>“But Filippo, automatic updates are going to break my box!”</em></p>
+
+<p>No. Distribution security updates are MEANT not to break things. And trust me, not patching security vulnerabilities is going to disrupt your service way sooner than a breaking update (if that ever happens).</p>
+
+<p><em>“But my box can’t reboot cleanly and resume service”</em></p>
+
+<p>This is bad, there are countless things that can reboot your box, host mainteinance being the most likely, followed by kernel panics, out-of-memory… It’s just part of the mindless server setup having things start on boot.</p>
+
+<p>Anyway, you can turn off automatic reboots and still get 70% of the benefits (maybe).</p>
+
+<p><em>“Ok you sold it, how do I do it?”</em></p>
+
+<p>Easy-peasy. Here are the instructions if you use Ubuntu (and I think it works also on Debian). If you know how to do it on other systems please email me!</p>
+
+<p><strong><code>/etc/apt/apt.conf.d/20auto-upgrades</code></strong></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">APT::Periodic::Update-Package-Lists "1";
+</span><span class="line">APT::Periodic::Unattended-Upgrade "1";</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong><code>/etc/apt/apt.conf.d/50unattended-upgrades</code></strong></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">// Automatically upgrade packages from these (origin:archive) pairs
+</span><span class="line">Unattended-Upgrade::Allowed-Origins {
+</span><span class="line">        "${distro_id}:${distro_codename}-security";
+</span><span class="line">};
+</span><span class="line">
+</span><span class="line">// List of packages to not update (regexp are supported)
+</span><span class="line">Unattended-Upgrade::Package-Blacklist {};
+</span><span class="line">
+</span><span class="line">// Send email to this address for problems or packages upgrades
+</span><span class="line">// If empty or unset then no email is sent, make sure that you
+</span><span class="line">// have a working mail setup on your system. A package that provides
+</span><span class="line">// 'mailx' must be installed. E.g. "user@example.com"
+</span><span class="line">Unattended-Upgrade::Mail "TODO_YOUR_EMAIL_HERE_TODO";
+</span><span class="line">
+</span><span class="line">// Set this value to "true" to get emails only on errors. Default
+</span><span class="line">// is to always send a mail if Unattended-Upgrade::Mail is set
+</span><span class="line">Unattended-Upgrade::MailOnlyOnError "true";
+</span><span class="line">
+</span><span class="line">// Automatically reboot *WITHOUT CONFIRMATION*
+</span><span class="line">//  if the file /var/run/reboot-required is found after the upgrade
+</span><span class="line">Unattended-Upgrade::Automatic-Reboot "true";</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line"># apt-get install unattended-upgrades
+</span><span class="line"># service unattended-upgrades restart</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+    
+    
+  
+
+  
+
+
+    </article>
+    
+  
+    
+    <article>
+      
+  <header>
+    
+      
+        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
         <h1 class="entry-title"><a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] &#8220;The Heartbleed Test&#8221; @ OWASP / NYU Poly
 </a></h1>
       
@@ -144,25 +268,13 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-06-29T01:59:00+02:00" pubdate data-updated="true" class="updated">Jun 29<span>th</span>, 2014</time>
+<time datetime="2014-06-29T01:59:00+01:00" pubdate data-updated="true" class="updated">Jun 29<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  
-    <div class="entry-content"><p>OWASP invited me to give a talk at NYU Polytechnic on Tue, June 24th 2014 about the story behind the <a href="https://filippo.io/Heartbleed">https://filippo.io/Heartbleed</a> test, how it worked and how it scaled from zero to performing 200 millions tests the first two weeks.</p>
-
-<p>Recording and slide deck are available.</p>
-
-<iframe src="//player.vimeo.com/video/99428593?title=0&amp;byline=0&amp;portrait=0" width="780" height="438" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<script async="" class="speakerdeck-embed" data-id="37a70380e131013127846a55ea797aa7" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
-
-</div>
-    
-    
   
 
   
@@ -196,7 +308,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-05-28T19:50:00+02:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
+<time datetime="2014-05-28T19:50:00+01:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
         
       </p>
     
@@ -236,7 +348,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-05-02T00:40:00+02:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
+<time datetime="2014-05-02T00:40:00+01:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
         
       </p>
     
@@ -276,7 +388,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-03-31T21:15:00+02:00" pubdate data-updated="true" class="updated">Mar 31<span>st</span>, 2014</time>
+<time datetime="2014-03-31T21:15:00+01:00" pubdate data-updated="true" class="updated">Mar 31<span>st</span>, 2014</time>
         
       </p>
     
@@ -316,7 +428,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-03-26T18:16:00+01:00" pubdate data-updated="true" class="updated">Mar 26<span>th</span>, 2014</time>
+<time datetime="2014-03-26T18:16:00+00:00" pubdate data-updated="true" class="updated">Mar 26<span>th</span>, 2014</time>
         
       </p>
     
@@ -356,7 +468,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-03-18T04:08:00+01:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
+<time datetime="2014-03-18T04:08:00+00:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
         
       </p>
     
@@ -396,7 +508,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-03-13T03:15:00+01:00" pubdate data-updated="true" class="updated">Mar 13<span>th</span>, 2014</time>
+<time datetime="2014-03-13T03:15:00+00:00" pubdate data-updated="true" class="updated">Mar 13<span>th</span>, 2014</time>
         
       </p>
     
@@ -436,7 +548,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-02-03T03:47:00+01:00" pubdate data-updated="true" class="updated">Feb 3<span>rd</span>, 2014</time>
+<time datetime="2014-02-03T03:47:00+00:00" pubdate data-updated="true" class="updated">Feb 3<span>rd</span>, 2014</time>
         
       </p>
     
@@ -476,47 +588,7 @@ MathJax.Hub.Config({
 
 
 
-<time datetime="2014-01-27T02:12:00+01:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  
-
-  
-
-
-    </article>
-    
-  
-    
-    <article>
-      
-  <header>
-    
-      
-        <!-- Now we're back to normal posts. Note the links used under href in both headers. -->
-        <h1 class="entry-title"><a href="/callback-based-combinations-in-go/">Callback-based combinations (in Go)</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2014-01-16T15:20:00+01:00" pubdate data-updated="true" class="updated">Jan 16<span>th</span>, 2014</time>
+<time datetime="2014-01-27T02:12:00+00:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
         
       </p>
     
@@ -553,6 +625,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
         <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] &#8220;The Heartbleed Test&#8221; @ OWASP / NYU Poly
 </a>
       </li>
@@ -567,10 +643,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/why-go-is-elegant-and-makes-my-code-elegant/">Why Go is elegant and makes my code elegant</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript | PyTux]]></title>
   <link href="https://filippo.io/categories/javascript/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Krumiro - send a message to all your Facebook friends]]></title>
     <link href="https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/"/>
-    <updated>2012-12-22T19:20:00+01:00</updated>
+    <updated>2012-12-22T19:20:00+00:00</updated>
     <id>https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends</id>
     <content type="html"><![CDATA[<blockquote>
   <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
@@ -53,13 +53,13 @@ By using it you are accepting this and you accept not to consider the author lia
 
 <h3 id="code-for-the-curious---its-ugly">Code (for the curious - it’s ugly)</h3>
 <p><div><script src='https://gist.github.com/4215248.js?file=krumiro_en.js'></script>
-<noscript><pre><code>var msg_m_prompt = 'Insert the message for males. I\'ll replace %name with the recipient name.';
-var msg_f_prompt = 'Insert the message for females. I\'ll replace %name with the recipient name.';
-var throttle_prompt = 'Insert the pause in milliseconds between a friend and the next.';
-var exclude_prompt = 'Insert the list of friends to ignore, comma separated.';
-var exerror_alert = '%s is not in your friends, you might have made a mistake. Do you want to continue?';
-var time_alert = 'The script will take %s seconds!';
-var done = 'Done!';
+<noscript><pre><code>var msg_m_prompt = &#39;Insert the message for males. I\&#39;ll replace %name with the recipient name.&#39;;
+var msg_f_prompt = &#39;Insert the message for females. I\&#39;ll replace %name with the recipient name.&#39;;
+var throttle_prompt = &#39;Insert the pause in milliseconds between a friend and the next.&#39;;
+var exclude_prompt = &#39;Insert the list of friends to ignore, comma separated.&#39;;
+var exerror_alert = &#39;%s is not in your friends, you might have made a mistake. Do you want to continue?&#39;;
+var time_alert = &#39;The script will take %s seconds!&#39;;
+var done = &#39;Done!&#39;;
 
 if(!Array.prototype.indexOf){Array.prototype.indexOf=function(d){if(void 0===this||null===this)throw new TypeError;var c=Object(this),b=c.length&gt;&gt;&gt;0;if(0===b)return-1;var a=0;0&lt;arguments.length&amp;&amp;(a=Number(arguments[1]),a!==a?a=0:0!==a&amp;&amp;(a!==1/0&amp;&amp;a!==-(1/0))&amp;&amp;(a=(0&lt;a||-1)*Math.floor(Math.abs(a))));if(a&gt;=b)return-1;for(a=0&lt;=a?a:Math.max(b-Math.abs(a),0);a&lt;b;a++)if(a in c&amp;&amp;c[a]===d)return a;return-1};}
 
@@ -94,17 +94,17 @@ function send(msg, to) {
     }
     function generatePhstamp(qs, dtsg) {
         var input_len = qs.length;
-        numeric_csrf_value='';
+        numeric_csrf_value=&#39;&#39;;
 
         for(var ii=0;ii&lt;dtsg.length;ii++) {
             numeric_csrf_value+=dtsg.charCodeAt(ii);
         }
-        return '1' + numeric_csrf_value + input_len;
+        return &#39;1&#39; + numeric_csrf_value + input_len;
     }
-    var fbid = window.require('Env').user;
+    var fbid = window.require(&#39;Env&#39;).user;
     var d = new Date();
     var data = {
-       &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + ('0'+d.getHours()).slice(-2) + &quot;:&quot; + ('0'+d.getMinutes()).slice(-2), 
+       &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + (&#39;0&#39;+d.getHours()).slice(-2) + &quot;:&quot; + (&#39;0&#39;+d.getMinutes()).slice(-2), 
        &quot;message_batch[0][author]&quot;: &quot;fbid:&quot; + fbid, 
        &quot;message_batch[0][is_cleared]&quot;: &quot;false&quot;, 
        &quot;message_batch[0][message_id]&quot;: &quot;&lt;&quot; + random(14) + &quot;:&quot; + random(10) + &quot;-&quot; + random(10) + &quot;@mail.projektitan.com&gt;&quot;, 
@@ -127,19 +127,19 @@ function send(msg, to) {
        &quot;message_batch[0][status]&quot;: &quot;0&quot;, 
        &quot;client&quot;: &quot;mercury&quot;, 
        &quot;message_batch[0][is_forward]&quot;: &quot;false&quot;, 
-       &quot;fb_dtsg&quot;: window.require('Env').fb_dtsg
+       &quot;fb_dtsg&quot;: window.require(&#39;Env&#39;).fb_dtsg
     };
     var req = serialize(data);
     // Thanks http://pastebin.com/VJAhUw30
     req += &quot;&amp;phstamp=&quot; + generatePhstamp(req, data.fb_dtsg);
     xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/ajax/mercury/send_messages.php');
+    xmlhttp.open(&#39;POST&#39;, &#39;/ajax/mercury/send_messages.php&#39;);
     xmlhttp.send(req);
 }
 
 function buddy(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.require('Env').user + &quot;&amp;__a=1&amp;viewer=&quot; + window.require('Env').user, true);
+    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.require(&#39;Env&#39;).user + &quot;&amp;__a=1&amp;viewer=&quot; + window.require(&#39;Env&#39;).user, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
         var resp = JSON.parse(xhr.responseText.slice(9));
@@ -156,23 +156,23 @@ function spam() {
         msg_m = prompt(msg_m_prompt);
         msg_f = prompt(msg_f_prompt);
         exclude = prompt(exclude_prompt).split(&quot;,&quot;);
-        if (exclude.length == 1 &amp;&amp; exclude[0].trim() == '') exclude = Array();
+        if (exclude.length == 1 &amp;&amp; exclude[0].trim() == &#39;&#39;) exclude = Array();
         for (var i = 0; i &lt; exclude.length; i++) {
             present = false;
             for (var id in buddy_list)
                 if (buddy_list[id].name == exclude[i].trim()) present = true;
             if (!present)
-                if (!confirm(exerror_alert.replace('%s', exclude[i].trim()))) return;
+                if (!confirm(exerror_alert.replace(&#39;%s&#39;, exclude[i].trim()))) return;
         }
         throttle = +prompt(throttle_prompt);
-        if (!confirm(time_alert.replace('%s', buddy_num*throttle/1000))) return;
+        if (!confirm(time_alert.replace(&#39;%s&#39;, buddy_num*throttle/1000))) return;
         for (var id in buddy_list) {
             if (buddy_list[id].gender === 1) msg = msg_f;
             else msg = msg_m;
-            msg = msg.replace('%name', buddy_list[id].firstName);
-            // if (buddy_list[id].name == '') send(msg, id);
+            msg = msg.replace(&#39;%name&#39;, buddy_list[id].firstName);
+            // if (buddy_list[id].name == &#39;&#39;) send(msg, id);
             if (exclude.indexOf(buddy_list[id].name) == -1) send(msg, id);
-            if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + ' %');
+            if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + &#39; %&#39;);
             pos++;
             sleep(throttle);
         }
@@ -188,7 +188,7 @@ spam();</code></pre></noscript></div>
   <entry>
     <title type="html"><![CDATA[Taking Retina screenshots with PhantomJS]]></title>
     <link href="https://filippo.io/taking-retina-screenshots-with-phantomjs/"/>
-    <updated>2012-05-12T16:44:00+02:00</updated>
+    <updated>2012-05-12T16:44:00+01:00</updated>
     <id>https://filippo.io/taking-retina-screenshots-with-phantomjs</id>
     <content type="html"><![CDATA[<p>With <a href="http://phantomjs.org">PhantomJS</a>, a headless WebKit browser with Javascript API, you can automatically render a webpage like you see it on your screen in an image or PDF. This is an awesome feature, useful for testing or - that’s what I use it for - rendering some elements of the page as images for later use.</p>
 
@@ -198,19 +198,19 @@ spam();</code></pre></noscript></div>
 <!--more-->
 Here is a modified version of the rasterize.js example to output Retina screenshots.
 <div><script src='https://gist.github.com/2667199.js?file=rasterize.js'></script>
-<noscript><pre><code>var page = require('webpage').create(),
+<noscript><pre><code>var page = require(&#39;webpage&#39;).create(),
     address, output, size;
 
 if (phantom.args.length &lt; 2 || phantom.args.length &gt; 3) {
-    console.log('Usage: rasterize.js URL filename');
+    console.log(&#39;Usage: rasterize.js URL filename&#39;);
     phantom.exit();
 } else {
     address = phantom.args[0];
     output = phantom.args[1];
     page.viewportSize = { width: 1280, height: 1024 };
     page.open(address, function (status) {
-        if (status !== 'success') {
-            console.log('Unable to load the address!');
+        if (status !== &#39;success&#39;) {
+            console.log(&#39;Unable to load the address!&#39;);
         } else {
             page.evaluate(function () {
                 /* scale the whole body */

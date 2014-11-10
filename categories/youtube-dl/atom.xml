@@ -4,7 +4,7 @@
   <title><![CDATA[Category: youtube-dl | PyTux]]></title>
   <link href="https://filippo.io/categories/youtube-dl/atom.xml" rel="self"/>
   <link href="https://filippo.io/"/>
-  <updated>2014-07-09T14:57:46+02:00</updated>
+  <updated>2014-11-10T15:50:56+00:00</updated>
   <id>https://filippo.io/</id>
   <author>
     <name><![CDATA[Filippo Valsorda]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Scraping the hell out of a more stubborn site]]></title>
     <link href="https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site/"/>
-    <updated>2014-02-03T03:47:00+01:00</updated>
+    <updated>2014-02-03T03:47:00+00:00</updated>
     <id>https://filippo.io/scraping-a-video-out-of-a-more-stubborn-site</id>
     <content type="html"><![CDATA[<p><em>This is the second post speaking about writing <strong>youtube-dl IEs</strong>, all the basics are <a href="/add-support-for-a-new-video-site-to-youtube-dl/">here</a>.</em></p>
 
@@ -71,7 +71,7 @@
   <entry>
     <title type="html"><![CDATA[Add support for a new video site to youtube-dl]]></title>
     <link href="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/"/>
-    <updated>2014-01-27T02:12:00+01:00</updated>
+    <updated>2014-01-27T02:12:00+00:00</updated>
     <id>https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl</id>
     <content type="html"><![CDATA[<p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
 
