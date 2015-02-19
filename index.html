@@ -154,6 +154,9 @@ h1 {
         <p class="lead">
             Check below. If you see an image with "YES" written on it,<br>you have a problem.
         </p>
+        <p>
+            (If the browser asks you to confirm/trust/accept with a pop-up, you're not vulnerable. And for the future consider that answering yes to those pop-ups is dangerous: you are giving up the security of the connection.)
+        </p>
         <p style="text-align: center">
             <img src="https://badfish.filippo.io/yes.png" onerror="this.onload=''; this.alt='Good, you seem not to trust the Superfish CA.'; this.style.width = '500px'; this.src='no.png'; ga('send', 'event', 'Result', 'Negative', {'nonInteraction': 1});" style="width: 300px" onload="this.alt='Yes, your connections can be tampered with!'; ga('send', 'event', 'Result', 'Positive', {'nonInteraction': 1});">
         </p>
