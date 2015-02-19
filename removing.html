@@ -61,10 +61,8 @@ h3 {
     text-align: center;
 }
 
-.sottotitolo {
-  font-size: 14px;
-  text-align: center;
-
+.container img {
+  width: 60%;
 }
 
 </style>
@@ -79,43 +77,73 @@ h3 {
             </div>
 
             <p>So you got a YES on the Badfish test: <a href="https://filippo.io/Badfish/">https://filippo.io/Badfish/</a></p>
+
             <p>Let's work together to fix that. Important: don't do this if you don't feel comfortable following the instructions, ask for help, these are administrative operations.</p>
-            <h3>Step 1. Uninstall the software</h3>
-            <ol>
-            <li>Open the Windows Start menu or Start screen and search for &quot;Uninstall a program&quot;. Launch it.</li>
-            <li>Right-click on &quot;Superfish Inc VisualDiscovery&quot; and select &quot;Uninstall,&quot; then enter your administrator password.</li>
+
+            <h3>
+            <a id="user-content-step-1-uninstall-the-software" class="anchor" href="#step-1-uninstall-the-software" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step 1. Uninstall the software</h3>
+
+            <ol class="task-list">
+            <li> Open the Windows Start menu or Start screen and search for "Uninstall a program". Launch it.</li>
+            <li> Right-click on "Superfish Inc VisualDiscovery" and select "Uninstall" then enter your administrator password.</li>
             </ol>
-            <h3>Step 2. Remove the certificate from Windows</h3>
-            <ol>
-            <li>Open the Windows Start menu or Start screen and search for &quot;certmgr.msc&quot;. Launch it.</li>
-            <li>Click on &quot;Trusted Root Certification Authorities&quot; and open Certificates.</li>
-            <li>Look for any certificates that include Superfish Inc, and right-click to delete them</li>
+
+            <h3>
+            <a id="user-content-step-2-remove-the-certificate-from-windows" class="anchor" href="#step-2-remove-the-certificate-from-windows" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step 2. Remove the certificate from Windows</h3>
+
+            <ol class="task-list">
+            <li> Open the Windows Start menu or Start screen and search for "certmgr.msc". Launch it as Administrator (right-click). If this does not work, you can try pressing Win+r, <a href="https://cloud.githubusercontent.com/assets/1225294/6274066/813714c8-b86c-11e4-9451-85e6abba0869.png">see here</a>.</li>
+            <li> Click on "Trusted Root Certification Authorities" and open Certificates.</li>
+            <li> Scroll down or use Ctrl-F to find the Superfish, Inc. certificate.</li>
+            <li> Right-click it and select Delete. If you don’t see the option to delete it, you may not be running as an administrator.</li>
             </ol>
-            <p><img src="https://cloud.githubusercontent.com/assets/1225294/6273278/07343fe4-b866-11e4-8d34-1f3d27a00b25.png" alt="image" /><br />
-            <em>credit: Chris Palmer</em></p>
-            <h3>Step 3. Remove the certificate from Firefox</h3>
+
+            <p><img src="https://cloud.githubusercontent.com/assets/1225294/6273964/8e3fcb2a-b86b-11e4-9d5a-6069156ca510.png" alt="image"></p>
+
+            <h3>
+            <a id="user-content-step-3-remove-the-certificate-from-firefox" class="anchor" href="#step-3-remove-the-certificate-from-firefox" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step 3. Remove the certificate from Firefox</h3>
+
             <p>This might or might not be needed, but check to be sure.</p>
-            <ol>
-            <li>Got to Options/Preferences</li>
-            <li>Click Advanced, then Certificates</li>
-            <li>Click View Certificates</li>
-            <li>Look for Superfish, if it's there click it and then click the &quot;Delete or Distrust&quot; button</li>
+
+            <ol class="task-list">
+            <li> Got to Options/Preferences</li>
+            <li> Click Advanced, then Certificates</li>
+            <li> Click View Certificates</li>
+            <li> Look for Superfish, if it's there click it and then click the "Delete or Distrust" button</li>
             </ol>
-            <p><img width="500px" src="https://cloud.githubusercontent.com/assets/1225294/6273580/6f225a4e-b868-11e4-95ff-fb6636f3e3b1.png" alt="image" /></p>
-            <h3>Step 4. Restart the browser</h3>
+
+            <p><img src="https://cloud.githubusercontent.com/assets/1225294/6273580/6f225a4e-b868-11e4-95ff-fb6636f3e3b1.png" alt="image"></p>
+
+            <h3>
+            <a id="user-content-step-4-restart-the-browser" class="anchor" href="#step-4-restart-the-browser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step 4. Restart the browser</h3>
+
             <p>Close completely and reopen your browsers. A reboot will do, too.</p>
-            <h3>Step 5. Check again</h3>
+
+            <h3>
+            <a id="user-content-step-5-check-again" class="anchor" href="#step-5-check-again" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step 5. Check again</h3>
+
             <p>Load <a href="https://filippo.io/Badfish">https://filippo.io/Badfish</a> again from both Chrome/IE and Firefox, and make sure you get a No this time.</p>
+
             <p>Note: The test might still be stuck on the old result, once you think you removed Superfish you can also load canibesuperphished.com and check if you get any warnings. If you do, you're fixed.</p>
-            <h3>Other resources</h3>
-            <ul>
-            <li><a href="http://www.pcworld.com/article/2886278/how-to-remove-the-dangerous-superfish-adware-presintalled-on-lenovo-pcs.html">PCWorld</a></li>
-            <li><a href="http://www.forbes.com/sites/thomasbrewster/2015/02/19/superfish-need-to-know/">Forbes</a></li>
-            <li><a href="http://arstechnica.com/security/2015/02/lenovo-pcs-ship-with-man-in-the-middle-adware-that-breaks-https-connections/">Ars</a></li>
-            <li><a href="http://marcrogers.org/2015/02/19/lenovo-installs-adware-on-customer-laptops-and-compromises-all-ssl/">Marc Rogers</a></li>
-            <li><a href="http://blog.erratasec.com/2015/02/some-notes-on-superfish.html">Errata</a></li>
+
+            <h3>
+            <a id="user-content-other-resources" class="anchor" href="#other-resources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other resources</h3>
+
+            <ul class="task-list">
+            <li>  <a href="http://www.pcworld.com/article/2886278/how-to-remove-the-dangerous-superfish-adware-presintalled-on-lenovo-pcs.html">PCWorld</a>
+            </li>
+            <li>  <a href="http://www.forbes.com/sites/thomasbrewster/2015/02/19/superfish-need-to-know/">Forbes</a>
+            </li>
+            <li>  <a href="http://arstechnica.com/security/2015/02/lenovo-pcs-ship-with-man-in-the-middle-adware-that-breaks-https-connections/">Ars</a>
+            </li>
+            <li>  <a href="http://marcrogers.org/2015/02/19/lenovo-installs-adware-on-customer-laptops-and-compromises-all-ssl/">Marc Rogers</a>
+            </li>
+            <li>  <a href="http://blog.erratasec.com/2015/02/some-notes-on-superfish.html">Errata</a>
+            </li>
             </ul>
-            <p>Thanks to: LifeHacker, PCWorld.</p>
+
+            <p>Thanks to: LifeHacker, PCWorld, The Wirecutter.</p>
+
 
         </div>
         <div id="footer">
