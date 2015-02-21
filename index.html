@@ -120,13 +120,22 @@ body {
         <!-- Load JS here for greater good =============================-->
         <script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
 
+        <script type="text/suspended" id="finally">
+            loadedNew();
+
+            if (typeof BADFISH_SELF !== 'undefined') triggeredSelf();
+            else if (typeof BADFISH_SUPER !== 'undefined') triggeredSuper();
+            else if (typeof BADFISH_SAN !== 'undefined') triggeredSan();
+            else allGood();
+
+            if (typeof console !== 'undefined') console.log('Loaded new');
+        </script>
         <script>
         window.setTimeout(function() {
             [
               'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
               'https://selfsigned.filippo.io/yes.js?cachekill=' + Math.random(),
-              'https://badfish.filippo.io/yes.js?cachekill=' + Math.random(),
-              'finally.js'
+              'https://badfish.filippo.io/yes.js?cachekill=' + Math.random()
             ].forEach(function(src) {
               var script = document.createElement('script');
               script.src = src;
@@ -134,7 +143,10 @@ body {
               document.head.appendChild(script);
             });
 
-            if (typeof console !== 'undefined') console.log('Finish');
+            var script = document.createElement('script');
+            script.innerHTML = document.getElementById('finally').innerHTML;
+            script.async = false;
+            document.head.appendChild(script);
         }, 10000);
 
         function loadedNew() {
