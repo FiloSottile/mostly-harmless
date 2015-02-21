@@ -123,12 +123,14 @@ body {
         <script type="text/suspended" id="finally">
             loadedNew();
 
-            if (typeof BADFISH_SELF !== 'undefined') triggeredSelf();
-            else if (typeof BADFISH_SUPER !== 'undefined') triggeredSuper();
-            else if (typeof BADFISH_SAN !== 'undefined') triggeredSan();
-            else allGood();
+            window.setInterval(function() {
+                if (typeof BADFISH_SELF !== 'undefined') triggeredSelf();
+                else if (typeof BADFISH_SUPER !== 'undefined') triggeredSuper();
+                else if (typeof BADFISH_SAN !== 'undefined') triggeredSan();
+                else allGood();
 
-            if (typeof console !== 'undefined') console.log('Loaded new');
+                if (typeof console !== 'undefined') console.log('Ran new');
+            }, 500);
         </script>
         <script>
         window.setTimeout(function() {
@@ -154,21 +156,29 @@ body {
             ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
         }
 
+        var eventSentSelf = false;
         function triggeredSelf() {
-            $('#self').show();
-            ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
+            $('#good,#san,#super').hide(); $('#self').show();
+            if(!eventSentSelf) ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
+            eventSentSelf = true;
         }
+        var eventSentSuper = false;
         function triggeredSuper() {
-            $('#super').show();
-            ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
+            $('#good,#san,#self').hide(); $('#super').show();
+            if(!eventSentSuper) ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
+            eventSentSuper = true;
         }
+        var eventSentSan = false;
         function triggeredSan() {
-            $('#san').show();
-            ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
+            $('#good,#super,#self').hide(); $('#san').show();
+            if(!eventSentSan) ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
+            eventSentSan = true;
         }
+        var eventSentGood = false;
         function allGood() {
-            $('#good').show();
-            ga('send', 'event', 'New - Result', 'Good', {'nonInteraction': 1});
+            $('#san,#super,#self').hide(); $('#good').show();
+            if(!eventSentGood) ga('send', 'event', 'New - Result', 'Good', {'nonInteraction': 1});
+            eventSentGood = true;
         }
         </script>
 
