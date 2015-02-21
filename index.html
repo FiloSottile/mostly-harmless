@@ -133,7 +133,7 @@ body {
                 var script = document.createElement('script');
                 script.src = s[i];
                 script.async = false;
-                document.head.appendChild(script);
+                document.getElementsByTagName('head')[0].appendChild(script);
             }
 
             window.setInterval(function() {
