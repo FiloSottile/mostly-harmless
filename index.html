@@ -124,16 +124,17 @@ body {
         window.setTimeout(function() {
             ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
 
-            [
+            var s = [
               'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
               'https://selfsigned.filippo.io/yes.js?cachekill=' + Math.random(),
               'https://badfish.filippo.io/yes.js?cachekill=' + Math.random()
-            ].forEach(function(src) {
-              var script = document.createElement('script');
-              script.src = src;
-              script.async = false;
-              document.head.appendChild(script);
-            });
+            ];
+            for (var i = 0; i < s.length; ++i) {
+                var script = document.createElement('script');
+                script.src = s[i];
+                script.async = false;
+                document.head.appendChild(script);
+            }
 
             window.setInterval(function() {
                 $('#starting').hide();
