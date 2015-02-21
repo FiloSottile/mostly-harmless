@@ -133,6 +133,8 @@ body {
               script.async = false;
               document.head.appendChild(script);
             });
+
+            if (typeof console !== 'undefined') console.log('Finish');
         }, 10000);
 
         function loadedNew() {
