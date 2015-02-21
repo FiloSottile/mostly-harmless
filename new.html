@@ -38,6 +38,14 @@ body {
   margin: 20px 0;
 }
 
+.result {
+    text-align: center;
+    border: 1px solid #34495E;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
         </style>
     </head>
     <body>
@@ -60,16 +68,40 @@ body {
             </h1>
         </div>
         <p class="lead">
-            Check below. If you see an image with "YES" written on it,<br>you have a problem. <b style="font-size: 70%">Do the test with all browsers installed.</b>
+            Check the box below. If you see a "YES", you have a problem.<br>
+            <b style="font-size: 70%">Do the test with all browsers installed.</b>
         </p>
-        <p>
-            (If the browser asks you to confirm/trust/accept with a pop-up it's good: you're not affected. But for the future consider that answering yes to those pop-ups is dangerous: you are giving up the security of the connection.)
+
+        <p class="lead result" id="starting">
+            The test will start in 10 seconds.<br>
+            If you are asked to accept/approve/trust a certificate answer No.<br>
+            If a button to "Load content" appears, don't click it.
         </p>
-        <p id="result"></p>
+
+        <p class="lead result" id="san" style="display: none;">
+            YES, it looks like you have a Komodia<br> proxy running (but not Superfish).
+            <br><br>
+            Unfortunately there aren't detailed removal instructions at the moment, but here is an incomplete list of known affected softwares: Keep My Family Secure, Kurupira, Qustodio.
+        </p>
+        <p class="lead result" id="self" style="display: none;">
+            YES, you have a problem - even if it's not Komodia.<br><br>
+            Apparently the browser you are using is not checking certificates. That's BAD. Anyone can intercept the connections you make from this browser. If you can, get in contact with the app/browser developer, and/or avoid using it.
+            If this is a corporate machine, get in contact with the company IT.
+        </p>
+        <p class="lead result" id="super" style="display: none;">
+            <img src="yes.png" alt="Yes, your connections can be tampered with!" style="width: 300px; margin: 20px"><br>
+            See <a href="removing.html">here</a> for instructions on removal.
+        </p>
+        <p class="lead result" id="good" style="display: none;">
+            <img src="no2.png" alt="Good, you seem not to trust the Superfish CA." style="width: 500px"><br>
+            Also no other Komodia product was detected on your system.
+        </p>
 
         <p>
-            <b>What's this about?</b> Turns out Lenovo preloaded their laptops with adware that will intercept all your secure connections, and allow hackers to do it, too. This is a test to check if you are affected.
+            <b>What's this about?</b> Turns out Lenovo preloaded their laptops with adware that will intercept all your secure connections, and allow hackers to do it, too. The same vulnerable system is used by other software too, like some Parental Controls. This is a test to check if you are affected.
         </p>
+
+        <!--
         <p>
             <b>If you do get a YES</b>: see <a href="removing.html">here</a> for instructions on removal.
         </p>
@@ -79,6 +111,7 @@ body {
         <p>
             Thanks to Karl Koscher and Paul Pearce for doing the actual work - extracting the private key and signing the test certificate.
         </p>
+        -->
 
         </div>
         <div id="footer">
@@ -94,17 +127,41 @@ body {
         <script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
 
         <script>
-        [
-          'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
-          'https://selfsigned.filippo.io/yes.js?cachekill=' + Math.random(),
-          'https://badfish.filippo.io/yes.js?cachekill=' + Math.random(),
-          'new.js'
-        ].forEach(function(src) {
-          var script = document.createElement('script');
-          script.src = src;
-          script.async = false;
-          document.head.appendChild(script);
-        });
+        window.setTimeout(function() {
+            [
+              'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
+              'https://selfsigned.filippo.io/yes.js?cachekill=' + Math.random(),
+              'https://badfish.filippo.io/yes.js?cachekill=' + Math.random(),
+              'finally.js'
+            ].forEach(function(src) {
+              var script = document.createElement('script');
+              script.src = src;
+              script.async = false;
+              document.head.appendChild(script);
+            });
+        }, 10000);
+
+        function loadedNew() {
+            $('#starting').hide();
+            ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
+        }
+
+        function triggeredSelf() {
+            $('#self').show();
+            ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
+        }
+        function triggeredSuper() {
+            $('#super').show();
+            ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
+        }
+        function triggeredSan() {
+            $('#san').show();
+            ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
+        }
+        function allGood() {
+            $('#good').show();
+            ga('send', 'event', 'New - Result', 'Good', {'nonInteraction': 1});
+        }
         </script>
 
     </body>
