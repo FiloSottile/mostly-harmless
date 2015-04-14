@@ -38,10 +38,18 @@
         .with-license {
             background: #F2F2F2;
         }
+        .with-license a {
+            color: inherit;
+        }
+
         .without-license {
             background: #FD8181;
         }
         .without-license a {
+            color: #333;
+        }
+
+        .click-here {
             color: #333;
             font-weight: bold;
         }
@@ -164,9 +172,9 @@
                 });
             }
 
-            function addTableLineGreen(name, license) {
+            function addTableLineGreen(name, license, fullName) {
                 var row = $('<tr class="with-license"></tr>')
-                row.append($('<td></td>').text(name))
+                row.append($('<td></td>').append($('<a></a>').attr('href', 'https://github.com/' + fullName).text(name)))
                 row.append($('<td></td>').text(license))
                 $("table").append(row)
                 $(window).scrollTop($("table").position().top);
@@ -174,9 +182,9 @@
 
             function addTableLineRed(name, fullName) {
                 var row = $('<tr class="without-license"></tr>')
-                row.append($('<td></td>').text(name))
+                row.append($('<td></td>').append($('<a></a>').attr('href', 'https://github.com/' + fullName).text(name)))
                 row.append($('<td></td>').append(
-                  $('<a>Click here!</a>').attr('href', 'https://github.com/' + fullName + '/new/master')
+                  $('<a class="click-here">Click here!</a>').attr('href', 'https://github.com/' + fullName + '/new/master')
                 ))
                 $("table").append(row)
                 $(window).scrollTop($("table").position().top);
@@ -186,7 +194,7 @@
                 $("table").html('')
                 listRepos($("input").val(), function(repo) {
                     if (repo.license) {
-                      addTableLineGreen(repo.name, repo.license.name)
+                      addTableLineGreen(repo.name, repo.license.name, repo.full_name)
                     } else {
                       addTableLineRed(repo.name, repo.full_name)
                     }
