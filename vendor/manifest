@@ -1,0 +1,88 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/cloudflare/dns",
+			"repository": "https://github.com/cloudflare/dns",
+			"revision": "71d0b8b3818117dd1b129de3a649a6e3c29e3a97",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gopherjs/gopherjs",
+			"repository": "https://github.com/gopherjs/gopherjs",
+			"revision": "9a384d49ca16076fcf43b96cf1a0cb71833b35ff",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gopherjs/gopherjs/js",
+			"repository": "https://github.com/gopherjs/gopherjs",
+			"revision": "9a384d49ca16076fcf43b96cf1a0cb71833b35ff",
+			"branch": "master",
+			"path": "/js"
+		},
+		{
+			"importpath": "github.com/inconshreveable/mousetrap",
+			"repository": "https://github.com/inconshreveable/mousetrap",
+			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/kardianos/osext",
+			"repository": "https://github.com/kardianos/osext",
+			"revision": "6e7f843663477789fac7c02def0d0909e969b4e5",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/neelance/sourcemap",
+			"repository": "https://github.com/neelance/sourcemap",
+			"revision": "8994456d80d26c100207bb0c4a758e25b1b4b5db",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/cobra",
+			"repository": "https://github.com/spf13/cobra",
+			"revision": "385fc87e4343efec233811d3d933509e8975d11a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/pflag",
+			"repository": "https://github.com/spf13/pflag",
+			"revision": "67cbc198fd11dab704b214c1e629a97af392c085",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/crypto/ssh/terminal",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "7d5b0be716b9d6d4269afdaae10032bb296d3cdf",
+			"branch": "master",
+			"path": "/ssh/terminal"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/exact",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "87156cb7667343326165d84f3557bd91ab57428b",
+			"branch": "master",
+			"path": "/go/exact"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/importer",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "87156cb7667343326165d84f3557bd91ab57428b",
+			"branch": "master",
+			"path": "/go/importer"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/types",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "87156cb7667343326165d84f3557bd91ab57428b",
+			"branch": "master",
+			"path": "/go/types"
+		},
+		{
+			"importpath": "gopkg.in/fsnotify.v1",
+			"repository": "https://gopkg.in/fsnotify.v1",
+			"revision": "96c060f6a6b7e0d6f75fddd10efeaca3e5d1bcb0",
+			"branch": "master"
+		}
+	]
+}
