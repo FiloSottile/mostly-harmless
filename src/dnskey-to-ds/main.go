@@ -15,11 +15,14 @@ func main() {
 	})
 }
 
+const Flags = dns.SEP | dns.ZONE
+
 func ToDS() {
 	go func() {
 		// document.getElementById('dnskey').value
 		zone := js.Global.Get("document").Call("getElementById", "dnskey").Get("value").String()
 
+		var result string
 		for x := range dns.ParseZone(strings.NewReader(zone), "", "") {
 			if x.Error != nil {
 				log.Println(x.Error)
@@ -32,20 +35,18 @@ func ToDS() {
 				continue
 			}
 
-			if dnskey.Flags&dns.SEP == 0 {
-				log.Println("Ignoring ZSK:", x.RR)
+			if dnskey.Flags&Flags != Flags {
+				log.Println("Ignoring non-KSK:", x.RR)
 				continue
 			}
 
 			ds1 := dnskey.ToDS(dns.SHA1)
 			ds2 := dnskey.ToDS(dns.SHA256)
 
-			result := fmt.Sprintf("%s\n%s\n", ds1, ds2)
-
-			// document.getElementById('ds').innerHTML
-			js.Global.Get("document").Call("getElementById", "ds").Set("innerHTML", result)
-
-			break
+			result += fmt.Sprintf("%s\n%s\n", ds1, ds2)
 		}
+
+		// document.getElementById('ds').innerHTML
+		js.Global.Get("document").Call("getElementById", "ds").Set("innerHTML", result)
 	}()
 }

@@ -45877,6 +45877,7 @@ $packages["dnskey-to-ds"] = (function() {
 			var $ptr, _ok, _r, _r$1, _r$2, _r$3, _ref, _tuple, _tuple$1, dnskey, ds1, ds2, ok, result, x, zone, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ok = $f._ok; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; dnskey = $f.dnskey; ds1 = $f.ds1; ds2 = $f.ds2; ok = $f.ok; result = $f.result; x = $f.x; zone = $f.zone; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			zone = $internalize($global.document.getElementById($externalize("dnskey", $String)).value, $String);
+			result = "";
 			_ref = dns.ParseZone(strings.NewReader(zone), "", "");
 			/* while (true) { */ case 1:
 				_r = $recv(_ref); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -45897,10 +45898,10 @@ $packages["dnskey-to-ds"] = (function() {
 					$r = log.Println(new sliceType([new $String("Not a DNSKEY:"), x.RR])); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 					/* continue; */ $s = 1; continue;
 				/* } */ case 8:
-				/* */ if (((dnskey.Flags & 1) >>> 0) === 0) { $s = 10; continue; }
+				/* */ if (!((((dnskey.Flags & 257) >>> 0) === 257))) { $s = 10; continue; }
 				/* */ $s = 11; continue;
-				/* if (((dnskey.Flags & 1) >>> 0) === 0) { */ case 10:
-					$r = log.Println(new sliceType([new $String("Ignoring ZSK:"), x.RR])); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				/* if (!((((dnskey.Flags & 257) >>> 0) === 257))) { */ case 10:
+					$r = log.Println(new sliceType([new $String("Ignoring non-KSK:"), x.RR])); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 					/* continue; */ $s = 1; continue;
 				/* } */ case 11:
 				_r$1 = dnskey.ToDS(1); /* */ $s = 13; case 13: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
@@ -45908,10 +45909,9 @@ $packages["dnskey-to-ds"] = (function() {
 				_r$2 = dnskey.ToDS(2); /* */ $s = 14; case 14: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 				ds2 = _r$2;
 				_r$3 = fmt.Sprintf("%s\n%s\n", new sliceType([ds1, ds2])); /* */ $s = 15; case 15: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-				result = _r$3;
-				$global.document.getElementById($externalize("ds", $String)).innerHTML = $externalize(result, $String);
-				/* break; */ $s = 2; continue;
+				result = result + (_r$3);
 			/* } */ $s = 1; continue; case 2:
+			$global.document.getElementById($externalize("ds", $String)).innerHTML = $externalize(result, $String);
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._ok = _ok; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.dnskey = dnskey; $f.ds1 = ds1; $f.ds2 = ds2; $f.ok = ok; $f.result = result; $f.x = x; $f.zone = zone; $f.$s = $s; $f.$r = $r; return $f;
 		}), []);
 	};
