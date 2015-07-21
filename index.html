@@ -15,8 +15,28 @@
   </head>
   <body>
     <div class="container">
-      <h1>Hello, world!</h1>
+      <div class="row">
+        <div class="col-md-12">
+          <h1>DNSKEY to DS record converter</h1>
+
+          <p>Based on <a href="https://github.com/cloudflare/dns">github.com/cloudflare/dns</a> compiled with <a href="https://github.com/gopherjs/gopherjs">GopherJS</a>.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <p>Enter the output of <code>dig [...] DNSKEY</code> (or anyway the DNSKEY records) here:</p>
+
+          <p><textarea id="dnskey" class="form-control" rows="5"></textarea></p>
+
+          <p><button type="button" class="btn btn-primary btn-lg" onclick="go.ToDS()">Convert</button></p>
+        </div>
+        <div class="col-md-6">
+          <pre><code id="ds"></code></pre>
+        </div>
+      </div>
     </div>
+
+    <a href="https://github.com/FiloSottile/dnskey-to-ds"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>

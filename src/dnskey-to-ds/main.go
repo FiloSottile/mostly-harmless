@@ -15,8 +15,11 @@ func main() {
 	})
 }
 
-func ToDS(zone string) {
+func ToDS() {
 	go func() {
+		// document.getElementById('dnskey').value
+		zone := js.Global.Get("document").Call("getElementById", "dnskey").Get("value").String()
+
 		for x := range dns.ParseZone(strings.NewReader(zone), "", "") {
 			if x.Error != nil {
 				log.Println(x.Error)
@@ -37,7 +40,12 @@ func ToDS(zone string) {
 			ds1 := dnskey.ToDS(dns.SHA1)
 			ds2 := dnskey.ToDS(dns.SHA256)
 
-			js.Global.Get("document").Call("write", fmt.Sprintf("%s\n%s\n", ds1, ds2))
+			result := fmt.Sprintf("%s\n%s\n", ds1, ds2)
+
+			// document.getElementById('ds').innerHTML
+			js.Global.Get("document").Call("getElementById", "ds").Set("innerHTML", result)
+
+			break
 		}
 	}()
 }

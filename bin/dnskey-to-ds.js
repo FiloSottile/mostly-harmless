@@ -45862,7 +45862,7 @@ $packages["dnskey-to-ds"] = (function() {
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	log = $packages["log"];
 	strings = $packages["strings"];
-	funcType = $funcType([$String], [], false);
+	funcType = $funcType([], [], false);
 	mapType = $mapType($String, $emptyInterface);
 	ptrType = $ptrType(dns.ParseError);
 	sliceType = $sliceType($emptyInterface);
@@ -45871,11 +45871,12 @@ $packages["dnskey-to-ds"] = (function() {
 		var $ptr, _key, _map;
 		$global.go = $externalize((_map = new $Map(), _key = "ToDS", _map[$String.keyFor(_key)] = { k: _key, v: new funcType(ToDS) }, _map), mapType);
 	};
-	ToDS = function(zone) {
-		var $ptr, zone;
+	ToDS = function() {
+		var $ptr;
 		$go((function $b() {
-			var $ptr, _ok, _r, _r$1, _r$2, _r$3, _ref, _tuple, _tuple$1, dnskey, ds1, ds2, ok, x, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ok = $f._ok; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; dnskey = $f.dnskey; ds1 = $f.ds1; ds2 = $f.ds2; ok = $f.ok; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			var $ptr, _ok, _r, _r$1, _r$2, _r$3, _ref, _tuple, _tuple$1, dnskey, ds1, ds2, ok, result, x, zone, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ok = $f._ok; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; dnskey = $f.dnskey; ds1 = $f.ds1; ds2 = $f.ds2; ok = $f.ok; result = $f.result; x = $f.x; zone = $f.zone; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			zone = $internalize($global.document.getElementById($externalize("dnskey", $String)).value, $String);
 			_ref = dns.ParseZone(strings.NewReader(zone), "", "");
 			/* while (true) { */ case 1:
 				_r = $recv(_ref); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -45907,9 +45908,11 @@ $packages["dnskey-to-ds"] = (function() {
 				_r$2 = dnskey.ToDS(2); /* */ $s = 14; case 14: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 				ds2 = _r$2;
 				_r$3 = fmt.Sprintf("%s\n%s\n", new sliceType([ds1, ds2])); /* */ $s = 15; case 15: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-				$global.document.write($externalize(_r$3, $String));
+				result = _r$3;
+				$global.document.getElementById($externalize("ds", $String)).innerHTML = $externalize(result, $String);
+				/* break; */ $s = 2; continue;
 			/* } */ $s = 1; continue; case 2:
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._ok = _ok; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.dnskey = dnskey; $f.ds1 = ds1; $f.ds2 = ds2; $f.ok = ok; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._ok = _ok; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.dnskey = dnskey; $f.ds1 = ds1; $f.ds2 = ds2; $f.ok = ok; $f.result = result; $f.x = x; $f.zone = zone; $f.$s = $s; $f.$r = $r; return $f;
 		}), []);
 	};
 	$pkg.ToDS = ToDS;
