@@ -14,21 +14,6 @@ import (
 	"golang.org/x/crypto/openpgp/packet"
 )
 
-func fatalIfErr(err error) {
-	if err != nil {
-		logFatal("Error: " + err.Error())
-	}
-}
-
-func logFatal(msg string) {
-	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.RedString("-"), msg)
-	os.Exit(1)
-}
-
-func logInfo(msg string) {
-	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.GreenString("+"), msg)
-}
-
 var pgpArmor bool
 
 func main() {
@@ -65,7 +50,7 @@ func main() {
 		pgpBackup(inputR)
 
 	default:
-		logFatal(fmt.Sprintf("Unrecognized PGP packet: %T", p))
+		logFatal("Unrecognized PGP packet: %T", p)
 	}
 }
 
@@ -87,12 +72,13 @@ func pgpDecrypt(p *packet.PrivateKey, passphrase []byte) []byte {
 	if p.Decrypt(passphrase) != nil {
 		logFatal("Decryption failed, is the passphrase right?")
 	}
-	logInfo("Decryption succeeded")
+	logInfo("Decryption successful")
 	return passphrase
 }
 
 func pgpBackup(inputR *bytes.Reader) {
 	var passphrase = []byte("")
+	var numWords int
 	r := packet.NewReader(inputR)
 	for {
 		p, err := r.Next()
@@ -115,9 +101,50 @@ func pgpBackup(inputR *bytes.Reader) {
 				logFatal("Unsupported number of primes")
 			}
 			logInfo("Generating backup sequence for key " + pk.KeyIdShortString())
-			Bip39Encode(key.Primes[0].Bytes())
+			words := Bip39Encode(key.Primes[0].Bytes())
+			printWords(words)
+			numWords += len(words)
 		default:
-			logFatal(fmt.Sprintf("Unsupported key algorithm: %T", key))
+			logFatal("Unsupported key algorithm: %T", key)
 		}
 	}
+	logInfo("Backup successful")
+	printFooter(numWords)
+}
+
+func fatalIfErr(err error) {
+	if err != nil {
+		logFatal("Error: %v", err)
+	}
+}
+
+func logFatal(format string, a ...interface{}) {
+	msg := fmt.Sprintf(format, a...)
+	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.RedString("-"), msg)
+	os.Exit(1)
+}
+
+func logInfo(format string, a ...interface{}) {
+	msg := fmt.Sprintf(format, a...)
+	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.GreenString("+"), msg)
+}
+
+func printWords(words []string) {
+	for n, w := range words {
+		if n%10 == 0 {
+			if n != 0 {
+				fmt.Print("\n")
+			}
+			fmt.Printf("%2d: ", n/10+1)
+		}
+		fmt.Print(w, " ")
+	}
+	fmt.Print("\n")
+}
+
+func printFooter(numWords int) {
+	fmt.Fprint(os.Stderr, "\n")
+	logInfo("You will be able to regenerate the secret key by running this")
+	logInfo("tool again on the public key and typing the provided %d words", numWords)
+	logInfo("Testing the restore process is highly recommended")
 }
