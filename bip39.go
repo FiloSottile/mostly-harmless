@@ -5,7 +5,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"math/big"
 	"strings"
 )
@@ -13,51 +12,33 @@ import (
 // This is a partial implementation of BIP0039 encoding, without checksum
 
 func Bip39Encode(data []byte) []string {
-	Last11BitsMask := big.NewInt(2047)
+	last11BitsMask := big.NewInt(2048 - 1)
 
-	// Compute some lengths for convenience
-	dataBitLength := len(data) * 8
-	sentenceLength := divideUp(dataBitLength, 11)
+	if len(data) > 0 && data[0] == 0 {
+		panic("Bip39 can't encode leading zeroes")
+	}
 
-	// Break data up into sentenceLength chunks of 11 bits
-	// For each word AND mask the rightmost 11 bits and find the word at that index
-	// Then bitshift data 11 bits right and repeat
-	// Add to the last empty slot so we can work with LSBs instead of MSB
-
-	// data as an int so we can bitmask without worrying about bytes slices
+	sentenceLength := divideUp(len(data)*8, 11)
 	dataInt := new(big.Int).SetBytes(data)
-
 	words := make([]string, sentenceLength)
 
-	word := big.NewInt(0)
+	word := new(big.Int)
 	for i := sentenceLength - 1; i >= 0; i-- {
-		// Get 11 right most bits and bitshift 11 to the right for next time
-		word.And(dataInt, Last11BitsMask)
+		word.And(dataInt, last11BitsMask)
+		words[i] = WordList[word.Int64()]
+
 		dataInt.Rsh(dataInt, 11)
-
-		// Get the bytes representing the 11 bits as a 2 byte slice
-		wordBytes := padByteSlice(word.Bytes(), 2)
-
-		// Convert bytes to an index and add that word to the list
-		words[i] = WordList[binary.BigEndian.Uint16(wordBytes)]
 	}
 
 	return words
 }
 
-func Bip39Decode(mnemonic string) (data []byte, corrected, wrong []string) {
+func Bip39Decode(words []string) (data []byte, corrected, wrong []string) {
 	dataInt := big.NewInt(0)
 
-	mnemonic = strings.ToLower(strings.Trim(mnemonic, " \n\t"))
-	for _, w := range strings.Split(mnemonic, " ") {
-		if w == "" {
-			continue
-		}
-		if len(w) < 4 {
-			wrong = append(wrong, w)
-			continue
-		}
-		entry, ok := WordMap[w[:4]]
+	for _, w := range words {
+		w = strings.ToLower(w)
+		entry, ok := WordMap[w[:min(4, len(w))]]
 		if !ok {
 			wrong = append(wrong, w)
 			continue
@@ -80,13 +61,15 @@ func Bip39Decode(mnemonic string) (data []byte, corrected, wrong []string) {
 	return
 }
 
-func padByteSlice(slice []byte, length int) []byte {
-	newSlice := make([]byte, length-len(slice))
-	return append(newSlice, slice...)
+func divideUp(a, b int) int {
+	return (a + b - 1) / b
 }
 
-func divideUp(a, b int) int {
-	return (a + (-a % b)) / b
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 type wordEntry struct {
@@ -99,8 +82,14 @@ var WordMap = make(map[string]wordEntry)
 
 func init() {
 	WordList = strings.Split(strings.Trim(englishWordList, "\n"), "\n")
+	if len(WordList) != 2048 {
+		panic("wrong WordList length")
+	}
 	for n, w := range WordList {
-		WordMap[w[:4]] = wordEntry{w, n}
+		WordMap[w[:min(4, len(w))]] = wordEntry{w, n}
+	}
+	if len(WordMap) != 2048 {
+		panic("wrong WordMap length")
 	}
 }
 
