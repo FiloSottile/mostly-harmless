@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/rsa"
 	"fmt"
@@ -14,11 +15,49 @@ import (
 	"golang.org/x/crypto/openpgp/packet"
 )
 
-var pgpArmor bool
+var (
+	// The input file was armored, so should be the output file
+	pgpArmor bool
+
+	// INPUT is -, don't try to read passwords from stdin
+	stdinInput bool
+
+	// Read passwords from stdin even if it's not a TTY (used for testing)
+	stdinPwd bool
+)
+
+func usage() {
+	fmt.Println(`Usage: paper INPUT [OUTPUT]
+
+INPUT is either a public or a private PGP key (password protected and ASCII
+armored keys are supported). To read from standard input specify "-".
+
+Private keys will be converted to paper-friendly backups, public keys will be
+reconstructed into private keys once the backup words are entered.
+
+If private keys are generated, they will written to OUTPUT. If OUTPUT is
+omitted private keys will be written to standard output.
+`)
+	os.Exit(3)
+}
 
 func main() {
-	input, err := ioutil.ReadAll(os.Stdin)
-	fatalIfErr(err)
+	if len(os.Args) < 2 || len(os.Args) > 3 {
+		usage()
+	}
+
+	var input []byte
+	if os.Args[1] == "-" {
+		stdinInput = true
+		var err error
+		input, err = ioutil.ReadAll(os.Stdin)
+		fatalIfErr(err)
+	} else {
+		f, err := os.Open(os.Args[1])
+		fatalIfErr(err)
+		input, err = ioutil.ReadAll(f)
+		fatalIfErr(err)
+	}
 	inputR := bytes.NewReader(input)
 
 	b, err := armor.Decode(inputR)
@@ -45,6 +84,9 @@ func main() {
 
 	switch p := p.(type) {
 	case *packet.PrivateKey:
+		if len(os.Args) > 2 {
+			logFatal("Can't specify OUTPUT file when generating backups")
+		}
 		logInfo("PGP private key detected, generating backup codes")
 		inputR.Seek(0, 0)
 		pgpBackup(inputR)
@@ -55,24 +97,34 @@ func main() {
 }
 
 func pgpDecrypt(p *packet.PrivateKey, passphrase []byte) []byte {
-	if err := p.Decrypt(passphrase); err == nil {
+	err := p.Decrypt(passphrase)
+	if err == nil {
 		return passphrase
 	}
-	tty := os.Stdin
-	var err error
-	if !termutil.Isatty(tty.Fd()) {
-		tty, err = os.Open("/dev/tty")
-		fatalIfErr(err)
-	}
-	passphrase, err = termutil.GetPass(
-		"[*] Enter passphrase for PGP key "+p.KeyIdShortString()+": ",
-		os.Stderr.Fd(), tty.Fd(),
-	)
-	fatalIfErr(err)
+	passphrase = getPass("Enter passphrase for PGP key " + p.KeyIdShortString() + ": ")
 	if p.Decrypt(passphrase) != nil {
 		logFatal("Decryption failed, is the passphrase right?")
 	}
 	logInfo("Decryption successful")
+	return passphrase
+}
+
+func getPass(msg string) []byte {
+	msg = "[*] " + msg
+	if stdinPwd {
+		fmt.Fprint(os.Stderr, msg)
+		passphrase, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
+		fatalIfErr(err)
+		return passphrase[:len(passphrase)-1]
+	}
+	tty := os.Stdin
+	if stdinInput || !termutil.Isatty(tty.Fd()) {
+		var err error
+		tty, err = os.Open("/dev/tty")
+		fatalIfErr(err)
+	}
+	passphrase, err := termutil.GetPass(msg, os.Stderr.Fd(), tty.Fd())
+	fatalIfErr(err)
 	return passphrase
 }
 
