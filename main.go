@@ -4,10 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/rsa"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/big"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/andrew-d/go-termutil"
 	"github.com/fatih/color"
@@ -42,7 +46,7 @@ omitted private keys will be written to standard output.
 }
 
 func main() {
-	if len(os.Args) < 2 || len(os.Args) > 3 {
+	if len(os.Args) != 2 && len(os.Args) != 3 {
 		usage()
 	}
 
@@ -81,15 +85,28 @@ func main() {
 	if err != nil || p == nil {
 		logFatal("Couldn't detect any PGP packets")
 	}
+	inputR.Seek(0, 0)
 
 	switch p := p.(type) {
 	case *packet.PrivateKey:
-		if len(os.Args) > 2 {
+		if len(os.Args) != 2 {
 			logFatal("Can't specify OUTPUT file when generating backups")
 		}
 		logInfo("PGP private key detected, generating backup codes")
-		inputR.Seek(0, 0)
 		pgpBackup(inputR)
+
+	case *packet.PublicKey:
+		var outputW io.WriteCloser
+		switch {
+		case len(os.Args) == 2:
+			outputW = os.Stdout
+		case len(os.Args) == 3:
+			f, err := os.Create(os.Args[2])
+			fatalIfErr(err)
+			outputW = f
+		}
+		logInfo("PGP public key detected, regenerating private key")
+		pgpRestore(inputR, outputW)
 
 	default:
 		logFatal("Unrecognized PGP packet: %T", p)
@@ -156,12 +173,135 @@ func pgpBackup(inputR *bytes.Reader) {
 			words := Bip39Encode(key.Primes[0].Bytes())
 			printWords(words)
 			numWords += len(words)
+
 		default:
 			logFatal("Unsupported key algorithm: %T", key)
 		}
 	}
 	logInfo("Backup successful")
 	printFooter(numWords)
+}
+
+var letterRe = regexp.MustCompile(`[a-zA-Z]`)
+var wordsReader *bufio.Reader
+
+func getWords() (words []string) {
+	if wordsReader == nil {
+		input := io.Reader(os.Stdin)
+		if stdinInput {
+			var err error
+			input, err = os.Open("/dev/tty")
+			fatalIfErr(err)
+		}
+		wordsReader = bufio.NewReader(input)
+	}
+	fmt.Fprint(os.Stderr, "[ ] ")
+	line, err := wordsReader.ReadString('\n')
+	fatalIfErr(err)
+	for _, w := range strings.Split(line[:len(line)-1], " ") {
+		if len(w) == 0 {
+			continue
+		}
+		if letterRe.FindString(w) == "" {
+			continue
+		}
+		words = append(words, strings.ToLower(w))
+	}
+	return
+}
+
+func pgpRestore(inputR *bytes.Reader, outputW io.WriteCloser) {
+	r := packet.NewOpaqueReader(inputR)
+	for {
+		op, err := r.Next()
+		if err == io.EOF {
+			break
+		}
+		fatalIfErr(err)
+		p, err := op.Parse()
+		if err != nil {
+			fatalIfErr(op.Serialize(outputW))
+			continue
+		}
+		pk, ok := p.(*packet.PublicKey)
+		if !ok {
+			fatalIfErr(op.Serialize(outputW))
+			continue
+		}
+
+		var priv *rsa.PrivateKey
+		switch key := pk.PublicKey.(type) {
+		case *rsa.PublicKey:
+			logInfo("Restoring key %s, please type the backup words", pk.KeyIdShortString())
+			logInfo("You can start a new line at any time, and words will be spell checked")
+			var words []string
+			for {
+				newWords := getWords()
+				_, corr, wrong := Bip39Decode(newWords)
+				if len(wrong) != 0 {
+					logError("Words not recognized (entire line was discarded): %s", strings.Join(wrong, ", "))
+					continue
+				}
+				if len(corr) != 0 {
+					logInfo("Words autocorrected (all %d words accepted): %s",
+						len(newWords), strings.Join(corr, ", "))
+				} else {
+					logInfo("%d words accepted", len(newWords))
+				}
+				words = append(words, newWords...)
+				data, _, _ := Bip39Decode(words)
+				priv, err = TryRSAKey(key, data)
+				fatalIfErr(err)
+				if priv == nil {
+					continue
+				}
+				privKey := &packet.PrivateKey{
+					PublicKey:  *pk,
+					PrivateKey: priv,
+				}
+				fatalIfErr(privKey.Serialize(outputW))
+				logInfo("Private key successfully recovered!")
+				break
+			}
+
+		default:
+			logFatal("Unsupported key algorithm: %T", key)
+		}
+	}
+}
+
+func TryRSAKey(pub *rsa.PublicKey, data []byte) (*rsa.PrivateKey, error) {
+	q := new(big.Int).SetBytes(data)
+	if q.BitLen() > pub.N.BitLen()/2+8 {
+		return nil, errors.New("words sequence got too long with no match")
+	}
+	if new(big.Int).Rem(pub.N, q).BitLen() != 0 {
+		return nil, nil
+	}
+
+	p := new(big.Int).Quo(pub.N, q)
+	priv := &rsa.PrivateKey{
+		PublicKey: *pub,
+		Primes:    []*big.Int{p, q},
+		D:         new(big.Int),
+	}
+
+	totient := big.NewInt(1)
+	pminus1 := new(big.Int)
+	for _, prime := range priv.Primes {
+		pminus1.Sub(prime, big.NewInt(1))
+		totient.Mul(totient, pminus1)
+	}
+	new(big.Int).GCD(priv.D, nil, big.NewInt(int64(pub.E)), totient)
+	if priv.D.Sign() < 0 {
+		priv.D.Add(priv.D, totient)
+	}
+
+	priv.Precompute()
+	if err := priv.Validate(); err != nil {
+		return nil, err
+	}
+	return priv, nil
 }
 
 func fatalIfErr(err error) {
@@ -171,9 +311,13 @@ func fatalIfErr(err error) {
 }
 
 func logFatal(format string, a ...interface{}) {
+	logError(format, a...)
+	os.Exit(1)
+}
+
+func logError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.RedString("-"), msg)
-	os.Exit(1)
 }
 
 func logInfo(format string, a ...interface{}) {
