@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/rsa"
 	"errors"
@@ -10,11 +9,8 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
-	"regexp"
 	"strings"
 
-	"github.com/andrew-d/go-termutil"
-	"github.com/fatih/color"
 	"golang.org/x/crypto/openpgp/armor"
 	"golang.org/x/crypto/openpgp/packet"
 )
@@ -132,25 +128,6 @@ func pgpDecrypt(p *packet.PrivateKey, passphrase []byte) []byte {
 	return passphrase
 }
 
-func getPass(msg string) []byte {
-	msg = "[*] " + msg
-	if stdinPwd {
-		fmt.Fprint(os.Stderr, msg)
-		passphrase, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
-		fatalIfErr(err)
-		return passphrase[:len(passphrase)-1]
-	}
-	tty := os.Stdin
-	if stdinInput || !termutil.Isatty(tty.Fd()) {
-		var err error
-		tty, err = os.Open("/dev/tty")
-		fatalIfErr(err)
-	}
-	passphrase, err := termutil.GetPass(msg, os.Stderr.Fd(), tty.Fd())
-	fatalIfErr(err)
-	return passphrase
-}
-
 func pgpBackup(inputR *bytes.Reader) {
 	var passphrase = []byte("")
 	var numWords int
@@ -185,35 +162,10 @@ func pgpBackup(inputR *bytes.Reader) {
 		}
 	}
 	logInfo("Backup successful")
-	printFooter(numWords)
-}
-
-var letterRe = regexp.MustCompile(`[a-zA-Z]`)
-var wordsReader *bufio.Reader
-
-func getWords() (words []string) {
-	if wordsReader == nil {
-		input := io.Reader(os.Stdin)
-		if stdinInput {
-			var err error
-			input, err = os.Open("/dev/tty")
-			fatalIfErr(err)
-		}
-		wordsReader = bufio.NewReader(input)
-	}
-	fmt.Fprint(os.Stderr, "[ ] ")
-	line, err := wordsReader.ReadString('\n')
-	fatalIfErr(err)
-	for _, w := range strings.Split(line[:len(line)-1], " ") {
-		if len(w) == 0 {
-			continue
-		}
-		if letterRe.FindString(w) == "" {
-			continue
-		}
-		words = append(words, strings.ToLower(w))
-	}
-	return
+	fmt.Fprint(os.Stderr, "\n")
+	logInfo("You will be able to regenerate the secret key by running this")
+	logInfo("tool again on the public key and typing the provided %d words", numWords)
+	logInfo("Testing the restore process is highly recommended")
 }
 
 func pgpRestore(inputR *bytes.Reader, outputW io.WriteCloser) {
@@ -309,45 +261,4 @@ func TryRSAKey(pub *rsa.PublicKey, data []byte) (*rsa.PrivateKey, error) {
 		return nil, err
 	}
 	return priv, nil
-}
-
-func fatalIfErr(err error) {
-	if err != nil {
-		logFatal("Error: %v", err)
-	}
-}
-
-func logFatal(format string, a ...interface{}) {
-	logError(format, a...)
-	os.Exit(1)
-}
-
-func logError(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.RedString("-"), msg)
-}
-
-func logInfo(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	fmt.Fprintf(os.Stderr, "[%s] %s\n", color.GreenString("+"), msg)
-}
-
-func printWords(words []string) {
-	for n, w := range words {
-		if n%10 == 0 {
-			if n != 0 {
-				fmt.Print("\n")
-			}
-			fmt.Printf("%2d: ", n/10+1)
-		}
-		fmt.Print(w, " ")
-	}
-	fmt.Print("\n")
-}
-
-func printFooter(numWords int) {
-	fmt.Fprint(os.Stderr, "\n")
-	logInfo("You will be able to regenerate the secret key by running this")
-	logInfo("tool again on the public key and typing the provided %d words", numWords)
-	logInfo("Testing the restore process is highly recommended")
 }
