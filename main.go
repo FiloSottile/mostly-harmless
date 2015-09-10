@@ -70,9 +70,11 @@ func main() {
 		// not a PGP armored input
 		inputR.Seek(0, 0)
 
-	case b.Type == "PGP PUBLIC KEY BLOCK" || b.Type == "PGP PRIVATE KEY BLOCK":
+	case b.Type == "PGP PUBLIC KEY BLOCK":
+		logInfo("PGP armor encoded block detected, output will be armored")
+		fallthrough
+	case b.Type == "PGP PRIVATE KEY BLOCK":
 		pgpArmor = true
-		logInfo("PGP armor encoded block detected")
 		body, err := ioutil.ReadAll(b.Body)
 		fatalIfErr(err)
 		input, inputR = body, bytes.NewReader(body)
@@ -104,6 +106,10 @@ func main() {
 			f, err := os.Create(os.Args[2])
 			fatalIfErr(err)
 			outputW = f
+		}
+		if pgpArmor {
+			outputW, err = armor.Encode(outputW, "PGP PRIVATE KEY BLOCK", nil)
+			fatalIfErr(err)
 		}
 		logInfo("PGP public key detected, regenerating private key")
 		pgpRestore(inputR, outputW)
@@ -268,6 +274,7 @@ func pgpRestore(inputR *bytes.Reader, outputW io.WriteCloser) {
 			logFatal("Unsupported key algorithm: %T", key)
 		}
 	}
+	outputW.Close()
 }
 
 func TryRSAKey(pub *rsa.PublicKey, data []byte) (*rsa.PrivateKey, error) {
