@@ -166,3 +166,11 @@ func Stack(buf []byte, all bool) int {
 func LockOSThread() {}
 
 func UnlockOSThread() {}
+
+func Version() string {
+	return theVersion
+}
+
+func StartTrace() error { return nil }
+func StopTrace()        {}
+func ReadTrace() []byte

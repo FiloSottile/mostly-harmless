@@ -3,10 +3,18 @@
 package time
 
 import (
+	"runtime"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
+
+// Make sure time.Unix func and time.Time struct it returns are always included with this package (despite DCE),
+// because they're needed for internalization/externalization of time.Time/Date. See issue https://github.com/gopherjs/gopherjs/issues/279.
+func init() {
+	// avoid dead code elimination
+	var _ Time = Unix(0, 0)
+}
 
 type runtimeTimer struct {
 	i       int32
@@ -70,4 +78,20 @@ func stopTimer(t *runtimeTimer) bool {
 	wasActive := t.active
 	t.active = false
 	return wasActive
+}
+
+func loadLocation(name string) (*Location, error) {
+	return loadZoneFile(runtime.GOROOT()+"/lib/time/zoneinfo.zip", name)
+}
+
+func forceZipFileForTesting(zipOnly bool) {
+}
+
+func initTestingZone() {
+	z, err := loadLocation("America/Los_Angeles")
+	if err != nil {
+		panic("cannot load America/Los_Angeles for testing: " + err.Error())
+	}
+	z.name = "Local"
+	localLoc = *z
 }

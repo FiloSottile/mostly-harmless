@@ -17,7 +17,7 @@ import (
 
 var sizes32 = &types.StdSizes{WordSize: 4, MaxAlign: 8}
 var reservedKeywords = make(map[string]bool)
-var _ = ___GOPHERJS_REQUIRES_GO_VERSION_1_4___ // compile error on earlier Go versions
+var _ = ___GOPHERJS_REQUIRES_GO_VERSION_1_5___ // compile error on earlier Go versions
 
 func init() {
 	for _, keyword := range []string{"abstract", "arguments", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default", "delete", "do", "double", "else", "enum", "eval", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in", "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private", "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "true", "try", "typeof", "undefined", "var", "void", "volatile", "while", "with", "yield"} {
@@ -169,7 +169,7 @@ func WriteProgramCode(pkgs []*Archive, w *SourceMapFilter) error {
 		}
 	}
 
-	if _, err := w.Write([]byte("$synthesizeMethods();\n$packages[\"runtime\"].$init();\n$go($packages[\"" + string(mainPkg.ImportPath) + "\"].$init, [], true);\n$flushConsole();\n\n}).call(this);\n")); err != nil {
+	if _, err := w.Write([]byte("$synthesizeMethods();\nvar $mainPkg = $packages[\"" + string(mainPkg.ImportPath) + "\"];\n$packages[\"runtime\"].$init();\n$go($mainPkg.$init, [], true);\n$flushConsole();\n\n}).call(this);\n")); err != nil {
 		return err
 	}
 

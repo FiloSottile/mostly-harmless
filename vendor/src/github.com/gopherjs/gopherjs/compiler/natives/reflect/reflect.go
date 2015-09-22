@@ -3,6 +3,7 @@
 package reflect
 
 import (
+	"errors"
 	"strconv"
 	"unsafe"
 
@@ -229,12 +230,28 @@ func ValueOf(i interface{}) Value {
 	return makeValue(reflectType(js.InternalObject(i).Get("constructor")), js.InternalObject(i).Get("$val"), 0)
 }
 
-func arrayOf(count int, elem Type) Type {
+func ArrayOf(count int, elem Type) Type {
 	return reflectType(js.Global.Call("$arrayType", jsType(elem), count))
 }
 
 func ChanOf(dir ChanDir, t Type) Type {
 	return reflectType(js.Global.Call("$chanType", jsType(t), dir == SendDir, dir == RecvDir))
+}
+
+func FuncOf(in, out []Type, variadic bool) Type {
+	if variadic && (len(in) == 0 || in[len(in)-1].Kind() != Slice) {
+		panic("reflect.FuncOf: last arg of variadic func must be slice")
+	}
+
+	jsIn := make([]*js.Object, len(in))
+	for i, v := range in {
+		jsIn[i] = jsType(v)
+	}
+	jsOut := make([]*js.Object, len(out))
+	for i, v := range out {
+		jsOut[i] = jsType(v)
+	}
+	return reflectType(js.Global.Call("$funcType", jsIn, jsOut, variadic))
 }
 
 func MapOf(key, elem Type) Type {
@@ -325,8 +342,8 @@ func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
 	return Value{t, unsafe.Pointer(fv.Unsafe()), flag(Func)}
 }
 
-func memmove(adst, asrc unsafe.Pointer, n uintptr) {
-	js.InternalObject(adst).Call("$set", js.InternalObject(asrc).Call("$get"))
+func typedmemmove(t *rtype, dst, src unsafe.Pointer) {
+	js.InternalObject(dst).Call("$set", js.InternalObject(src).Call("$get"))
 }
 
 func loadScalar(p unsafe.Pointer, n uintptr) uintptr {
@@ -341,8 +358,17 @@ func makemap(t *rtype) (m unsafe.Pointer) {
 	return unsafe.Pointer(js.Global.Get("$Map").New().Unsafe())
 }
 
+func keyFor(t *rtype, key unsafe.Pointer) (*js.Object, string) {
+	kv := js.InternalObject(key)
+	if kv.Get("$get") != js.Undefined {
+		kv = kv.Call("$get")
+	}
+	k := jsType(t.Key()).Call("keyFor", kv).String()
+	return kv, k
+}
+
 func mapaccess(t *rtype, m, key unsafe.Pointer) unsafe.Pointer {
-	k := jsType(t.Key()).Call("keyFor", js.InternalObject(key).Call("$get")).String()
+	_, k := keyFor(t, key)
 	entry := js.InternalObject(m).Get(k)
 	if entry == js.Undefined {
 		return nil
@@ -351,8 +377,7 @@ func mapaccess(t *rtype, m, key unsafe.Pointer) unsafe.Pointer {
 }
 
 func mapassign(t *rtype, m, key, val unsafe.Pointer) {
-	kv := js.InternalObject(key).Call("$get")
-	k := jsType(t.Key()).Call("keyFor", kv).String()
+	kv, k := keyFor(t, key)
 	jsVal := js.InternalObject(val).Call("$get")
 	et := t.Elem()
 	if et.Kind() == Struct {
@@ -367,7 +392,7 @@ func mapassign(t *rtype, m, key, val unsafe.Pointer) {
 }
 
 func mapdelete(t *rtype, m unsafe.Pointer, key unsafe.Pointer) {
-	k := jsType(t.Key()).Call("keyFor", js.InternalObject(key).Call("$get")).String()
+	_, k := keyFor(t, key)
 	js.InternalObject(m).Delete(k)
 }
 
@@ -920,6 +945,10 @@ func (v Value) Index(i int) Value {
 	default:
 		panic(&ValueError{"reflect.Value.Index", k})
 	}
+}
+
+func (v Value) InterfaceData() [2]uintptr {
+	panic(errors.New("InterfaceData is not supported by GopherJS"))
 }
 
 func (v Value) IsNil() bool {

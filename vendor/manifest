@@ -10,7 +10,7 @@
 		{
 			"importpath": "github.com/gopherjs/gopherjs",
 			"repository": "https://github.com/gopherjs/gopherjs",
-			"revision": "9a384d49ca16076fcf43b96cf1a0cb71833b35ff",
+			"revision": "52a9b31eabc43e16e0e4cd257564251484808b97",
 			"branch": "master"
 		},
 		{
