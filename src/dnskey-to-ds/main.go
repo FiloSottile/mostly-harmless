@@ -39,11 +39,9 @@ func ToDS() {
 				log.Println("Ignoring non-KSK:", x.RR)
 				continue
 			}
-
-			ds1 := dnskey.ToDS(dns.SHA1)
-			ds2 := dnskey.ToDS(dns.SHA256)
-
-			result += fmt.Sprintf("%s\n%s\n", ds1, ds2)
+			
+			ds := dnskey.ToDS(dns.SHA256)
+			result += fmt.Sprintf("%s\n", ds)
 		}
 
 		// document.getElementById('ds').innerHTML
