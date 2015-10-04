@@ -1,4 +1,4 @@
-# "Automated Testing with go-fuzz" material
+# "Automated Testing with go-fuzz" code
 
 Presented at GothamGo on 2015-10-02 in NYC
 
