@@ -1,0 +1,12 @@
+panic: runtime error: slice bounds out of range
+
+goroutine 1 [running]:
+github.com/FiloSottile/fuzz-talk.ParseStrings(0x8820327001, 0x0, 0x1fffff, 0x8201301c0, 0x1, 0x1)
+	/var/folders/v8/xdj2snz51sg2m2bnpmwl_91c0000gn/T/go-fuzz-build091822086/src/github.com/FiloSottile/fuzz-talk/bugged.go:11 +0x213
+github.com/FiloSottile/fuzz-talk.Fuzz(0x8820327000, 0x1, 0x200000, 0x3)
+	/var/folders/v8/xdj2snz51sg2m2bnpmwl_91c0000gn/T/go-fuzz-build091822086/src/github.com/FiloSottile/fuzz-talk/bugged_fuzz.go:6 +0x60
+github.com/dvyukov/go-fuzz/go-fuzz-dep.Main(0xb49f8)
+	/Users/filippo/go/src/github.com/dvyukov/go-fuzz/go-fuzz-dep/main.go:47 +0x14c
+main.main()
+	/var/folders/v8/xdj2snz51sg2m2bnpmwl_91c0000gn/T/go-fuzz-build091822086/src/go-fuzz-main/main.go:10 +0x23
+exit status 2

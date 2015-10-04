@@ -1,0 +1,5 @@
+panic: runtime error: slice bounds out of range
+github.com/FiloSottile/fuzz-talk.ParseStrings
+github.com/FiloSottile/fuzz-talk.Fuzz
+github.com/dvyukov/go-fuzz/go-fuzz-dep.Main
+main.main
