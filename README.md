@@ -32,3 +32,25 @@ Just put username and password in `creds.json`
     "FD_USER": "*** USER ***",
     "FD_PASSWORD": "*** PASSWORD ***"
 ```
+
+## Syncing
+
+Run `sync.py`, it will add missing flight (as identified by date and flight number) that are in TripIt to Flightdiary.
+
+## Dumping all TripIt information
+
+Run `tripit.py`, it will output a JSON of all your past trips.
+
+You can then run `./jq.sh < tripit.json > tripit.txt` to get a textual list of flights. (You need to install jq.)
+
+## Dumping Flightdiary flights
+
+Run `flightdiary.py`, it will output a textual list of all your flights.
+
+You can compare this list with the one on TripIt (for example before running the sync) like this:
+
+```
+./flightdiary.py | sort | diff -u - tripit.txt
+```
+
+Any lines starting with `+` are the ones that `sync.py` will add (unless it's just the airports codes that are wrong).
