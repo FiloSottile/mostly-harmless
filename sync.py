@@ -7,17 +7,17 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"hi:",["ifile="])
     except getopt.GetoptError:
-        print "No input file detected, that's okay!"
+        pass # No input file detected, that's okay!
     for opt, arg in opts:
         if opt == '-h':
-            print 'sync.py -i <tript json inputfile>'
+            print 'sync.py [-i <tripit json inputfile>]'
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-            print 'Input file is "', inputfile
+            print 'Input file is', inputfile
     
     if inputfile == '':
-        print 'Querying TripIt for trips...'
+        print 'No input file detected, querying TripIt for trips...'
         trips = tripit.get_trips()
     else:
         with open(inputfile) as f:
