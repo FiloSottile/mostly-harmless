@@ -19,6 +19,7 @@ def get_flights():
     Flight = collections.namedtuple('Flight', ['date', 'from_', 'to', 'flight'])
     flights = []
 
+    last = -1
     soup = bs4.BeautifulSoup(r.text, "html5lib")
     for row in soup.find_all(lambda tag: tag.has_attr('data-row-number')):
         flights.append(Flight(
@@ -29,6 +30,9 @@ def get_flights():
         ))
         last = int(row['data-row-number'])
 
+    if last == -1:
+        return ''
+    
     while True:
         r = s.get('http://flightdiary.net/public-scripts/flight-list/%s/%d/' % (creds["FD_USER"], last)).json()
         if len(r) == 0: break
@@ -44,11 +48,11 @@ def get_flights():
     return reversed(flights)
 
 def get_airport(code):
-    l = s.get('http://flightdiary.net/add-flight/search/airport/?term=' + code).json()
+    l = s.get('http://flightdiary.net/add-flight/search/airport/?term=' + code.strip()).json()
     return l[0]
 
 def get_airline(code):
-    l = s.get('http://flightdiary.net/add-flight/search/airline/?term=' + code).json()
+    l = s.get('http://flightdiary.net/add-flight/search/airline/?term=' + code.strip()).json()
     return l[0]
 
 def add_flight(data):
