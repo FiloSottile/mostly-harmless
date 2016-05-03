@@ -208,7 +208,7 @@ $( "form" ).submit(function( event ) {
     var host = $( "input:first" ).val();
     $(".lucky").hide()
     NProgress.start();
-    $.getJSON( "https://CVE-2016-2107.filippo.io/check/" + host, get, function( data ) {
+    $.getJSON( "https://CVE-2016-2107.filippo.io/check/" + host, null, function( data ) {
         $('button').removeAttr('disabled')
         NProgress.done();
         $('.hostname').text(data.host);
