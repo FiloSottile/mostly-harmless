@@ -142,7 +142,7 @@ body {
         <script>
         window.setTimeout(function() {
             ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
-            _paq.push(['trackEvent', 'Test', 'Load']);
+            _paq.push(['trackEvent', 'Badfish', 'Start']);
 
             var s = [
               'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
@@ -172,21 +172,21 @@ body {
         function triggeredSelf() {
             $('#good,#san,#super').hide(); $('#self').show();
             if(!eventSentSelf) ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
-            if(!eventSentSelf) _paq.push(['trackEvent', 'Test', 'Result', 'Selfsigned']);
+            if(!eventSentSelf) _paq.push(['trackEvent', 'Badfish', 'Result-Selfsigned']);
             eventSentSelf = true;
         }
         var eventSentSuper = false;
         function triggeredSuper() {
             $('#good,#san,#self').hide(); $('#super').show();
             if(!eventSentSuper) ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
-            if(!eventSentSuper) _paq.push(['trackEvent', 'Test', 'Result', 'Superfish']);
+            if(!eventSentSuper) _paq.push(['trackEvent', 'Badfish', 'Result-Superfish']);
             eventSentSuper = true;
         }
         var eventSentSan = false;
         function triggeredSan() {
             $('#good,#super,#self').hide(); $('#san').show();
             if(!eventSentSan) ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
-            if(!eventSentSan) _paq.push(['trackEvent', 'Test', 'Result', 'SAN only']);
+            if(!eventSentSan) _paq.push(['trackEvent', 'Badfish', 'Result-SAN']);
             eventSentSan = true;
         }
         </script>
