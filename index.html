@@ -239,7 +239,7 @@ $( "form" ).submit(function( event ) {
     var host = $( "input:first" ).val();
     $(".lucky").hide()
     NProgress.start();
-    _paq.push(['trackEvent', 'Test', 'Launch', data.host]);
+    _paq.push(['trackEvent', 'CVE-2016-2107', 'Launch', data.host]);
     $.getJSON( "https://CVE-2016-2107.filippo.io/check/" + host, null, function( data ) {
         $('button').removeAttr('disabled')
         NProgress.done();
@@ -247,15 +247,15 @@ $( "form" ).submit(function( event ) {
         window.location.hash = data.host;
         if (data.code == 0){
             $(".lucky-vuln").show();
-            _paq.push(['trackEvent', 'Result', 'Vulnerable', data.host]);
+            _paq.push(['trackEvent', 'CVE-2016-2107', 'Result-Vulnerable', data.host]);
         } else if (data.code == 1) {
             $(".lucky-safe").show();
-            _paq.push(['trackEvent', 'Result', 'Safe', data.host]);
+            _paq.push(['trackEvent', 'CVE-2016-2107', 'Result-Safe', data.host]);
         } else {
             $('#error').text(data.error);
             $(".lucky-error").show();
-            _paq.push(['trackEvent', 'Result', 'Error', data.host]);
-            _paq.push(['trackEvent', 'Error', 'Error', data.error]);
+            _paq.push(['trackEvent', 'CVE-2016-2107', 'Result-Error', data.host]);
+            _paq.push(['trackEvent', 'CVE-2016-2107', 'Error', data.error]);
         }
     });
     event.preventDefault();
