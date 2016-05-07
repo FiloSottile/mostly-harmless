@@ -239,18 +239,23 @@ $( "form" ).submit(function( event ) {
     var host = $( "input:first" ).val();
     $(".lucky").hide()
     NProgress.start();
+    _paq.push(['trackEvent', 'Test', 'Launch', data.host]);
     $.getJSON( "https://CVE-2016-2107.filippo.io/check/" + host, null, function( data ) {
         $('button').removeAttr('disabled')
         NProgress.done();
         $('.hostname').text(data.host);
         window.location.hash = data.host;
         if (data.code == 0){
-            $(".lucky-vuln").show()
+            $(".lucky-vuln").show();
+            _paq.push(['trackEvent', 'Result', 'Vulnerable', data.host]);
         } else if (data.code == 1) {
-            $(".lucky-safe").show()
+            $(".lucky-safe").show();
+            _paq.push(['trackEvent', 'Result', 'Safe', data.host]);
         } else {
             $('#error').text(data.error);
-            $(".lucky-error").show()
+            $(".lucky-error").show();
+            _paq.push(['trackEvent', 'Result', 'Error', data.host]);
+            _paq.push(['trackEvent', 'Error', 'Error', data.error]);
         }
     });
     event.preventDefault();
