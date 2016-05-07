@@ -123,10 +123,26 @@ body {
         </div>
         <!-- Load JS here for greater good =============================-->
         <script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
+        
+        <!-- Piwik -->
+        <script type="text/javascript">
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            _paq.push(['setTrackerUrl',  'https://api-0b836c1a160d7bee1cc2d7acf70821e8.filippo.sandcats.io']);
+            _paq.push(['setSiteId', 2]);
+            _paq.push(['setApiToken', 'Vbvrod10M6ujlvOxIvBj4sYSTQiK6TujF9PYtw6hLY7']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io/embed.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <!-- End Piwik Code -->
 
         <script>
         window.setTimeout(function() {
             ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
+            _paq.push(['trackEvent', 'Test', 'Load']);
 
             var s = [
               'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
@@ -156,36 +172,23 @@ body {
         function triggeredSelf() {
             $('#good,#san,#super').hide(); $('#self').show();
             if(!eventSentSelf) ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
+            if(!eventSentSelf) _paq.push(['trackEvent', 'Test', 'Result', 'Selfsigned']);
             eventSentSelf = true;
         }
         var eventSentSuper = false;
         function triggeredSuper() {
             $('#good,#san,#self').hide(); $('#super').show();
             if(!eventSentSuper) ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
+            if(!eventSentSuper) _paq.push(['trackEvent', 'Test', 'Result', 'Superfish']);
             eventSentSuper = true;
         }
         var eventSentSan = false;
         function triggeredSan() {
             $('#good,#super,#self').hide(); $('#san').show();
             if(!eventSentSan) ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
+            if(!eventSentSan) _paq.push(['trackEvent', 'Test', 'Result', 'SAN only']);
             eventSentSan = true;
         }
         </script>
-
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    _paq.push(['setTrackerUrl',  'https://api-0b836c1a160d7bee1cc2d7acf70821e8.filippo.sandcats.io']);
-    _paq.push(['setSiteId', 2]);
-    _paq.push(['setApiToken', 'Vbvrod10M6ujlvOxIvBj4sYSTQiK6TujF9PYtw6hLY7']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io/embed.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
-
     </body>
 </html>
