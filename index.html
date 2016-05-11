@@ -50,17 +50,6 @@ body {
     </head>
     <body>
 
-        <script>
-          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-          ga('create', 'UA-37225193-1', 'auto');
-          ga('send', 'pageview');
-
-        </script>
-
         <div class="container">
         <div class="page-header">
             <h1>
@@ -141,7 +130,6 @@ body {
 
         <script>
         window.setTimeout(function() {
-            ga('send', 'event', 'New - Loaded', {'nonInteraction': 1});
             _paq.push(['trackEvent', 'Badfish', 'Start']);
 
             var s = [
@@ -171,21 +159,18 @@ body {
         var eventSentSelf = false;
         function triggeredSelf() {
             $('#good,#san,#super').hide(); $('#self').show();
-            if(!eventSentSelf) ga('send', 'event', 'New - Result', 'Selfsigned', {'nonInteraction': 1});
             if(!eventSentSelf) _paq.push(['trackEvent', 'Badfish', 'Result-Selfsigned']);
             eventSentSelf = true;
         }
         var eventSentSuper = false;
         function triggeredSuper() {
             $('#good,#san,#self').hide(); $('#super').show();
-            if(!eventSentSuper) ga('send', 'event', 'New - Result', 'Superfish', {'nonInteraction': 1});
             if(!eventSentSuper) _paq.push(['trackEvent', 'Badfish', 'Result-Superfish']);
             eventSentSuper = true;
         }
         var eventSentSan = false;
         function triggeredSan() {
             $('#good,#super,#self').hide(); $('#san').show();
-            if(!eventSentSan) ga('send', 'event', 'New - Result', 'SAN only', {'nonInteraction': 1});
             if(!eventSentSan) _paq.push(['trackEvent', 'Badfish', 'Result-SAN']);
             eventSentSan = true;
         }
