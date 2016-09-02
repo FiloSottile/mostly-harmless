@@ -1,0 +1,22 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/google/boringssl/ssl/test/runner",
+			"repository": "https://github.com/google/boringssl",
+			"vcs": "git",
+			"revision": "d17d74d73f8a008f5e7ca6a64257b3c3a99d1bb4",
+			"branch": "master",
+			"path": "/ssl/test/runner",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/cheggaaa/pb.v1",
+			"repository": "https://gopkg.in/cheggaaa/pb.v1",
+			"vcs": "git",
+			"revision": "9453b2db37f4d8bc63751daca63bbe7049eb5e74",
+			"branch": "master",
+			"notests": true
+		}
+	]
+}
