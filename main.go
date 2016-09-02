@@ -32,18 +32,40 @@ type job struct {
 	Address string
 	Timeout time.Duration
 
-	h         *histogram
+	h, sh     *histogram
 	bar       *pb.ProgressBar
 	tlsConfig *tls.Config
 }
 
 var outputMu sync.Mutex
 
+type ttfbConn struct {
+	net.Conn
+
+	firstReadTime *time.Time
+}
+
+func (c ttfbConn) Read(b []byte) (n int, err error) {
+	n, err = c.Conn.Read(b)
+	if n > 0 && c.firstReadTime.IsZero() {
+		*c.firstReadTime = time.Now()
+	}
+	return
+}
+
 func runJob(j *job) {
 	start := time.Now()
-	conn, err := tls.DialWithDialer(&net.Dialer{
-		Timeout: j.Timeout,
-	}, "tcp", j.Address, j.tlsConfig)
+	var handshakeStart time.Time
+	var serverHelloTime time.Time
+
+	conn, err := net.DialTimeout("tcp", j.Address, j.Timeout)
+	if err == nil {
+		conn.SetDeadline(start.Add(j.Timeout))
+		conn := tls.Client(ttfbConn{conn, &serverHelloTime}, j.tlsConfig)
+		handshakeStart = time.Now()
+		err = conn.Handshake()
+	}
+
 	outputMu.Lock()
 	j.bar.Increment()
 	j.bar.Update()
@@ -52,7 +74,8 @@ func runJob(j *job) {
 		fmt.Print(j.bar.String())
 		outputMu.Unlock()
 	} else {
-		j.h.Observe(time.Since(start))
+		j.h.Observe(time.Since(handshakeStart))
+		j.sh.Observe(serverHelloTime.Sub(handshakeStart))
 		outputMu.Unlock()
 		conn.Close()
 	}
@@ -86,6 +109,7 @@ func main() {
 	}
 
 	h := newHistogram()
+	sh := newHistogram()
 	bar := pb.New(len(c.Targets) * c.Repeats)
 	bar.ShowTimeLeft = false
 	bar.ManualUpdate = true
@@ -118,6 +142,7 @@ func main() {
 				Timeout:   timeout,
 				tlsConfig: tlsConfig,
 				h:         h,
+				sh:        sh,
 				bar:       bar,
 			}
 		}
@@ -126,7 +151,12 @@ func main() {
 	wg.Wait()
 
 	bar.Finish()
-	fmt.Print("\n")
+	fmt.Printf("\n\nVersion: %v, AllowDowngrade: %v, SNI: %v, Parallel: %v, Targets: %v, Repeats: %v\n",
+		c.Version, c.AllowDowngrade, c.SNI, c.Parallel, len(c.Targets), c.Repeats)
+	fmt.Print("\nHandshake time:\n")
 	h.Print(true)
 	fmt.Printf("\nFastest: %s - Slowest: %s\n\n", h.fastest, h.slowest)
+	fmt.Print("\nTime to ServerHello:\n")
+	sh.Print(true)
+	fmt.Printf("\nFastest: %s - Slowest: %s\n\n", sh.fastest, sh.slowest)
 }

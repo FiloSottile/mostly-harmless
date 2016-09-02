@@ -80,7 +80,6 @@ func (h *histogram) Print(log bool) {
 	}
 
 	// Print histogram to stdout.
-	fmt.Printf("Response time histogram:\n")
 	lowerBound := time.Duration(0)
 	for i, upperBound := range buckets {
 		// Normalize bar lengths.
