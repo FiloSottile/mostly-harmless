@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"runtime"
 	"sync"
@@ -35,54 +34,12 @@ type job struct {
 	Address string
 	Timeout time.Duration
 
-	h, sh     *histogram
+	h, sh, ih *histogram
 	bar       *pb.ProgressBar
 	tlsConfig *tls.Config
 }
 
 var outputMu sync.Mutex
-
-type ttfbConn struct {
-	net.Conn
-
-	firstReadTime *time.Time
-}
-
-func (c ttfbConn) Read(b []byte) (n int, err error) {
-	n, err = c.Conn.Read(b)
-	if n > 0 && c.firstReadTime.IsZero() {
-		*c.firstReadTime = time.Now()
-	}
-	return
-}
-
-func runJob(j *job) {
-	start := time.Now()
-	var handshakeStart time.Time
-	var serverHelloTime time.Time
-
-	conn, err := net.DialTimeout("tcp", j.Address, j.Timeout)
-	if err == nil {
-		conn.SetDeadline(start.Add(j.Timeout))
-		conn := tls.Client(ttfbConn{conn, &serverHelloTime}, j.tlsConfig)
-		handshakeStart = time.Now()
-		err = conn.Handshake()
-	}
-
-	outputMu.Lock()
-	j.bar.Increment()
-	j.bar.Update()
-	if err != nil {
-		fmt.Printf("\r\033[K\x1b\x5b\x31\x6d%v\x1b\x5b\x30\x6d: %v (%v)\n", j.Name, err, time.Since(start))
-		fmt.Print(j.bar.String())
-		outputMu.Unlock()
-	} else {
-		j.h.Observe(time.Since(handshakeStart))
-		j.sh.Observe(serverHelloTime.Sub(handshakeStart))
-		outputMu.Unlock()
-		conn.Close()
-	}
-}
 
 func main() {
 	c := &Config{}
@@ -114,6 +71,7 @@ func main() {
 
 	h := newHistogram()
 	sh := newHistogram()
+	ih := newHistogram()
 	bar := pb.New(len(c.Targets) * c.Repeats)
 	bar.ShowTimeLeft = false
 	bar.ManualUpdate = true
@@ -151,6 +109,7 @@ func main() {
 				tlsConfig: tlsConfig,
 				h:         h,
 				sh:        sh,
+				ih:        ih,
 				bar:       bar,
 			}
 		}
@@ -167,4 +126,7 @@ func main() {
 	fmt.Print("\nTime to ServerHello:\n")
 	sh.Print(true)
 	fmt.Printf("\nFastest: %s - Slowest: %s\n\n", sh.fastest, sh.slowest)
+	fmt.Print("\nTime in flight:\n")
+	ih.Print(true)
+	fmt.Printf("\nFastest: %s - Slowest: %s\n\n", ih.fastest, ih.slowest)
 }
