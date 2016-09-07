@@ -11,6 +11,7 @@ import (
 	"time"
 
 	tls "github.com/google/boringssl/ssl/test/runner"
+	"github.com/pkg/profile"
 	"gopkg.in/cheggaaa/pb.v1"
 )
 
@@ -19,12 +20,14 @@ type Config struct {
 		Name    string
 		Address string // host:port
 	}
-	SNI            string
-	Version        string // tls12, tls13
-	AllowDowngrade bool
-	Parallel       int // If 0, matches number of CPUs
-	Timeout        string
-	Repeats        int
+	SNI                string
+	Version            string // tls12, tls13
+	AllowDowngrade     bool
+	InsecureSkipVerify bool
+	Parallel           int // If 0, matches number of CPUs
+	Timeout            string
+	Repeats            int
+	Profile            bool // If true, dump profiles
 }
 
 type job struct {
@@ -101,8 +104,9 @@ func main() {
 		log.Fatal("Invalid Version field")
 	}
 	tlsConfig := &tls.Config{
-		MaxVersion: version,
-		ServerName: c.SNI,
+		MaxVersion:         version,
+		ServerName:         c.SNI,
+		InsecureSkipVerify: c.InsecureSkipVerify,
 	}
 	if !c.AllowDowngrade {
 		tlsConfig.MinVersion = version
@@ -133,6 +137,10 @@ func main() {
 	}
 
 	fmt.Print("\n")
+
+	if c.Profile {
+		defer profile.Start().Stop()
+	}
 
 	for n := 0; n < c.Repeats; n++ {
 		for _, t := range c.Targets {
