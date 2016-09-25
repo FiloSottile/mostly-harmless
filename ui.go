@@ -12,6 +12,15 @@ import (
 	"github.com/fatih/color"
 )
 
+func pickOutput() (outputW io.WriteCloser) {
+	if len(os.Args) == 3 {
+		f, err := os.Create(os.Args[2])
+		fatalIfErr(err)
+		return f
+	}
+	return os.Stdout
+}
+
 func getPass(msg string) []byte {
 	msg = "[*] " + msg
 	if stdinPwd {
