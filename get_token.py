@@ -12,7 +12,7 @@ fetch_response = oauth.fetch_request_token(request_token_url)
 print fetch_response
 base_authorization_url = 'https://www.tripit.com/oauth/authorize'
 authorization_url = oauth.authorization_url(base_authorization_url)
-print authorization_url + '&oauth_callback=foo'
+print authorization_url + '&oauth_callback=http%3A%2F%2Flocalhost%2Ffoo'
 oauth_response = oauth.parse_authorization_response(raw_input())
 print oauth_response
 resource_owner_key = fetch_response.get('oauth_token')
