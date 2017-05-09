@@ -32,16 +32,16 @@ func submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type_ := r.Form.Get("type")
-    if type_ != "gotit" && type_ != "confused" {
-        http.Error(w, "WRONG TYPE YO", 400)
-        return
-    }
+	if type_ != "gotit" && type_ != "confused" {
+		http.Error(w, "WRONG TYPE YO", 400)
+		return
+	}
 	user := r.Form.Get("user")
-    if user == "" {
-        http.Error(w, "NO USER ID OH NO", 400)
-        return
-    }
-    log.Printf("received vote %s from %s", type_, user)
+	if user == "" {
+		http.Error(w, "NO USER ID OH NO", 400)
+		return
+	}
+	log.Printf("received vote %s from %s", type_, user)
 	stateMu.Lock()
 	defer stateMu.Unlock()
 	state[user] = entry{
