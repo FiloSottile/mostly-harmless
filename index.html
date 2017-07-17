@@ -53,18 +53,15 @@ body {
         <div class="container">
         <div class="page-header">
             <h1>
-                Superfish, Komodia, PrivDog vulnerability test<br>(updated again!)
+                Superfish, Komodia, PrivDog vulnerability test (retired)
             </h1>
         </div>
         <p class="lead">
-            Check the box below. If you see a "YES", you have a problem.<br>
-            <b style="font-size: 70%">Do the test with all browsers installed.</b>
+            This test has been retired in favor of the <a href="https://badssl.com/dashboard/">badssl.com Dashboard</a>.
         </p>
 
         <p class="lead result" id="starting">
-            The test will start in 10 seconds.<br>
-            If you're asked to accept/approve/trust a certificate, answer No.<br>
-            If a button to "Load content" appears, don't click it.
+            Test disabled.
         </p>
 
         <p class="lead result" id="san" style="display: none;">
@@ -129,7 +126,7 @@ body {
         <!-- End Piwik Code -->
 
         <script>
-        window.setTimeout(function() {
+        /* window.setTimeout(function() {
             _paq.push(['trackEvent', 'Badfish', 'Start']);
 
             var s = [
@@ -154,7 +151,7 @@ body {
 
                 if (typeof console !== 'undefined') console.log('Ran new');
             }, 500);
-        }, 10000);
+        }, 10000); */
 
         var eventSentSelf = false;
         function triggeredSelf() {
