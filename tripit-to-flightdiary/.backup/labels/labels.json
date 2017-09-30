@@ -1,0 +1,51 @@
+[
+    {
+        "color": "fc2929",
+        "default": true,
+        "id": 273160296,
+        "name": "bug",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/bug"
+    },
+    {
+        "color": "cccccc",
+        "default": true,
+        "id": 273160297,
+        "name": "duplicate",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/duplicate"
+    },
+    {
+        "color": "84b6eb",
+        "default": true,
+        "id": 273160298,
+        "name": "enhancement",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/enhancement"
+    },
+    {
+        "color": "159818",
+        "default": true,
+        "id": 273160299,
+        "name": "help wanted",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/help%20wanted"
+    },
+    {
+        "color": "e6e6e6",
+        "default": true,
+        "id": 273160300,
+        "name": "invalid",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/invalid"
+    },
+    {
+        "color": "cc317c",
+        "default": true,
+        "id": 273160301,
+        "name": "question",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/question"
+    },
+    {
+        "color": "ffffff",
+        "default": true,
+        "id": 273160302,
+        "name": "wontfix",
+        "url": "https://api.github.com/repos/FiloSottile/tripit-to-flightdiary/labels/wontfix"
+    }
+]
