@@ -20,19 +20,30 @@ import (
 	"github.com/docopt/docopt-go"
 )
 
+var hc = &http.Client{
+	Timeout: 100 * time.Second,
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	},
+}
+
 func commit(target string) string {
-	resp, err := http.PostForm("https://archive.today/submit/",
+	resp, err := hc.PostForm("https://archive.today/submit/",
 		url.Values{"url": {target}})
 	if err != nil {
 		log.Fatal("Error doing a POST:", err)
 	}
 	resp.Body.Close()
 
-	h := resp.Header.Get("Refresh")
-	if h[:6] != "0;url=" {
-		log.Fatal("Malformed answer while committing.")
+	h := resp.Header.Get("Location")
+	if h != "" {
+		return h
 	}
 
+	h = resp.Header.Get("Refresh")
+	if len(h) < 6 || h[:6] != "0;url=" {
+		log.Fatalln("Malformed answer while committing:", target)
+	}
 	return h[6:]
 }
 
@@ -51,7 +62,7 @@ func fetchZip(archiveURL string) (int64, io.ReadCloser, error) {
 			log.Fatal(err)
 		}
 		resp.Body.Close()
-		if bytes.Index(body, loadingGif) > -1 {
+		if bytes.Contains(body, loadingGif) {
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -67,7 +78,7 @@ func fetchZip(archiveURL string) (int64, io.ReadCloser, error) {
 
 		size, err := strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("fetchZip error: %s: %v", zipURL, err)
 		}
 
 		return size, resp.Body, nil

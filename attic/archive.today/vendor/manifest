@@ -1,0 +1,13 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/docopt/docopt-go",
+			"repository": "https://github.com/docopt/docopt-go",
+			"vcs": "git",
+			"revision": "784ddc588536785e7299f7272f39101f7faccc3f",
+			"branch": "master",
+			"notests": true
+		}
+	]
+}
