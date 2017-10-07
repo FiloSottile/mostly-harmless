@@ -1,0 +1,4 @@
+*.[oa]
+/target
+/lldb/lldb
+/rustgo
