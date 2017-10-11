@@ -2,7 +2,7 @@ import json
 import sys
 from datetime import datetime
 
-start, end = "2015-01-01", "2015-12-31"
+start, end = "2017-01-01", "2017-12-31"
 year_start, year_end = datetime.strptime(start, "%Y-%m-%d"), datetime.strptime(end, "%Y-%m-%d")
 
 airports_uk = "LCY,LGW,LHR,LTN,STN,MAN".split(",")
@@ -45,14 +45,16 @@ for event in events:
             print "Warning: DROPPED THIS 'OUT' EVENT"
             print
             continue
+
         from_, to = datetime.strptime(last_in, "%Y-%m-%d"), datetime.strptime(event[0], "%Y-%m-%d"), 
         if (from_ < year_start and to < year_start) or (from_ > year_end and to > year_end):
             last_in = None
             continue
         from_, to = max(from_, year_start), min(to, year_end)
-        print "In the UK from", last_in, "to", event[0], "-", (to - from_).days, "nights"
+        print "From", from_.strftime("%Y-%m-%d"), "to", to.strftime("%Y-%m-%d"), "-", (to - from_).days + 1, "days"
         print
-        nights_in += (to - from_).days
+        nights_in += (to - from_).days + 1
+
         last_in = None
     else:
         if last_in is not None:
@@ -62,4 +64,4 @@ if last_in is not None:
     print "Warning: DROPPED PREVIOUS 'IN' EVENT"
 
 print
-print "Total nights in between", year_start, "and", year_end, "-", nights_in
+print "Total days in between", year_start.strftime("%Y-%m-%d"), "and", year_end.strftime("%Y-%m-%d"), "-", nights_in
