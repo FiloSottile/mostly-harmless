@@ -46,7 +46,7 @@ func corpusFromFile(name string) map[rune]float64 {
 	return buildCorpus(string(text))
 }
 
-var corpus = corpusFromFile("_testdata/aliceinwonderland.txt")
+var corpus = corpusFromFile("testdata/aliceinwonderland.txt")
 
 func TestProblem3(t *testing.T) {
 	res, _, _ := findSingleXORKey(decodeHex(t, "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"), corpus)
