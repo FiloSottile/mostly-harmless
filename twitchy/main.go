@@ -8,8 +8,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,11 +23,7 @@ import (
 
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
-func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	cacheFile, err := tokenCacheFile()
-	if err != nil {
-		log.Fatalf("Unable to get path to cached credential file. %v", err)
-	}
+func getClient(ctx context.Context, config *oauth2.Config, cacheFile string) *http.Client {
 	tok, err := tokenFromFile(cacheFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)
@@ -53,12 +51,6 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	return tok
 }
 
-// tokenCacheFile generates credential file path/filename.
-// It returns the generated credential path/filename.
-func tokenCacheFile() (string, error) {
-	return "token_cache.json", nil
-}
-
 // tokenFromFile retrieves a Token from a given file path.
 // It returns the retrieved Token and any read error encountered.
 func tokenFromFile(file string) (*oauth2.Token, error) {
@@ -84,11 +76,35 @@ func saveToken(file string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-var amountRegexp = regexp.MustCompile(`\$\s*\d+`)
+var amountRegexp = regexp.MustCompile(`\$\s*(\d+)`)
 
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 	ctx := context.Background()
+
+	var nightconfig struct {
+		ID, Secret, Redirect string
+	}
+
+	nb, err := ioutil.ReadFile("client_secret_nightbot.json")
+	if err != nil {
+		log.Fatalf("Unable to read nightbot secret file: %v", err)
+	}
+	if err := json.Unmarshal(nb, &nightconfig); err != nil {
+		log.Fatalf("Unable to read nightbot secret file: %v", err)
+	}
+
+	nightbot := getClient(ctx, &oauth2.Config{
+		ClientID:     nightconfig.ID,
+		ClientSecret: nightconfig.Secret,
+		RedirectURL:  nightconfig.Redirect,
+		Scopes:       []string{"channel", "channel_send"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://api.nightbot.tv/oauth2/authorize",
+			TokenURL: "https://api.nightbot.tv/oauth2/token",
+		},
+	}, "token_cache_nightbot.json")
+	nightbot.Timeout = 60 * time.Second
 
 	b, err := ioutil.ReadFile("client_secret.json")
 	if err != nil {
@@ -100,7 +116,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
-	client := getClient(ctx, config)
+	client := getClient(ctx, config, "token_cache.json")
 	client.Timeout = 60 * time.Second
 
 	srv, err := gmail.New(client)
@@ -108,29 +124,55 @@ func main() {
 		log.Fatalf("Unable to retrieve gmail Client %v", err)
 	}
 
+	var total int
+
+	msgs, err := getEmails(srv, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, msg := range msgs {
+		match := amountRegexp.FindSubmatch(msg.TextBody)
+		val, err := strconv.Atoi(string(match[1]))
+		if err != nil {
+			log.Fatal(err)
+		}
+		total += val
+	}
+	log.Printf("Starting with total: $%d", total)
+
 	for range time.NewTicker(30 * time.Second).C {
-		msgs, err := getUnseenEmails(srv)
+		msgs, err := getEmails(srv, true)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, msg := range msgs {
-			val := string(amountRegexp.Find(msg.TextBody))
-			if val == "" {
-				val = "???"
+			match := amountRegexp.FindSubmatch(msg.TextBody)
+			if match == nil {
+				log.Println("Got an email with no regex match! :(")
+				continue
 			}
-			name := strings.TrimPrefix(msg.Subject, "Fwd: ")
-			if len(name) > 60 {
-				name = name[:60]
+			val, err := strconv.Atoi(string(match[1]))
+			if err != nil {
+				log.Fatal(err)
 			}
-			line := fmt.Sprintf(`Latest donation: %s by "%s". Thank you!`, val, name)
+			total += val
+			name := strings.Split(msg.From, " ")[0]
+			line := fmt.Sprintf(`Latest donation: $%d by %s. Thank you! Total: $%d`, val, name, total)
 			log.Print(line)
 			if err := setBanner(line); err != nil {
 				log.Fatal(err)
 			}
+			nightbot.PostForm("https://api.nightbot.tv/1/channel/send", url.Values{
+				"message": []string{fmt.Sprintf("Thanks to %s for a %d$ donation to the Internet Archive!", name, val)},
+			})
+			time.Sleep(5 * time.Second)
+			nightbot.PostForm("https://api.nightbot.tv/1/channel/send", url.Values{
+				"message": []string{fmt.Sprintf("We raised %d$ so far! Donate at archive.org/donate and forward your receipt to filippo.donations@gmail.com :)", total)},
+			})
 			if err := markMessageSeen(srv, msg.ID); err != nil {
 				log.Fatal(err)
 			}
-			time.Sleep(30 * time.Second)
+			time.Sleep(5 * time.Minute)
 		}
 	}
 }
@@ -138,18 +180,22 @@ func main() {
 type Message struct {
 	ID       string
 	Subject  string
+	From     string
 	TextBody []byte
 }
 
-var query = `"Internet Archive" NOT label:SEEN`
-
-func getUnseenEmails(srv *gmail.Service) ([]*Message, error) {
+func getEmails(srv *gmail.Service, unseen bool) ([]*Message, error) {
+	query := `"Internet Archive" label:SEEN`
+	if unseen {
+		query = `"Internet Archive" NOT label:SEEN`
+	}
 	r, err := srv.Users.Messages.List("me").Q(query).Do()
 	if err != nil {
 		return nil, err
 	}
 	var res []*Message
-	for _, ml := range r.Messages {
+	for i := range r.Messages {
+		ml := r.Messages[len(r.Messages)-1-i]
 		msg := &Message{}
 		m, err := srv.Users.Messages.Get("me", ml.Id).Do()
 		if err != nil {
@@ -157,16 +203,18 @@ func getUnseenEmails(srv *gmail.Service) ([]*Message, error) {
 		}
 		msg.ID = ml.Id
 		for _, hdr := range m.Payload.Headers {
-			if hdr.Name != "Subject" {
-				continue
+			if hdr.Name == "Subject" {
+				msg.Subject = hdr.Value
 			}
-			msg.Subject = hdr.Value
+			if hdr.Name == "From" {
+				msg.From = hdr.Value
+			}
 		}
 		for _, part := range m.Payload.Parts {
 			if part.MimeType != "text/plain" {
 				continue
 			}
-			data, err := base64.RawURLEncoding.DecodeString(part.Body.Data)
+			data, err := base64.URLEncoding.DecodeString(part.Body.Data)
 			if err != nil {
 				return nil, err
 			}
