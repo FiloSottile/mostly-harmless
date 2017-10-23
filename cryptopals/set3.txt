@@ -1,0 +1,102 @@
+XXXXXXXXXXXXXXX
+
+XXXXXXXXXX55555
+XXXXXXXXXX5555 (5 XOR 5 XOR 1) = 1 -> XXXXXXXXXXXXXX1
+XXXXXXXXXX5555 (5 XOR 1 XOR 1) = 5 -> XXXXXXXXXX55555
+
+XXXXXXXXXXXXXX1
+XXXXXXXXXXXXXX (1 XOR 1 XOR 1)
+
+XXXXXXXXXXXXX22
+
+                x     p    pad
+
+XXXXXXXXXXXXX21
+XXXXXXXXXXXXX2 (1 XOR 1 XOR 1) -> 1
+XXXXXXXXXXXXX2 (1 XOR 3 XOR 1) -> 2     3 == (1 XOR 2)
+
+
+                x     p    pad
+
+XXXXXXXXXXXXX2x
+XXXXXXXXXXXXX2 (x XOR 1 XOR 1) -> x
+XXXXXXXXXXXXX2 (x XOR x XOR 1) -> 1
+XXXXXXXXXXXXX2 (x XOR y XOR 1) -> 2     y = (x XOR 2)
+
+
+                x     p    pad
+
+XXXXXXXXXXXX3xX
+XXXXXXXXXXXX3 (x XOR 1 XOR 2) -> x
+XXXXXXXXXXXX3 (x XOR x XOR 2) -> 1
+XXXXXXXXXXXX3 (x XOR y XOR 2) -> 2     y = (x XOR 2)
+
+0b0b0b0b  0x0b xor 0x0a xor 0x01
+      0a
+
+
+
+XXXXXXX88888888
+
+(p XOR 01)
+
+
+y ^= y >> 18
+
+y ^= y >> 18 ^ y >> 18*2
+
+
+12345 67890 87465    74658 36458 34992 
+00000 12345 67890    87465 74658 36458
+
+      12345 67890    87465 74658 36458 
+      00000 12345    67890 87465 74658 
+
+            12345    67890 87465 74658 
+            00000    12345 67890 87465 
+             
+                     12345 67890 87465 
+                     00000 12345 67890 
+             
+                           12345 67890
+                           00000 12345
+             
+                                 12345 
+                                 00000
+
+
+
+y = 0xa2d6f7c1
+y ^= y << 15 & 4022730752
+
+y ^= y << 15 & 4022730752
+y ^= ((y << 15 & 4022730752) << 15) & 4022730752
+
+hex(y)
+
+
+12345 67890 87465
+11101 00111 00000
+678_0 __465 _____
+
+11101 00111 00000
+678 0   465 
+__4 5   ___ 
+
+00111 00000
+  4 5   
+  0 0   
+
+
+y = 0xa2d6f7c1
+y ^= y << 7 & 2636928640
+hex(y)
+
+y ^= y << 7 & 2636928640
+y ^= (y << 7 & 2636928640) << 7 & 2636928640
+y ^= ((y << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640
+y ^= (((y << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640
+y ^= ((((y << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640) << 7 & 2636928640
+
+hex(y)
+

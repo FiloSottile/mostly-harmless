@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
-	"log"
 	mathrand "math/rand"
 	"net/url"
 	"strconv"
@@ -197,7 +196,7 @@ func unpadPKCS7(in []byte) []byte {
 		return in
 	}
 	b := in[len(in)-1]
-	if len(in) < int(b) {
+	if int(b) > len(in) || b == 0 {
 		return nil
 	}
 	for i := 1; i < int(b); i++ {
@@ -289,7 +288,7 @@ func recoverECBSuffixWithPrefix(oracle func([]byte) []byte) []byte {
 	})
 }
 
-func newCBCOracles() (
+func newCBCCookieOracles() (
 	generateCookie func(email string) string,
 	amIAdmin func(cookie string) bool,
 ) {
@@ -311,7 +310,6 @@ func newCBCOracles() (
 	amIAdmin = func(cookie string) bool {
 		iv, msg := []byte(cookie[:16]), []byte(cookie[16:])
 		cookie = string(unpadPKCS7(decryptCBC(msg, b, iv)))
-		log.Printf("%q", cookie)
 		return strings.Contains(cookie, ";admin=true;")
 	}
 	return

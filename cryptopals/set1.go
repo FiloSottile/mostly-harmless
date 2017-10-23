@@ -20,8 +20,8 @@ func hexToBase64(hs string) (string, error) {
 }
 
 func xor(a, b []byte) []byte {
-	if len(a) != len(b) {
-		panic("xor: mismatched lengths")
+	if len(a) > len(b) {
+		a = a[:len(b)]
 	}
 	res := make([]byte, len(a))
 	for i := range a {

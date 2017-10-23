@@ -102,7 +102,7 @@ func assertEqual(t *testing.T, a, b []byte) {
 }
 
 func TestProblem16(t *testing.T) {
-	generateCookie, amIAdmin := newCBCOracles()
+	generateCookie, amIAdmin := newCBCCookieOracles()
 	if amIAdmin(generateCookie(";admin=true;")) {
 		t.Fatal("this is too easy")
 	}
