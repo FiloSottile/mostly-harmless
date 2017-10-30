@@ -99,6 +99,9 @@ func attackCBCPaddingOracle(ct []byte, checkMessagePadding func(ct []byte) bool)
 }
 
 func encryptCTR(src []byte, b cipher.Block, nonce []byte) []byte {
+	if len(nonce) >= b.BlockSize() {
+		panic("nonce should be shorter than blocksize")
+	}
 	input, output := make([]byte, b.BlockSize()), make([]byte, b.BlockSize())
 	copy(input, nonce)
 	var dst []byte
