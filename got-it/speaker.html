@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Got it? - Talk live feedback</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		html {
+    			padding: 0;
+    			margin: 0;
+    			height: 100%;
+			box-sizing: border-box;
+		}
+		body {
+			padding: 5%;
+			margin: 0;
+			height: 100%;
+			box-sizing: border-box;
+		}
+		.bar {
+    			width: 100%;
+    height: 130px;
+    min-width: 20px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+		}
+		#gotit {
+    			background-color: #8bc34a;
+		}
+		#confused {
+    			background-color: #f44336;
+		}
+		p {
+    font-size: 60px;
+    font-family: Lato;
+		}
+	</style>
+	<script
+	  src="https://code.jquery.com/jquery-3.2.1.min.js"
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	  crossorigin="anonymous"></script>
+	<script>
+
+var max = 1;
+
+function load() {
+	$.getJSON( "/stats", function( data ) {
+		max = Math.max(max, data.gotit, data.confused);
+		$("#max").text(max);
+		console.log(max, data.gotit, data.confused);
+		$("#gotit").css("width", (100.0 / max * data.gotit) + "%");
+		// $("#gotit-num").text(data.gotit);
+		$("#confused").css("width", (100.0 / max * data.confused) + "%");
+		// $("#confused-num").text(data.confused);
+	});
+};
+
+$(function() {
+	var intervalID = window.setInterval(load, 1000);
+});
+
+	</script>
+<head>
+<body>
+	<div id="gotit" class="bar"></div>
+	<div id="confused" class="bar"></div>
+	<p>Max: <span id="max"></span><!-- - Got it: <span id="gotit-num"></span> - Confused: <span id="confused-num"></span>--></p>

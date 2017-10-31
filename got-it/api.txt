@@ -1,0 +1,4 @@
+GET / -> serves index.html
+GET /speaker -> serves speaker.html
+POST /submit?type={gotit|confused}&user={UUID} -> 200 / 400
+GET /stats -> { "gotit": X, "confused": X }
