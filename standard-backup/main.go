@@ -62,7 +62,7 @@ func main() {
 	}
 	resp.Body.Close()
 
-	if len(jsonData.Items) < 100*1024 || jsonData.Items[0] != '{' {
+	if len(jsonData.Items) < 100*1024 || jsonData.Items[0] != '[' {
 		log.Fatal("data looks corrupted")
 	}
 
