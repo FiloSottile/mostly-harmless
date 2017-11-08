@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Biglumber map</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
+	<!--[if lte IE 8]>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
+	<![endif]-->
+
+        <link rel="stylesheet" href="MarkerCluster.css" />
+	<link rel="stylesheet" href="MarkerCluster.Default.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="MarkerCluster.Default.ie.css" /><![endif]-->
+
+	<style>
+		#map {
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			height: 600px;
+			margin-top: 40px;
+			color: #333;
+		}
+		h1 {
+			margin-top: 30px;
+		}
+		.github-ribbon img {
+			z-index: 10;
+		}
+		body {
+			background-image: url(http://subtlepatterns.subtlepatterns.netdna-cdn.com/patterns/dark_wall.png);
+		}
+		.container {
+			color: lightGrey;
+		}
+	</style>
+
+</head>
+<body>
+
+	<a href="https://github.com/FiloSottile/Biglumber-map" class="github-ribbon">
+		<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
+	</a>
+
+	<div class="container">
+		<div id="map"></div>
+		<h1>The Biglumber map</h1>
+		<hr>
+		<p>This little mockup shows all the <a href="http://biglumber.com">biglumber.com</a> listings on a <a href="http://leaflet.cloudmade.com/">Leaflet</a> map. <strong>Click on the pins</strong> to view the listings.</p>
+		<p>Biglumber is a site for coordinating GPG keys signing. People who are available to sign other people keys put a listing there.</p>
+		<p>This map makes it easier to find listings near you. Go getting into the strong set!</p>
+		<p>Made by <a href="http://www.pytux.it">FiloSottile</a> (<a href="http://twitter.com/FiloSottile">Twitter</a> - <a href="https://github.com/FiloSottile">GitHub</a>). Thanks to <a href="https://github.com/guerda">guerda</a>. Code under <a href="http://filosottile.mit-license.org/">MIT license</a>.</p>
+	</div>
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/bootstrap.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.1/jquery.fancybox.pack.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+	<script src="leaflet.markercluster-src.js"></script>
+
+	<script>
+	$(document).ready(function(){
+		var map = L.map('map').setView([30, 0], 2);
+		L.tileLayer('http://{s}.tile.cloudmade.com/9a88461e8f114afe8ecd1fd41795769f/997/256/{z}/{x}/{y}.png', {
+    		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+    		maxZoom: 18
+		}).addTo(map);
+
+		var markerClusters = new L.MarkerClusterGroup();
+		
+		$.getJSON('biglumber.json', function(data) {
+		  window.biglumber_data = data;
+		  $.each(data, function(key, val) {
+		    marker = L.marker(val[1]);
+		    marker.bindPopup("<strong>" + val[0] + "</strong><br>Listings: " + val[2] + "<br><a href=\"#\" onclick=\"show_listings(" + key + ")\">View »</a>");
+		    markerClusters.addLayer(marker);
+		  });
+		});
+
+		map.addLayer(markerClusters);
+	});
+
+	function show_listings(key) {
+		city = biglumber_data[key];
+
+		obj = $('<div/>');
+		obj.append($('<div/>', { html: '<strong>Listings for ' + city[0] + '</strong>' }));
+		obj.append($('<div/>', { html: '<strong><a href="http://biglumber.com/x/web?sl=' + key + '">See all on Biglumber.com »</a></strong>' }));
+		obj.append($('<hr>'));
+
+		console.log(city[3]);
+		_.each(city[3], function(listing) {
+			console.log(listing);
+			ul = $('<ul/>');
+
+			if (listing.email) {
+				a = parseInt(listing.email.split(',')[0], 10);
+				b = parseInt(listing.email.split(',')[1], 10);
+				c = listing.email.split(',')[2];
+				var email = ' < ' + c.slice(b-1) + ' ' + c.slice(0, a) + '.' + c.slice(a, b-1) + ' >';
+			} else email = '';
+			ul.append($('<li/>', { html: '<strong>' + listing.name + '</strong>' + email}));
+			if (listing.url) ul.append($('<li/>', { html: 'Url: <a href="' + listing.url + '">' + listing.url + '</a>' }));
+			if (listing.fingerprint) ul.append($('<li/>', { html: 'Fingerprint: ' + listing.fingerprint.slice(0, -8) + '<b>' + listing.fingerprint.slice(-8) + '</b> (' + listing.keytype + ')' }));
+			if (listing.key_comment) ul.append($('<li/>', { html: 'Key comment: <code>' + listing.key_comment + '</code>' }));
+			if (listing.notes) ul.append($('<li/>', { html: 'Notes: <br /><blockquote><tt>' + listing.notes + '</tt></blockquote>' }));
+
+			obj.append(ul);
+			obj.append($('<hr>'));
+		});
+
+		$.fancybox({ type: 'html', content: obj });
+	}
+	</script>
+
+	<script src="//static.getclicky.com/js" type="text/javascript"></script>
+	<script type="text/javascript">try{ clicky.init(100540743); }catch(e){}</script>
+	<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100540743ns.gif" /></p></noscript>
+
+</body>
+</html>
