@@ -1,0 +1,3 @@
+[submodule "warrior"]
+	path = warrior
+	url = https://github.com/ArchiveTeam/warrior-dockerfile.git
