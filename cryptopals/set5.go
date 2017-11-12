@@ -360,8 +360,8 @@ func (s *srpServerMITM) tryPassword(password []byte) bool {
 func rsaGenerate() *rsa.PrivateKey {
 	priv := &rsa.PrivateKey{}
 	for {
-		p, _ := rand.Prime(rand.Reader, 512)
-		q, _ := rand.Prime(rand.Reader, 512)
+		p, _ := rand.Prime(rand.Reader, 1024)
+		q, _ := rand.Prime(rand.Reader, 1024)
 		priv.Primes = []*big.Int{p, q}
 		priv.N = new(big.Int).Mul(p, q)
 		et := new(big.Int).Sub(p, big1)
@@ -442,14 +442,15 @@ func cubeRoot(cube *big.Int) *big.Int {
 		}
 		x.Sub(x, d)
 	}
-	for new(big.Int).Exp(x, big3, nil).Cmp(cube) > 0 {
-		x.Sub(x, big1)
-	}
 	for new(big.Int).Exp(x, big3, nil).Cmp(cube) < 0 {
 		x.Add(x, big1)
 	}
-	if new(big.Int).Exp(x, big3, nil).Cmp(cube) != 0 {
-		panic("not a cube")
+	for new(big.Int).Exp(x, big3, nil).Cmp(cube) > 0 {
+		x.Sub(x, big1)
 	}
+	// Return the cube, rounded down.
+	// if new(big.Int).Exp(x, big3, nil).Cmp(cube) != 0 {
+	// 	panic("not a cube")
+	// }
 	return x
 }

@@ -1,0 +1,26 @@
+00 01 ff 00 ASN1 HASH ff ff ff ff ff ff ff ff
+
+| Cube root
+V
+
+654356789876543234567898765434567.987654567876545676567
+
+654356789876543234567898765434567
+
+|
+V
+
+00 01 ff 00 ASN1 HASH ff ff ff xx xx xx xx xx
+
+
+00013020300c06082a864886f70d02050500041027fea662fb7a7b51f5201c8e79913162ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+00013020300c06082a864886f70d02050500041027fea662fb7a7b51f5201c8e79913162fffffffffffffffd6fb01732800edde8f946b82d7831a5534e157481b8761ba1f9b51dc2dc6ba851938ff25918736221798bfd3333e6e985c69b163e6095d5c6b81e4f633b2f182534cff6d8d362614d5ff32ef888328e6dc5c4289b
+
+
+
+
+00 02 XX XX XX XX XX XX
+
+B: 01 00 00 00 00 00 00
+
+2B <= p <= 3B-1
