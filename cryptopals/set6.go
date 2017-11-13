@@ -309,10 +309,44 @@ func attackBB98(pub *rsa.PublicKey, cc []byte, isPaddingValid func([]byte) bool)
 
 	B := new(big.Int).Lsh(big1, uint(pub.N.BitLen()-16))
 	B2, B3 := new(big.Int).Mul(B, big2), new(big.Int).Mul(B, big3)
-	lower, upper := new(big.Int).Set(B2), new(big.Int).Sub(B3, big1)
 
-	s, r, r1 := new(big.Int), new(big.Int), new(big.Int)
-	a, b, maxS := new(big.Int), new(big.Int), new(big.Int)
+	newRanges := func(s *big.Int, ranges [][2]*big.Int) [][2]*big.Int {
+		var res [][2]*big.Int
+		r, maxR := new(big.Int), new(big.Int)
+		a, b := new(big.Int), new(big.Int)
+
+		for i := range ranges {
+			lower, upper := ranges[i][0], ranges[i][1]
+			// ( as − 3B + 1 ) / n
+			r.Mul(lower, s).Sub(r, B3).Add(r, big1)
+			divRoundUp(r, r, pub.N)
+			// ( bs − 2B ) / n
+			maxR.Mul(upper, s).Sub(maxR, B2).Div(maxR, pub.N)
+
+			for r.Cmp(maxR) <= 0 {
+				newLower, newUpper := lower, upper
+
+				// ( 2B + rn ) / s <- round up
+				divRoundUp(a, a.Mul(r, pub.N).Add(a, B2), s)
+				if a.Cmp(lower) > 0 {
+					newLower = new(big.Int).Set(a)
+				}
+				// ( 3B − 1 + rn ) / s <- round down
+				b.Mul(r, pub.N).Add(b, B3).Sub(b, big1).Div(b, s)
+				if b.Cmp(upper) < 0 {
+					newUpper = new(big.Int).Set(b)
+				}
+
+				res = append(res, [2]*big.Int{newLower, newUpper})
+				r.Add(r, big1)
+			}
+		}
+
+		return res
+	}
+
+	lower, upper := new(big.Int).Set(B2), new(big.Int).Sub(B3, big1)
+	s, r, maxS := new(big.Int), new(big.Int), new(big.Int)
 	i := 1
 	for {
 		if i == 1 {
@@ -340,26 +374,15 @@ func attackBB98(pub *rsa.PublicKey, cc []byte, isPaddingValid func([]byte) bool)
 			}
 		}
 
-		// ( as − 3B + 1 ) / n
-		r.Mul(lower, s).Sub(r, B3).Add(r, big1)
-		divRoundUp(r, r, pub.N)
-		// ( bs − 2B ) / n
-		r1.Mul(upper, s).Sub(r1, B2).Div(r1, pub.N)
-
-		if r.Cmp(r1) != 0 {
-			panic("multiple ranges unimplemented")
+		ranges := newRanges(s, [][2]*big.Int{{lower, upper}})
+		for len(ranges) != 1 {
+			s.Add(s, big1)
+			for !tryS(s) {
+				s.Add(s, big1)
+			}
+			ranges = newRanges(s, ranges)
 		}
-
-		// ( 2B + rn ) / s <- round up
-		divRoundUp(a, a.Mul(r, pub.N).Add(a, B2), s)
-		if a.Cmp(lower) > 0 {
-			lower.Set(a)
-		}
-		// ( 3B − 1 + rn ) / s <- round down
-		b.Mul(r, pub.N).Add(b, B3).Sub(b, big1).Div(b, s)
-		if b.Cmp(upper) < 0 {
-			upper.Set(b)
-		}
+		lower, upper = ranges[0][0], ranges[0][1]
 
 		fmt.Fprintf(os.Stderr, "%q\n", lower.Bytes())
 		if upper.Cmp(lower) == 0 {

@@ -140,7 +140,7 @@ func TestProblem47(t *testing.T) {
 
 func TestProblem48(t *testing.T) {
 	msg := decodeBase64(t, "VGhhdCdzIHdoeSBJIGZvdW5kIHlvdSBkb24ndCBwbGF5IGFyb3VuZCB3aXRoIHRoZSBGdW5reSBDb2xkIE1lZGluYQ==")
-	pub, encrypt, isPaddingValid := rsaPKCS1Oracle(768)
+	pub, encrypt, isPaddingValid := rsaPKCS1Oracle(1024)
 	c := encrypt(msg)
 	attackBB98(pub, c, isPaddingValid)
 }
