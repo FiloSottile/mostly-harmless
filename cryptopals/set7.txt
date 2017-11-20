@@ -1,0 +1,33 @@
+F(b, c, d) = (b ∧ c) ∨ (¬b ∧ d)
+
+φ = ((a + F(b, c, d) + m) mod 2^32) ≪ s
+
+a1 >>> s - a0 - F(b, c, d)
+
+
+a1 = φ (a, b, c, d, m[0:4], 3)
+d1 = φ (d, a, b, c, m[4:8], 7)
+c1 = φ (c, d, a, b, m[8:12], 11)
+b1 = φ (b, c, d, a, m[12:16], 19)
+
+a2 = φ (a, b, c, d, m[16:20], 3)
+d2 = φ (d, a, b, c, ..., 7)
+c2 = φ (c, d, a, b, ..., 11)
+b2 = φ (b, c, d, a, ..., 19)
+
+a3 = φ (a, b, c, d, wj,4i, sj,4i)
+d3 = φ (d, a, b, c, wj,4i+1, sj,4i+1)
+c3 = φ (c, d, a, b, wj,4i+2, sj,4i+2)
+b3 = φ (b, c, d, a, wj,4i+3, sj,4i+3)
+
+a4 = φ (a, b, c, d, wj,4i, sj,4i)
+d4 = φ (d, a, b, c, wj,4i+1, sj,4i+1)
+c4 = φ (c, d, a, b, wj,4i+2, sj,4i+2)
+b4 = φ (b, c, d, a, wj,4i+3, sj,4i+3)
+
+
+
+
+
+               x               x
+/AAAAAAAAAAAAAAAA 123456789012345678901234567890

@@ -18,7 +18,12 @@ func padPKCS7(in []byte, size int) []byte {
 		panic("can't pad to size higher than 255")
 	}
 	padLen := size - len(in)%size
-	return append(in, bytes.Repeat([]byte{byte(padLen)}, padLen)...)
+	res := make([]byte, len(in)+padLen)
+	copy(res, in)
+	for i := len(in); i < len(res); i++ {
+		res[i] = byte(padLen)
+	}
+	return res
 }
 
 func encryptCBC(src []byte, b cipher.Block, iv []byte) []byte {

@@ -24,3 +24,18 @@ V
 B: 01 00 00 00 00 00 00
 
 2B <= p <= 3B-1
+
+
+
+
+00:00 - 00:14
+11:22 - 3:15:45
+3:33:00 - END
+
+ffmpeg -i set6.mp4 \
+    -c copy -t 0:00:14 set6.a.mp4 \
+    -c copy -ss 0:11:22 -to 3:15:45 set6.b.mp4 \
+    -c copy -ss 3:33:00 set6.c.mp4
+
+ffmpeg -f concat -safe 0 -i <(printf "file '%s'\n" $PWD/set6.?.mp4) \
+    -movflags faststart -c copy set6.cut.mp4

@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"strconv"
 )
 
 func decryptRSAOnceOracle() (
@@ -198,6 +199,22 @@ func magicDSAg1Signature(dsa dsaParams, y *big.Int) (r, s *big.Int) {
 	return
 }
 
+func printProgress(b []byte, newLine bool) {
+	var res []rune
+	for _, r := range string(b) {
+		if strconv.IsPrint(r) && r != '\n' && r != '\r' {
+			res = append(res, r)
+		} else {
+			res = append(res, '�')
+		}
+	}
+	if newLine {
+		fmt.Fprintf(os.Stderr, "\r%s\n", string(res))
+	} else {
+		fmt.Fprintf(os.Stderr, "\r%s", string(res))
+	}
+}
+
 func rsaParityOracle() (
 	pub *rsa.PublicKey,
 	encrypt func([]byte) []byte,
@@ -230,7 +247,7 @@ func attackRSAParityOracle(pub *rsa.PublicKey, c []byte, isPlaintextEven func([]
 		} else {
 			lower.Add(lower, diff) // upper half
 		}
-		fmt.Fprintf(os.Stderr, "%q\n", lower.Bytes())
+		printProgress(lower.Bytes(), true)
 
 		if lower.Cmp(upper) == 0 || diff.Sign() == 0 {
 			return lower.Bytes()
