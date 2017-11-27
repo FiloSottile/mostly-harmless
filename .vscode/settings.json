@@ -1,0 +1,6 @@
+{
+    "spellright.spellContext": "body comments strings",
+    "spellright.documentTypes": [
+        "plaintext", "html"
+    ],
+}
