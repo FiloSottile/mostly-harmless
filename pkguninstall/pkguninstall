@@ -1,0 +1,135 @@
+#! /bin/bash
+
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
+IFS=$'\n\t'
+
+readonly PROGNAME=$(basename "$0")
+readonly PROGDIR=$(cd "$(dirname "$0")"; pwd)
+readonly ARGS="$@"
+
+pkg_path() {
+    local vol=$(pkgutil --pkg-info "$PKGNAME" | grep volume: | cut -f 2 -d ' ')
+    local loc=$(pkgutil --pkg-info "$PKGNAME" | grep location: | cut -f 2 -d ' ')
+
+    echo "$vol$loc/" | sed "s|//*|/|g"
+}
+
+pkg_files() {
+    local path=$(pkg_path "$PKGNAME")
+
+    for f in $(pkgutil --only-files --files "$PKGNAME"); do
+        [[ -L "$path$f" || -e "$path$f" ]] && echo "$path$f"
+    done
+}
+
+pkg_dirs() {
+    local path=$(pkg_path "$PKGNAME")
+
+    for f in $(pkgutil --only-dirs --files "$PKGNAME"); do
+        [[ -L "$path$f" || -e "$path$f" ]] && echo "$path$f"
+    done
+}
+
+pkg_dirs_reversed() {
+    pkg_dirs "$PKGNAME" | tail -r
+}
+
+rm_file() {
+    local path=$1
+
+    if pretend; then
+        echo "Would be removing: $path"
+    else
+        verbose "Removing: $path"
+        sudo rm "$path"
+    fi
+}
+
+rm_dir() {
+    local path=$1
+
+    if pretend; then
+        echo "Would be removing if empty: $path"
+    else
+        verbose "Removing if empty: $path"
+        sudo rmdir "$path" || true
+    fi
+}
+
+usage() {
+    cat >&2 <<- EOF
+Usage: $PROGNAME [-vnh] pkgid
+
+Options:
+  -n   Simulate only
+  -v   Verbose
+  -h   Print this help
+EOF
+}
+
+cmdline() {
+    while getopts "vhn" OPTION
+    do
+        case $OPTION in
+        v)
+            readonly VERBOSE=1
+            ;;
+        n)
+            readonly PRETEND=1
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        ?)
+            usage
+            exit 1
+            ;;
+        esac
+    done
+
+    shift "$((OPTIND - 1))"
+
+    if [ -z "${1:-}" ]; then
+        usage
+        exit 1
+    fi
+
+    readonly PKGNAME=$1
+}
+
+verbose() {
+    if [ -n "${VERBOSE:-}" ]; then
+        echo $@ >&2
+    fi
+}
+
+pretend() {
+    if [ -n "${PRETEND:-}" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+main() {
+    cmdline $ARGS
+
+    if ! pkgutil --pkg-info "$PKGNAME" > /dev/null 2>&1; then
+        echo "Package $PKGNAME not found" >&2
+        exit 2
+    fi
+
+    for f in $(pkg_files); do
+        rm_file "$f"
+    done
+
+    for f in $(pkg_dirs_reversed); do
+        rm_dir "$f"
+    done
+
+    pretend || sudo pkgutil --forget $PKGNAME
+}
+
+main
