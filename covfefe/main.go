@@ -117,6 +117,9 @@ func main() {
 
 		var processTweet func(*twitter.Tweet)
 		processTweet = func(tweet *twitter.Tweet) {
+			if tweet.User.Protected {
+				return
+			}
 			if insertTweet(tweet, messageID) {
 				var media []twitter.MediaEntity
 				if tweet.Entities != nil {
