@@ -7,7 +7,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"runtime/debug"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -112,6 +116,8 @@ func main() {
 	}
 	demux := twitter.NewSwitchDemux()
 
+	var wg sync.WaitGroup
+
 	demux.Tweet = func(tweet *twitter.Tweet) {
 		messageID := insertMessage(tweet, mustTimeParse(tweet.CreatedAt))
 
@@ -137,6 +143,7 @@ func main() {
 					}
 				}
 				if len(media) != 0 {
+					wg.Add(1)
 					go func() {
 						for _, m := range media {
 							if m.SourceStatusID != 0 {
@@ -146,6 +153,7 @@ func main() {
 							insertMedia(mustGet(m.MediaURLHttps), m.ID, tweet.ID)
 							// TODO: archive videos?
 						}
+						wg.Done()
 					}()
 				}
 				if tweet.RetweetedStatus != nil {
@@ -177,7 +185,19 @@ func main() {
 		log.Println("Warning:", warning.Message)
 	}
 
-	demux.HandleChan(stream.Messages)
+	ch := make(chan os.Signal)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		demux.HandleChan(stream.Messages)
+		signal.Stop(ch)
+		close(ch)
+	}()
+
+	log.Println(<-ch)
+
+	stream.Stop()
+	wg.Wait()
 }
 
 func mustMarshal(v interface{}) []byte {
