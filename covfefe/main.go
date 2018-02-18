@@ -80,9 +80,10 @@ func main() {
 		_, err := db.Exec(
 			`INSERT INTO Tweets (id, created, user, message) VALUES (?, ?, ?, ?)`,
 			tweet.ID, mustTimeParse(tweet.CreatedAt), tweet.User.ScreenName, message)
-		if err, ok := err.(*sqlite3.Error); ok && err.ExtendedCode != sqlite3.ErrConstraintPrimaryKey {
+		if err, ok := err.(sqlite3.Error); ok && err.ExtendedCode != sqlite3.ErrConstraintUnique {
 			return false
-		} else if err != nil {
+		}
+		if err != nil {
 			debug.PrintStack()
 			log.Fatalln("Failed to execute insert:", err)
 		}
