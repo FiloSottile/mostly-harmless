@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+go test . -cover
+go vet ./...
+
+echo "Checking gofmt..."
+FORMATTABLE="$(find . -type f -name '*.go')"
+fmtRes=$(gofmt -l $FORMATTABLE)
+if [ -n "${fmtRes}" ]; then
+  echo -e "gofmt checking failed:\n${fmtRes}"
+  exit 2
+fi
+
+echo "Checking golint..."
+lintRes=$(go list ./... | xargs -n 1 golint)
+if [ -n "${lintRes}" ]; then
+  echo -e "golint checking failed:\n${lintRes}"
+  exit 2
+fi
