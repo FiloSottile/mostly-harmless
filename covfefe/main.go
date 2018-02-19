@@ -148,9 +148,6 @@ func (c *Covfefe) deletedTweet(id int64) {
 }
 
 func (c *Covfefe) processTweet(messageID int64, tweet *twitter.Tweet) {
-	if tweet.User.Protected {
-		return // TODO: move to before the message insert
-	}
 	new, err := c.insertTweet(tweet, messageID)
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -213,6 +210,9 @@ func (c *Covfefe) demux() twitter.Demux {
 	demux := twitter.NewSwitchDemux()
 
 	demux.Tweet = func(tweet *twitter.Tweet) {
+		if tweet.User.Protected {
+			return
+		}
 		messageID, err := c.insertMessage(tweet, mustParseTime(tweet.CreatedAt))
 		if err != nil {
 			log.WithError(err).WithField("tweet", tweet.ID).Error("Failed to insert message")
@@ -224,6 +224,10 @@ func (c *Covfefe) demux() twitter.Demux {
 		c.deletedTweet(deletion.ID)
 	}
 	demux.Event = func(event *twitter.Event) {
+		if (event.Source != nil && event.Source.Protected) ||
+			(event.Target != nil && event.Target.Protected) {
+			return
+		}
 		_, err := c.insertMessage(event, mustParseTime(event.CreatedAt))
 		if err != nil {
 			log.WithError(err).WithField("event", event.Event).Error("Failed to insert message")
