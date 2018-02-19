@@ -1,5 +1,5 @@
 import tripit
-import flightdiary
+import flightradar
 import json,sys,getopt
 
 def main(argv):
@@ -24,7 +24,7 @@ def main(argv):
             trips = json.load(f)
     
     flights = set()
-    for f in flightdiary.get_flights():
+    for f in flightradar.get_flights():
         flights.add((f.date, f.flight))
 
     for ao in trips['AirObject']:
@@ -36,16 +36,21 @@ def main(argv):
                 + s['marketing_flight_number']) in flights:
                 continue
     
-            air = flightdiary.get_airline(s['marketing_airline_code'])
-            if not '(%s/' % s['marketing_airline_code'] in air["label"]: raise Exception
-            from_ = flightdiary.get_airport(s['start_airport_code'])
+            airline_code = s.get('operating_airline_code', s['marketing_airline_code'])
+            flight_number = s.get('operating_flight_number', s['marketing_flight_number'])
+            if (s['StartDateTime']['date'], airline_code + flight_number) in flights:
+                continue
+
+            air = flightradar.get_airline(airline_code)
+            if not '(%s/' % airline_code in air["label"]: raise Exception
+            from_ = flightradar.get_airport(s['start_airport_code'])
             if not from_['iata'].startswith(s['start_airport_code']): raise Exception
-            to = flightdiary.get_airport(s['end_airport_code'])
+            to = flightradar.get_airport(s['end_airport_code'])
             if not to['iata'].startswith(s['end_airport_code']): raise Exception
     
             data = {
                 "departure-date": s['StartDateTime']['date'],
-                "flight-number": s['marketing_airline_code'] + s['marketing_flight_number'],
+                "flight-number": airline_code + flight_number,
                 "departure-airport": from_["label"],
                 "departure-airport-value": from_["id"],
                 "departure-time-hour": s['StartDateTime']['time'].split(':')[0],
@@ -68,13 +73,13 @@ def main(argv):
                 "duration-minute": "",
             }
     
-            flightdiary.add_flight(data)
+            flightradar.add_flight(data)
     
             print 'Added flight %s %s %s %s' % (
                 s['StartDateTime']['date'],
                 s['start_airport_code'],
                 s['end_airport_code'],
-                s['marketing_airline_code'] + s['marketing_flight_number'],
+                airline_code + flight_number,
             )
 
 if __name__ == '__main__':
