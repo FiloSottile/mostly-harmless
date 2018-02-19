@@ -1,0 +1,13 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/russross/blackfriday",
+			"repository": "https://github.com/russross/blackfriday",
+			"vcs": "git",
+			"revision": "4048872b16cc0fc2c5fd9eacf0ed2c2fedaa0c8c",
+			"branch": "master",
+			"notests": true
+		}
+	]
+}
