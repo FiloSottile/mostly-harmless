@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"io/ioutil"
+	"log/syslog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,12 +18,24 @@ import (
 	"github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	lsyslog "github.com/sirupsen/logrus/hooks/syslog"
+	// TODO: prometheus
 )
 
 func main() {
 	dbFile := flag.String("db", "twitter.db", "The path of the SQLite DB")
 	credsFile := flag.String("creds", "creds.json", "The path of the credentials JSON")
+	syslogFlag := flag.Bool("syslog", false, "Also log to syslog")
 	flag.Parse()
+
+	if *syslogFlag {
+		hook, err := lsyslog.NewSyslogHook("", "", syslog.LOG_INFO, "")
+		if err != nil {
+			log.WithError(err).Fatal("Failed to dial syslog")
+		}
+		log.AddHook(hook)
+	}
+	log.Info("Starting...")
 
 	credsJSON, err := ioutil.ReadFile(*credsFile)
 	if err != nil {
