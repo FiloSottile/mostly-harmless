@@ -51,9 +51,10 @@ for event in events:
             last_in = None
             continue
         from_, to = max(from_, year_start), min(to, year_end)
-        print "From", from_.strftime("%Y-%m-%d"), "to", to.strftime("%Y-%m-%d"), "-", (to - from_).days + 1, "days"
+        days = (to - from_).days + 1
+        print "From", from_.strftime("%Y-%m-%d"), "to", to.strftime("%Y-%m-%d"), "-", days, "days"
         print
-        nights_in += (to - from_).days + 1
+        nights_in += days
 
         last_in = None
     else:
