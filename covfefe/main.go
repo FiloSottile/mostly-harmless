@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -238,13 +240,51 @@ func (c *Covfefe) demux() twitter.Demux {
 	}
 	demux.Event = func(event *twitter.Event) {
 		if (event.Source != nil && event.Source.Protected) ||
-			(event.Target != nil && event.Target.Protected) {
+			(event.Target != nil && event.Target.Protected) ||
+			(event.TargetObject != nil && event.TargetObject.User.Protected) {
 			return
 		}
-		_, err := c.insertMessage(event, mustParseTime(event.CreatedAt))
+		messageID, err := c.insertMessage(event, mustParseTime(event.CreatedAt))
 		if err != nil {
 			log.WithError(err).WithField("event", event.Event).Error("Failed to insert message")
+			return
 		}
+		switch event.Event {
+		case "quoted_tweet":
+		case "favorite", "unfavorite":
+		case "favorited_retweet":
+		case "retweeted_retweet":
+		case "follow", "unfollow":
+		case "user_update":
+		case "list_created", "list_destroyed", "list_updated", "list_member_added",
+			"list_member_removed", "list_user_subscribed", "list_user_unsubscribed":
+			return
+		case "block", "unblock":
+			return
+		case "mute", "unmute":
+			return
+		default:
+			log.WithFields(log.Fields{
+				"event": event.Event, "json": mustMarshal(event),
+			}).Warning("Unknown event type")
+			return
+		}
+		if event.TargetObject != nil {
+			c.processTweet(messageID, event.TargetObject)
+		}
+	}
+
+	demux.StatusWithheld = func(w *twitter.StatusWithheld) {
+		log.WithFields(log.Fields{
+			"id": strconv.FormatInt(w.ID, 10), "user": strconv.FormatInt(w.UserID, 10),
+			"countries": strings.Join(w.WithheldInCountries, ","),
+		}).Info("Status withheld")
+	}
+	demux.UserWithheld = func(w *twitter.UserWithheld) {
+		log.WithFields(log.Fields{
+			"user":      strconv.FormatInt(w.ID, 10),
+			"countries": strings.Join(w.WithheldInCountries, ","),
+		}).Info("User withheld")
 	}
 
 	demux.StreamLimit = func(limit *twitter.StreamLimit) {
@@ -285,6 +325,7 @@ func mustParseTime(CreatedAt string) time.Time {
 }
 
 func (c *Covfefe) httpGet(url string) ([]byte, error) {
+	// TODO: retry
 	res, err := c.httpClient.Get(url)
 	if err != nil {
 		return nil, err
