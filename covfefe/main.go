@@ -79,7 +79,7 @@ func main() {
 
 	c.wg.Add(1)
 	go func() {
-		c.demux().HandleChan(messages)
+		c.HandleChan(messages)
 		c.wg.Done()
 	}()
 
@@ -188,9 +188,8 @@ func (c *Covfefe) initDB() {
 	}
 }
 
-func (c *Covfefe) insertMessage(object interface{}, created time.Time) (id int64, err error) {
-	res, err := c.db.Exec(`INSERT INTO Messages (created, json) VALUES (?, ?)`,
-		created, mustMarshal(object))
+func (c *Covfefe) insertMessage(object interface{}) (id int64, err error) {
+	res, err := c.db.Exec(`INSERT INTO Messages (json) VALUES (?)`, mustMarshal(object))
 	if err != nil {
 		return 0, errors.Wrap(err, "failed insert query")
 	}
@@ -289,38 +288,19 @@ func (c *Covfefe) processTweet(messageID int64, tweet *twitter.Tweet) {
 	// TODO: crawl thread, non-embedded linked tweets
 }
 
-func (c *Covfefe) demux() twitter.Demux {
-	demux := twitter.NewSwitchDemux()
-	demux.All = func(m interface{}) {
-		log.WithField("type", fmt.Sprintf("%T", m)).Debug("Received message")
-	}
-
-	demux.Tweet = func(tweet *twitter.Tweet) {
-		if tweet.User.Protected {
-			return
+func isProtected(message interface{}) bool {
+	switch m := message.(type) {
+	case *twitter.Tweet:
+		if m.User.Protected {
+			return true
 		}
-		messageID, err := c.insertMessage(tweet, mustParseTime(tweet.CreatedAt))
-		if err != nil {
-			log.WithError(err).WithField("tweet", tweet.ID).Error("Failed to insert message")
-			return
+	case *twitter.Event:
+		if (m.Source != nil && m.Source.Protected) ||
+			(m.Target != nil && m.Target.Protected) ||
+			(m.TargetObject != nil && m.TargetObject.User.Protected) {
+			return true
 		}
-		c.processTweet(messageID, tweet)
-	}
-	demux.StatusDeletion = func(deletion *twitter.StatusDeletion) {
-		c.deletedTweet(deletion.ID)
-	}
-	demux.Event = func(event *twitter.Event) {
-		if (event.Source != nil && event.Source.Protected) ||
-			(event.Target != nil && event.Target.Protected) ||
-			(event.TargetObject != nil && event.TargetObject.User.Protected) {
-			return
-		}
-		messageID, err := c.insertMessage(event, mustParseTime(event.CreatedAt))
-		if err != nil {
-			log.WithError(err).WithField("event", event.Event).Error("Failed to insert message")
-			return
-		}
-		switch event.Event {
+		switch m.Event {
 		case "quoted_tweet":
 		case "favorite", "unfavorite":
 		case "favorited_retweet":
@@ -329,15 +309,57 @@ func (c *Covfefe) demux() twitter.Demux {
 		case "user_update":
 		case "list_created", "list_destroyed", "list_updated", "list_member_added",
 			"list_member_removed", "list_user_subscribed", "list_user_unsubscribed":
-			return
+			return true // lists can be private
 		case "block", "unblock":
-			return
+			return true
 		case "mute", "unmute":
-			return
+			return true
 		default:
 			log.WithFields(log.Fields{
-				"event": event.Event, "json": mustMarshal(event),
+				"event": m.Event, "json": mustMarshal(m),
 			}).Warning("Unknown event type")
+			return true // when in doubt...
+		}
+	}
+	return false
+}
+
+func (c *Covfefe) HandleChan(messages <-chan interface{}) {
+	demux := c.demux()
+	for m := range messages {
+		if isProtected(m) {
+			continue
+		}
+		demux.Handle(m)
+	}
+}
+
+func (c *Covfefe) demux() twitter.Demux {
+	demux := twitter.NewSwitchDemux()
+	demux.All = func(m interface{}) {
+		log.WithField("type", fmt.Sprintf("%T", m)).Debug("Received message")
+	}
+
+	demux.Tweet = func(tweet *twitter.Tweet) {
+		messageID, err := c.insertMessage(tweet)
+		if err != nil {
+			log.WithError(err).WithField("tweet", tweet.ID).Error("Failed to insert message")
+			return
+		}
+		c.processTweet(messageID, tweet)
+	}
+	demux.StatusDeletion = func(deletion *twitter.StatusDeletion) {
+		_, err := c.insertMessage(deletion)
+		if err != nil {
+			log.WithError(err).WithField("deletion", deletion.ID).Error("Failed to insert message")
+			return
+		}
+		c.deletedTweet(deletion.ID)
+	}
+	demux.Event = func(event *twitter.Event) {
+		messageID, err := c.insertMessage(event)
+		if err != nil {
+			log.WithError(err).WithField("event", event.Event).Error("Failed to insert message")
 			return
 		}
 		if event.TargetObject != nil {
@@ -346,12 +368,20 @@ func (c *Covfefe) demux() twitter.Demux {
 	}
 
 	demux.StatusWithheld = func(w *twitter.StatusWithheld) {
+		_, err := c.insertMessage(w)
+		if err != nil {
+			log.WithError(err).Error("Failed to insert message")
+		}
 		log.WithFields(log.Fields{
 			"id": strconv.FormatInt(w.ID, 10), "user": strconv.FormatInt(w.UserID, 10),
 			"countries": strings.Join(w.WithheldInCountries, ","),
 		}).Info("Status withheld")
 	}
 	demux.UserWithheld = func(w *twitter.UserWithheld) {
+		_, err := c.insertMessage(w)
+		if err != nil {
+			log.WithError(err).Error("Failed to insert message")
+		}
 		log.WithFields(log.Fields{
 			"user":      strconv.FormatInt(w.ID, 10),
 			"countries": strings.Join(w.WithheldInCountries, ","),
