@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log/syslog"
 	"net/http"
@@ -28,8 +30,12 @@ func main() {
 	dbFile := flag.String("db", "twitter.db", "The path of the SQLite DB")
 	credsFile := flag.String("creds", "creds.json", "The path of the credentials JSON")
 	syslogFlag := flag.Bool("syslog", false, "Also log to syslog")
+	debugFlag := flag.Bool("debug", false, "Enable debug logging")
 	flag.Parse()
 
+	if *debugFlag {
+		log.SetLevel(log.DebugLevel)
+	}
 	if *syslogFlag {
 		hook, err := lsyslog.NewSyslogHook("", "", syslog.LOG_INFO, "")
 		if err != nil {
@@ -43,7 +49,14 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatal("Failed to read credentials file")
 	}
-	var creds map[string]string
+	var creds struct {
+		APIKey    string `json:"API_KEY"`
+		APISecret string `json:"API_SECRET"`
+		Accounts  []struct {
+			Token       string `json:"TOKEN"`
+			TokenSecret string `json:"TOKEN_SECRET"`
+		}
+	}
 	if err := json.Unmarshal(credsJSON, &creds); err != nil {
 		log.WithError(err).Fatal("Failed to parse credentials file")
 	}
@@ -62,33 +75,88 @@ func main() {
 	}
 	c.initDB()
 
-	config := oauth1.NewConfig(creds["API_KEY"], creds["API_SECRET"])
-	token := oauth1.NewToken(creds["TOKEN"], creds["TOKEN_SECRET"]) // TODO: multiple tokens
-	httpClient := config.Client(oauth1.NoContext, token)
-	client := twitter.NewClient(httpClient)
+	messages := make(chan interface{})
 
-	params := &twitter.StreamUserParams{
-		With:          "followings",
-		StallWarnings: twitter.Bool(true),
-	}
-	stream, err := client.Streams.User(params)
-	if err != nil {
-		log.WithError(err).Fatal("Failed to open twitter stream")
-	}
-
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-
+	c.wg.Add(1)
 	go func() {
-		c.demux().HandleChan(stream.Messages)
-		signal.Stop(ch)
-		close(ch)
+		c.demux().HandleChan(messages)
+		c.wg.Done()
 	}()
 
-	log.WithField("signal", <-ch).Info("Gracefully stopping")
+	ctx, cancel := context.WithCancel(context.Background())
 
-	stream.Stop()
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		log.WithField("signal", <-ch).Info("Received signal, stopping...")
+		cancel()
+	}()
+
+	var streamsWG sync.WaitGroup
+	config := oauth1.NewConfig(creds.APIKey, creds.APISecret)
+	for i, account := range creds.Accounts {
+		token := oauth1.NewToken(account.Token, account.TokenSecret)
+
+		httpClient := config.Client(oauth1.NoContext, token)
+		client := twitter.NewClient(httpClient)
+
+		user, _, err := client.Accounts.VerifyCredentials(nil)
+		if err != nil {
+			log.WithError(err).WithField("i", i).Error("Invalid credentials")
+			return
+		}
+
+		params := &twitter.StreamUserParams{
+			With:          "followings",
+			StallWarnings: twitter.Bool(true),
+		}
+		stream, err := client.Streams.User(params)
+		if err != nil {
+			log.WithError(err).WithField("user", user.ScreenName).Error("Failed to open twitter stream")
+		}
+
+		streamsWG.Add(1)
+		go func() {
+			log.WithField("user", user.ScreenName).Info("Starting streaming")
+			for m := range StreamWithContext(ctx, stream) {
+				messages <- m
+			}
+			if ctx.Err() == nil {
+				log.WithField("user", user.ScreenName).Error("Stream terminated")
+				cancel() // TODO: retry and reopen
+			}
+			streamsWG.Done()
+		}()
+	}
+	streamsWG.Wait()
+
+	close(messages)
 	c.wg.Wait()
+}
+
+func StreamWithContext(ctx context.Context, stream *twitter.Stream) chan interface{} {
+	c := make(chan interface{})
+	go func() {
+	Loop:
+		for {
+			select {
+			case m, ok := <-stream.Messages:
+				if !ok {
+					break Loop
+				}
+				select {
+				case c <- m:
+				case <-ctx.Done():
+					break Loop
+				}
+			case <-ctx.Done():
+				break Loop
+			}
+		}
+		stream.Stop()
+		close(c)
+	}()
+	return c
 }
 
 type Covfefe struct {
@@ -223,6 +291,9 @@ func (c *Covfefe) processTweet(messageID int64, tweet *twitter.Tweet) {
 
 func (c *Covfefe) demux() twitter.Demux {
 	demux := twitter.NewSwitchDemux()
+	demux.All = func(m interface{}) {
+		log.WithField("type", fmt.Sprintf("%T", m)).Debug("Received message")
+	}
 
 	demux.Tweet = func(tweet *twitter.Tweet) {
 		if tweet.User.Protected {
