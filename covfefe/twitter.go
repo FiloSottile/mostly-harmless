@@ -122,14 +122,14 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 			messageID, err := c.insertMessage(m.account, msg)
 			if err != nil {
 				log.WithError(err).WithField("tweet", msg.ID).Error("Failed to insert message")
-				return
+				continue
 			}
 			c.processTweet(messageID, msg)
 		case *twitter.StatusDeletion:
 			messageID, err := c.insertMessage(m.account, msg)
 			if err != nil {
 				log.WithError(err).WithField("deletion", msg.ID).Error("Failed to insert message")
-				return
+				continue
 			}
 			log.WithField("id", msg.ID).Debug("Deleted Tweet")
 			c.deletedTweet(messageID, msg.ID)
@@ -137,7 +137,7 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 			messageID, err := c.insertMessage(m.account, msg)
 			if err != nil {
 				log.WithError(err).WithField("event", msg.Event).Error("Failed to insert message")
-				return
+				continue
 			}
 			if msg.TargetObject != nil {
 				c.processTweet(messageID, msg.TargetObject)
