@@ -1,0 +1,4 @@
+/covfefe
+*.db
+*.db.*
+creds.json
