@@ -113,20 +113,20 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 		}).Debug("Received message")
 
 		if isProtected(m.msg) {
-			log.Debug("Dropped protected message")
+			log.WithField("account", m.account).Debug("Dropped protected message")
 			continue
 		}
 
 		switch msg := m.msg.(type) {
 		case *twitter.Tweet:
-			messageID, err := c.insertMessage(m.account, msg)
+			messageID, err := c.insertMessage(m)
 			if err != nil {
 				log.WithError(err).WithField("tweet", msg.ID).Error("Failed to insert message")
 				continue
 			}
 			c.processTweet(messageID, msg)
 		case *twitter.StatusDeletion:
-			messageID, err := c.insertMessage(m.account, msg)
+			messageID, err := c.insertMessage(m)
 			if err != nil {
 				log.WithError(err).WithField("deletion", msg.ID).Error("Failed to insert message")
 				continue
@@ -134,7 +134,7 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 			log.WithField("id", msg.ID).Debug("Deleted Tweet")
 			c.deletedTweet(messageID, msg.ID)
 		case *twitter.Event:
-			messageID, err := c.insertMessage(m.account, msg)
+			messageID, err := c.insertMessage(m)
 			if err != nil {
 				log.WithError(err).WithField("event", msg.Event).Error("Failed to insert message")
 				continue
@@ -144,7 +144,7 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 			}
 
 		case *twitter.StatusWithheld:
-			_, err := c.insertMessage(m.account, msg)
+			_, err := c.insertMessage(m)
 			if err != nil {
 				log.WithError(err).Error("Failed to insert message")
 			}
@@ -153,7 +153,7 @@ func (c *Covfefe) HandleChan(messages <-chan Message) {
 				"countries": strings.Join(msg.WithheldInCountries, ","),
 			}).Info("Status withheld")
 		case *twitter.UserWithheld:
-			_, err := c.insertMessage(m.account, msg)
+			_, err := c.insertMessage(m)
 			if err != nil {
 				log.WithError(err).Error("Failed to insert message")
 			}

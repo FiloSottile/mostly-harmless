@@ -1,0 +1,4 @@
+{
+    "go.buildTags": "json1",
+    "go.vetFlags": ["-tags", "json1"]
+}

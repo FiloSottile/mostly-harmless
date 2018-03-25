@@ -1,4 +1,5 @@
 /covfefe
+/enroll
 *.db
 *.db.*
 creds.json

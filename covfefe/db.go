@@ -1,6 +1,10 @@
+// The SQL in this file requires SQLite to be built with the json1 extension.
+// +build json1
+
 package covfefe
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"time"
 
@@ -8,6 +12,7 @@ import (
 	sqlite3 "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/blake2b"
 )
 
 func (c *Covfefe) initDB() error {
@@ -34,9 +39,30 @@ func (c *Covfefe) initDB() error {
 	return errors.Wrap(err, "failed to initialize database")
 }
 
-func (c *Covfefe) insertMessage(account string, object interface{}) (id int64, err error) {
-	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, ?)`,
-		mustMarshal(object), account)
+func (c *Covfefe) insertMessage(m Message) (id int64, err error) {
+	msg := mustMarshal(m.msg)
+	h := blake2b.Sum256(msg)
+
+	if id, ok := c.msgIDs.Get(h); ok {
+		log.WithFields(log.Fields{
+			"id": id, "account": m.account, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+		}).Debug("Duplicate message")
+
+		_, err := c.db.Exec(`UPDATE Messages SET account = (
+				SELECT json_group_array(value) FROM (
+					SELECT json_each.value
+					FROM Messages, json_each(Messages.account)
+					WHERE Messages.id = ?
+					UNION ALL SELECT ?
+				) GROUP BY ''
+			) WHERE id = ?;`, id, m.account, id)
+		if err != nil {
+			return 0, errors.Wrap(err, "failed update query")
+		}
+		return id.(int64), nil
+	}
+
+	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, msg, m.account)
 	if err != nil {
 		return 0, errors.Wrap(err, "failed insert query")
 	}
@@ -44,6 +70,12 @@ func (c *Covfefe) insertMessage(account string, object interface{}) (id int64, e
 	if err != nil {
 		return 0, errors.Wrap(err, "failed to get message id")
 	}
+
+	log.WithFields(log.Fields{
+		"id": id, "account": m.account, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+	}).Debug("New message")
+
+	c.msgIDs.Add(h, id)
 	return id, nil
 }
 

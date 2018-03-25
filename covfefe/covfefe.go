@@ -12,6 +12,7 @@ import (
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	"github.com/golang/groupcache/lru"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -19,16 +20,19 @@ import (
 type Credentials struct {
 	APIKey    string `json:"API_KEY"`
 	APISecret string `json:"API_SECRET"`
-	Accounts  []struct {
-		Token       string `json:"TOKEN"`
-		TokenSecret string `json:"TOKEN_SECRET"`
-	}
+	Accounts  []Account
+}
+
+type Account struct {
+	Token       string `json:"TOKEN"`
+	TokenSecret string `json:"TOKEN_SECRET"`
 }
 
 type Covfefe struct {
 	db         *sql.DB
 	wg         sync.WaitGroup
 	httpClient *http.Client
+	msgIDs     *lru.Cache
 }
 
 func Run(db string, creds *Credentials) error {
@@ -38,6 +42,7 @@ func Run(db string, creds *Credentials) error {
 		httpClient: &http.Client{
 			Timeout: 1 * time.Minute,
 		},
+		msgIDs: lru.New(1 << 16),
 	}
 
 	c.db, err = sql.Open("sqlite3", "file:"+db+"?_foreign_keys=1")

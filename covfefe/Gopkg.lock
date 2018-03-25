@@ -15,7 +15,10 @@
 
 [[projects]]
   name = "github.com/dghubble/oauth1"
-  packages = ["."]
+  packages = [
+    ".",
+    "twitter"
+  ]
   revision = "70562a5920ad9b6ff03ef697c0f90ae569abbd2b"
   version = "v0.4.0"
 
@@ -24,6 +27,12 @@
   packages = ["."]
   revision = "eb56e89ac5088bebb12eef3cb4b293300f43608b"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/groupcache"
+  packages = ["lru"]
+  revision = "66deaeb636dff1ac7d938ce666d090556056a4b0"
 
 [[projects]]
   branch = "master"
@@ -55,7 +64,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "blake2b",
+    "ssh/terminal"
+  ]
   revision = "650f4a345ab4e5b245a3034b110ebc7299e68186"
 
 [[projects]]
@@ -76,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d6388668144619859e0dc6d4e2a87bf44e4b199ba84bbfcda561553b8a1b682d"
+  inputs-digest = "78667a50ad284075f19df9f93b9af9a5dfddba273f71e9cb26ecaeb784f853de"
   solver-name = "gps-cdcl"
   solver-version = 1
