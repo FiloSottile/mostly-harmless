@@ -33,15 +33,21 @@ func main() {
 		Endpoint:       twitter.AuthorizeEndpoint,
 	}
 
-	requestToken, _, err := config.RequestToken()
-	if err != nil {
-		log.WithError(err).Fatal("RequestToken failed")
+	var requestToken string
+	if len(os.Args) == 1 {
+		newToken, _, err := config.RequestToken()
+		if err != nil {
+			log.WithError(err).Fatal("RequestToken failed")
+		}
+		authorizationURL, err := config.AuthorizationURL(newToken)
+		if err != nil {
+			log.WithError(err).Fatal("AuthorizationURL failed")
+		}
+		fmt.Fprintf(os.Stderr, "URL: %s\n", authorizationURL.String())
+		requestToken = newToken
+	} else {
+		requestToken = os.Args[1]
 	}
-	authorizationURL, err := config.AuthorizationURL(requestToken)
-	if err != nil {
-		log.WithError(err).Fatal("AuthorizationURL failed")
-	}
-	fmt.Fprintf(os.Stderr, "URL: %s\n", authorizationURL.String())
 
 	fmt.Fprintf(os.Stderr, "Paste your PIN here: ")
 	var verifier string
