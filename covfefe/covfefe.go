@@ -98,7 +98,7 @@ func Run(db string, creds *Credentials) error {
 
 		streamsWG.Add(1)
 		go func() {
-			log.WithField("account", user.ScreenName).Info("Starting streaming")
+			log.WithField("account", user.ScreenName).WithField("id", user.ID).Info("Starting streaming")
 			for msg := range StreamWithContext(ctx, stream) {
 				messages <- &Message{account: user, msg: msg}
 			}

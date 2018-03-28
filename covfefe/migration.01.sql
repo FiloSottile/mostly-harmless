@@ -1,7 +1,7 @@
 PRAGMA foreign_keys=OFF;
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS new_Messages (
+CREATE TABLE new_Messages (
     id INTEGER PRIMARY KEY,
     received DATETIME DEFAULT (DATETIME('now')),
     json TEXT NOT NULL,
@@ -12,7 +12,7 @@ DROP TABLE Messages;
 ALTER TABLE new_Messages RENAME TO Messages;
 PRAGMA foreign_key_check;
 
-CREATE TABLE IF NOT EXISTS new_Tweets (
+CREATE TABLE new_Tweets (
     id INTEGER PRIMARY KEY,
     created DATETIME NOT NULL,
     user TEXT NOT NULL,
