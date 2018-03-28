@@ -51,7 +51,9 @@ func Run(db string, creds *Credentials) error {
 	}
 	defer c.db.Close()
 
-	c.initDB()
+	if err := c.initDB(); err != nil {
+		return err
+	}
 
 	log.Info("Starting...")
 

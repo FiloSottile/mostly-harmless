@@ -40,14 +40,14 @@ func (c *Covfefe) initDB() error {
 		handle TEXT NOT NULL,
 		name TEXT NOT NULL,
 		bio TEXT NOT NULL,
-		UNIQUE (id, handle, name, bio) ON CONFLICT IGNORE,
-		first_seen INTEGER NOT NULL REFERENCES Messages(id)
+		first_seen INTEGER NOT NULL REFERENCES Messages(id),
+		UNIQUE (id, handle, name, bio) ON CONFLICT IGNORE
 	);
 	CREATE TABLE IF NOT EXISTS Follows (
 		follower INTEGER NOT NULL,
 		target INTEGER NOT NULL,
-		UNIQUE (target, follower) ON CONFLICT IGNORE,
-		first_seen INTEGER NOT NULL REFERENCES Messages(id)
+		first_seen INTEGER NOT NULL REFERENCES Messages(id),
+		UNIQUE (target, follower) ON CONFLICT IGNORE
 	);`)
 
 	return errors.Wrap(err, "failed to initialize database")
