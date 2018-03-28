@@ -10,11 +10,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (c *Covfefe) processTweet(messageID int64, tweet *twitter.Tweet) {
-	new, err := c.insertTweet(tweet, messageID)
+func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
+	new, err := c.insertTweet(tweet, m.id)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err, "message": messageID, "tweet": tweet.ID,
+			"err": err, "message": m.id, "tweet": tweet.ID,
 		}).Error("Failed to insert tweet")
 		return
 	}
@@ -61,10 +61,10 @@ func (c *Covfefe) processTweet(messageID int64, tweet *twitter.Tweet) {
 	}
 
 	if tweet.RetweetedStatus != nil {
-		c.processTweet(messageID, tweet.RetweetedStatus)
+		c.processTweet(m, tweet.RetweetedStatus)
 	}
 	if tweet.QuotedStatus != nil {
-		c.processTweet(messageID, tweet.QuotedStatus)
+		c.processTweet(m, tweet.QuotedStatus)
 	}
 	// TODO: crawl thread, non-embedded linked tweets
 }
@@ -105,76 +105,71 @@ func isProtected(message interface{}) bool {
 	return false
 }
 
-func (c *Covfefe) HandleChan(messages <-chan Message) {
+func (c *Covfefe) HandleChan(messages <-chan *Message) {
 	for m := range messages {
 		log.WithFields(log.Fields{
 			"type":    fmt.Sprintf("%T", m.msg),
-			"account": m.account,
+			"account": m.account.ScreenName,
 		}).Debug("Received message")
 
 		if isProtected(m.msg) {
-			log.WithField("account", m.account).Debug("Dropped protected message")
+			log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
 			continue
 		}
 
-		switch msg := m.msg.(type) {
+		switch obj := m.msg.(type) {
 		case *twitter.Tweet:
-			messageID, err := c.insertMessage(m)
-			if err != nil {
-				log.WithError(err).WithField("tweet", msg.ID).Error("Failed to insert message")
+			if err := c.insertMessage(m); err != nil {
+				log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
 				continue
 			}
-			c.processTweet(messageID, msg)
+			c.processTweet(m, obj)
 		case *twitter.StatusDeletion:
-			messageID, err := c.insertMessage(m)
-			if err != nil {
-				log.WithError(err).WithField("deletion", msg.ID).Error("Failed to insert message")
+			if err := c.insertMessage(m); err != nil {
+				log.WithError(err).WithField("deletion", obj.ID).Error("Failed to insert message")
 				continue
 			}
-			log.WithField("id", msg.ID).Debug("Deleted Tweet")
-			c.deletedTweet(messageID, msg.ID)
+			log.WithField("id", obj.ID).Debug("Deleted Tweet")
+			c.deletedTweet(obj.ID, m.id)
 		case *twitter.Event:
-			messageID, err := c.insertMessage(m)
-			if err != nil {
-				log.WithError(err).WithField("event", msg.Event).Error("Failed to insert message")
+			if err := c.insertMessage(m); err != nil {
+				log.WithError(err).WithField("event", obj.Event).Error("Failed to insert message")
 				continue
 			}
-			if msg.TargetObject != nil {
-				c.processTweet(messageID, msg.TargetObject)
+			if obj.TargetObject != nil {
+				c.processTweet(m, obj.TargetObject)
 			}
 
 		case *twitter.StatusWithheld:
-			_, err := c.insertMessage(m)
-			if err != nil {
+			if err := c.insertMessage(m); err != nil {
 				log.WithError(err).Error("Failed to insert message")
 			}
 			log.WithFields(log.Fields{
-				"id": strconv.FormatInt(msg.ID, 10), "user": strconv.FormatInt(msg.UserID, 10),
-				"countries": strings.Join(msg.WithheldInCountries, ","),
+				"id": strconv.FormatInt(obj.ID, 10), "user": strconv.FormatInt(obj.UserID, 10),
+				"countries": strings.Join(obj.WithheldInCountries, ","),
 			}).Info("Status withheld")
 		case *twitter.UserWithheld:
-			_, err := c.insertMessage(m)
-			if err != nil {
+			if err := c.insertMessage(m); err != nil {
 				log.WithError(err).Error("Failed to insert message")
 			}
 			log.WithFields(log.Fields{
-				"user":      strconv.FormatInt(msg.ID, 10),
-				"countries": strings.Join(msg.WithheldInCountries, ","),
+				"user":      strconv.FormatInt(obj.ID, 10),
+				"countries": strings.Join(obj.WithheldInCountries, ","),
 			}).Info("User withheld")
 
 		case *twitter.StreamLimit:
 			log.WithFields(log.Fields{
-				"type": "StreamLimit", "track": msg.Track,
+				"type": "StreamLimit", "track": obj.Track,
 			}).Warn("Warning message")
 		case *twitter.StreamDisconnect:
 			log.WithFields(log.Fields{
-				"type": "StreamDisconnect", "reason": msg.Reason,
-				"name": msg.StreamName, "code": msg.Code,
+				"type": "StreamDisconnect", "reason": obj.Reason,
+				"name": obj.StreamName, "code": obj.Code,
 			}).Warn("Warning message")
 		case *twitter.StallWarning:
 			log.WithFields(log.Fields{
-				"type": "StallWarning", "message": msg.Message,
-				"code": msg.Code, "percent": msg.PercentFull,
+				"type": "StallWarning", "message": obj.Message,
+				"code": obj.Code, "percent": obj.PercentFull,
 			}).Warn("Warning message")
 		}
 	}

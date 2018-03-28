@@ -55,7 +55,7 @@ func Run(db string, creds *Credentials) error {
 
 	log.Info("Starting...")
 
-	messages := make(chan Message)
+	messages := make(chan *Message)
 
 	c.wg.Add(1)
 	go func() {
@@ -97,8 +97,8 @@ func Run(db string, creds *Credentials) error {
 		streamsWG.Add(1)
 		go func() {
 			log.WithField("account", user.ScreenName).Info("Starting streaming")
-			for m := range StreamWithContext(ctx, stream) {
-				messages <- Message{account: user.ScreenName, msg: m}
+			for msg := range StreamWithContext(ctx, stream) {
+				messages <- &Message{account: user, msg: msg}
 			}
 			if ctx.Err() == nil {
 				log.WithField("account", user.ScreenName).Error("Stream terminated")
@@ -115,8 +115,9 @@ func Run(db string, creds *Credentials) error {
 }
 
 type Message struct {
-	account string
+	account *twitter.User
 	msg     interface{}
+	id      int64
 }
 
 func StreamWithContext(ctx context.Context, stream *twitter.Stream) chan interface{} {

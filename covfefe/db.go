@@ -21,12 +21,12 @@ func (c *Covfefe) initDB() error {
 		id INTEGER PRIMARY KEY,
 		received DATETIME DEFAULT (DATETIME('now')),
 		json TEXT NOT NULL,
-		account TEXT NOT NULL
+		account TEXT NOT NULL -- JSON array of IDs
 	);
 	CREATE TABLE IF NOT EXISTS Tweets (
 		id INTEGER PRIMARY KEY,
 		created DATETIME NOT NULL,
-		user TEXT NOT NULL,
+		user INTEGER NOT NULL,
 		message INTEGER NOT NULL REFERENCES Messages(id),
 		deleted INTEGER REFERENCES Messages(id)
 	);
@@ -39,13 +39,13 @@ func (c *Covfefe) initDB() error {
 	return errors.Wrap(err, "failed to initialize database")
 }
 
-func (c *Covfefe) insertMessage(m Message) (id int64, err error) {
+func (c *Covfefe) insertMessage(m *Message) error {
 	msg := mustMarshal(m.msg)
 	h := blake2b.Sum256(msg)
 
 	if id, ok := c.msgIDs.Get(h); ok {
 		log.WithFields(log.Fields{
-			"id": id, "account": m.account, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+			"id": id, "account": m.account.ScreenName, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
 		}).Debug("Duplicate message")
 
 		_, err := c.db.Exec(`UPDATE Messages SET account = (
@@ -55,34 +55,35 @@ func (c *Covfefe) insertMessage(m Message) (id int64, err error) {
 					WHERE Messages.id = ?
 					UNION ALL SELECT ?
 				) GROUP BY ''
-			) WHERE id = ?;`, id, m.account, id)
+			) WHERE id = ?;`, id, m.account.ID, id)
 		if err != nil {
-			return 0, errors.Wrap(err, "failed update query")
+			return errors.Wrap(err, "failed update query")
 		}
-		return id.(int64), nil
+		m.id = id.(int64)
+		return nil
 	}
 
-	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, msg, m.account)
+	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, msg, m.account.ID)
 	if err != nil {
-		return 0, errors.Wrap(err, "failed insert query")
+		return errors.Wrap(err, "failed insert query")
 	}
-	id, err = res.LastInsertId()
+	m.id, err = res.LastInsertId()
 	if err != nil {
-		return 0, errors.Wrap(err, "failed to get message id")
+		return errors.Wrap(err, "failed to get message id")
 	}
 
 	log.WithFields(log.Fields{
-		"id": id, "account": m.account, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+		"id": m.id, "account": m.account.ScreenName, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
 	}).Debug("New message")
 
-	c.msgIDs.Add(h, id)
-	return id, nil
+	c.msgIDs.Add(h, m.id)
+	return nil
 }
 
 func (c *Covfefe) insertTweet(tweet *twitter.Tweet, message int64) (new bool, err error) {
 	_, err = c.db.Exec(
 		`INSERT INTO Tweets (id, created, user, message) VALUES (?, ?, ?, ?)`,
-		tweet.ID, mustParseTime(tweet.CreatedAt), tweet.User.ScreenName, message)
+		tweet.ID, mustParseTime(tweet.CreatedAt), tweet.User.ID, message)
 	if err, ok := err.(sqlite3.Error); ok && err.ExtendedCode != sqlite3.ErrConstraintUnique {
 		return false, nil
 	}
@@ -101,8 +102,8 @@ func (c *Covfefe) insertMedia(data []byte, id, tweet int64) {
 	}
 }
 
-func (c *Covfefe) deletedTweet(msgID, tweet int64) {
-	_, err := c.db.Exec(`UPDATE Tweets SET deleted = ? WHERE id = ?`, msgID, tweet)
+func (c *Covfefe) deletedTweet(tweet, message int64) {
+	_, err := c.db.Exec(`UPDATE Tweets SET deleted = ? WHERE id = ?`, message, tweet)
 	if err != nil {
 		log.WithError(err).WithField("tweet", tweet).Error("Failed to delete tweet")
 	}
