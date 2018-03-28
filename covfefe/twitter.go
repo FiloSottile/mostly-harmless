@@ -22,6 +22,8 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 		return
 	}
 
+	c.processUser(m, tweet.User)
+
 	var media []twitter.MediaEntity
 	if tweet.Entities != nil {
 		media = tweet.Entities.Media
@@ -67,6 +69,17 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 		c.processTweet(m, tweet.QuotedStatus)
 	}
 	// TODO: crawl thread, non-embedded linked tweets
+}
+
+func (c *Covfefe) processUser(m *Message, user *twitter.User) {
+	if err := c.insertUser(user, m.id); err != nil {
+		log.WithError(err).WithField("message", m.id).Error("Failed to insert user")
+	}
+	if user.Following {
+		if err := c.insertFollow(m.account.ID, user.ID, m.id); err != nil {
+			log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
+		}
+	}
 }
 
 func isProtected(message interface{}) bool {
@@ -136,8 +149,19 @@ func (c *Covfefe) HandleChan(messages <-chan *Message) {
 				log.WithError(err).WithField("event", obj.Event).Error("Failed to insert message")
 				continue
 			}
+			if obj.Source != nil {
+				c.processUser(m, obj.Source)
+			}
+			if obj.Target != nil {
+				c.processUser(m, obj.Target)
+			}
 			if obj.TargetObject != nil {
 				c.processTweet(m, obj.TargetObject)
+			}
+			if obj.Event == "follow" {
+				if err := c.insertFollow(obj.Source.ID, obj.Target.ID, m.id); err != nil {
+					log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
+				}
 			}
 
 		case *twitter.StatusWithheld:

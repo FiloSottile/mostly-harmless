@@ -34,6 +34,20 @@ func (c *Covfefe) initDB() error {
 		id INTEGER PRIMARY KEY,
 		media BLOB NOT NULL,
 		tweet INTEGER NOT NULL REFERENCES Tweets(id)
+	);
+	CREATE TABLE IF NOT EXISTS Users (
+		id INTEGER NOT NULL,
+		handle TEXT NOT NULL,
+		name TEXT NOT NULL,
+		bio TEXT NOT NULL,
+		UNIQUE (id, handle, name, bio) ON CONFLICT IGNORE,
+		first_seen INTEGER NOT NULL REFERENCES Messages(id)
+	);
+	CREATE TABLE IF NOT EXISTS Follows (
+		follower INTEGER NOT NULL,
+		target INTEGER NOT NULL,
+		UNIQUE (target, follower) ON CONFLICT IGNORE,
+		first_seen INTEGER NOT NULL REFERENCES Messages(id)
 	);`)
 
 	return errors.Wrap(err, "failed to initialize database")
@@ -91,6 +105,18 @@ func (c *Covfefe) insertTweet(tweet *twitter.Tweet, message int64) (new bool, er
 		return false, errors.Wrap(err, "failed insert query")
 	}
 	return true, nil
+}
+
+func (c *Covfefe) insertUser(user *twitter.User, message int64) error {
+	_, err := c.db.Exec(`INSERT INTO Users (id, handle, name, bio, first_seen)
+		VALUES (?, ?, ?, ?, ?)`, user.ID, user.ScreenName, user.Name, user.Description, message)
+	return errors.Wrap(err, "failed insert query")
+}
+
+func (c *Covfefe) insertFollow(follower, target, message int64) error {
+	_, err := c.db.Exec(`INSERT INTO Follows (follower, target, first_seen)
+		VALUES (?, ?, ?)`, follower, target, message)
+	return errors.Wrap(err, "failed insert query")
 }
 
 func (c *Covfefe) insertMedia(data []byte, id, tweet int64) {
