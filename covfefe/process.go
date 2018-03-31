@@ -39,7 +39,7 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 			media = tweet.ExtendedTweet.ExtendedEntities.Media
 		}
 	}
-	if len(media) != 0 {
+	if len(media) != 0 && !c.rescan {
 		c.wg.Add(1)
 		go func() {
 			for _, m := range media {
@@ -75,11 +75,12 @@ func (c *Covfefe) processUser(m *Message, user *twitter.User) {
 	if err := c.insertUser(user, m.id); err != nil {
 		log.WithError(err).WithField("message", m.id).Error("Failed to insert user")
 	}
-	if user.Following {
-		if err := c.insertFollow(m.account.ID, user.ID, m.id); err != nil {
-			log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
-		}
-	}
+	// Deprecated and removed, thankfully. It would break deduplication.
+	// if user.Following {
+	// 	if err := c.insertFollow(m.account.ID, user.ID, m.id); err != nil {
+	// 		log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
+	// 	}
+	// }
 }
 
 func isProtected(message interface{}) bool {
@@ -120,82 +121,93 @@ func isProtected(message interface{}) bool {
 
 func (c *Covfefe) HandleChan(messages <-chan *Message) {
 	for m := range messages {
+		c.Handle(m)
+	}
+}
+
+func (c *Covfefe) Handle(m *Message) {
+	if m.id != 0 {
+		log.WithFields(log.Fields{
+			"type": fmt.Sprintf("%T", m.msg),
+			"id":   m.id,
+		}).Debug("Read message")
+	} else {
 		log.WithFields(log.Fields{
 			"type":    fmt.Sprintf("%T", m.msg),
 			"account": m.account.ScreenName,
 		}).Debug("Received message")
+	}
 
-		if isProtected(m.msg) {
-			log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
-			continue
+	if isProtected(m.msg) {
+		log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
+		return
+	}
+
+	switch obj := m.msg.(type) {
+	case *twitter.Tweet:
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
+			return
+		}
+		c.processTweet(m, obj)
+	case *twitter.StatusDeletion:
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).WithField("deletion", obj.ID).Error("Failed to insert message")
+			return
+		}
+		log.WithField("id", obj.ID).Debug("Deleted Tweet")
+		c.deletedTweet(obj.ID, m.id)
+	case *twitter.Event:
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).WithField("event", obj.Event).Error("Failed to insert message")
+			return
+		}
+		if obj.Source != nil {
+			c.processUser(m, obj.Source)
+		}
+		if obj.Target != nil {
+			c.processUser(m, obj.Target)
+		}
+		if obj.TargetObject != nil {
+			c.processTweet(m, obj.TargetObject)
+		}
+		if obj.Event == "follow" {
+			if err := c.insertFollow(obj.Source.ID, obj.Target.ID, m.id); err != nil {
+				log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
+			}
 		}
 
-		switch obj := m.msg.(type) {
-		case *twitter.Tweet:
-			if err := c.insertMessage(m); err != nil {
-				log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
-				continue
-			}
-			c.processTweet(m, obj)
-		case *twitter.StatusDeletion:
-			if err := c.insertMessage(m); err != nil {
-				log.WithError(err).WithField("deletion", obj.ID).Error("Failed to insert message")
-				continue
-			}
-			log.WithField("id", obj.ID).Debug("Deleted Tweet")
-			c.deletedTweet(obj.ID, m.id)
-		case *twitter.Event:
-			if err := c.insertMessage(m); err != nil {
-				log.WithError(err).WithField("event", obj.Event).Error("Failed to insert message")
-				continue
-			}
-			if obj.Source != nil {
-				c.processUser(m, obj.Source)
-			}
-			if obj.Target != nil {
-				c.processUser(m, obj.Target)
-			}
-			if obj.TargetObject != nil {
-				c.processTweet(m, obj.TargetObject)
-			}
-			if obj.Event == "follow" {
-				if err := c.insertFollow(obj.Source.ID, obj.Target.ID, m.id); err != nil {
-					log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
-				}
-			}
-
-		case *twitter.StatusWithheld:
-			if err := c.insertMessage(m); err != nil {
-				log.WithError(err).Error("Failed to insert message")
-			}
-			log.WithFields(log.Fields{
-				"id": strconv.FormatInt(obj.ID, 10), "user": strconv.FormatInt(obj.UserID, 10),
-				"countries": strings.Join(obj.WithheldInCountries, ","),
-			}).Info("Status withheld")
-		case *twitter.UserWithheld:
-			if err := c.insertMessage(m); err != nil {
-				log.WithError(err).Error("Failed to insert message")
-			}
-			log.WithFields(log.Fields{
-				"user":      strconv.FormatInt(obj.ID, 10),
-				"countries": strings.Join(obj.WithheldInCountries, ","),
-			}).Info("User withheld")
-
-		case *twitter.StreamLimit:
-			log.WithFields(log.Fields{
-				"type": "StreamLimit", "track": obj.Track,
-			}).Warn("Warning message")
-		case *twitter.StreamDisconnect:
-			log.WithFields(log.Fields{
-				"type": "StreamDisconnect", "reason": obj.Reason,
-				"name": obj.StreamName, "code": obj.Code,
-			}).Warn("Warning message")
-		case *twitter.StallWarning:
-			log.WithFields(log.Fields{
-				"type": "StallWarning", "message": obj.Message,
-				"code": obj.Code, "percent": obj.PercentFull,
-			}).Warn("Warning message")
+	case *twitter.StatusWithheld:
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).Error("Failed to insert message")
 		}
+		log.WithFields(log.Fields{
+			"id": strconv.FormatInt(obj.ID, 10), "user": strconv.FormatInt(obj.UserID, 10),
+			"countries": strings.Join(obj.WithheldInCountries, ","),
+		}).Info("Status withheld")
+	case *twitter.UserWithheld:
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).Error("Failed to insert message")
+		}
+		log.WithFields(log.Fields{
+			"user":      strconv.FormatInt(obj.ID, 10),
+			"countries": strings.Join(obj.WithheldInCountries, ","),
+		}).Info("User withheld")
+
+	case *twitter.StreamLimit:
+		log.WithFields(log.Fields{
+			"type": "StreamLimit", "track": obj.Track,
+		}).Warn("Warning message")
+	case *twitter.StreamDisconnect:
+		log.WithFields(log.Fields{
+			"type": "StreamDisconnect", "reason": obj.Reason,
+			"name": obj.StreamName, "code": obj.Code,
+		}).Warn("Warning message")
+	case *twitter.StallWarning:
+		log.WithFields(log.Fields{
+			"type": "StallWarning", "message": obj.Message,
+			"code": obj.Code, "percent": obj.PercentFull,
+		}).Warn("Warning message")
 	}
 }
 

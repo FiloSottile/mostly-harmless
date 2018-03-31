@@ -1,5 +1,6 @@
 /covfefe
 /enroll
+/rescan
 *.db
 *.db.*
 creds.json

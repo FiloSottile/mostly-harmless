@@ -29,27 +29,38 @@ type Account struct {
 }
 
 type Covfefe struct {
-	db         *sql.DB
+	db interface {
+		Exec(query string, args ...interface{}) (sql.Result, error)
+		Query(query string, args ...interface{}) (*sql.Rows, error)
+	}
 	wg         sync.WaitGroup
 	httpClient *http.Client
 	msgIDs     *lru.Cache
+	rescan     bool // TODO: get rid of this field
 }
 
-func Run(db string, creds *Credentials) error {
-	var err error
+func Run(dbPath string, creds *Credentials) error {
+	db, err := sql.Open("sqlite3", "file:"+dbPath+"?_foreign_keys=1")
+	if err != nil {
+		return errors.Wrap(err, "failed to open database")
+	}
+	defer db.Close()
+
+	_, err = db.Exec("PRAGMA journal_mode=WAL;")
+	if err != nil {
+		return errors.Wrap(err, "failed to convert to WAL")
+	}
+	// Let the WAL be checkpointed (this should not be a problem w/o long tx?)
+	db.SetConnMaxLifetime(250 * time.Millisecond)
+	db.SetMaxOpenConns(1)
 
 	c := &Covfefe{
+		db: db,
 		httpClient: &http.Client{
 			Timeout: 1 * time.Minute,
 		},
 		msgIDs: lru.New(1 << 16),
 	}
-
-	c.db, err = sql.Open("sqlite3", "file:"+db+"?_foreign_keys=1")
-	if err != nil {
-		return errors.Wrap(err, "failed to open database")
-	}
-	defer c.db.Close()
 
 	if err := c.initDB(); err != nil {
 		return err

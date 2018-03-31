@@ -54,6 +54,10 @@ func (c *Covfefe) initDB() error {
 }
 
 func (c *Covfefe) insertMessage(m *Message) error {
+	if m.id != 0 {
+		return nil
+	}
+
 	msg := mustMarshal(m.msg)
 	h := blake2b.Sum256(msg)
 
@@ -78,7 +82,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 	}
 
 	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, msg, m.account.ID)
-	if err != nil {
+	if err != nil { // TODO: retry
 		return errors.Wrap(err, "failed insert query")
 	}
 	m.id, err = res.LastInsertId()
