@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	log "github.com/sirupsen/logrus"
 )
 

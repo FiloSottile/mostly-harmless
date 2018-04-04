@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/golang/groupcache/lru"
 	"github.com/pkg/errors"

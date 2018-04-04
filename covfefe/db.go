@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	sqlite3 "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

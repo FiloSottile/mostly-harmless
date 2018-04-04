@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
