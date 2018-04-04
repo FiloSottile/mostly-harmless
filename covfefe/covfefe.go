@@ -129,12 +129,12 @@ func Run(dbPath string, creds *Credentials) error {
 
 type Message struct {
 	account *twitter.User
-	msg     interface{}
+	msg     []byte
 	id      int64
 }
 
-func StreamWithContext(ctx context.Context, stream *twitter.Stream) chan interface{} {
-	c := make(chan interface{})
+func StreamWithContext(ctx context.Context, stream *twitter.Stream) chan []byte {
+	c := make(chan []byte)
 	go func() {
 	Loop:
 		for {

@@ -143,7 +143,7 @@ func (srv *StreamService) Firehose(params *StreamFirehoseParams) (*Stream, error
 // wait until the stream is properly stopped.
 type Stream struct {
 	client   *http.Client
-	Messages chan interface{}
+	Messages chan []byte
 	done     chan struct{}
 	group    *sync.WaitGroup
 	body     io.Closer
@@ -155,7 +155,7 @@ type Stream struct {
 func newStream(client *http.Client, req *http.Request) *Stream {
 	s := &Stream{
 		client:   client,
-		Messages: make(chan interface{}),
+		Messages: make(chan []byte),
 		done:     make(chan struct{}),
 		group:    &sync.WaitGroup{},
 	}
@@ -192,7 +192,7 @@ func (s *Stream) retry(req *http.Request, expBackOff backoff.BackOff, aggExpBack
 		resp, err := s.client.Do(req)
 		if err != nil {
 			// stop retrying for HTTP protocol errors
-			s.Messages <- err
+			// s.Messages <- err
 			return
 		}
 		// when err is nil, resp contains a non-nil Body which must be closed
@@ -239,21 +239,19 @@ func (s *Stream) receive(body io.Reader) {
 			continue
 		}
 		select {
-		// send messages, data, or errors
-		case s.Messages <- getMessage(data):
+		case s.Messages <- data:
 			continue
-		// allow client to Stop(), even if not receiving
 		case <-s.done:
 			return
 		}
 	}
 }
 
-// getMessage unmarshals the token and returns a message struct, if the type
+// GetMessage unmarshals the token and returns a message struct, if the type
 // can be determined. Otherwise, returns the token unmarshalled into a data
 // map[string]interface{} or the unmarshal error.
-func getMessage(token []byte) interface{} {
-	var data map[string]interface{}
+func GetMessage(token []byte) interface{} {
+	var data map[string]json.RawMessage
 	// unmarshal JSON encoded token into a map for
 	err := json.Unmarshal(token, &data)
 	if err != nil {
@@ -264,60 +262,56 @@ func getMessage(token []byte) interface{} {
 
 // decodeMessage determines the message type from known data keys, allocates
 // at most one message struct, and JSON decodes the token into the message.
-// Returns the message struct or the data map if the message type could not be
-// determined.
-func decodeMessage(token []byte, data map[string]interface{}) interface{} {
-	if hasPath(data, "retweet_count") {
-		tweet := new(Tweet)
-		json.Unmarshal(token, tweet)
-		return tweet
-	} else if hasPath(data, "direct_message") {
-		notice := new(directMessageNotice)
-		json.Unmarshal(token, notice)
-		return notice.DirectMessage
-	} else if hasPath(data, "delete") {
-		notice := new(statusDeletionNotice)
-		json.Unmarshal(token, notice)
-		return notice.Delete.StatusDeletion
-	} else if hasPath(data, "scrub_geo") {
-		notice := new(locationDeletionNotice)
-		json.Unmarshal(token, notice)
-		return notice.ScrubGeo
-	} else if hasPath(data, "limit") {
-		notice := new(streamLimitNotice)
-		json.Unmarshal(token, notice)
-		return notice.Limit
-	} else if hasPath(data, "status_withheld") {
-		notice := new(statusWithheldNotice)
-		json.Unmarshal(token, notice)
-		return notice.StatusWithheld
-	} else if hasPath(data, "user_withheld") {
-		notice := new(userWithheldNotice)
-		json.Unmarshal(token, notice)
-		return notice.UserWithheld
-	} else if hasPath(data, "disconnect") {
-		notice := new(streamDisconnectNotice)
-		json.Unmarshal(token, notice)
-		return notice.StreamDisconnect
-	} else if hasPath(data, "warning") {
-		notice := new(stallWarningNotice)
-		json.Unmarshal(token, notice)
-		return notice.StallWarning
-	} else if hasPath(data, "friends") {
-		friendsList := new(FriendsList)
-		json.Unmarshal(token, friendsList)
-		return friendsList
-	} else if hasPath(data, "event") {
-		event := new(Event)
-		json.Unmarshal(token, event)
-		return event
+// Returns the message struct or a map[string]interface{} if the message type
+// could not be determined.
+func decodeMessage(token []byte, data map[string]json.RawMessage) interface{} {
+	var res interface{}
+	switch {
+	case hasPath(data, "retweet_count"):
+		res = new(Tweet)
+	case hasPath(data, "direct_message"):
+		res = new(DirectMessage)
+		token = data["direct_message"]
+	case hasPath(data, "delete"):
+		res = new(StatusDeletion)
+		notice := &struct {
+			StatusDeletion interface{} `json:"status"`
+		}{StatusDeletion: res}
+		json.Unmarshal(data["delete"], notice)
+		return res
+	case hasPath(data, "scrub_geo"):
+		res = new(LocationDeletion)
+		token = data["scrub_geo"]
+	case hasPath(data, "limit"):
+		res = new(StreamLimit)
+		token = data["limit"]
+	case hasPath(data, "status_withheld"):
+		res = new(StatusWithheld)
+		token = data["status_withheld"]
+	case hasPath(data, "user_withheld"):
+		res = new(UserWithheld)
+		token = data["user_withheld"]
+	case hasPath(data, "disconnect"):
+		res = new(StreamDisconnect)
+		token = data["disconnect"]
+	case hasPath(data, "warning"):
+		res = new(StallWarning)
+		token = data["warning"]
+	case hasPath(data, "friends"):
+		res = new(FriendsList)
+	case hasPath(data, "event"):
+		res = new(Event)
+	default:
+		res = make(map[string]interface{})
+		json.Unmarshal(token, &res)
+		return res
 	}
-	// message type unknown, return the data map[string]interface{}
-	return data
+	json.Unmarshal(token, res)
+	return res
 }
 
 // hasPath returns true if the map contains the given key, false otherwise.
-func hasPath(data map[string]interface{}, key string) bool {
+func hasPath(data map[string]json.RawMessage, key string) bool {
 	_, ok := data[key]
 	return ok
 }

@@ -110,9 +110,7 @@ func isProtected(message interface{}) bool {
 		case "mute", "unmute":
 			return true
 		default:
-			log.WithFields(log.Fields{
-				"event": m.Event, "json": mustMarshal(m),
-			}).Warning("Unknown event type")
+			log.WithField("event", m.Event).Warning("Unknown event type")
 			return true // when in doubt...
 		}
 	}
@@ -126,24 +124,26 @@ func (c *Covfefe) HandleChan(messages <-chan *Message) {
 }
 
 func (c *Covfefe) Handle(m *Message) {
+	msg := getMessage(m.msg)
+
 	if m.id != 0 {
 		log.WithFields(log.Fields{
-			"type": fmt.Sprintf("%T", m.msg),
+			"type": fmt.Sprintf("%T", msg),
 			"id":   m.id,
 		}).Debug("Read message")
 	} else {
 		log.WithFields(log.Fields{
-			"type":    fmt.Sprintf("%T", m.msg),
+			"type":    fmt.Sprintf("%T", msg),
 			"account": m.account.ScreenName,
 		}).Debug("Received message")
 	}
 
-	if isProtected(m.msg) {
+	if isProtected(msg) {
 		log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
 		return
 	}
 
-	switch obj := m.msg.(type) {
+	switch obj := msg.(type) {
 	case *twitter.Tweet:
 		if err := c.insertMessage(m); err != nil {
 			log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
@@ -208,6 +208,10 @@ func (c *Covfefe) Handle(m *Message) {
 			"type": "StallWarning", "message": obj.Message,
 			"code": obj.Code, "percent": obj.PercentFull,
 		}).Warn("Warning message")
+
+	case *twitter.FriendsList:
+	default:
+		log.Warningf("Unhandled message type: %T", msg)
 	}
 }
 

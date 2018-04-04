@@ -5,7 +5,6 @@ package covfefe
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"time"
 
 	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
@@ -58,8 +57,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 		return nil
 	}
 
-	msg := mustMarshal(m.msg)
-	h := blake2b.Sum256(msg)
+	h := blake2b.Sum256(m.msg)
 
 	if id, ok := c.msgIDs.Get(h); ok {
 		log.WithFields(log.Fields{
@@ -81,7 +79,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 		return nil
 	}
 
-	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, msg, m.account.ID)
+	res, err := c.db.Exec(`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`, m.msg, m.account.ID)
 	if err != nil { // TODO: retry
 		return errors.Wrap(err, "failed insert query")
 	}
@@ -137,14 +135,6 @@ func (c *Covfefe) deletedTweet(tweet, message int64) {
 	if err != nil {
 		log.WithError(err).WithField("tweet", tweet).Error("Failed to delete tweet")
 	}
-}
-
-func mustMarshal(v interface{}) []byte {
-	j, err := json.Marshal(v)
-	if err != nil {
-		log.WithError(err).WithField("object", v).Fatal("Failed to marshal JSON")
-	}
-	return j
 }
 
 func mustParseTime(CreatedAt string) time.Time {

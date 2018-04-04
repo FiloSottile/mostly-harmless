@@ -2,9 +2,7 @@ package covfefe
 
 import (
 	"database/sql"
-	"encoding/json"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -58,7 +56,7 @@ func Rescan(dbPath string) error {
 		if err := rows.Scan(&id, &json); err != nil {
 			log.WithError(err).Fatal("Scan failed")
 		}
-		c.Handle(&Message{id: id, msg: getMessage(json)})
+		c.Handle(&Message{id: id, msg: json})
 	}
 	if err := rows.Err(); err != nil {
 		log.WithError(err).Fatal("Query returned an error")
@@ -76,37 +74,4 @@ func Rescan(dbPath string) error {
 	}
 
 	return nil
-}
-
-func getMessage(token []byte) interface{} {
-	var data map[string]json.RawMessage
-	err := json.Unmarshal(token, &data)
-	if err != nil {
-		panic(err)
-	}
-
-	var res interface{}
-	switch {
-	case hasPath(data, "retweet_count"):
-		res = new(twitter.Tweet)
-	case hasPath(data, "event"):
-		res = new(twitter.Event)
-	case hasPath(data, "withheld_in_countries") && hasPath(data, "user_id"):
-		res = new(twitter.StatusWithheld)
-	case hasPath(data, "withheld_in_countries"):
-		res = new(twitter.UserWithheld)
-	case hasPath(data, "synthetic"):
-		fallthrough // migrated deletion events
-	case hasPath(data, "user_id_str"):
-		res = new(twitter.StatusDeletion)
-	default:
-		panic("unknown Twitter message type")
-	}
-	json.Unmarshal(token, res)
-	return res
-}
-
-func hasPath(data map[string]json.RawMessage, key string) bool {
-	_, ok := data[key]
-	return ok
 }
