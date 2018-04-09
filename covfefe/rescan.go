@@ -1,31 +1,34 @@
 package covfefe
 
 import (
-	"database/sql"
-
+	"crawshaw.io/sqlite"
+	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/v2pro/plz/gls"
 )
 
-func Rescan(dbPath string) error {
-	db, err := sql.Open("sqlite3", "file:"+dbPath)
+func Rescan(dbPath string) (err error) {
+	// We use a single connection for performance and rollback.
+	conn, err := sqlite.OpenConn("file:"+dbPath, 0)
 	if err != nil {
 		return errors.Wrap(err, "failed to open database")
 	}
-	defer db.Close()
+	defer conn.Close()
+	defer sqliteutil.Save(conn)(&err)
 
-	_, err = db.Exec("PRAGMA journal_mode=WAL;")
-	if err != nil {
-		return errors.Wrap(err, "failed to convert to WAL")
+	mainID := gls.GoID()
+	c := &Covfefe{
+		withConn: func(f func(conn *sqlite.Conn) error) error {
+			if gls.GoID() != mainID {
+				// This goroutine owns the conn, as it has an open
+				// statement until the end. Also, no locking!
+				panic("rescan should not use multiple goroutines")
+			}
+			return f(conn)
+		},
+		rescan: true,
 	}
-	db.SetMaxOpenConns(1)
-
-	tx, err := db.Begin()
-	if err != nil {
-		return errors.Wrap(err, "failed to begin transaction")
-	}
-
-	c := &Covfefe{rescan: true, db: tx}
 
 	if err := c.initDB(); err != nil {
 		return err
@@ -34,44 +37,27 @@ func Rescan(dbPath string) error {
 	log.Info("Dropping tables...")
 
 	// Need to have foreign keys OFF for TRUNCATE
-	_, err = tx.Exec(`
+	if err := sqliteutil.ExecScript(conn, `
 		DELETE FROM Tweets;
 		DELETE FROM Users;
 		DELETE FROM Follows;
-	`)
-	if err != nil {
+	`); err != nil {
 		return errors.Wrap(err, "failed to truncate tables")
 	}
 
 	log.Info("Starting rescan...")
 
-	rows, err := tx.Query("SELECT id, json FROM Messages")
-	if err != nil {
-		log.WithError(err).Fatal("Query failed")
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var id int64
-		var json []byte
-		if err := rows.Scan(&id, &json); err != nil {
-			log.WithError(err).Fatal("Scan failed")
-		}
-		c.Handle(&Message{id: id, msg: json})
-	}
-	if err := rows.Err(); err != nil {
-		log.WithError(err).Fatal("Query returned an error")
+	if err := sqliteutil.Exec(conn, "SELECT id, json FROM Messages;",
+		func(stmt *sqlite.Stmt) error {
+			c.Handle(&Message{
+				id:  stmt.GetInt64("id"),
+				msg: []byte(stmt.GetText("json")),
+			})
+			return nil
+		}); err != nil {
+		return errors.Wrap(err, "listing Messages failed")
 	}
 
 	log.Info("Finishing up...")
-
-	err = tx.Commit()
-	if err != nil {
-		return errors.Wrap(err, "failed to commit transaction")
-	}
-	_, err = db.Exec("PRAGMA foreign_keys = ON; PRAGMA foreign_key_check;")
-	if err != nil {
-		return errors.Wrap(err, "failed to check foreign keys")
-	}
-
 	return nil
 }

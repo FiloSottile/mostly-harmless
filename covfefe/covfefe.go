@@ -2,7 +2,6 @@ package covfefe
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"crawshaw.io/sqlite"
+	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/golang/groupcache/lru"
@@ -29,10 +30,7 @@ type Account struct {
 }
 
 type Covfefe struct {
-	db interface {
-		Exec(query string, args ...interface{}) (sql.Result, error)
-		Query(query string, args ...interface{}) (*sql.Rows, error)
-	}
+	withConn   func(f func(conn *sqlite.Conn) error) error
 	wg         sync.WaitGroup
 	httpClient *http.Client
 	msgIDs     *lru.Cache
@@ -40,22 +38,21 @@ type Covfefe struct {
 }
 
 func Run(dbPath string, creds *Credentials) error {
-	db, err := sql.Open("sqlite3", "file:"+dbPath+"?_foreign_keys=1")
+	db, err := sqlite.Open("file:"+dbPath, 0, 5)
 	if err != nil {
 		return errors.Wrap(err, "failed to open database")
 	}
 	defer db.Close()
 
-	_, err = db.Exec("PRAGMA journal_mode=WAL;")
-	if err != nil {
-		return errors.Wrap(err, "failed to convert to WAL")
-	}
-	// Let the WAL be checkpointed (this should not be a problem w/o long tx?)
-	db.SetConnMaxLifetime(250 * time.Millisecond)
-	db.SetMaxOpenConns(1)
-
 	c := &Covfefe{
-		db: db,
+		withConn: func(f func(conn *sqlite.Conn) error) error {
+			conn := db.Get(nil)
+			defer db.Put(conn)
+			if err := sqliteutil.Exec(conn, "PRAGMA foreign_keys = ON;", nil); err != nil {
+				return err
+			}
+			return f(conn)
+		},
 		httpClient: &http.Client{
 			Timeout: 1 * time.Minute,
 		},

@@ -30,14 +30,6 @@
   unused-packages = true
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/dghubble/go-twitter"
-
-[[constraint]]
-  name = "github.com/mattn/go-sqlite3"
-  version = "1.6.0"
-
-[[constraint]]
   name = "github.com/dghubble/oauth1"
   version = "0.4.0"
 
@@ -56,3 +48,11 @@
 [[constraint]]
   branch = "master"
   name = "github.com/golang/groupcache"
+
+[[constraint]]
+  branch = "master"
+  name = "crawshaw.io/sqlite"
+
+[[constraint]]
+  name = "github.com/v2pro/plz"
+  version = "0.9.1"

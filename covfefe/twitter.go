@@ -2,6 +2,8 @@ package covfefe
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 
 	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 )
@@ -10,6 +12,7 @@ func getMessage(token []byte) interface{} {
 	var data map[string]json.RawMessage
 	err := json.Unmarshal(token, &data)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", token)
 		panic(err)
 	}
 

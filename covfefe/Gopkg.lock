@@ -2,16 +2,19 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "crawshaw.io/sqlite"
+  packages = [
+    ".",
+    "sqliteutil"
+  ]
+  revision = "daf8b6897d63e99a6e9adefb30e81b1d985a83ce"
+
+[[projects]]
   name = "github.com/cenkalti/backoff"
   packages = ["."]
   revision = "61153c768f31ee5f130071d08fc82b85208528de"
   version = "v1.1.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/dghubble/go-twitter"
-  packages = ["twitter"]
-  revision = "c4115fa44a928413e0b857e0eb47376ffde3a61a"
 
 [[projects]]
   name = "github.com/dghubble/oauth1"
@@ -41,12 +44,6 @@
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
-  name = "github.com/mattn/go-sqlite3"
-  packages = ["."]
-  revision = "6c771bb9887719704b210e87e934f08be014bdb1"
-  version = "v1.6.0"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -60,6 +57,16 @@
   ]
   revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
   version = "v1.0.4"
+
+[[projects]]
+  name = "github.com/v2pro/plz"
+  packages = [
+    "concurrent",
+    "gls",
+    "reflect2"
+  ]
+  revision = "10fc95fad3224a032229e59f6e7023137d82b526"
+  version = "0.9.1"
 
 [[projects]]
   branch = "master"
@@ -88,6 +95,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "78667a50ad284075f19df9f93b9af9a5dfddba273f71e9cb26ecaeb784f853de"
+  inputs-digest = "7672895c140ddfc176c2696f02daf62be8aa42afd1faf45715ce749c960c55b4"
   solver-name = "gps-cdcl"
   solver-version = 1
