@@ -32,6 +32,7 @@
 [[constraint]]
   branch = "master"
   name = "crawshaw.io/sqlite"
+  source = "github.com/FiloSottile/sqlite"
 
 [[constraint]]
   name = "github.com/sirupsen/logrus"

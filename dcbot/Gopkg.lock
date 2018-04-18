@@ -8,7 +8,8 @@
     ".",
     "sqliteutil"
   ]
-  revision = "a98490ac2243c45efa2a409be45ea37c663930ef"
+  revision = "f0c5f168ad849c4abfb45ed7c486365f9776120f"
+  source = "github.com/FiloSottile/sqlite"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -55,6 +56,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8b6f2fd00e947887cae71378eff9df5115913602c3a836cd46fcccef201d0e6d"
+  inputs-digest = "355e6459251e397f8ea1cf0e60cd001ddce2740281038e9e0649d7807c06472a"
   solver-name = "gps-cdcl"
   solver-version = 1
