@@ -25,9 +25,10 @@ type DocumentCloudBot struct {
 }
 
 func main() {
-	dbFile := flag.String("db", "dc.db", "The path of the SQLite DB")
-	syslogFlag := flag.Bool("syslog", false, "Also log to syslog")
-	debugFlag := flag.Bool("debug", false, "Enable debug logging")
+	dbFile := flag.String("db", "dc.db", "`path` of the SQLite DB")
+	syslogFlag := flag.Bool("syslog", false, "also log to syslog")
+	debugFlag := flag.Bool("debug", false, "enable debug logging")
+	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
 	flag.Parse()
 
 	if *debugFlag {
@@ -65,6 +66,9 @@ func main() {
 
 	g, ctx := errgroup.WithContext(context.Background())
 	g.Go(func() error { return dcb.Latest(ctx) })
+	if *backFlag >= 0 {
+		g.Go(func() error { return dcb.Backfill(ctx, *backFlag) })
+	}
 	g.Go(func() error {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -25,9 +25,16 @@ func newRequest(ctx context.Context, url string) *http.Request {
 	return req.WithContext(ctx)
 }
 
+const perPage = 900
+
 func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResult, error) {
-	<-dcb.rateLimit.C
-	url := "https://www.documentcloud.org/api/search.json?page=" + strconv.Itoa(page)
+	select {
+	case <-dcb.rateLimit.C:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+
+	url := fmt.Sprintf("https://www.documentcloud.org/api/search.json?per_page=%d&page=%d", perPage, page)
 	res, err := dcb.httpClient.Do(newRequest(ctx, url))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed search request")
