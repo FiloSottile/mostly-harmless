@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -29,7 +30,7 @@ const perPage = 900
 
 func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResult, error) {
 	select {
-	case <-dcb.rateLimit.C:
+	case <-dcb.searchRate.C:
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
@@ -45,6 +46,25 @@ func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResul
 		return nil, errors.Wrap(err, "failed reading search result")
 	}
 	return sr, nil
+}
+
+func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) ([]byte, error) {
+	select {
+	case <-dcb.assetRate.C:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+
+	res, err := dcb.httpClient.Do(newRequest(ctx, url))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed asset request")
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed reading asset")
+	}
+	return body, nil
 }
 
 func IDForDocument(doc json.RawMessage) string {

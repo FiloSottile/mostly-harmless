@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,6 +40,7 @@ func (dcb *DocumentCloudBot) Latest(ctx context.Context) error {
 		}
 	}
 
+	log.WithError(ctx.Err()).Debug("Shutting down")
 	return ctx.Err()
 }
 
@@ -67,5 +70,51 @@ func (dcb *DocumentCloudBot) Backfill(ctx context.Context, fromPage int) error {
 			"per_page": sr.PerPage}).Debug("Downloaded page")
 	}
 
+	log.WithError(ctx.Err()).Debug("Shutting down")
+	return ctx.Err()
+}
+
+func (dcb *DocumentCloudBot) Download(ctx context.Context) error {
+	log := logrus.WithField("module", "download")
+
+	for ctx.Err() == nil {
+		jsonDoc, err := dcb.getPendingDocument(ctx)
+		if err != nil {
+			return err
+		}
+		if jsonDoc == nil {
+			log.Debug("Sleeping 5 minutes...")
+			select {
+			case <-time.After(5 * time.Minute):
+			case <-ctx.Done():
+			}
+			continue
+		}
+		var doc struct {
+			ID        string
+			Resources map[string]interface{}
+		}
+		if err := json.Unmarshal(jsonDoc, &doc); err != nil {
+			return errors.Wrap(err, "failed to unmarshal document")
+		}
+		log.WithField("doc", doc.ID).Debug("Downloading files")
+		files := make(map[string][]byte)
+		for _, res := range []string{"pdf", "text"} {
+			url, ok := doc.Resources[res].(string)
+			if !ok {
+				return errors.Errorf("document %s is missing resource %s", doc.ID, res)
+			}
+			body, err := dcb.DownloadFile(ctx, url)
+			if err != nil {
+				return err
+			}
+			files[res] = body
+		}
+		if err := dcb.insertFiles(ctx, doc.ID, files); err != nil {
+			return err
+		}
+	}
+
+	log.WithError(ctx.Err()).Debug("Shutting down")
 	return ctx.Err()
 }

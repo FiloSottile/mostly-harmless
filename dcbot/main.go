@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"crawshaw.io/sqlite"
+	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	lsyslog "github.com/sirupsen/logrus/hooks/syslog"
@@ -21,7 +22,8 @@ import (
 type DocumentCloudBot struct {
 	withConn   func(ctx context.Context, f func(conn *sqlite.Conn) error) error
 	httpClient *http.Client
-	rateLimit  *time.Ticker
+	searchRate *time.Ticker
+	assetRate  *time.Ticker
 }
 
 func main() {
@@ -46,7 +48,12 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to open database")
 	}
-	defer db.Close()
+	defer func() {
+		conn := db.Get(nil)
+		sqliteutil.ExecTransient(conn, `PRAGMA journal_mode=DELETE`, nil)
+		db.Put(conn)
+		logrus.WithError(db.Close()).Info("Closed database")
+	}()
 
 	dcb := &DocumentCloudBot{
 		withConn: func(ctx context.Context, f func(conn *sqlite.Conn) error) error {
@@ -57,7 +64,8 @@ func main() {
 		httpClient: &http.Client{
 			Timeout: 1 * time.Minute,
 		},
-		rateLimit: time.NewTicker(10 * time.Second),
+		searchRate: time.NewTicker(10 * time.Second),
+		assetRate:  time.NewTicker(1 * time.Second),
 	}
 
 	if err := dcb.initDB(context.Background()); err != nil {
@@ -66,13 +74,19 @@ func main() {
 
 	g, ctx := errgroup.WithContext(context.Background())
 	g.Go(func() error { return dcb.Latest(ctx) })
+	g.Go(func() error { return dcb.Download(ctx) })
 	if *backFlag >= 0 {
 		g.Go(func() error { return dcb.Backfill(ctx, *backFlag) })
 	}
 	g.Go(func() error {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		return errors.Errorf("received signal: %v", <-c)
+		select {
+		case s := <-c:
+			return errors.Errorf("received signal: %v", s)
+		case <-ctx.Done():
+			return ctx.Err()
+		}
 	})
 	logrus.WithError(g.Wait()).Error("Exiting")
 }

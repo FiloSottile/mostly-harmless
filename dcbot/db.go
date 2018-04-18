@@ -10,6 +10,11 @@ import (
 
 func (dcb *DocumentCloudBot) initDB(ctx context.Context) error {
 	return dcb.withConn(ctx, func(conn *sqlite.Conn) error {
+		// https://github.com/crawshaw/sqlite/issues/7
+		err := sqliteutil.ExecTransient(conn, `PRAGMA journal_mode=WAL`, nil)
+		if err != nil {
+			return err
+		}
 		return sqliteutil.ExecScript(conn, `
 			CREATE TABLE IF NOT EXISTS Documents (
 				id TEXT PRIMARY KEY,
@@ -40,6 +45,24 @@ func (dcb *DocumentCloudBot) insertDocument(ctx context.Context, id string, body
 	return true, nil
 }
 
+func (dcb *DocumentCloudBot) getPendingDocument(ctx context.Context) ([]byte, error) {
+	var result []byte
+	err := dcb.withConn(ctx, func(conn *sqlite.Conn) error {
+		return sqliteutil.Exec(conn, `SELECT json FROM Documents WHERE retrieved IS NULL LIMIT 1`,
+			func(stmt *sqlite.Stmt) error {
+				if result != nil {
+					return errors.New("unexpected multiple results")
+				}
+				result = []byte(stmt.ColumnText(0))
+				return nil
+			})
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select pending document")
+	}
+	return result, nil
+}
+
 func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, files map[string][]byte) error {
 	return dcb.withConn(ctx, func(conn *sqlite.Conn) (err error) {
 		defer sqliteutil.Save(conn)(&err)
@@ -50,7 +73,7 @@ func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, f
 			}
 		}
 		return sqliteutil.Exec(conn,
-			`UPDATE Documents SET retrieved = DATETIME('now') WHERE document = ?`,
+			`UPDATE Documents SET retrieved = DATETIME('now') WHERE id = ?`,
 			nil, document)
 	})
 }
