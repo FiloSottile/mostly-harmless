@@ -67,13 +67,17 @@ func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, f
 	return dcb.withConn(ctx, func(conn *sqlite.Conn) (err error) {
 		defer sqliteutil.Save(conn)(&err)
 		for typ, content := range files {
+			if len(content) == 0 {
+				continue
+			}
 			err = sqliteutil.Exec(conn, `INSERT INTO Files VALUES (?, ?, ?)`, nil, document, typ, content)
 			if err != nil {
-				return
+				return errors.Wrapf(err, "failed to insert file of len %d and type %s for document %s",
+					len(content), typ, document)
 			}
 		}
-		return sqliteutil.Exec(conn,
+		return errors.Wrap(sqliteutil.Exec(conn,
 			`UPDATE Documents SET retrieved = DATETIME('now') WHERE id = ?`,
-			nil, document)
+			nil, document), "failed to update document")
 	})
 }
