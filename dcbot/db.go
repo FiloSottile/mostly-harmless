@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"io"
+	"os"
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqliteutil"
@@ -63,21 +65,61 @@ func (dcb *DocumentCloudBot) getPendingDocument(ctx context.Context) ([]byte, er
 	return result, nil
 }
 
-func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, files map[string][]byte) error {
+func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, files map[string]*os.File) error {
 	return dcb.withConn(ctx, func(conn *sqlite.Conn) (err error) {
 		defer sqliteutil.Save(conn)(&err)
-		for typ, content := range files {
-			if len(content) == 0 {
+		for typ := range files {
+			fi, err := files[typ].Stat()
+			if err != nil {
+				return errors.Wrap(err, "failed to stat file")
+			}
+			if fi.Size() == 0 {
 				continue
 			}
-			err = sqliteutil.Exec(conn, `INSERT INTO Files VALUES (?, ?, ?)`, nil, document, typ, content)
+			query := `INSERT INTO Files (document, type, content) VALUES (?, ?, ?)`
+			stmt, err := conn.Prepare(query)
 			if err != nil {
-				return errors.Wrapf(err, "failed to insert file of len %d and type %s for document %s",
-					len(content), typ, document)
+				return errors.Wrapf(err, "failed to prepare query (%s)", query)
 			}
+			stmt.BindText(1, document)
+			stmt.BindText(2, typ)
+			stmt.BindZeroBlob(3, fi.Size())
+			if _, err := stmt.Step(); err != nil {
+				return errors.Wrapf(err, "failed to insert file of size %d and type %s for document %s",
+					fi.Size(), typ, document)
+			}
+			b, err := conn.OpenBlob("", "Files", "content", conn.LastInsertRowID(), true)
+			if err != nil {
+				return errors.Wrapf(err, "failed to open file of size %d and type %s for document %s",
+					fi.Size(), typ, document)
+			}
+			if _, err := io.Copy(NewAtWriter(b), files[typ]); err != nil {
+				return errors.Wrapf(err, "failed to copy file of size %d and type %s for document %s",
+					fi.Size(), typ, document)
+			}
+			if err := b.Close(); err != nil {
+				return errors.Wrapf(err, "failed to close file of size %d and type %s for document %s",
+					fi.Size(), typ, document)
+			}
+
 		}
 		return errors.Wrap(sqliteutil.Exec(conn,
 			`UPDATE Documents SET retrieved = DATETIME('now') WHERE id = ?`,
 			nil, document), "failed to update document")
 	})
+}
+
+type AtWriter struct {
+	io.WriterAt
+	off int64
+}
+
+func NewAtWriter(w io.WriterAt) *AtWriter {
+	return &AtWriter{WriterAt: w}
+}
+
+func (at *AtWriter) Write(p []byte) (n int, err error) {
+	n, err = at.WriteAt(p, at.off)
+	at.off += int64(n)
+	return n, err
 }

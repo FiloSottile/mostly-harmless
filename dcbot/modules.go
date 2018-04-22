@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"time"
 
 	"github.com/pkg/errors"
@@ -98,19 +99,29 @@ func (dcb *DocumentCloudBot) Download(ctx context.Context) error {
 			return errors.Wrap(err, "failed to unmarshal document")
 		}
 		log.WithField("doc", doc.ID).Debug("Downloading files")
-		files := make(map[string][]byte)
+		files := make(map[string]*os.File)
 		for _, res := range []string{"pdf", "text"} {
 			url, ok := doc.Resources[res].(string)
 			if !ok {
+				for _, f := range files {
+					os.Remove(f.Name())
+				}
 				return errors.Errorf("document %s is missing resource %s", doc.ID, res)
 			}
-			body, err := dcb.DownloadFile(ctx, url)
+			f, err := dcb.DownloadFile(ctx, url)
 			if err != nil {
+				for _, f := range files {
+					os.Remove(f.Name())
+				}
 				return err
 			}
-			files[res] = body
+			files[res] = f
 		}
-		if err := dcb.insertFiles(ctx, doc.ID, files); err != nil {
+		err = dcb.insertFiles(ctx, doc.ID, files)
+		for _, f := range files {
+			os.Remove(f.Name())
+		}
+		if err != nil {
 			return err
 		}
 	}

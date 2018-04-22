@@ -24,6 +24,7 @@ type DocumentCloudBot struct {
 	httpClient *http.Client
 	searchRate *time.Ticker
 	assetRate  *time.Ticker
+	tmpDir     string
 }
 
 func main() {
@@ -31,6 +32,8 @@ func main() {
 	syslogFlag := flag.Bool("syslog", false, "also log to syslog")
 	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
+	cwd, _ := os.Getwd()
+	tmpDirFlag := flag.String("tmpdir", cwd, "enable backfilling from `page`")
 	flag.Parse()
 
 	if *debugFlag {
@@ -62,10 +65,11 @@ func main() {
 			return f(conn)
 		},
 		httpClient: &http.Client{
-			Timeout: 1 * time.Minute,
+			Timeout: 5 * time.Minute,
 		},
 		searchRate: time.NewTicker(10 * time.Second),
 		assetRate:  time.NewTicker(1 * time.Second),
+		tmpDir:     *tmpDirFlag,
 	}
 
 	if err := dcb.initDB(context.Background()); err != nil {

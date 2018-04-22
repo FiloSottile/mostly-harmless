@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/pkg/errors"
 )
@@ -48,7 +50,7 @@ func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResul
 	return sr, nil
 }
 
-func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) ([]byte, error) {
+func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) (*os.File, error) {
 	select {
 	case <-dcb.assetRate.C:
 	case <-ctx.Done():
@@ -60,11 +62,17 @@ func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) ([]by
 		return nil, errors.Wrap(err, "failed asset request")
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	f, err := ioutil.TempFile(dcb.tmpDir, "tmp-dc-asset-")
 	if err != nil {
+		return nil, errors.Wrap(err, "failed to create temp file")
+	}
+	if _, err := io.Copy(f, res.Body); err != nil {
 		return nil, errors.Wrap(err, "failed reading asset")
 	}
-	return body, nil
+	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		return nil, errors.Wrap(err, "failed seeking")
+	}
+	return f, nil
 }
 
 func IDForDocument(doc json.RawMessage) string {
