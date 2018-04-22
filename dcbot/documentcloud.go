@@ -43,6 +43,9 @@ func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResul
 		return nil, errors.Wrap(err, "failed search request")
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		return nil, errors.Errorf("search result returned %d: %s", res.StatusCode, res.Status)
+	}
 	var sr *SearchResult
 	if err := json.NewDecoder(res.Body).Decode(&sr); err != nil {
 		return nil, errors.Wrap(err, "failed reading search result")

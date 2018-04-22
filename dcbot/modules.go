@@ -15,11 +15,13 @@ func (dcb *DocumentCloudBot) Latest(ctx context.Context) error {
 
 	for ctx.Err() == nil {
 		log.Debug("Fetching latest entries...")
+		page := 1
 	SearchLoop:
-		for page := 1; ctx.Err() == nil; page++ {
+		for ctx.Err() == nil {
 			sr, err := dcb.Search(ctx, page)
 			if err != nil {
-				return err
+				log.WithError(err).Error("Search error")
+				continue
 			}
 			for _, doc := range sr.Documents {
 				id := IDForDocument(doc)
@@ -32,6 +34,7 @@ func (dcb *DocumentCloudBot) Latest(ctx context.Context) error {
 					break SearchLoop
 				}
 			}
+			page++
 		}
 
 		log.Debug("Sleeping 5 minutes...")
@@ -48,10 +51,12 @@ func (dcb *DocumentCloudBot) Latest(ctx context.Context) error {
 func (dcb *DocumentCloudBot) Backfill(ctx context.Context, fromPage int) error {
 	log := logrus.WithField("module", "backfill")
 
-	for page := fromPage; ctx.Err() == nil; page++ {
+	page := fromPage
+	for ctx.Err() == nil {
 		sr, err := dcb.Search(ctx, page)
 		if err != nil {
-			return err
+			log.WithError(err).Error("Search error")
+			continue
 		}
 		if len(sr.Documents) == 0 {
 			log.Info("Reached the end!")
@@ -69,6 +74,7 @@ func (dcb *DocumentCloudBot) Backfill(ctx context.Context, fromPage int) error {
 			"page":     sr.Page,
 			"total":    sr.Total,
 			"per_page": sr.PerPage}).Debug("Downloaded page")
+		page++
 	}
 
 	log.WithError(ctx.Err()).Debug("Shutting down")
