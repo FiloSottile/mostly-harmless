@@ -70,9 +70,11 @@ func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) (*os.
 		return nil, errors.Wrap(err, "failed to create temp file")
 	}
 	if _, err := io.Copy(f, res.Body); err != nil {
+		os.Remove(f.Name())
 		return nil, errors.Wrap(err, "failed reading asset")
 	}
 	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		os.Remove(f.Name())
 		return nil, errors.Wrap(err, "failed seeking")
 	}
 	return f, nil

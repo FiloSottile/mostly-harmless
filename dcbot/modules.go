@@ -114,7 +114,18 @@ func (dcb *DocumentCloudBot) Download(ctx context.Context) error {
 				}
 				return errors.Errorf("document %s is missing resource %s", doc.ID, res)
 			}
-			f, err := dcb.DownloadFile(ctx, url)
+			var (
+				f   *os.File
+				err error
+			)
+			for retry := 0; retry < 5; retry++ {
+				f, err = dcb.DownloadFile(ctx, url)
+				if err != nil {
+					log.WithError(err).WithField("retry", retry).Error("error downloading file")
+					continue
+				}
+				break
+			}
 			if err != nil {
 				for _, f := range files {
 					os.Remove(f.Name())
