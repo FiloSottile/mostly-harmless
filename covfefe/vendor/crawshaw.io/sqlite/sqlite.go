@@ -27,6 +27,8 @@ package sqlite
 // #cgo CFLAGS: -DSQLITE_USE_ALLOCA
 // #cgo CFLAGS: -DSQLITE_ENABLE_COLUMN_METADATA
 // #cgo linux LDFLAGS: -ldl -lm
+// #cgo openbsd LDFLAGS: -lm
+// #cgo openbsd CFLAGS: -std=c99
 //
 // #include <blocking_step.h>
 // #include <sqlite3.h>
@@ -35,8 +37,8 @@ package sqlite
 //
 // // Use a helper function here to avoid the cgo pointer detection
 // // logic treating SQLITE_TRANSIENT as a Go pointer.
-// static int transient_bind_blob(sqlite3_stmt* stmt, int col, char* p, int n) {
-//	return sqlite3_bind_blob(stmt, col, p, n, SQLITE_TRANSIENT);
+// static int transient_bind_text(sqlite3_stmt* stmt, int col, char* p, int n) {
+//	return sqlite3_bind_text(stmt, col, p, n, SQLITE_TRANSIENT);
 // }
 //
 // extern void log_fn(void* pArg, int code, char* msg);
@@ -131,6 +133,7 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 		C.sqlite3_close_v2(conn.conn)
 		return nil, reserr("OpenConn", path, "", res)
 	}
+	C.sqlite3_extended_result_codes(conn.conn, 1)
 
 	// TODO: only if Debug ?
 	_, file, line, _ := runtime.Caller(2) // caller of OpenConn or Open
@@ -140,6 +143,19 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 			panic(file + ":" + string(itoa(buf[:], int(line))) + ": *sqlite.Conn garbage collected, call Close method")
 		}
 	})
+
+	if flags&SQLITE_OPEN_WAL > 0 {
+		stmt, _, err := conn.PrepareTransient("PRAGMA journal_mode=wal;")
+		if err != nil {
+			conn.Close()
+			return nil, err
+		}
+		defer stmt.Finalize()
+		if _, err := stmt.Step(); err != nil {
+			conn.Close()
+			return nil, err
+		}
+	}
 
 	return conn, nil
 }
@@ -530,7 +546,7 @@ func (stmt *Stmt) BindParamCount() int {
 // BindInt64 binds value to a numbered stmt parameter.
 // https://www.sqlite.org/c3ref/bind_blob.html
 func (stmt *Stmt) BindInt64(param int, value int64) {
-	res := C.sqlite3_bind_int64(stmt.stmt, C.int(param), C.longlong(value))
+	res := C.sqlite3_bind_int64(stmt.stmt, C.int(param), C.sqlite3_int64(value))
 	stmt.handleBindErr("BindInt64", res)
 }
 
@@ -540,7 +556,7 @@ func (stmt *Stmt) BindBool(param int, value bool) {
 	if value {
 		v = 1
 	}
-	res := C.sqlite3_bind_int64(stmt.stmt, C.int(param), C.longlong(v))
+	res := C.sqlite3_bind_int64(stmt.stmt, C.int(param), C.sqlite3_int64(v))
 	stmt.handleBindErr("BindBool", res)
 }
 
@@ -555,7 +571,7 @@ func (stmt *Stmt) BindBytes(param int, value []byte) {
 	if len(value) != 0 {
 		v = (*C.char)(unsafe.Pointer(&value[0]))
 	}
-	res := C.transient_bind_blob(stmt.stmt, C.int(param), v, C.int(len(value)))
+	res := C.transient_bind_text(stmt.stmt, C.int(param), v, C.int(len(value)))
 	runtime.KeepAlive(value)
 	stmt.handleBindErr("BindBytes", res)
 }
@@ -701,9 +717,8 @@ func (stmt *Stmt) columnBytes(col int) []byte {
 // Column indicies start at 0.
 // https://www.sqlite.org/c3ref/column_blob.html
 func (stmt *Stmt) ColumnText(col int) string {
-	data := C.sqlite3_column_text(stmt.stmt, C.int(col))
 	n := stmt.ColumnLen(col)
-	return C.GoStringN((*C.char)(unsafe.Pointer(data)), C.int(n))
+	return C.GoStringN((*C.char)(unsafe.Pointer(C.sqlite3_column_text(stmt.stmt, C.int(col)))), C.int(n))
 }
 
 // ColumnFloat returns a query result as a float64.

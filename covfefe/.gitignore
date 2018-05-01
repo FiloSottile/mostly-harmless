@@ -1,6 +1,4 @@
-/covfefe
-/enroll
-/rescan
-*.db
-*.db.*
+/bin
+/.GOPATH
+twitter.db*
 creds.json

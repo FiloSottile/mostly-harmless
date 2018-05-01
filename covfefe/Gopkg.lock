@@ -8,7 +8,7 @@
     ".",
     "sqliteutil"
   ]
-  revision = "daf8b6897d63e99a6e9adefb30e81b1d985a83ce"
+  revision = "2c204735769c318990e7b4e133a4f770fea28498"
 
 [[projects]]
   name = "github.com/cenkalti/backoff"
