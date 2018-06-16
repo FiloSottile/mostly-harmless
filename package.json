@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "puppeteer": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^1.3.4"
+  }
+}
