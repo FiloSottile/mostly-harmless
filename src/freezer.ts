@@ -49,3 +49,27 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
 
     process.stdout.write(await page.content())
 })
+
+
+function elementMatchCSSRule(element: Element, cssRule: CSSRule): boolean {
+    if (cssRule.type != CSSRule.STYLE_RULE) { return false }
+    return element.matches((cssRule as CSSStyleRule).selectorText)
+}
+
+var allCSSRules = Array.from(document.styleSheets).reduce(function (rules, styleSheet) {
+    if (styleSheet instanceof CSSStyleSheet) {
+        return rules.concat(Array.from(styleSheet.cssRules))
+    } else {
+        return rules
+    }
+}, [] as CSSRule[])
+
+function getAppliedCSS(e: HTMLElement): CSSRule[] {
+    var rules = allCSSRules.filter(elementMatchCSSRule.bind(null, e))
+    if (e.style.length > 0) rules.push(e.style.parentRule)
+
+    // TODO: use the CSS property names to lookup the computed values
+    // or maybe rewrite in terms of getDefaultComputedStyle diff
+
+    return rules
+}
