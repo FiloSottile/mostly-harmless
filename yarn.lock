@@ -75,6 +75,10 @@ debug@^3.1.0:
   dependencies:
     ms "2.0.0"
 
+devtools-protocol@^0.0.567107:
+  version "0.0.567107"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.567107.tgz#4db0060b4619483a22eb9f68201abffa144a86e1"
+
 es6-promise@^4.0.3:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.4.tgz#dc4221c2b16518760bd8c39a52d8f356fc00ed29"

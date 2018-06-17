@@ -5,7 +5,7 @@
 * PDF
 * strip <script> and neuter <form>
 * inline small images
-* JSON info file
+* JSON info file w/ metadata and stats
 * link rel="canonical"
 * WebFonts
 * Chrome sandbox
@@ -18,3 +18,5 @@
 * createIncognitoBrowserContext
 * Fixed viewport size
 * Pseudo elements
+* iframes
+* WARC bundles
