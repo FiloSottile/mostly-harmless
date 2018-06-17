@@ -6,16 +6,16 @@ import * as minimist from 'minimist'
 // https://github.com/ChromeDevTools/devtools-protocol/issues/106
 import { Protocol as CDP } from 'devtools-protocol'
 
-const argv = minimist(process.argv.slice(2), { stopEarly: true });
+const argv = minimist(process.argv.slice(2), { stopEarly: true })
 if (argv._.length != 1) {
     console.error("Missing URL argument")
     process.exit(1)
 }
-const URL = argv._[0];
+const URL = argv._[0]
 
 function runWithBrowser(f: (browser: puppeteer.Browser) => Promise<void>) {
     (async () => {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch()
         await f(browser).catch((reason) => { console.error(reason) })
         await browser.close()
     })().catch((reason) => { console.error(reason) })
@@ -31,7 +31,7 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
     })
     console.warn("Fetched page.")
 
-    page.on('console', msg => console.warn(msg.text()));
+    page.on('console', msg => console.warn(msg.text()))
 
     const client = await page.target().createCDPSession()
     await client.send('DOM.enable')
@@ -79,16 +79,17 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
         const computedStyle = await getComputedStyle(nodeId)
         const styledProps = await getStyledProperties(nodeId)
 
-        // TODO: generate shorthands, ignore transitions
         var style = ""
         for (var name of styledProps) {
             if (!computedStyle.get(name)) continue
             style += name + ":" + computedStyle.get(name) + ";"
         }
-
-        await client.send('DOM.setAttributeValue', {
-            nodeId: nodeId, name: "style", value: style
-        } as CDP.DOM.SetAttributeValueRequest)
+        style = style.replace(/"/g, "'") // TODO: almost certainly broken
+        if (style != "") {
+            await client.send('DOM.setAttributeValue', {
+                nodeId: nodeId, name: "style", value: style
+            } as CDP.DOM.SetAttributeValueRequest)
+        }
     }
 
     const CDPDocument: CDP.DOM.GetFlattenedDocumentResponse = await client.send('DOM.getFlattenedDocument',
@@ -103,11 +104,7 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
 
     await page.evaluate(() => {
         function eachElement(document: Document, f: (e: Element) => void) {
-            var nodeIterator = document.createNodeIterator(
-                document.body,
-                NodeFilter.SHOW_ELEMENT
-            );
-
+            var nodeIterator = document.createNodeIterator(document, NodeFilter.SHOW_ELEMENT)
             var node = nodeIterator.nextNode()
             while (node) {
                 f(node as Element)
@@ -116,12 +113,22 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
         }
 
         eachElement(document, (e: Element) => {
+            // TODO: proper element and attribute whitelist
             if (e.nodeName == "SCRIPT" || e.nodeName == "STYLE") {
                 e.remove()
                 return
             }
+            if (e.nodeName == "LINK" && (e.getAttribute("rel") || "").toLowerCase() == "stylesheet") {
+                e.remove()
+                return
+            }
+            if (e.nodeName == "META" && e.getAttribute("http-equiv")) {
+                e.remove()
+                return
+            }
+            if (document.head.contains(e)) return
             for (var attr of Array.from(e.attributes)) {
-                if (attr.name != "style" && attr.name != "href") {
+                if (attr.name != "style" && attr.name != "href" && attr.name != "datetime") {
                     e.removeAttributeNode(attr)
                 }
             }
