@@ -24,6 +24,7 @@ function runWithBrowser(f: (browser: puppeteer.Browser) => Promise<void>) {
 console.warn("Starting...")
 runWithBrowser(async (browser: puppeteer.Browser) => {
     const page = await browser.newPage()
+    await page.setViewport({ width: 1280, height: 850 })
     await page.goto(URL, {
         timeout: pageLoadTimeout,
         waitUntil: ["load", "networkidle0"],
