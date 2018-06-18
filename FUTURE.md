@@ -2,7 +2,7 @@
 * various storage backends (Perkeep, IPFS, git...)
 * per-site plugins
 * WARC
-* PDF
+* PDF (instead of screenshot)
 * neuter <form>
 * inline small images
 * JSON info file w/ metadata and stats
@@ -12,7 +12,7 @@
 * 3 components: fetcher, storage, viewer
 * HTTPS Everywhere
 * Readability.js
-* SOCKS5 WARC
+* SOCKS5 or puppeteer events => WARC
 * pseudo elements
 * iframes
 * WARC bundles

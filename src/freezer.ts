@@ -6,6 +6,8 @@ import * as minimist from 'minimist'
 // https://github.com/ChromeDevTools/devtools-protocol/issues/106
 import { Protocol as CDP } from 'devtools-protocol'
 
+console = new console.Console(process.stderr, process.stderr)
+
 const argv = minimist(process.argv.slice(2), { stopEarly: true })
 if (argv._.length != 1) {
     console.error("Missing URL argument")
@@ -13,7 +15,7 @@ if (argv._.length != 1) {
 }
 const URL = argv._[0]
 
-console.warn("Starting...");
+console.log("Starting...");
 (async () => {
     const browser = await puppeteer.launch()
     await runWithContext(browser, async (page: puppeteer.Page, client: puppeteer.CDPSession) => {
@@ -26,30 +28,47 @@ async function runWithContext(browser: puppeteer.Browser, f: (page: puppeteer.Pa
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/26626
     const context: puppeteer.Browser = await (browser as any).createIncognitoBrowserContext()
     const page = await context.newPage()
-    page.on('console', msg => console.warn(msg.text()))
+    page.on('console', msg => console.log("remote:", msg.text()))
     const client = await page.target().createCDPSession()
     await client.send('DOM.enable')
     await client.send('CSS.enable')
+    await client.send('Page.enable')
     await f(page, client).catch((reason) => { console.error(reason) })
     await client.detach()
     await context.close()
 }
 
 async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, URL: string) {
-    console.warn("Fetching page " + URL + "...")
+    console.log("Fetching page " + URL + "...")
+    console.time("fetch")
+
     await page.setViewport({ width: 1280, height: 850 })
     await page.goto(URL, {
         timeout: pageLoadTimeout,
         waitUntil: ["load", "networkidle0"],
         // https://github.com/GoogleChrome/puppeteer/issues/1353#issuecomment-356561654
     })
-    console.warn("... fetched page")
+    await client.send("Page.stopLoading")
+
+    // TODO: immediately unload all scripts
+
+    // Restore console.log, because fuck you Twitter.
+    await page.evaluate(() => {
+        var i = document.createElement('iframe')
+        i.style.display = 'none'
+        document.body.appendChild(i);
+        (window as any).console = i.contentWindow!.console
+        // i.parentNode!.removeChild(i)
+    })
+
+    console.timeEnd("fetch")
+    console.time("inline styles")
 
     async function getMatchedStyle(nodeId: CDP.DOM.NodeId): Promise<CDP.CSS.GetMatchedStylesForNodeResponse> {
         return await client.send('CSS.getMatchedStylesForNode',
             { nodeId: nodeId } as CDP.CSS.GetMatchedStylesForNodeRequest)
     }
-    async function getComputedStyle(nodeId: CDP.DOM.NodeId): Promise<Map<string, string>> {
+    async function getComputedStyleCDP(nodeId: CDP.DOM.NodeId): Promise<Map<string, string>> {
         var res = new Map<string, string>()
         const computedStyle: CDP.CSS.GetComputedStyleForNodeResponse = await client.send(
             'CSS.getComputedStyleForNode',
@@ -84,7 +103,7 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
     }
 
     async function inlineStyles(nodeId: CDP.DOM.NodeId): Promise<void> {
-        const computedStyle = await getComputedStyle(nodeId)
+        const computedStyle = await getComputedStyleCDP(nodeId)
         const styledProps = await getStyledProperties(nodeId)
 
         var style = ""
@@ -107,7 +126,85 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         await inlineStyles(node.nodeId)
     }
 
-    console.warn("... inlined styles")
+    console.timeEnd("inline styles")
+    console.time("process resources")
+
+    const imgSrcs = new Set<string>(await page.evaluate(() => {
+        // TODO: preserve data URLs
+
+        var a: HTMLAnchorElement
+        function absoluteURL(url: string): string {
+            if (!a) a = document.createElement("a")
+            a.href = url
+            return a.href
+        }
+
+        var srcs: string[] = []
+
+        Array.from(document.querySelectorAll("img")).forEach((e) => {
+            if (e.currentSrc) srcs.push(e.currentSrc)
+        })
+
+        var nodeIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_ELEMENT)
+        var node = nodeIterator.nextNode()
+        while (node) {
+            const e = node as HTMLElement
+            var bi = e.style.backgroundImage
+            if (bi && bi != "none") {
+                bi = bi.replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '')
+                bi = absoluteURL(bi)
+                e.setAttribute("data-background-image-url", bi)
+                srcs.push(bi)
+            }
+            node = nodeIterator.nextNode()
+        }
+
+        return srcs
+    }))
+
+    async function getResourceTree(): Promise<CDP.Page.FrameResourceTree> {
+        const res = await client.send('Page.getResourceTree') as CDP.Page.GetResourceTreeResponse
+        return res.frameTree
+    }
+    async function getResourceContent(frameId: CDP.Page.FrameId, url: string): Promise<string> {
+        const res = await client.send('Page.getResourceContent', { frameId: frameId, url: url } as CDP.Page.GetResourceContentRequest) as CDP.Page.GetResourceContentResponse
+        console.assert(res.base64Encoded)
+        return res.content
+    }
+
+    var imgDataURLs: { [url: string]: string } = {}
+    const resTree = await getResourceTree()
+    for (var res of resTree.resources) {
+        if (res.type != "Image") continue
+        if (res.failed || res.canceled) continue
+        if (!imgSrcs.has(res.url)) continue
+        // TODO: based on res.contentSize, decide to make a separate file
+        const b64Content = await getResourceContent(resTree.frame.id, res.url)
+        imgDataURLs[res.url] = "data:" + res.mimeType + ";base64," + b64Content
+    }
+
+    await page.evaluate((imgDataURLs) => {
+        Array.from(document.querySelectorAll("img")).forEach((e) => {
+            if (e.currentSrc && imgDataURLs[e.currentSrc]) {
+                e.setAttribute("src", imgDataURLs[e.currentSrc])
+            } else {
+                e.removeAttribute("src")
+            }
+        })
+
+        Array.from(document.querySelectorAll("[data-background-image-url]")).forEach((ee) => {
+            const e = ee as HTMLElement
+            var bi = e.getAttribute("data-background-image-url") || ""
+            if (imgDataURLs[bi]) {
+                e.style.backgroundImage = "url('" + imgDataURLs[bi] + "')"
+            } else {
+                e.style.backgroundImage = "none"
+            }
+        })
+    }, imgDataURLs)
+
+    console.timeEnd("process resources")
+    console.time("strip DOM")
 
     await page.evaluate(() => {
         function eachElement(document: Document, f: (e: Element) => void) {
@@ -135,14 +232,14 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
             }
             if (document.head.contains(e)) return
             for (var attr of Array.from(e.attributes)) {
-                if (attr.name != "style" && attr.name != "href" && attr.name != "datetime") {
-                    e.removeAttributeNode(attr)
-                }
+                if (attr.name == "style" || attr.name == "href" || attr.name == "datetime") continue
+                if (e.nodeName == "IMG" && attr.name == "src") continue
+                e.removeAttributeNode(attr)
             }
         })
     })
 
-    console.warn("... stripped DOM")
+    console.timeEnd("strip DOM")
 
     process.stdout.write(await page.content())
 }
