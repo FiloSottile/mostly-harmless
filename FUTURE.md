@@ -13,7 +13,7 @@
 * HTTPS Everywhere
 * Readability.js
 * SOCKS5 WARC
-* createIncognitoBrowserContext
-* Pseudo elements
+* pseudo elements
 * iframes
 * WARC bundles
+* request progress view

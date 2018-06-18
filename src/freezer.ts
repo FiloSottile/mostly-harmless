@@ -13,30 +13,37 @@ if (argv._.length != 1) {
 }
 const URL = argv._[0]
 
-function runWithBrowser(f: (browser: puppeteer.Browser) => Promise<void>) {
-    (async () => {
-        const browser = await puppeteer.launch()
-        await f(browser).catch((reason) => { console.error(reason) })
-        await browser.close()
-    })().catch((reason) => { console.error(reason) })
+console.warn("Starting...");
+(async () => {
+    const browser = await puppeteer.launch()
+    await runWithContext(browser, async (page: puppeteer.Page, client: puppeteer.CDPSession) => {
+        await freezePage(page, client, URL)
+    }).catch((reason) => { console.error(reason) })
+    await browser.close()
+})().catch((reason) => { console.error(reason) })
+
+async function runWithContext(browser: puppeteer.Browser, f: (page: puppeteer.Page, client: puppeteer.CDPSession) => Promise<void>) {
+    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/26626
+    const context: puppeteer.Browser = await (browser as any).createIncognitoBrowserContext()
+    const page = await context.newPage()
+    page.on('console', msg => console.warn(msg.text()))
+    const client = await page.target().createCDPSession()
+    await client.send('DOM.enable')
+    await client.send('CSS.enable')
+    await f(page, client).catch((reason) => { console.error(reason) })
+    await client.detach()
+    await context.close()
 }
 
-console.warn("Starting...")
-runWithBrowser(async (browser: puppeteer.Browser) => {
-    const page = await browser.newPage()
+async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, URL: string) {
+    console.warn("Fetching page " + URL + "...")
     await page.setViewport({ width: 1280, height: 850 })
     await page.goto(URL, {
         timeout: pageLoadTimeout,
         waitUntil: ["load", "networkidle0"],
         // https://github.com/GoogleChrome/puppeteer/issues/1353#issuecomment-356561654
     })
-    console.warn("Fetched page.")
-
-    page.on('console', msg => console.warn(msg.text()))
-
-    const client = await page.target().createCDPSession()
-    await client.send('DOM.enable')
-    await client.send('CSS.enable')
+    console.warn("... fetched page")
 
     async function getMatchedStyle(nodeId: CDP.DOM.NodeId): Promise<CDP.CSS.GetMatchedStylesForNodeResponse> {
         return await client.send('CSS.getMatchedStylesForNode',
@@ -100,8 +107,7 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
         await inlineStyles(node.nodeId)
     }
 
-    await client.detach()
-    console.warn("Inlined styles.")
+    console.warn("... inlined styles")
 
     await page.evaluate(() => {
         function eachElement(document: Document, f: (e: Element) => void) {
@@ -135,7 +141,8 @@ runWithBrowser(async (browser: puppeteer.Browser) => {
             }
         })
     })
-    console.warn("Stripped DOM.")
+
+    console.warn("... stripped DOM")
 
     process.stdout.write(await page.content())
-})
+}
