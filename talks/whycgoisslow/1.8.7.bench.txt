@@ -1,0 +1,30 @@
+BenchmarkCgoCall-4   	100000000	        61.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.247s
+BenchmarkCgoCall-4   	100000000	        61.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.247s
+BenchmarkCgoCall-4   	100000000	        61.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.249s
+BenchmarkCgoCall-4   	100000000	        64.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.555s
+BenchmarkCgoCall-4   	100000000	        61.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.247s
+BenchmarkCgoCall-4   	100000000	        61.8 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.249s
+BenchmarkCgoCall-4   	100000000	        65.1 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.587s
+BenchmarkCgoCall-4   	100000000	        64.9 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.569s
+BenchmarkCgoCall-4   	100000000	        64.7 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.540s
+BenchmarkCgoCall-4   	100000000	        62.2 ns/op
+PASS
+ok  	github.com/FiloSottile/mostly-harmless/talks/whycgoisslow	6.293s
