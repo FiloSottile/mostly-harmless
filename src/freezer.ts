@@ -21,7 +21,7 @@ console.log("Starting...");
     const browser = await puppeteer.launch()
     await runWithContext(browser, async (page: puppeteer.Page, client: puppeteer.CDPSession) => {
         await freezePage(page, client, URL)
-    }).catch((reason) => { console.error(reason) })
+    })
     await browser.close()
 })().catch((reason) => { console.error(reason) })
 
@@ -31,9 +31,7 @@ async function runWithContext(browser: puppeteer.Browser, f: (page: puppeteer.Pa
     const page = await context.newPage()
     page.on('console', msg => console.log("remote:", msg.text()))
     const client = await page.target().createCDPSession()
-    await client.send('DOM.enable')
-    await client.send('CSS.enable')
-    await client.send('Page.enable')
+    await Promise.all([client.send('DOM.enable'), client.send('CSS.enable'), client.send('Page.enable')])
     await f(page, client).catch((reason) => { console.error(reason) })
     await client.detach()
     await context.close()
@@ -63,14 +61,14 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
     })
 
     console.timeEnd("fetch")
-    console.time("extract")
+    console.time("sync processing")
 
     // Build up a virtual DOM for performance and control.
     const dom = new JSDOM()
     const document = dom.window.document
 
     async function getMatchedStyle(nodeId: CDP.DOM.NodeId): Promise<CDP.CSS.GetMatchedStylesForNodeResponse> {
-        return await client.send('CSS.getMatchedStylesForNode',
+        return client.send('CSS.getMatchedStylesForNode',
             { nodeId: nodeId } as CDP.CSS.GetMatchedStylesForNodeRequest)
     }
     async function getComputedStyleCDP(nodeId: CDP.DOM.NodeId): Promise<Map<string, string>> {
@@ -108,13 +106,13 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
     }
 
     async function inlineStyles(node: CDP.DOM.Node, el: HTMLElement): Promise<void> {
-        const computedStyle = await getComputedStyleCDP(node.nodeId)
-        const styledProps = await getStyledProperties(node.nodeId)
+        const computedStyle = getComputedStyleCDP(node.nodeId)
+        const styledProps = getStyledProperties(node.nodeId)
 
-        var style = ""
-        for (var name of styledProps) {
-            let computedValue = computedStyle.get(name)
-            if (!computedValue) continue
+        var style = "";
+        await Promise.all(Array.from(await styledProps).map(async (name) => {
+            let computedValue = (await computedStyle).get(name)
+            if (!computedValue) return
             if (name == "background-image") {
                 // Because string.replace does not work with async/await, wtf...
                 let res = ""
@@ -132,7 +130,7 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
                 computedValue = res
             }
             style += name + ":" + computedValue + ";"
-        }
+        }))
         if (style != "") {
             el.setAttribute("style", style)
         }
@@ -150,7 +148,9 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
             functionDeclaration: "function currentSrc() { return this.currentSrc; }",
         } as CDP.Runtime.CallFunctionOnRequest)
         if (result.result.type != "string") return null
-        return result.result.value! as string
+        const currentSrc = result.result.value! as string
+        if (currentSrc == "") return null
+        return currentSrc
     }
 
     var a: HTMLAnchorElement
@@ -219,7 +219,7 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         return false
     }
 
-    function applyAttributes(node: CDP.DOM.Node, el: HTMLElement) {
+    async function applyAttributes(node: CDP.DOM.Node, el: HTMLElement) {
         if (node.attributes === undefined) return
         for (let i = 0; i < node.attributes.length; i += 2) {
             switch (node.attributes[i].toLowerCase()) {
@@ -232,25 +232,32 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         }
     }
 
-    async function appendNode(parent: Node, head: boolean, node: CDP.DOM.Node) {
-        switch (node.nodeType) {
-            case 1: // ELEMENT_NODE
-                if (shouldDropElement(node, head)) return
-                const el = document.createElement(node.nodeName)
-                for (let child of node.children || []) await appendNode(el, head, child)
-                await setImageURL(node, el)
-                applyAttributes(node, el)
-                await inlineStyles(node, el)
-                parent.appendChild(el)
-                break
-            case 3: // TEXT_NODE
-                const text = document.createTextNode(node.nodeValue)
-                parent.appendChild(text)
-                break
-            case 4: // CDATA_SECTION_NODE
-                const cdata = document.createCDATASection(node.nodeValue)
-                parent.appendChild(cdata)
-                break
+    let parallelJobs = {
+        setImageURL: <Promise<void>[]>[],
+        applyAttributes: <Promise<void>[]>[],
+        inlineStyles: <Promise<void>[]>[],
+    }
+    async function processElement(node: CDP.DOM.Node, el: HTMLElement, head: boolean) {
+        parallelJobs.setImageURL.push(setImageURL(node, el))
+        parallelJobs.applyAttributes.push(applyAttributes(node, el))
+        parallelJobs.inlineStyles.push(inlineStyles(node, el))
+        for (let child of node.children || []) {
+            switch (child.nodeType) {
+                case 1: // ELEMENT_NODE
+                    if (shouldDropElement(child, head)) continue
+                    const childEl = document.createElement(child.nodeName)
+                    await processElement(child, childEl, head)
+                    el.appendChild(childEl)
+                    break
+                case 3: // TEXT_NODE
+                    const text = document.createTextNode(child.nodeValue)
+                    el.appendChild(text)
+                    break
+                case 4: // CDATA_SECTION_NODE
+                    const cdata = document.createCDATASection(child.nodeValue)
+                    el.appendChild(cdata)
+                    break
+            }
         }
     }
 
@@ -263,23 +270,28 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
                 for (let ch of node.children!) {
                     switch (ch.nodeName) {
                         case "HEAD":
-                            await appendNode(document.head, true, ch)
+                            await processElement(ch, document.head, true)
                             break
                         case "BODY":
-                            await appendNode(document.body, false, ch)
+                            await processElement(ch, document.body, false)
                             break
                     }
                 }
                 break
             case 10: // DOCUMENT_TYPE_NODE
-                // const doctype: CDP.DOM.GetOuterHTMLResponse = await client.send('DOM.getOuterHTML',
-                //     { nodeId: node.nodeId } as CDP.DOM.GetOuterHTMLRequest)
                 document.insertBefore(document.implementation.createDocumentType(
                     node.nodeName, node.publicId!, node.systemId!), document.childNodes[0])
                 break
         }
     }
 
-    console.timeEnd("extract")
+    console.timeEnd("sync processing")
+
+    await Promise.all(Object.entries(parallelJobs).map(async ([key, jobs]) => {
+        console.time(key)
+        await Promise.all(jobs)
+        console.timeEnd(key)
+    }))
+
     process.stdout.write(dom.serialize())
 }
