@@ -125,15 +125,14 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
                     lastIndex = match.index + match[0].length
                     const url = match[1]
                     const dataURL = await dataURLForResource(url)
-                    if (dataURL === null) res += "url('')"
-                    else res += "url('" + dataURL + "')"
+                    if (dataURL === null) res += 'url("")'
+                    else res += 'url("' + dataURL + '")'
                 }
                 res += computedValue.slice(lastIndex)
                 computedValue = res
             }
             style += name + ":" + computedValue + ";"
         }
-        style = style.replace(/"/g, "'") // TODO: almost certainly broken
         if (style != "") {
             el.setAttribute("style", style)
         }
