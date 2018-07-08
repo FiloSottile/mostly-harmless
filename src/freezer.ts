@@ -2,6 +2,7 @@ const pageLoadTimeout = 60 * 1000 // milliseconds
 
 import * as puppeteer from 'puppeteer'
 import * as minimist from 'minimist'
+import { JSDOM } from 'jsdom'
 
 // https://github.com/ChromeDevTools/devtools-protocol/issues/106
 import { Protocol as CDP } from 'devtools-protocol'
@@ -50,7 +51,7 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
     })
     await client.send("Page.stopLoading")
 
-    // TODO: immediately unload all scripts
+    // TODO: immediately unload all scripts, or anyway stop the page
 
     // Restore console.log, because fuck you Twitter.
     await page.evaluate(() => {
@@ -62,7 +63,11 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
     })
 
     console.timeEnd("fetch")
-    console.time("inline styles")
+    console.time("extract")
+
+    // Build up a virtual DOM for performance and control.
+    const dom = new JSDOM()
+    const document = dom.window.document
 
     async function getMatchedStyle(nodeId: CDP.DOM.NodeId): Promise<CDP.CSS.GetMatchedStylesForNodeResponse> {
         return await client.send('CSS.getMatchedStylesForNode',
@@ -102,65 +107,59 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         return res
     }
 
-    async function inlineStyles(nodeId: CDP.DOM.NodeId): Promise<void> {
-        const computedStyle = await getComputedStyleCDP(nodeId)
-        const styledProps = await getStyledProperties(nodeId)
+    async function inlineStyles(node: CDP.DOM.Node, el: HTMLElement): Promise<void> {
+        const computedStyle = await getComputedStyleCDP(node.nodeId)
+        const styledProps = await getStyledProperties(node.nodeId)
 
         var style = ""
         for (var name of styledProps) {
-            if (!computedStyle.get(name)) continue
-            style += name + ":" + computedStyle.get(name) + ";"
+            let computedValue = computedStyle.get(name)
+            if (!computedValue) continue
+            if (name == "background-image") {
+                // Because string.replace does not work with async/await, wtf...
+                let res = ""
+                let lastIndex = 0
+                for (let re = /url\("([^"]+)"\)/g, match: RegExpExecArray | null;
+                    match = re.exec(computedValue); match !== null) {
+                    res += computedValue.slice(lastIndex, match.index)
+                    lastIndex = match.index + match[0].length
+                    const url = match[1]
+                    const dataURL = await dataURLForResource(url)
+                    if (dataURL === null) res += "url('')"
+                    else res += "url('" + dataURL + "')"
+                }
+                res += computedValue.slice(lastIndex)
+                computedValue = res
+            }
+            style += name + ":" + computedValue + ";"
         }
         style = style.replace(/"/g, "'") // TODO: almost certainly broken
         if (style != "") {
-            await client.send('DOM.setAttributeValue', {
-                nodeId: nodeId, name: "style", value: style
-            } as CDP.DOM.SetAttributeValueRequest)
+            el.setAttribute("style", style)
         }
     }
 
-    const CDPDocument: CDP.DOM.GetFlattenedDocumentResponse = await client.send('DOM.getFlattenedDocument',
-        { depth: -1 } as CDP.DOM.GetFlattenedDocumentRequest)
-    for (var node of CDPDocument.nodes) {
-        if (node.nodeType != 1 /* ELEMENT_NODE */) continue // https://dom.spec.whatwg.org/#dom-node-nodetype
-        await inlineStyles(node.nodeId)
+    async function getCurrentSrc(nodeId: CDP.DOM.NodeId): Promise<string | null> {
+        // https://github.com/cyrus-and/chrome-remote-interface/issues/78
+        // Could alternatively call Runtime.getProperties, but effectively it executes Javascript.
+        const remoteObj: CDP.DOM.ResolveNodeResponse = await client.send('DOM.resolveNode', {
+            nodeId: nodeId,
+            objectGroup: "get-current-src", // TODO: consider releasing, but we use throw-away contexts anyway
+        } as CDP.DOM.ResolveNodeRequest)
+        const result: CDP.Runtime.CallFunctionOnResponse = await client.send('Runtime.callFunctionOn', {
+            objectId: remoteObj.object.objectId!, silent: true, returnByValue: true, generatePreview: false,
+            functionDeclaration: "function currentSrc() { return this.currentSrc; }",
+        } as CDP.Runtime.CallFunctionOnRequest)
+        if (result.result.type != "string") return null
+        return result.result.value! as string
     }
 
-    console.timeEnd("inline styles")
-    console.time("process resources")
-
-    const imgSrcs = new Set<string>(await page.evaluate(() => {
-        // TODO: preserve data URLs
-
-        var a: HTMLAnchorElement
-        function absoluteURL(url: string): string {
-            if (!a) a = document.createElement("a")
-            a.href = url
-            return a.href
-        }
-
-        var srcs: string[] = []
-
-        Array.from(document.querySelectorAll("img")).forEach((e) => {
-            if (e.currentSrc) srcs.push(e.currentSrc)
-        })
-
-        var nodeIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_ELEMENT)
-        var node = nodeIterator.nextNode()
-        while (node) {
-            const e = node as HTMLElement
-            var bi = e.style.backgroundImage
-            if (bi && bi != "none") {
-                bi = bi.replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '')
-                bi = absoluteURL(bi)
-                e.setAttribute("data-background-image-url", bi)
-                srcs.push(bi)
-            }
-            node = nodeIterator.nextNode()
-        }
-
-        return srcs
-    }))
+    var a: HTMLAnchorElement
+    function absoluteURL(url: string): string {
+        if (!a) a = document.createElement("a")
+        a.href = url
+        return a.href
+    }
 
     async function getResourceTree(): Promise<CDP.Page.FrameResourceTree> {
         const res = await client.send('Page.getResourceTree') as CDP.Page.GetResourceTreeResponse
@@ -172,74 +171,121 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         return res.content
     }
 
-    var imgDataURLs: { [url: string]: string } = {}
+    var imgDataURLs = new Map<string, string>()
     const resTree = await getResourceTree()
-    for (var res of resTree.resources) {
-        if (res.type != "Image") continue
-        if (res.failed || res.canceled) continue
-        if (!imgSrcs.has(res.url)) continue
-        // TODO: based on res.contentSize, decide to make a separate file
-        const b64Content = await getResourceContent(resTree.frame.id, res.url)
-        imgDataURLs[res.url] = "data:" + res.mimeType + ";base64," + b64Content
+    async function dataURLForResource(url: string): Promise<string | null> {
+        for (var res of resTree.resources) {
+            if (imgDataURLs.has(url)) return imgDataURLs.get(url)!
+            if (res.url != url) continue
+            if (res.type != "Image") continue
+            if (res.failed || res.canceled) continue
+            // TODO: based on res.contentSize, decide to make a separate file
+            const b64Content = await getResourceContent(resTree.frame.id, res.url)
+            const dataURL = "data:" + res.mimeType + ";base64," + b64Content
+            imgDataURLs.set(url, dataURL)
+            return dataURL
+        }
+        return null
     }
 
-    await page.evaluate((imgDataURLs) => {
-        Array.from(document.querySelectorAll("img")).forEach((e) => {
-            if (e.currentSrc && imgDataURLs[e.currentSrc]) {
-                e.setAttribute("src", imgDataURLs[e.currentSrc])
-            } else {
-                e.removeAttribute("src")
-            }
-        })
+    async function setImageURL(node: CDP.DOM.Node, el: HTMLElement) {
+        if (node.nodeName != "IMG") return
+        const currentSrc = await getCurrentSrc(node.nodeId)
+        if (currentSrc === null) return
+        const dataURL = await dataURLForResource(currentSrc)
+        if (dataURL === null) return
+        el.setAttribute("src", dataURL)
+    }
 
-        Array.from(document.querySelectorAll("[data-background-image-url]")).forEach((ee) => {
-            const e = ee as HTMLElement
-            var bi = e.getAttribute("data-background-image-url") || ""
-            if (imgDataURLs[bi]) {
-                e.style.backgroundImage = "url('" + imgDataURLs[bi] + "')"
-            } else {
-                e.style.backgroundImage = "none"
-            }
-        })
-    }, imgDataURLs)
-
-    console.timeEnd("process resources")
-    console.time("strip DOM")
-
-    await page.evaluate(() => {
-        function eachElement(document: Document, f: (e: Element) => void) {
-            var nodeIterator = document.createNodeIterator(document, NodeFilter.SHOW_ELEMENT)
-            var node = nodeIterator.nextNode()
-            while (node) {
-                f(node as Element)
-                node = nodeIterator.nextNode()
+    function getLowerCaseAttribute(node: CDP.DOM.Node, name: string): string | null {
+        if (node.attributes === undefined) return null
+        for (let i = 0; i < node.attributes.length; i += 2) {
+            if (node.attributes[i].toLowerCase() == name) {
+                return node.attributes[i + 1].toLowerCase()
             }
         }
+        return null
+    }
 
-        eachElement(document, (e: Element) => {
-            // TODO: proper element and attribute whitelist
-            if (e.nodeName == "SCRIPT" || e.nodeName == "STYLE") {
-                e.remove()
-                return
-            }
-            if (e.nodeName == "LINK" && (e.getAttribute("rel") || "").toLowerCase() == "stylesheet") {
-                e.remove()
-                return
-            }
-            if (e.nodeName == "META" && e.getAttribute("http-equiv")) {
-                e.remove()
-                return
-            }
-            if (document.head.contains(e)) return
-            for (var attr of Array.from(e.attributes)) {
-                if (attr.name == "style" || attr.name == "href" || attr.name == "datetime") continue
-                if (e.nodeName == "IMG" && attr.name == "src") continue
-                e.removeAttributeNode(attr)
-            }
-        })
-    })
+    function shouldDropElement(node: CDP.DOM.Node): boolean {
+        // TODO: proper element and attribute whitelist
+        if (node.nodeName == "SCRIPT" || node.nodeName == "STYLE") {
+            return true
+        }
+        if (node.nodeName == "LINK" && getLowerCaseAttribute(node, "rel") == "stylesheet") {
+            return true
+        }
+        if (node.nodeName == "META" && getLowerCaseAttribute(node, "http-equiv") !== null) {
+            return true
+        }
+        // TODO: if (document.head.contains(e)) return true
+        return false
+    }
 
-    console.timeEnd("strip DOM")
+    function applyAttributes(node: CDP.DOM.Node, el: HTMLElement) {
+        if (node.attributes === undefined) return
+        for (let i = 0; i < node.attributes.length; i += 2) {
+            switch (node.attributes[i].toLowerCase()) {
+                case "href":
+                case "datetime":
+                    el.setAttribute(node.attributes[i], node.attributes[i + 1])
+                    break
+            }
+        }
+    }
 
-    process.stdout.write(await page.content())
+    async function appendNode(parent: Node, node: CDP.DOM.Node) {
+        switch (node.nodeType) {
+            case 1: // ELEMENT_NODE
+                if (shouldDropElement(node)) {
+                    return
+                }
+                const el = document.createElement(node.nodeName)
+                for (let child of node.children || []) {
+                    await appendNode(el, child)
+                }
+                await setImageURL(node, el)
+                applyAttributes(node, el)
+                await inlineStyles(node, el)
+                parent.appendChild(el)
+                break
+            case 3: // TEXT_NODE
+                const text = document.createTextNode(node.nodeValue)
+                parent.appendChild(text)
+                break
+            case 4: // CDATA_SECTION_NODE
+                const cdata = document.createCDATASection(node.nodeValue)
+                parent.appendChild(cdata)
+                break
+        }
+    }
+
+    const CDPDocument: CDP.DOM.GetDocumentResponse = await client.send('DOM.getDocument',
+        { depth: -1 } as CDP.DOM.GetDocumentRequest)
+    // See https://dom.spec.whatwg.org/#interface-node
+    for (let node of CDPDocument.root.children!) {
+        switch (node.nodeType) {
+            case 1: // ELEMENT_NODE
+                for (let ch of node.children!) {
+                    switch (ch.nodeName) {
+                        case "HEAD":
+                            await appendNode(document.head, ch)
+                            break
+                        case "BODY":
+                            await appendNode(document.body, ch)
+                            break
+                    }
+                }
+                break
+            case 10: // DOCUMENT_TYPE_NODE
+                // const doctype: CDP.DOM.GetOuterHTMLResponse = await client.send('DOM.getOuterHTML',
+                //     { nodeId: node.nodeId } as CDP.DOM.GetOuterHTMLRequest)
+                document.insertBefore(document.implementation.createDocumentType(
+                    node.nodeName, node.publicId!, node.systemId!), document.childNodes[0])
+                break
+        }
+    }
+
+    console.timeEnd("extract")
+    process.stdout.write(dom.serialize())
 }
