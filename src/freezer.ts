@@ -206,18 +206,16 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         return null
     }
 
-    function shouldDropElement(node: CDP.DOM.Node): boolean {
-        // TODO: proper element and attribute whitelist
-        if (node.nodeName == "SCRIPT" || node.nodeName == "STYLE") {
+    function shouldDropElement(node: CDP.DOM.Node, head: boolean): boolean {
+        if (node.nodeName == "SCRIPT" || node.nodeName == "STYLE" || node.nodeName == "LINK") {
             return true
         }
-        if (node.nodeName == "LINK" && getLowerCaseAttribute(node, "rel") == "stylesheet") {
+        if (node.nodeName == "META" && getLowerCaseAttribute(node, "charset") !== null) {
+            return false
+        }
+        if (head && node.nodeName != "TITLE" && node.nodeName != "HEAD") {
             return true
         }
-        if (node.nodeName == "META" && getLowerCaseAttribute(node, "http-equiv") !== null) {
-            return true
-        }
-        // TODO: if (document.head.contains(e)) return true
         return false
     }
 
@@ -225,6 +223,7 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         if (node.attributes === undefined) return
         for (let i = 0; i < node.attributes.length; i += 2) {
             switch (node.attributes[i].toLowerCase()) {
+                case "charset":
                 case "href":
                 case "datetime":
                     el.setAttribute(node.attributes[i], node.attributes[i + 1])
@@ -233,16 +232,12 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
         }
     }
 
-    async function appendNode(parent: Node, node: CDP.DOM.Node) {
+    async function appendNode(parent: Node, head: boolean, node: CDP.DOM.Node) {
         switch (node.nodeType) {
             case 1: // ELEMENT_NODE
-                if (shouldDropElement(node)) {
-                    return
-                }
+                if (shouldDropElement(node, head)) return
                 const el = document.createElement(node.nodeName)
-                for (let child of node.children || []) {
-                    await appendNode(el, child)
-                }
+                for (let child of node.children || []) await appendNode(el, head, child)
                 await setImageURL(node, el)
                 applyAttributes(node, el)
                 await inlineStyles(node, el)
@@ -268,10 +263,10 @@ async function freezePage(page: puppeteer.Page, client: puppeteer.CDPSession, UR
                 for (let ch of node.children!) {
                     switch (ch.nodeName) {
                         case "HEAD":
-                            await appendNode(document.head, ch)
+                            await appendNode(document.head, true, ch)
                             break
                         case "BODY":
-                            await appendNode(document.body, ch)
+                            await appendNode(document.body, false, ch)
                             break
                     }
                 }
