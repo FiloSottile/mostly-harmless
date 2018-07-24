@@ -1,0 +1,264 @@
+$def with (fb_data, cover, flipped_cover, host, tracking_id, _, DEBUG)
+
+<html>
+<head>
+
+<style>
+body {
+	background: #e7ebf2;
+	padding-bottom: 25px;
+	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+}
+
+.fixed-block {
+	width: 760px;
+	margin: 0 auto;
+}
+
+.title {
+	background-color: #fff;
+	display: inline-block;
+	margin-bottom: 20px;
+	color: #3d5e96;
+	font-family: helvetica;
+	height: 68px;
+	line-height: normal;
+	width: 750px;
+	border-color: #c4cce0;
+	-webkit-border-radius: 3px;
+	border-style: solid;
+	border-width: 1px;
+	-webkit-box-shadow: 0 1px 0 0 #d9dfea;
+	padding: 4px;
+}
+.title > div {
+	background-color: #f2f2f2;
+	height: 60px;
+	padding-top: 8px;
+	padding-left: 10px;
+	color: #333;
+}
+.title > div > div {
+	font-size: 30px;
+	line-height: 30px;
+	position: relative;
+	top: 12px;
+}
+
+.container {
+	width: 758px;
+	overflow: auto;
+	background: white;
+	border: 1px solid #c4cde0;
+	-webkit-border-radius: 3px;
+	border-bottom-width: 2px;
+	min-height: 220px;
+	padding-bottom: 10px;
+}
+.container > .header {
+	border-bottom: solid 1px #e5e5e5;
+	padding: 10px;
+}
+.container > .content {
+	padding: 10px 10px 0;
+}
+
+.content > .cover_image {
+	margin: 0 auto 5px;
+	display: block;
+	clear: both;
+	width: 700px;
+}
+.content > .arrow {
+	margin: 10px auto;
+	display: block;
+	clear: both;
+	width: 100px;
+}
+
+.button {
+	width: 200px;
+	height: 35px;
+	margin: 10px auto 0;
+	background-image: url(https://s-static.ak.fbcdn.net/rsrc.php/v2/yK/x/nDEHv4nTejR.png);
+	background-repeat: no-repeat;
+	background-size: auto;
+	background-position: -1px -441px;
+	background-color: #5b74a8;
+	border-color: #29447e #29447e #1a356e;
+	display: block;
+	border: 1px solid;
+	-webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 13px;
+	padding: 2px 6px;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap;
+}
+.button > span {
+	color: #fff;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	display: inline-block;
+	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+	font-size: 22px;
+	font-weight: bold;
+	line-height: 35px;
+	margin: 0;
+	padding: 1px 0 2px;
+	white-space: nowrap;
+}
+
+.footer {
+	width: 758px;
+	color: gray;
+	font-size: 11px;
+	line-height: 1.28;
+	padding-top: 10px;
+}
+.footer a {
+	color: #3b5998;
+	text-decoration: none;
+}
+.footer a:hover {
+	text-decoration: underline;
+}
+
+.jqmWindow {
+    display: none;
+    position: fixed;
+    top: 17%;
+    left: 50%;
+    margin-left: -200px;
+    width: 400px;
+    background-color: #EEE;
+    color: #333;
+    border: 1px solid #c4cde0;
+	-webkit-border-radius: 3px;
+    padding: 12px;
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+}
+#waitdialog {
+	text-align: center;
+}
+.jqmOverlay { background-color: #000; }
+</style>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '$tracking_id']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</head>
+<body>
+
+<a href="https://github.com/FiloSottile/cover-flipper"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+<div class="fixed-block">
+
+	<div class="title"><div><div>$_("_title_")</div></div></div>
+
+	<div class="container">
+		<div class="header">$:_("_description_")</div>
+
+		<div class="content">
+
+			<img class="cover_image" src="$cover">
+			<img class="arrow" src="http://i.imgur.com/LhToX.png">
+			<img class="cover_image" src="$flipped_cover">
+
+			<div class="button" onclick="upload()"><span>$_("_flip_button_")</span></div>
+
+		</div>
+	</div>
+
+	<div class="footer">$:_("_footer_")</div>
+
+</div>
+
+
+<div class="jqmWindow" id="waitdialog">
+
+<p>$:_("_wait_")</p>
+<p><img src="http://i.imgur.com/0v3Gw.gif"></p>
+
+</div>
+
+<div class="jqmWindow" id="donedialog">
+
+<p>$:_("_done_")</p>
+<p><div class="button" onclick="redirect()"><span>$_("_go_button_")</span></div></p>
+
+</div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+(function(b){b.fn.jqm=function(a){var k={overlay:50,overlayClass:"jqmOverlay",closeClass:"jqmClose",trigger:".jqModal",ajax:d,ajaxText:"",target:d,modal:d,toTop:d,onShow:d,onHide:d,onLoad:d};return this.each(function(){if(this._jqm)return i[this._jqm].c=b.extend({},i[this._jqm].c,a);g++;this._jqm=g;i[g]={c:b.extend(k,b.jqm.params,a),a:d,w:b(this).addClass("jqmID"+g),s:g};k.trigger&&b(this).jqmAddTrigger(k.trigger)})};b.fn.jqmAddClose=function(a){return n(this,a,"jqmHide")};b.fn.jqmAddTrigger=function(a){return n(this,
+a,"jqmShow")};b.fn.jqmShow=function(a){return this.each(function(){a=a||window.event;b.jqm.open(this._jqm,a)})};b.fn.jqmHide=function(a){return this.each(function(){a=a||window.event;b.jqm.close(this._jqm,a)})};b.jqm={hash:{},open:function(a,k){var c=i[a],e=c.c,l="."+e.closeClass,h=parseInt(c.w.css("z-index")),h=0<h?h:3E3,f=b("<div></div>").css({height:"100%",width:"100%",position:"fixed",left:0,top:0,"z-index":h-1,opacity:e.overlay/100});if(c.a)return d;c.t=k;c.a=!0;c.w.css("z-index",h);e.modal?
+(j[0]||p("bind"),j.push(a)):0<e.overlay?c.w.jqmAddClose(f):f=d;c.o=f?f.addClass(e.overlayClass).prependTo("body"):d;if(q&&(b("html,body").css({height:"100%",width:"100%"}),f)){var f=f.css({position:"absolute"})[0],g;for(g in{Top:1,Left:1})f.style.setExpression(g.toLowerCase(),"(_=(document.documentElement.scroll"+g+" || document.body.scroll"+g+"))+'px'")}e.ajax?(h=e.target||c.w,f=e.ajax,h="string"==typeof h?b(h,c.w):b(h),f="@"==f.substr(0,1)?b(k).attr(f.substring(1)):f,h.html(e.ajaxText).load(f,function(){e.onLoad&&
+e.onLoad.call(this,c);l&&c.w.jqmAddClose(b(l,c.w));r(c)})):l&&c.w.jqmAddClose(b(l,c.w));e.toTop&&c.o&&c.w.before('<span id="jqmP'+c.w[0]._jqm+'"></span>').insertAfter(c.o);e.onShow?e.onShow(c):c.w.show();r(c);return d},close:function(a){a=i[a];if(!a.a)return d;a.a=d;j[0]&&(j.pop(),j[0]||p("unbind"));a.c.toTop&&a.o&&b("#jqmP"+a.w[0]._jqm).after(a.w).remove();if(a.c.onHide)a.c.onHide(a);else a.w.hide(),a.o&&a.o.remove();return d},params:{}};var g=0,i=b.jqm.hash,j=[],q=b.browser.msie&&"6.0"==b.browser.version,
+d=!1,s=b('<iframe src="javascript:false;document.write(\'\');" class="jqm"></iframe>').css({opacity:0}),r=function(a){q&&(a.o?a.o.html('<p style="width:100%;height:100%"/>').prepend(s):b("iframe.jqm",a.w)[0]||a.w.prepend(s));t(a)},t=function(a){try{b(":input:visible",a.w)[0].focus()}catch(d){}},p=function(a){b()[a]("keypress",m)[a]("keydown",m)[a]("mousedown",m)},m=function(a){var d=i[j[j.length-1]];(a=!b(a.target).parents(".jqmID"+d.s)[0])&&t(d);return!a},n=function(a,g,c){return a.each(function(){var a=
+this._jqm;b(g).each(function(){this[c]||(this[c]=[],b(this).click(function(){for(var a in{jqmShow:1,jqmHide:1})for(var b in this[a])if(i[this[a][b]])i[this[a][b]].w[a](this);return d}));this[c].push(a)})})}})(jQuery);
+</script>
+<script type="text/javascript">
+var access_token = '$fb_data['oauth_token']';
+var flipped_cover = 'http://$host$flipped_cover';
+
+$if DEBUG:
+	flipped_cover = 'http://fakeimg.pl/2048x600/?text=Cover%20flipper';
+
+function upload() {
+	_gaq.push(['_trackEvent', 'Flow', 'Upload']);
+
+	jQuery('#waitdialog').jqmShow()
+
+	var url='https://graph.facebook.com/photos?access_token=' + access_token;
+
+	jQuery.post(url, { url: flipped_cover }, function(data) {
+		window.cover_fbid = data['id'];
+		ready();
+	}, 'json');
+}
+
+function ready() {
+	jQuery('#waitdialog').jqmHide()
+	jQuery('#donedialog').jqmShow()
+}
+
+function redirect() {
+	_gaq.push(['_trackEvent', 'Flow', 'Redirect']);
+	top.location.href = 'https://www.facebook.com/me?preview_cover=' + window.cover_fbid;
+}
+
+jQuery(document).ready(function() {
+	jQuery('#waitdialog').jqm({ modal: true });
+	jQuery('#donedialog').jqm({ modal: true });
+
+	jQuery('a').each(function() {
+		var href = jQuery(this).attr('href');
+		jQuery(this).click(function() {
+			top.location.href = href;
+			console.log(href);
+		});
+		jQuery(this).attr('href', '#');
+	});
+});
+</script>
+
+
+</body>
+</html>
