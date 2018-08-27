@@ -19,6 +19,7 @@ func AcceptLoop() {
 		if err, ok := err.(net.Error); ok && err.Temporary() {
 			log.Printf("Temporary Accept error: %v; sleeping 1s...", err)
 			time.Sleep(1 * time.Second)
+			continue
 		} else if err != nil {
 			log.Fatal(err)
 		}
