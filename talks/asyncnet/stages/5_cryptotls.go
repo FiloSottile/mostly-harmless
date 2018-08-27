@@ -2,6 +2,7 @@ package stages
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/binary"
 	"io"
 	"log"
@@ -9,7 +10,7 @@ import (
 	"time"
 )
 
-func serviceConnProxiAndSNI(conn net.Conn) {
+func serviceConnTLS(conn net.Conn) {
 	defer conn.Close()
 
 	conn.SetDeadline(time.Now().Add(30 * time.Second))
@@ -36,29 +37,19 @@ func serviceConnProxiAndSNI(conn net.Conn) {
 	conn.SetDeadline(time.Time{}) // reset deadline
 	conn.(*net.TCPConn).SetKeepAlive(true)
 	conn.(*net.TCPConn).SetKeepAlivePeriod(3 * time.Minute)
-	proxyConn(prefixConn{
+
+	// TODO: move to main()
+	cert, err := tls.LoadX509KeyPair("localhost.pem", "localhost-key.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+	config := &tls.Config{Certificates: []tls.Certificate{cert}}
+
+	c := tls.Server(prefixConn{
 		Reader: io.MultiReader(&buf, conn),
 		Conn:   conn,
-	})
-}
+	}, config)
 
-type prefixConn struct {
-	io.Reader
-	net.Conn
-}
-
-func (c prefixConn) Read(b []byte) (int, error) {
-	return c.Reader.Read(b)
-}
-
-func proxyConn(conn net.Conn) {
-	upstream, err := net.Dial("tcp", "gophercon.com:https")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer upstream.Close()
-	go io.Copy(upstream, conn)
-	_, err = io.Copy(conn, upstream)
-	log.Printf("Proxy connection finished with err = %v", err)
+	// copyToStderr(c)
+	proxyConn(c, "gophercon.com:http")
 }

@@ -1,35 +1,15 @@
-package main
+package stages
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/binary"
 	"io"
 	"log"
 	"net"
-	"os"
 	"time"
 )
 
-func main() {
-	l, err := net.Listen("tcp", "localhost:4242")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for {
-		conn, err := l.Accept()
-		if err, ok := err.(net.Error); ok && err.Temporary() {
-			log.Printf("Temporary Accept error: %v; sleeping 1s...", err)
-			time.Sleep(1 * time.Second)
-		} else if err != nil {
-			log.Fatal(err)
-		}
-		go serviceConn(conn)
-	}
-}
-
-func serviceConn(conn net.Conn) {
+func serviceConnProxyAndSNI(conn net.Conn) {
 	defer conn.Close()
 
 	conn.SetDeadline(time.Now().Add(30 * time.Second))
@@ -57,20 +37,10 @@ func serviceConn(conn net.Conn) {
 	conn.(*net.TCPConn).SetKeepAlive(true)
 	conn.(*net.TCPConn).SetKeepAlivePeriod(3 * time.Minute)
 
-	// TODO: move to main()
-	cert, err := tls.LoadX509KeyPair("localhost.pem", "localhost-key.pem")
-	if err != nil {
-		log.Fatal(err)
-	}
-	config := &tls.Config{Certificates: []tls.Certificate{cert}}
-
-	c := tls.Server(prefixConn{
+	proxyConn(prefixConn{
 		Reader: io.MultiReader(&buf, conn),
 		Conn:   conn,
-	}, config)
-
-	// copyToStderr(c)
-	proxyConn(c, "gophercon.com:http")
+	}, "gophercon.com:https")
 }
 
 type prefixConn struct {
@@ -89,22 +59,7 @@ func proxyConn(conn net.Conn, addr string) {
 		return
 	}
 	defer upstream.Close()
-	go io.Copy(upstream, conn)       // cancelled by Close
+	go io.Copy(upstream, conn)
 	_, err = io.Copy(conn, upstream) // splice from 1.11!
 	log.Printf("Proxy connection finished with err = %v", err)
-}
-
-func copyToStderr(conn net.Conn) {
-	var total int
-	for {
-		conn.SetReadDeadline(time.Now().Add(5 * time.Second))
-		var buf [128]byte
-		n, err := conn.Read(buf[:])
-		os.Stderr.Write(buf[:n])
-		total += n
-		if err != nil {
-			log.Printf("Copied %d bytes and ended with err = %v.", total, err)
-			return // or we could recover if Timeout()
-		}
-	}
 }

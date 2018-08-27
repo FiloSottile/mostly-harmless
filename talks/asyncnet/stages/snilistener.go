@@ -23,6 +23,8 @@ func mainSNIListener() {
 		"localhost.pem", "localhost-key.pem"))
 }
 
+// This is wrong!! It blocks in Accept.
+
 type sniListener struct {
 	net.Listener
 }

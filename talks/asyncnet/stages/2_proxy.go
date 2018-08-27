@@ -15,7 +15,7 @@ func serviceConnProxy(conn net.Conn) {
 		return
 	}
 	defer upstream.Close()
-	go io.Copy(upstream, conn)
-	_, err = io.Copy(conn, upstream)
+	go io.Copy(upstream, conn)       // cancelled by Close
+	_, err = io.Copy(conn, upstream) // splice from 1.11!
 	log.Printf("Connection finished with err = %v", err)
 }

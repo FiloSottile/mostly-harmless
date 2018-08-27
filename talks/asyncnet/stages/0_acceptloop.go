@@ -5,32 +5,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"runtime/debug"
+	"time"
 )
 
 func AcceptLoop() {
-	// go build . && ./asyncnet
-	// nc localhost 4242
-
 	l, err := net.Listen("tcp", "localhost:4242")
-	fatalIfErr(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for {
 		conn, err := l.Accept()
-		fatalIfErr(err) // TODO: check for temporary errors
+		if err, ok := err.(net.Error); ok && err.Temporary() {
+			log.Printf("Temporary Accept error: %v; sleeping 1s...", err)
+			time.Sleep(1 * time.Second)
+		} else if err != nil {
+			log.Fatal(err)
+		}
 		go serviceConn(conn)
 	}
 }
 
 func serviceConn(conn net.Conn) {
+	defer conn.Close()
 	n, err := io.Copy(os.Stderr, conn)
 	log.Printf("Copied %d bytes and ended with err = %v.", n, err)
-	conn.Close()
-}
-
-func fatalIfErr(err error) {
-	if err != nil {
-		debug.PrintStack()
-		log.Fatal(err)
-	}
 }
