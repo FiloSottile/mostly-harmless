@@ -1,0 +1,17 @@
+# crawshaw.io/sqlite v0.0.0-20180418062123-f0c5f168ad84
+crawshaw.io/sqlite
+crawshaw.io/sqlite/sqliteutil
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
+# github.com/sirupsen/logrus v1.0.5
+github.com/sirupsen/logrus
+github.com/sirupsen/logrus/hooks/syslog
+# golang.org/x/crypto v0.0.0-20180411161317-d6449816ce06
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.0.0-20180415214307-500e7a4f953d
+golang.org/x/net/context
+# golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+golang.org/x/sync/errgroup
+# golang.org/x/sys v0.0.0-20180414092825-2281fa97ef7b
+golang.org/x/sys/unix
+golang.org/x/sys/windows

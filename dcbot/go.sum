@@ -1,0 +1,14 @@
+crawshaw.io/sqlite v0.0.0-20180418062123-f0c5f168ad84 h1:ZaoPCqXpLQELaMRZ70WSb9nmoaYyKv6F+TgZ+Rlpyqo=
+crawshaw.io/sqlite v0.0.0-20180418062123-f0c5f168ad84/go.mod h1:BZaitnE9BVpocOuCdi/y5XReJMUelG53e/rDSLwSFzY=
+github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
+github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/sirupsen/logrus v1.0.5 h1:8c8b5uO0zS4X6RPl/sd1ENwSkIc0/H2PaHxE3udaE8I=
+github.com/sirupsen/logrus v1.0.5/go.mod h1:pMByvHTf9Beacp5x1UXfOR9xyW/9antXMhjMPG0dEzc=
+golang.org/x/crypto v0.0.0-20180411161317-d6449816ce06 h1:EOqG0JqGlLr+punVB69jvWCv/ErZKGlC7PMdyHfv+Bc=
+golang.org/x/crypto v0.0.0-20180411161317-d6449816ce06/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
+golang.org/x/net v0.0.0-20180415214307-500e7a4f953d h1:YbPBOQdSo5fFDiZgBDcltE4XjtOLk2wUw16mtGFpoOg=
+golang.org/x/net v0.0.0-20180415214307-500e7a4f953d/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
+golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f h1:wMNYb4v58l5UBM7MYRLPG6ZhfOqbKu7X5eyFl8ZhKvA=
+golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sys v0.0.0-20180414092825-2281fa97ef7b h1:TZPu90il0Pa3zEX8+9qApAIAo9nGKe3ZzQCfYS1y/Ic=
+golang.org/x/sys v0.0.0-20180414092825-2281fa97ef7b/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
