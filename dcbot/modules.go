@@ -123,6 +123,11 @@ func (dcb *DocumentCloudBot) Download(ctx context.Context) error {
 				break
 			}
 			if err != nil {
+				f.Close()
+				os.Remove(f.Name())
+				return err
+			}
+			if err := f.Close(); err != nil {
 				os.Remove(f.Name())
 				return err
 			}
