@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
-	"os"
+
+	"crawshaw.io/iox"
 
 	"github.com/pkg/errors"
 )
@@ -53,31 +53,29 @@ func (dcb *DocumentCloudBot) Search(ctx context.Context, page int) (*SearchResul
 	return sr, nil
 }
 
-func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) (*os.File, error) {
+func (dcb *DocumentCloudBot) DownloadFile(ctx context.Context, url string) (int64, *iox.BufferFile, error) {
 	select {
 	case <-dcb.assetRate.C:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		return 0, nil, ctx.Err()
 	}
 
 	res, err := dcb.httpClient.Do(newRequest(ctx, url))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed asset request")
+		return 0, nil, errors.Wrap(err, "failed asset request")
 	}
 	defer res.Body.Close()
-	f, err := ioutil.TempFile(dcb.tmpDir, "tmp-dc-asset-")
+	f := dcb.filer.BufferFile(1024 * 1024)
+	n, err := io.Copy(f, res.Body)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create temp file")
-	}
-	if _, err := io.Copy(f, res.Body); err != nil {
-		os.Remove(f.Name())
-		return nil, errors.Wrap(err, "failed reading asset")
+		f.Close()
+		return 0, nil, errors.Wrap(err, "failed reading asset")
 	}
 	if _, err := f.Seek(0, io.SeekStart); err != nil {
-		os.Remove(f.Name())
-		return nil, errors.Wrap(err, "failed seeking")
+		f.Close()
+		return 0, nil, errors.Wrap(err, "failed seeking")
 	}
-	return f, nil
+	return n, f, nil
 }
 
 func IDForDocument(doc json.RawMessage) string {

@@ -26,7 +26,10 @@ package sqlite
 // #cgo CFLAGS: -DSQLITE_ENABLE_PREUPDATE_HOOK
 // #cgo CFLAGS: -DSQLITE_USE_ALLOCA
 // #cgo CFLAGS: -DSQLITE_ENABLE_COLUMN_METADATA
+// #cgo CFLAGS: -DHAVE_USLEEP=1
+// #cgo windows LDFLAGS: -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
 // #cgo linux LDFLAGS: -ldl -lm
+// #cgo linux CFLAGS: -std=c99
 // #cgo openbsd LDFLAGS: -lm
 // #cgo openbsd CFLAGS: -std=c99
 //
@@ -133,15 +136,29 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 		C.sqlite3_close_v2(conn.conn)
 		return nil, reserr("OpenConn", path, "", res)
 	}
+	C.sqlite3_extended_result_codes(conn.conn, 1)
 
 	// TODO: only if Debug ?
 	_, file, line, _ := runtime.Caller(2) // caller of OpenConn or Open
 	runtime.SetFinalizer(conn, func(conn *Conn) {
 		if !conn.closed {
 			var buf [20]byte
-			panic(file + ":" + string(itoa(buf[:], int(line))) + ": *sqlite.Conn garbage collected, call Close method")
+			panic(file + ":" + string(itoa(buf[:], int64(line))) + ": *sqlite.Conn garbage collected, call Close method")
 		}
 	})
+
+	if flags&SQLITE_OPEN_WAL > 0 {
+		stmt, _, err := conn.PrepareTransient("PRAGMA journal_mode=wal;")
+		if err != nil {
+			conn.Close()
+			return nil, err
+		}
+		defer stmt.Finalize()
+		if _, err := stmt.Step(); err != nil {
+			conn.Close()
+			return nil, err
+		}
+	}
 
 	return conn, nil
 }
@@ -171,14 +188,24 @@ func (conn *Conn) Close() error {
 //
 //	ctx := context.WithTimeout(context.Background(), 100*time.Millisecond)
 //	conn.SetInterrupt(ctx.Done())
-func (conn *Conn) SetInterrupt(doneCh <-chan struct{}) {
+//
+// Any busy statements at the time SetInterrupt is called will be reset.
+//
+// SetInterrupt returns the old doneCh assigned to the connection.
+func (conn *Conn) SetInterrupt(doneCh <-chan struct{}) (oldDoneCh <-chan struct{}) {
 	if conn.closed {
 		panic("sqlite.Conn is closed")
 	}
+	oldDoneCh = conn.doneCh
 	conn.cancelInterrupt()
 	conn.doneCh = doneCh
+	for _, stmt := range conn.stmts {
+		if stmt.lastHasRow {
+			stmt.Reset()
+		}
+	}
 	if doneCh == nil {
-		return
+		return oldDoneCh
 	}
 	cancelCh := make(chan struct{})
 	conn.cancelCh = cancelCh
@@ -193,6 +220,7 @@ func (conn *Conn) SetInterrupt(doneCh <-chan struct{}) {
 			cancelCh <- struct{}{}
 		}
 	}()
+	return oldDoneCh
 }
 
 func (conn *Conn) interrupted(loc, query string) error {
@@ -250,8 +278,12 @@ func (conn *Conn) Prep(query string) *Stmt {
 // https://www.sqlite.org/c3ref/prepare.html
 func (conn *Conn) Prepare(query string) (*Stmt, error) {
 	if stmt := conn.stmts[query]; stmt != nil {
-		stmt.Reset()
-		stmt.ClearBindings()
+		if err := stmt.Reset(); err != nil {
+			return nil, err
+		}
+		if err := stmt.ClearBindings(); err != nil {
+			return nil, err
+		}
 		return stmt, nil
 	}
 	stmt, trailingBytes, err := conn.prepare(query, C.SQLITE_PREPARE_PERSISTENT)
@@ -276,8 +308,15 @@ func (conn *Conn) Prepare(query string) (*Stmt, error) {
 //
 // https://www.sqlite.org/c3ref/prepare.html
 func (conn *Conn) PrepareTransient(query string) (stmt *Stmt, trailingBytes int, err error) {
-	return conn.prepare(query, 0)
-
+	stmt, trailingBytes, err = conn.prepare(query, 0)
+	if stmt != nil {
+		runtime.SetFinalizer(stmt, func(stmt *Stmt) {
+			if stmt.conn != nil && !stmt.conn.closed {
+				panic("open *sqlite.Stmt \"" + query + "\" garbage collected, call Finalize")
+			}
+		})
+	}
+	return stmt, trailingBytes, err
 }
 
 func (conn *Conn) prepare(query string, flags C.uint) (*Stmt, int, error) {
@@ -300,13 +339,6 @@ func (conn *Conn) prepare(query string, flags C.uint) (*Stmt, int, error) {
 		return nil, 0, err
 	}
 	trailingBytes := int(C.strlen(ctrailing))
-
-	// TODO: only if Debug ?
-	runtime.SetFinalizer(stmt, func(stmt *Stmt) {
-		if stmt.conn != nil && !stmt.conn.closed {
-			panic("open *sqlite.Stmt \"" + query + "\" garbage collected, call Finalize")
-		}
-	})
 
 	for i, count := 1, stmt.BindParamCount(); i <= count; i++ {
 		cname := C.sqlite3_bind_parameter_name(stmt.stmt, C.int(i))
@@ -395,6 +427,7 @@ type Stmt struct {
 	colNames     map[string]int
 	bindErr      error
 	prepInterupt bool // set if Prep was interrupted
+	lastHasRow   bool // last bool returned by Step
 }
 
 func (stmt *Stmt) interrupted(loc string) error {
@@ -431,9 +464,7 @@ func (stmt *Stmt) Finalize() error {
 // https://www.sqlite.org/c3ref/reset.html
 func (stmt *Stmt) Reset() error {
 	stmt.conn.count++
-	if err := stmt.interrupted("Stmt.Reset"); err != nil {
-		return err
-	}
+	stmt.lastHasRow = false
 	res := C.sqlite3_reset(stmt.stmt)
 	return stmt.conn.reserr("Stmt.Reset", stmt.query, res)
 }
@@ -481,16 +512,28 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 	if stmt.bindErr != nil {
 		err = stmt.bindErr
 		stmt.bindErr = nil
+		stmt.Reset()
 		return false, err
 	}
+	defer func() {
+		stmt.lastHasRow = rowReturned
+	}()
 
 	for {
 		stmt.conn.count++
 		if err := stmt.interrupted("Stmt.Step"); err != nil {
+			stmt.Reset()
 			return false, err
 		}
 		switch res := C.sqlite3_step(stmt.stmt); uint8(res) { // reduce to non-extended error code
 		case C.SQLITE_LOCKED:
+			if res != C.SQLITE_LOCKED_SHAREDCACHE {
+				// don't call wait_for_unlock_notify as it might deadlock, see:
+				// https://github.com/crawshaw/sqlite/issues/6
+				stmt.Reset()
+				return false, stmt.conn.reserr("Stmt.Step", stmt.query, res)
+			}
+
 			if res := C.wait_for_unlock_notify(stmt.conn.conn, stmt.conn.unlockNote); res != C.SQLITE_OK {
 				return false, stmt.conn.reserr("Stmt.Step(Wait)", stmt.query, res)
 			}
@@ -521,6 +564,27 @@ func (stmt *Stmt) findBindName(loc string, param string) int {
 		stmt.bindErr = reserr(loc, stmt.query, "unknown parameter: "+param, C.SQLITE_ERROR)
 	}
 	return pos
+}
+
+// DataCount returns the number of columns in the current row of the result
+// set of prepared statement.
+// https://sqlite.org/c3ref/data_count.html
+func (stmt *Stmt) DataCount() int {
+	return int(C.sqlite3_data_count(stmt.stmt))
+}
+
+// ColumnCount returns the number of columns in the result set returned by the
+// prepared statement.
+// https://sqlite.org/c3ref/column_count.html
+func (stmt *Stmt) ColumnCount() int {
+	return int(C.sqlite3_column_count(stmt.stmt))
+}
+
+// ColumnName returns the name assigned to a particular column in the result
+// set of a SELECT statement.
+// https://sqlite.org/c3ref/column_name.html
+func (stmt *Stmt) ColumnName(col int) string {
+	return C.GoString((*C.char)(unsafe.Pointer(C.sqlite3_column_name(stmt.stmt, C.int(col)))))
 }
 
 // BindParamCount reports the number of parameters in stmt.
@@ -696,6 +760,57 @@ func (stmt *Stmt) columnBytes(col int) []byte {
 	}
 	n := stmt.ColumnLen(col)
 	return (*[1 << 28]byte)(unsafe.Pointer(p))[:n:n]
+}
+
+// ColumnType are codes for each of the SQLite fundamental datatypes:
+//
+//   64-bit signed integer
+//   64-bit IEEE floating point number
+//   string
+//   BLOB
+//   NULL
+//
+// https://www.sqlite.org/c3ref/c_blob.html
+type ColumnType int
+
+const (
+	SQLITE_INTEGER = ColumnType(C.SQLITE_INTEGER)
+	SQLITE_FLOAT   = ColumnType(C.SQLITE_FLOAT)
+	SQLITE_TEXT    = ColumnType(C.SQLITE3_TEXT)
+	SQLITE_BLOB    = ColumnType(C.SQLITE_BLOB)
+	SQLITE_NULL    = ColumnType(C.SQLITE_NULL)
+)
+
+func (t ColumnType) String() string {
+	switch t {
+	case SQLITE_INTEGER:
+		return "SQLITE_INTEGER"
+	case SQLITE_FLOAT:
+		return "SQLITE_FLOAT"
+	case SQLITE_TEXT:
+		return "SQLITE_TEXT"
+	case SQLITE_BLOB:
+		return "SQLITE_BLOB"
+	case SQLITE_NULL:
+		return "SQLITE_NULL"
+	default:
+		return "<unknown sqlite datatype>"
+	}
+}
+
+// ColumnType returns the datatype code for the initial data
+// type of the result column. The returned value is one of:
+//
+//   SQLITE_INTEGER
+//   SQLITE_FLOAT
+//   SQLITE_TEXT
+//   SQLITE_BLOB
+//   SQLITE_NULL
+//
+// Column indicies start at 0.
+// https://www.sqlite.org/c3ref/column_blob.html
+func (stmt *Stmt) ColumnType(col int) ColumnType {
+	return ColumnType(C.sqlite3_column_type(stmt.stmt, C.int(col)))
 }
 
 // ColumnText returns a query result as a string.

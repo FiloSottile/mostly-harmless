@@ -1,4 +1,6 @@
-# crawshaw.io/sqlite v0.0.0-20180418062123-f0c5f168ad84
+# crawshaw.io/iox v0.0.0-20180616200234-48719f2c4ca1
+crawshaw.io/iox
+# crawshaw.io/sqlite v0.1.0
 crawshaw.io/sqlite
 crawshaw.io/sqlite/sqliteutil
 # github.com/pkg/errors v0.8.0

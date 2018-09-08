@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"crawshaw.io/iox"
 	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	lsyslog "github.com/sirupsen/logrus/hooks/syslog"
@@ -24,7 +24,7 @@ type DocumentCloudBot struct {
 	httpClient *http.Client
 	searchRate *time.Ticker
 	assetRate  *time.Ticker
-	tmpDir     string
+	filer      *iox.Filer
 }
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
 	cwd, _ := os.Getwd()
-	tmpDirFlag := flag.String("tmpdir", cwd, "enable backfilling from `page`")
+	tmpDirFlag := flag.String("tmpdir", cwd, "stage big downloads at `path`")
 	flag.Parse()
 
 	if *debugFlag {
@@ -52,9 +52,6 @@ func main() {
 		logrus.WithError(err).Fatal("Failed to open database")
 	}
 	defer func() {
-		conn := db.Get(nil)
-		sqliteutil.ExecTransient(conn, `PRAGMA journal_mode=DELETE`, nil)
-		db.Put(conn)
 		logrus.WithError(db.Close()).Info("Closed database")
 	}()
 
@@ -69,8 +66,9 @@ func main() {
 		},
 		searchRate: time.NewTicker(10 * time.Second),
 		assetRate:  time.NewTicker(1 * time.Second),
-		tmpDir:     *tmpDirFlag,
+		filer:      iox.NewFiler(0),
 	}
+	dcb.filer.SetTempdir(*tmpDirFlag)
 
 	if err := dcb.initDB(context.Background()); err != nil {
 		logrus.WithError(err).Fatal("Failed to init database")
