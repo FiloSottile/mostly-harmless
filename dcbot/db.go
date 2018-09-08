@@ -30,7 +30,7 @@ func (dcb *DocumentCloudBot) insertDocument(ctx context.Context, id string, body
 	err = dcb.withConn(ctx, func(conn *sqlite.Conn) error {
 		return sqliteutil.Exec(conn, `INSERT INTO Documents (id, json) VALUES (?, ?)`, nil, id, body)
 	})
-	if sqlite.ErrCode(err) == sqlite.SQLITE_CONSTRAINT_UNIQUE {
+	if sqlite.ErrCode(err) == sqlite.SQLITE_CONSTRAINT_PRIMARYKEY {
 		return false, nil
 	}
 	if err != nil {
