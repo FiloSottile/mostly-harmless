@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"time"
 
-	"crawshaw.io/iox"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -105,42 +106,28 @@ func (dcb *DocumentCloudBot) Download(ctx context.Context) error {
 			return errors.Wrap(err, "failed to unmarshal document")
 		}
 		log.WithField("doc", doc.ID).Debug("Downloading files")
-		files := make(map[string]*iox.BufferFile)
-		cleanup := func() {
-			for _, f := range files {
-				f.Close()
-			}
-		}
-		sizes := make(map[string]int64)
 		for _, res := range []string{"pdf", "text"} {
 			url, ok := doc.Resources[res].(string)
 			if !ok {
-				cleanup()
 				return errors.Errorf("document %s is missing resource %s", doc.ID, res)
 			}
-			var (
-				n   int64
-				f   *iox.BufferFile
-				err error
-			)
+			f, err := os.Create(filepath.Join(dcb.filePath, doc.ID+"."+res))
+			if err != nil {
+				return err
+			}
 			for retry := 0; retry < 5; retry++ {
-				n, f, err = dcb.DownloadFile(ctx, url)
-				if err != nil {
+				if err = dcb.DownloadFile(ctx, url, f); err != nil {
 					log.WithError(err).WithField("retry", retry).Error("error downloading file")
 					continue
 				}
 				break
 			}
 			if err != nil {
-				cleanup()
+				os.Remove(f.Name())
 				return err
 			}
-			files[res] = f
-			sizes[res] = n
 		}
-		err = dcb.insertFiles(ctx, doc.ID, files, sizes)
-		cleanup()
-		if err != nil {
+		if err := dcb.markRetrieved(ctx, doc.ID); err != nil {
 			return err
 		}
 	}

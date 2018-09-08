@@ -1,7 +1,7 @@
 module github.com/FiloSottile/mostly-harmless/dcbot
 
 require (
-	crawshaw.io/iox v0.0.0-20180616200234-48719f2c4ca1
+	crawshaw.io/iox v0.0.0-20180616200234-48719f2c4ca1 // indirect
 	crawshaw.io/sqlite v0.1.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect

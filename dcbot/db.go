@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"io"
 
-	"crawshaw.io/iox"
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/pkg/errors"
@@ -59,40 +57,8 @@ func (dcb *DocumentCloudBot) getPendingDocument(ctx context.Context) ([]byte, er
 	return result, nil
 }
 
-func (dcb *DocumentCloudBot) insertFiles(ctx context.Context, document string, files map[string]*iox.BufferFile, sizes map[string]int64) error {
+func (dcb *DocumentCloudBot) markRetrieved(ctx context.Context, document string) error {
 	return dcb.withConn(ctx, func(conn *sqlite.Conn) (err error) {
-		defer sqliteutil.Save(conn)(&err)
-		for typ := range files {
-			if sizes[typ] == 0 {
-				continue
-			}
-			query := `INSERT INTO Files (document, type, content) VALUES (?, ?, ?)`
-			stmt, err := conn.Prepare(query)
-			if err != nil {
-				return errors.Wrapf(err, "failed to prepare query (%s)", query)
-			}
-			stmt.BindText(1, document)
-			stmt.BindText(2, typ)
-			stmt.BindZeroBlob(3, sizes[typ])
-			if _, err := stmt.Step(); err != nil {
-				return errors.Wrapf(err, "failed to insert file of size %d and type %s for document %s",
-					sizes[typ], typ, document)
-			}
-			b, err := conn.OpenBlob("", "Files", "content", conn.LastInsertRowID(), true)
-			if err != nil {
-				return errors.Wrapf(err, "failed to open file of size %d and type %s for document %s",
-					sizes[typ], typ, document)
-			}
-			if _, err := io.Copy(b, files[typ]); err != nil {
-				return errors.Wrapf(err, "failed to copy file of size %d and type %s for document %s",
-					sizes[typ], typ, document)
-			}
-			if err := b.Close(); err != nil {
-				return errors.Wrapf(err, "failed to close file of size %d and type %s for document %s",
-					sizes[typ], typ, document)
-			}
-
-		}
 		return errors.Wrap(sqliteutil.Exec(conn,
 			`UPDATE Documents SET retrieved = DATETIME('now') WHERE id = ?`,
 			nil, document), "failed to update document")

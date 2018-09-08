@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"crawshaw.io/iox"
 	"crawshaw.io/sqlite"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -24,7 +23,7 @@ type DocumentCloudBot struct {
 	httpClient *http.Client
 	searchRate *time.Ticker
 	assetRate  *time.Ticker
-	filer      *iox.Filer
+	filePath   string
 }
 
 func main() {
@@ -32,8 +31,7 @@ func main() {
 	syslogFlag := flag.Bool("syslog", false, "also log to syslog")
 	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
-	cwd, _ := os.Getwd()
-	tmpDirFlag := flag.String("tmpdir", cwd, "stage big downloads at `path`")
+	filesFlag := flag.String("files", ".", "store files at `path`")
 	flag.Parse()
 
 	if *debugFlag {
@@ -66,9 +64,8 @@ func main() {
 		},
 		searchRate: time.NewTicker(10 * time.Second),
 		assetRate:  time.NewTicker(1 * time.Second),
-		filer:      iox.NewFiler(0),
+		filePath:   *filesFlag,
 	}
-	dcb.filer.SetTempdir(*tmpDirFlag)
 
 	if err := dcb.initDB(context.Background()); err != nil {
 		logrus.WithError(err).Fatal("Failed to init database")
