@@ -1,3 +1,17 @@
+// Copyright 2017 Filippo Valsorda
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -11,6 +25,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,7 +35,13 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-const Version = "002"
+func isSupportedVersion(version string) bool {
+	switch version {
+	case "002", "003":
+		return true
+	}
+	return false
+}
 
 type Backup struct {
 	Items []struct {
@@ -28,14 +49,16 @@ type Backup struct {
 		ContentType string    `json:"content_type"`
 		CreatedAt   time.Time `json:"created_at"`
 		EncItemKey  string    `json:"enc_item_key"`
-		Content     string
+		Content     string    `json:"content"`
 		UpdatedAt   time.Time `json:"updated_at"`
-		Deleted     bool
+		Deleted     bool      `json:"deleted"`
 	}
 	AuthParams struct {
 		Salt    string `json:"pw_salt"`
+		Nonce   string `json:"pw_nonce"`
+		Email   string `json:"identifier"`
 		Cost    int    `json:"pw_cost"`
-		Version string
+		Version string `json:"version"`
 	} `json:"auth_params"`
 }
 
@@ -49,17 +72,17 @@ type Item struct {
 
 func decrypt(s, uuid string, ek, ak []byte) ([]byte, error) {
 	parts := strings.Split(s, ":")
-	if len(parts) != 5 {
+	if len(parts) < 5 {
 		return nil, errors.New("wrong parts length")
 	}
-	if parts[0] != Version {
+	if !isSupportedVersion(parts[0]) {
 		return nil, errors.New("wrong version")
 	}
 	if parts[2] != uuid {
 		return nil, errors.New("wrong uuid")
 	}
 	h := hmac.New(sha256.New, ak)
-	h.Write([]byte(strings.Join(append([]string{Version}, parts[2:]...), ":")))
+	h.Write([]byte(strings.Join(append([]string{parts[0]}, parts[2:5]...), ":")))
 	if parts[1] != hex.EncodeToString(h.Sum(nil)) {
 		return nil, errors.New("wrong hmac")
 	}
@@ -91,6 +114,9 @@ func derive(pw, salt string, cost int) ([]byte, []byte, []byte) {
 }
 
 func main() {
+	if len(os.Args) != 2 {
+		log.Fatalln("usage: standard-decrypt backup.txt")
+	}
 	data, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
 		log.Fatalln("Failed to open backup file:", err)
@@ -99,14 +125,25 @@ func main() {
 	if err := json.Unmarshal(data, &backup); err != nil {
 		log.Fatalln("Failed to parse backup file:", err)
 	}
-	if backup.AuthParams.Version != Version {
-		log.Fatalln("Unsupported version")
+	if !isSupportedVersion(backup.AuthParams.Version) {
+		log.Fatalln("Unsupported version:", backup.AuthParams.Version)
 	}
 
 	os.Stderr.WriteString("Password: ")
 	s := bufio.NewScanner(os.Stdin)
 	s.Scan()
-	spw, ek, ak := derive(s.Text(), backup.AuthParams.Salt, backup.AuthParams.Cost)
+
+	var salt string
+	switch backup.AuthParams.Version {
+	case "003":
+		h := sha256.New()
+		fmt.Fprintf(h, "%s:SF:%s:%d:%s", backup.AuthParams.Email, backup.AuthParams.Version,
+			backup.AuthParams.Cost, backup.AuthParams.Nonce)
+		salt = hex.EncodeToString(h.Sum(nil))
+	case "002":
+		salt = backup.AuthParams.Salt
+	}
+	spw, ek, ak := derive(s.Text(), salt, backup.AuthParams.Cost)
 	log.Printf("Server password: %x", spw)
 
 	var res []*Item
