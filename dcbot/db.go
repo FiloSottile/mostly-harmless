@@ -16,12 +16,8 @@ func (dcb *DocumentCloudBot) initDB(ctx context.Context) error {
 				json TEXT NOT NULL,
 				retrieved DATETIME
 			);
-			CREATE TABLE IF NOT EXISTS Files (
-				document TEXT NOT NULL REFERENCES Documents(id),
-				type TEXT NOT NULL,
-				content BLOB NOT NULL,
-				UNIQUE (document, type) 
-			);
+			CREATE INDEX IF NOT EXISTS pending ON Documents(retrieved)
+				WHERE retrieved IS NULL;
 		`)
 	})
 }

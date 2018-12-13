@@ -34,6 +34,7 @@ func main() {
 	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
 	filesFlag := flag.String("files", ".", "store files at `path`")
+	drainFlag := flag.Bool("drain", false, "move files out of SQLite")
 	flag.Parse()
 
 	go func() {
@@ -82,6 +83,9 @@ func main() {
 	g.Go(func() error { return dcb.Download(ctx) })
 	if *backFlag >= 0 {
 		g.Go(func() error { return dcb.Backfill(ctx, *backFlag) })
+	}
+	if *drainFlag {
+		g.Go(func() error { return dcb.Drain(ctx) })
 	}
 	g.Go(func() error {
 		c := make(chan os.Signal, 1)
