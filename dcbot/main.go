@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 	"log/syslog"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -33,6 +35,10 @@ func main() {
 	backFlag := flag.Int("backfill", -1, "enable backfilling from `page`")
 	filesFlag := flag.String("files", ".", "store files at `path`")
 	flag.Parse()
+
+	go func() {
+		log.Println(http.ListenAndServe("0.0.0.0:6060", nil))
+	}()
 
 	if *debugFlag {
 		logrus.SetLevel(logrus.DebugLevel)
