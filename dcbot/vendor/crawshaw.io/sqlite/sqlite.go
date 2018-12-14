@@ -53,6 +53,7 @@ import (
 	"bytes"
 	"runtime"
 	"sync"
+	"time"
 	"unsafe"
 )
 
@@ -61,7 +62,7 @@ import (
 // A Conn can only be used by goroutine at a time.
 type Conn struct {
 	conn   *C.sqlite3
-	stmts  map[string]*Stmt
+	stmts  map[string]*Stmt // query -> prepared statement
 	closed bool
 	count  int // shared variable to help the race detector find Conn misuse
 
@@ -102,7 +103,6 @@ const (
 //
 //	SQLITE_OPEN_READWRITE
 //	SQLITE_OPEN_CREATE
-//	SQLITE_OPEN_SHAREDCACHE
 //	SQLITE_OPEN_WAL
 //	SQLITE_OPEN_URI
 //	SQLITE_OPEN_NOMUTEX
@@ -115,7 +115,7 @@ func OpenConn(path string, flags OpenFlags) (*Conn, error) {
 func openConn(path string, flags OpenFlags) (*Conn, error) {
 	sqliteInit.Do(sqliteInitFn)
 	if flags == 0 {
-		flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE | SQLITE_OPEN_WAL | SQLITE_OPEN_URI | SQLITE_OPEN_NOMUTEX
+		flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_WAL | SQLITE_OPEN_URI | SQLITE_OPEN_NOMUTEX
 	}
 	conn := &Conn{
 		stmts: make(map[string]*Stmt),
@@ -159,6 +159,10 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 			return nil, err
 		}
 	}
+
+	// Large timeout as Go programs should control timeouts
+	// using SetInterrupt. Documented in SetBusyTimeout.
+	conn.SetBusyTimeout(10 * time.Second)
 
 	return conn, nil
 }
@@ -221,6 +225,16 @@ func (conn *Conn) SetInterrupt(doneCh <-chan struct{}) (oldDoneCh <-chan struct{
 		}
 	}()
 	return oldDoneCh
+}
+
+// SetBusyTimeout sets a busy handler that sleeps for up to d to acquire a lock.
+//
+// By default, a large busy timeout (10s) is set on the assumption that
+// Go programs use a context object via SetInterrupt to control timeouts.
+//
+// https://www.sqlite.org/c3ref/busy_timeout.html
+func (conn *Conn) SetBusyTimeout(d time.Duration) {
+	C.sqlite3_busy_timeout(conn.conn, C.int(d/time.Millisecond))
 }
 
 func (conn *Conn) interrupted(loc, query string) error {
@@ -380,7 +394,6 @@ func (conn *Conn) extreserr(loc, query string, res C.int) error {
 	switch res {
 	case C.SQLITE_OK, C.SQLITE_ROW, C.SQLITE_DONE:
 		return nil
-	case C.SQLITE_BUSY:
 	default:
 		msg = C.GoString(C.sqlite3_errmsg(conn.conn))
 	}
@@ -465,8 +478,20 @@ func (stmt *Stmt) Finalize() error {
 func (stmt *Stmt) Reset() error {
 	stmt.conn.count++
 	stmt.lastHasRow = false
-	res := C.sqlite3_reset(stmt.stmt)
-	return stmt.conn.reserr("Stmt.Reset", stmt.query, res)
+	var res C.int
+	for {
+		res = C.sqlite3_reset(stmt.stmt)
+		if res != C.SQLITE_LOCKED_SHAREDCACHE {
+			break
+		}
+		// An SQLITE_LOCKED_SHAREDCACHE error has been seen from sqlite3_reset
+		// in the wild, but so far has eluded exact test case replication.
+		// TODO: write a test for this.
+		if res := C.wait_for_unlock_notify(stmt.conn.conn, stmt.conn.unlockNote); res != C.SQLITE_OK {
+			return stmt.conn.extreserr("Stmt.Reset(Wait)", stmt.query, res)
+		}
+	}
+	return stmt.conn.extreserr("Stmt.Reset", stmt.query, res)
 }
 
 // ClearBindings clears all bound parameter values on a statement.
@@ -485,9 +510,15 @@ func (stmt *Stmt) ClearBindings() error {
 //
 // If a row of data is available, rowReturned is reported as true.
 // If the statement has reached the end of the available data then
-// rowReturned is false.
+// rowReturned is false. Thus the status codes SQLITE_ROW and
+// SQLITE_DONE are reported by the rowReturned bool, and all other
+// non-OK status codes are reported as an error.
+//
+// If an error value is returned, then the statement has been reset.
 //
 // https://www.sqlite.org/c3ref/step.html
+//
+// Shared cache
 //
 // As the sqlite package enables shared cache mode by default
 // and multiple writers are common in multi-threaded programs,
@@ -516,13 +547,15 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 		return false, err
 	}
 	defer func() {
+		if err != nil {
+			C.sqlite3_reset(stmt.stmt)
+		}
 		stmt.lastHasRow = rowReturned
 	}()
 
 	for {
 		stmt.conn.count++
 		if err := stmt.interrupted("Stmt.Step"); err != nil {
-			stmt.Reset()
 			return false, err
 		}
 		switch res := C.sqlite3_step(stmt.stmt); uint8(res) { // reduce to non-extended error code
@@ -530,12 +563,11 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 			if res != C.SQLITE_LOCKED_SHAREDCACHE {
 				// don't call wait_for_unlock_notify as it might deadlock, see:
 				// https://github.com/crawshaw/sqlite/issues/6
-				stmt.Reset()
-				return false, stmt.conn.reserr("Stmt.Step", stmt.query, res)
+				return false, stmt.conn.extreserr("Stmt.Step", stmt.query, res)
 			}
 
 			if res := C.wait_for_unlock_notify(stmt.conn.conn, stmt.conn.unlockNote); res != C.SQLITE_OK {
-				return false, stmt.conn.reserr("Stmt.Step(Wait)", stmt.query, res)
+				return false, stmt.conn.extreserr("Stmt.Step(Wait)", stmt.query, res)
 			}
 			C.sqlite3_reset(stmt.stmt)
 			// loop
@@ -543,7 +575,7 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 			return true, nil
 		case C.SQLITE_DONE:
 			return false, nil
-		case C.SQLITE_BUSY, C.SQLITE_INTERRUPT, C.SQLITE_CONSTRAINT:
+		case C.SQLITE_INTERRUPT, C.SQLITE_CONSTRAINT:
 			// TODO: embed some of these errors into the stmt for zero-alloc errors?
 			return false, stmt.conn.reserr("Stmt.Step", stmt.query, res)
 		default:
