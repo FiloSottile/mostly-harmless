@@ -1,16 +1,15 @@
-
-# OAuth1 [![Build Status](https://travis-ci.org/dghubble/oauth1.png)](https://travis-ci.org/dghubble/oauth1) [![Coverage](http://gocover.io/_badge/github.com/dghubble/oauth1)](http://gocover.io/github.com/dghubble/oauth1) [![GoDoc](http://godoc.org/github.com/dghubble/oauth1?status.png)](http://godoc.org/github.com/dghubble/oauth1)
+# OAuth1 [![Build Status](https://travis-ci.org/dghubble/oauth1.svg?branch=master)](https://travis-ci.org/dghubble/oauth1) [![GoDoc](http://godoc.org/github.com/dghubble/oauth1?status.svg)](http://godoc.org/github.com/dghubble/oauth1)
 <img align="right" src="https://storage.googleapis.com/dghubble/oauth1.png">
 
-OAauth1 is a Go implementation of the [OAuth 1 spec](https://tools.ietf.org/html/rfc5849).
+Package `oauth1` provides a Go implementation of the [OAuth 1 spec](https://tools.ietf.org/html/rfc5849) to allow end-users to authorize a client (i.e. consumer) to access protected resources on his/her behalf.
 
-It allows end-users to authorize a client (consumer) to access protected resources on his/her behalf and to make signed and authorized requests.
-
-Package `oauth1` takes design cues from [golang.org/x/oauth2](https://godoc.org/golang.org/x/oauth2), to provide an analogous API and an `http.Client` with a Transport which signs/authorizes requests.
+`oauth1` takes design cues from [golang.org/x/oauth2](https://godoc.org/golang.org/x/oauth2), to provide an analogous API and an `http.Client` with a Transport which signs/authorizes requests.
 
 ## Install
 
-    go get github.com/dghubble/oauth1
+```
+go get github.com/dghubble/oauth1
+```
 
 ## Docs
 
@@ -59,7 +58,7 @@ config := oauth1.Config{
     ```go
     authorizationURL, err := config.AuthorizationURL(requestToken)
     // handle err
-    http.Redirect(w, req, authorizationURL.String(), htt.StatusFound)
+    http.Redirect(w, req, authorizationURL.String(), http.StatusFound)
     ```
 
     Receive the callback from the OAuth1 provider in a handler.
@@ -74,7 +73,7 @@ config := oauth1.Config{
     ```go
     accessToken, accessSecret, err := config.AccessToken(requestToken, requestSecret, verifier)
     // handle error
-    token := NewToken(accessToken, accessSecret)
+    token := oauth1.NewToken(accessToken, accessSecret)
     ```
 
 Check the [examples](examples) to see this authorization flow in action from the command line, with Twitter PIN-based login and Tumblr login.
@@ -112,7 +111,7 @@ An `Endpoint` groups an OAuth provider's token and authorization URL endpoints.E
 
 A `Config` stores a consumer application's consumer key and secret, the registered callback URL, and the `Endpoint` to which the consumer is registered. It provides OAuth1 authorization flow methods.
 
-An OAuth1 `Token` is an access token which can be used to make signed requests on behalf of a user. See [Authorized Requests](#Authorized Requests) for details.
+An OAuth1 `Token` is an access token which can be used to make signed requests on behalf of a user. See [Authorized Requests](#authorized-requests) for details.
 
 If you've used the [golang.org/x/oauth2](https://godoc.org/golang.org/x/oauth2) package for OAuth2 before, this organization should be familiar.
 

@@ -64,7 +64,7 @@ to make requests on behalf of the user.
 
 	accessToken, accessSecret, err := config.AccessToken(requestToken, requestSecret, verifier)
 	// handle error
-	token := NewToken(accessToken, accessSecret)
+	token := oauth1.NewToken(accessToken, accessSecret)
 
 Check the examples to see this authorization flow in action from the command
 line, with Twitter PIN-based login and Tumblr login.

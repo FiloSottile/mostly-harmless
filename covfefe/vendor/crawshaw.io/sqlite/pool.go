@@ -14,6 +14,8 @@
 
 package sqlite
 
+import "sync"
+
 // Pool is a pool of SQLite connections.
 //
 // It is safe for use by multiple goroutines concurrently.
@@ -23,10 +25,28 @@ package sqlite
 //
 //	conn := dbpool.Get(nil)
 //	defer dbpool.Put(conn)
+//
+// As Get may block, a context can be used to return if a task
+// is cancelled. In this case the Conn returned will be nil:
+//
+//	conn := dbpool.Get(ctx.Done())
+//	if conn == nil {
+//		return context.Canceled
+//	}
+//	defer dbpool.Put(conn)
 type Pool struct {
+	// If checkReset, the Put method checks all of the connection's
+	// prepared statements and ensures they were correctly cleaned up.
+	// If they were not, Put will panic with details.
+	//
+	// TODO: export this? Is it enough of a performance concern?
+	checkReset bool
+
 	free   chan *Conn
-	all    []*Conn
 	closed chan struct{}
+
+	allMu sync.Mutex
+	all   map[*Conn]struct{}
 }
 
 // Open opens a fixed-size pool of SQLite connections.
@@ -34,26 +54,23 @@ type Pool struct {
 //
 //	SQLITE_OPEN_READWRITE
 //	SQLITE_OPEN_CREATE
-//	SQLITE_OPEN_SHAREDCACHE
 //	SQLITE_OPEN_WAL
 //	SQLITE_OPEN_URI
 //	SQLITE_OPEN_NOMUTEX
-//
-// The pool is always created with the shared cache enabled.
 func Open(uri string, flags OpenFlags, poolSize int) (*Pool, error) {
-	if flags == 0 {
-		flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_WAL | SQLITE_OPEN_URI | SQLITE_OPEN_NOMUTEX
-	}
-	flags |= SQLITE_OPEN_SHAREDCACHE
 	if uri == ":memory:" {
 		return nil, strerror{msg: `sqlite: ":memory:" does not work with multiple connections, use "file::memory:?mode=memory"`}
 	}
 
 	p := &Pool{
-		free:   make(chan *Conn, poolSize),
-		closed: make(chan struct{}),
+		checkReset: true,
+		free:       make(chan *Conn, poolSize),
+		closed:     make(chan struct{}),
 	}
 
+	p.allMu.Lock()
+	defer p.allMu.Unlock()
+	p.all = make(map[*Conn]struct{})
 	for i := 0; i < poolSize; i++ {
 		conn, err := openConn(uri, flags)
 		if err != nil {
@@ -61,7 +78,7 @@ func Open(uri string, flags OpenFlags, poolSize int) (*Pool, error) {
 			return nil, err
 		}
 		p.free <- conn
-		p.all = append(p.all, conn)
+		p.all[conn] = struct{}{}
 	}
 
 	return p, nil
@@ -78,7 +95,10 @@ func Open(uri string, flags OpenFlags, poolSize int) (*Pool, error) {
 // details.
 func (p *Pool) Get(doneCh <-chan struct{}) *Conn {
 	select {
-	case conn := <-p.free:
+	case conn, ok := <-p.free:
+		if !ok {
+			return nil // pool is closed
+		}
 		conn.SetInterrupt(doneCh)
 		return conn
 	case <-doneCh:
@@ -89,27 +109,47 @@ func (p *Pool) Get(doneCh <-chan struct{}) *Conn {
 }
 
 // Put puts an SQLite connection back into the Pool.
+// A nil conn will cause Put to panic.
 func (p *Pool) Put(conn *Conn) {
 	if conn == nil {
 		panic("attempted to Put a nil Conn into Pool")
 	}
+	if p.checkReset {
+		for _, stmt := range conn.stmts {
+			if stmt.lastHasRow {
+				panic("connection returned to pool has active statement: \"" + stmt.query + "\"")
+			}
+		}
+	}
+
+	p.allMu.Lock()
+	_, found := p.all[conn]
+	p.allMu.Unlock()
+
+	if !found {
+		panic("sqlite.Pool.Put: connection not created by this pool")
+	}
+
 	conn.SetInterrupt(nil)
 	select {
 	case p.free <- conn:
 	default:
-		panic("no space in Pool; Get/Put mismatch")
 	}
 }
 
 // Close closes all the connections in the Pool.
 func (p *Pool) Close() (err error) {
 	close(p.closed)
-	for _, conn := range p.all {
+
+	p.allMu.Lock()
+	for conn := range p.all {
 		err2 := conn.Close()
 		if err == nil {
 			err = err2
 		}
 	}
+	p.allMu.Unlock()
+
 	close(p.free)
 	for range p.free {
 	}

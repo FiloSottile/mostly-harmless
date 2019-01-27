@@ -1,6 +1,18 @@
 # OAuth1 Changelog
 
-## v0.4.0 (2016-04-20)
+Notable changes between releases.
+
+## Latest
+
+## v0.5.0
+
+* Use standard library `context` ([c0a405](https://github.com/dghubble/oauth1/commit/c0a405baf29f5ed2616bc1ef6b778532c960aa5b))
+  * Requires Go 1.7+
+* Add `xing` package with a provider `Endpoint` ([#10](https://github.com/dghubble/oauth1/pull/10))
+* Add status code checks so server errors are clearer ([09fded](https://github.com/dghubble/oauth1/commit/b0d5c93a5292844f3fd568893ce4e12bdcdb79ae))
+* Move confirmed check after token check so errors are clearer ([#8](https://github.com/dghubble/oauth1/pull/8))
+
+## v0.4.0
 
 * Add a Signer field to the Config to allow custom Signer implementations.
 * Use the HMACSigner by default. This provides the same signing behavior as in previous versions (HMAC-SHA1).
@@ -9,14 +21,14 @@
 * Change `Signer` to be a signer interface.
 * Remove the old Signer methods `SetAccessTokenAuthHeader`, `SetRequestAuthHeader`, and `SetRequestTokenAuthHeader`.
 
-## v0.3.0 (2015-09-13)
+## v0.3.0
 
 * Added `NoContext` which may be used in most cases.
 * Allowed Transport Base http.RoundTripper to be set through a ctx.
 * Changed `NewClient` to require a context.Context.
 * Changed `Config.Client` to require a context.Context.
 
-## v.0.2.0 (2015-08-30)
+## v.0.2.0
 
 * Improved OAuth 1 spec compliance and test coverage.
 * Added `func StaticTokenSource(*Token) TokenSource`
@@ -25,6 +37,6 @@
 * Removed `RequestToken` in favor of passing token and secret value strings.
 * Removed `ReuseTokenSource` struct, it was effectively a static source. Replaced by `StaticTokenSource`.
 
-## v0.1.0 (2015-04-26)
+## v0.1.0
 
 * Initial OAuth1 support for obtaining authorization and making authorized requests.

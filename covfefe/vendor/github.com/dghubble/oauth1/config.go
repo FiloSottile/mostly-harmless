@@ -1,12 +1,12 @@
 package oauth1
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	"golang.org/x/net/context"
 )
 
 const (
@@ -73,6 +73,9 @@ func (c *Config) RequestToken() (requestToken, requestSecret string, err error) 
 	}
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return "", "", fmt.Errorf("oauth1: Server returned status %d", resp.StatusCode)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", "", err
@@ -82,13 +85,13 @@ func (c *Config) RequestToken() (requestToken, requestSecret string, err error) 
 	if err != nil {
 		return "", "", err
 	}
-	if values.Get(oauthCallbackConfirmedParam) != "true" {
-		return "", "", errors.New("oauth1: oauth_callback_confirmed was not true")
-	}
 	requestToken = values.Get(oauthTokenParam)
 	requestSecret = values.Get(oauthTokenSecretParam)
 	if requestToken == "" || requestSecret == "" {
 		return "", "", errors.New("oauth1: Response missing oauth_token or oauth_token_secret")
+	}
+	if values.Get(oauthCallbackConfirmedParam) != "true" {
+		return "", "", errors.New("oauth1: oauth_callback_confirmed was not true")
 	}
 	return requestToken, requestSecret, nil
 }
@@ -147,6 +150,9 @@ func (c *Config) AccessToken(requestToken, requestSecret, verifier string) (acce
 	}
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return "", "", fmt.Errorf("oauth1: Server returned status %d", resp.StatusCode)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", "", err

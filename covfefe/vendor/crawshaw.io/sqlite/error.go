@@ -50,7 +50,7 @@ func (code ErrorCode) String() string {
 	switch code {
 	default:
 		var buf [20]byte
-		return "SQLITE_UNKNOWN_ERR(" + string(itoa(buf[:], int(code))) + ")"
+		return "SQLITE_UNKNOWN_ERR(" + string(itoa(buf[:], int64(code))) + ")"
 	case SQLITE_OK:
 		return "SQLITE_OK(not an error)"
 	case SQLITE_ROW:
@@ -338,11 +338,25 @@ const (
 	SQLITE_AUTH_USER               = ErrorCode(C.SQLITE_AUTH_USER)
 )
 
+type causer interface {
+	Cause() error
+}
+
 // ErrCode extracts the SQLite error code from err.
 // If err is not a sqlite Error, SQLITE_ERROR is returned.
 // If err is nil, SQLITE_OK is returned.
+//
+// This function supports wrapped errors that implement
+//
+// 	interface { Cause() error }
+//
+// for errors from packages like https://github.com/pkg/errors
 func ErrCode(err error) ErrorCode {
 	if err != nil {
+		if ce, ok := err.(causer); ok {
+			return ErrCode(ce.Cause())
+		}
+
 		if err, isError := err.(Error); isError {
 			return err.Code
 		}
@@ -351,7 +365,7 @@ func ErrCode(err error) ErrorCode {
 	return SQLITE_OK
 }
 
-func itoa(buf []byte, val int) []byte {
+func itoa(buf []byte, val int64) []byte {
 	i := len(buf) - 1
 	neg := false
 	if val < 0 {

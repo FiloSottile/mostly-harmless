@@ -74,21 +74,37 @@ func savepoint(conn *sqlite.Conn, name string) (releaseFn func(*error), err erro
 		return nil, err
 	}
 	releaseFn = func(errp *error) {
-		if p := recover(); p != nil {
-			Exec(conn, fmt.Sprintf("ROLLBACK TO %q;", name), nil)
-			panic(p)
-		}
-		if *errp == nil {
+		recoverP := recover()
+
+		if *errp == nil && recoverP == nil {
+			// Success path. Release the savepoint successfully.
 			*errp = Exec(conn, fmt.Sprintf("RELEASE %q;", name), nil)
-		} else {
-			err := Exec(conn, fmt.Sprintf("ROLLBACK TO %q;", name), nil)
-			if err != nil {
-				panic(err)
+			if *errp == nil {
+				return
 			}
-			err = Exec(conn, fmt.Sprintf("RELEASE %q;", name), nil)
-			if err != nil {
-				panic(err)
-			}
+			// Possible interrupt. Fall through to the error path.
+		}
+
+		orig := ""
+		if *errp != nil {
+			orig = (*errp).Error() + "\n\t"
+		}
+
+		// Error path.
+		// Always run ROLLBACK even if the connection has been interrupted.
+		oldDoneCh := conn.SetInterrupt(nil)
+		defer conn.SetInterrupt(oldDoneCh)
+		err := Exec(conn, fmt.Sprintf("ROLLBACK TO %q;", name), nil)
+		if err != nil {
+			panic(orig + err.Error())
+		}
+		err = Exec(conn, fmt.Sprintf("RELEASE %q;", name), nil)
+		if err != nil {
+			panic(orig + err.Error())
+		}
+
+		if recoverP != nil {
+			panic(recoverP)
 		}
 	}
 	return releaseFn, nil

@@ -137,6 +137,24 @@ func (s *Sling) Delete(pathURL string) *Sling {
 	return s.Path(pathURL)
 }
 
+// Options sets the Sling method to OPTIONS and sets the given pathURL.
+func (s *Sling) Options(pathURL string) *Sling {
+	s.method = "OPTIONS"
+	return s.Path(pathURL)
+}
+
+// Trace sets the Sling method to TRACE and sets the given pathURL.
+func (s *Sling) Trace(pathURL string) *Sling {
+	s.method = "TRACE"
+	return s.Path(pathURL)
+}
+
+// Connect sets the Sling method to CONNECT and sets the given pathURL.
+func (s *Sling) Connect(pathURL string) *Sling {
+	s.method = "CONNECT"
+	return s.Path(pathURL)
+}
+
 // Header
 
 // Add adds the key, value pair in Headers, appending values for existing keys
@@ -351,6 +369,13 @@ func (s *Sling) Do(req *http.Request, successV, failureV interface{}) (*http.Res
 	}
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
+
+	// Don't try to decode on 204s
+	if resp.StatusCode == 204 {
+		return resp, nil
+	}
+
+	// Decode from json
 	if successV != nil || failureV != nil {
 		err = decodeResponseJSON(resp, successV, failureV)
 	}

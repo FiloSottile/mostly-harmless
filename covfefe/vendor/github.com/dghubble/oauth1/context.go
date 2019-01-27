@@ -1,9 +1,8 @@
 package oauth1
 
 import (
+	"context"
 	"net/http"
-
-	"golang.org/x/net/context"
 )
 
 type contextKey struct{}
