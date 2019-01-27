@@ -1,4 +1,2 @@
-/bin
-/.GOPATH
 twitter.db*
 creds.json
