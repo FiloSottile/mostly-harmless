@@ -3,10 +3,14 @@ package covfefe
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
+	"github.com/h2non/filetype"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -53,15 +57,18 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 					// We'll find this media attached to the retweet.
 					continue
 				}
+				log := log.WithFields(log.Fields{
+					"url": m.MediaURLHttps, "media": m.ID, "tweet": tweet.ID,
+				})
 				body, err := c.httpGet(m.MediaURLHttps)
 				if err != nil {
-					log.WithFields(log.Fields{
-						"err": err, "url": m.MediaURLHttps,
-						"media": m.ID, "tweet": tweet.ID,
-					}).Error("Failed to download media")
+					log.WithError(err).Error("Failed to download media")
 					continue
 				}
-				c.insertMedia(body, m.ID, tweet.ID)
+				if err := c.saveMedia(body, m.ID); err != nil {
+					log.WithError(err).Error("Failed to save media")
+					continue
+				}
 				// TODO: archive videos?
 			}
 			c.wg.Done()
@@ -75,6 +82,22 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 		c.processTweet(m, tweet.QuotedStatus)
 	}
 	// TODO: crawl thread, non-embedded linked tweets
+}
+
+func (c *Covfefe) saveMedia(data []byte, id int64) error {
+	t, err := filetype.Match(data)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	name := filepath.Join(c.mediaPath, fmt.Sprintf("%d.%s", id, t.Extension))
+	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if _, err := f.Write(data); err != nil {
+		return errors.WithStack(err)
+	}
+	return errors.WithStack(f.Close())
 }
 
 func (c *Covfefe) processUser(m *Message, user *twitter.User) {

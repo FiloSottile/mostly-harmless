@@ -9,6 +9,7 @@ require (
 	github.com/dghubble/sling v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20181024230925-c65c006176ff
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/h2non/filetype v1.0.6
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.3.0
 	github.com/stretchr/testify v1.3.0 // indirect

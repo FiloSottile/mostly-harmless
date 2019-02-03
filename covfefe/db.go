@@ -34,11 +34,6 @@ func (c *Covfefe) initDB() error {
 				message INTEGER NOT NULL REFERENCES Messages(id),
 				deleted INTEGER REFERENCES Messages(id)
 			);
-			CREATE TABLE IF NOT EXISTS Media (
-				id INTEGER PRIMARY KEY,
-				media BLOB NOT NULL,
-				tweet INTEGER NOT NULL REFERENCES Tweets(id)
-			);
 			CREATE TABLE IF NOT EXISTS Users (
 				id INTEGER NOT NULL,
 				handle TEXT NOT NULL,
@@ -122,15 +117,6 @@ func (c *Covfefe) insertFollow(follower, target, message int64) error {
 	return errors.Wrap(c.execSQL(
 		`INSERT INTO Follows (follower, target, first_seen) VALUES (?, ?, ?);`,
 		follower, target, message), "failed insert query")
-}
-
-func (c *Covfefe) insertMedia(data []byte, id, tweet int64) {
-	err := c.execSQL(`INSERT INTO Media (id, media, tweet) VALUES (?, ?, ?)`, id, data, tweet)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err, "media": id, "tweet": tweet,
-		}).Error("Failed to insert media")
-	}
 }
 
 func (c *Covfefe) deletedTweet(tweet, message int64) {

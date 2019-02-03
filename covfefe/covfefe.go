@@ -33,10 +33,11 @@ type Covfefe struct {
 	wg         sync.WaitGroup
 	httpClient *http.Client
 	msgIDs     *lru.Cache
+	mediaPath  string
 	rescan     bool // TODO: get rid of this field
 }
 
-func Run(dbPath string, creds *Credentials) error {
+func Run(dbPath, mediaPath string, creds *Credentials) error {
 	db, err := sqlite.Open("file:"+dbPath, 0, 5)
 	if err != nil {
 		return errors.Wrap(err, "failed to open database")
@@ -55,7 +56,8 @@ func Run(dbPath string, creds *Credentials) error {
 		httpClient: &http.Client{
 			Timeout: 1 * time.Minute,
 		},
-		msgIDs: lru.New(1 << 16),
+		msgIDs:    lru.New(1 << 16),
+		mediaPath: mediaPath,
 	}
 
 	if err := c.initDB(); err != nil {

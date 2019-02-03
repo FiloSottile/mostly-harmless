@@ -14,6 +14,10 @@ github.com/dghubble/sling
 github.com/golang/groupcache/lru
 # github.com/google/go-querystring v1.0.0
 github.com/google/go-querystring/query
+# github.com/h2non/filetype v1.0.6
+github.com/h2non/filetype
+github.com/h2non/filetype/matchers
+github.com/h2non/filetype/types
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/pkg/errors v0.8.1

@@ -14,6 +14,7 @@ import (
 
 func main() {
 	dbFile := flag.String("db", "twitter.db", "The path of the SQLite DB")
+	mediaPath := flag.String("media", "twitter-media", "The folder to store media files in")
 	credsFile := flag.String("creds", "creds.json", "The path of the credentials JSON")
 	syslogFlag := flag.Bool("syslog", false, "Also log to syslog")
 	debugFlag := flag.Bool("debug", false, "Enable debug logging")
@@ -39,7 +40,7 @@ func main() {
 		log.WithError(err).Fatal("Failed to parse credentials file")
 	}
 
-	if err := covfefe.Run(*dbFile, creds); err != nil {
+	if err := covfefe.Run(*dbFile, *mediaPath, creds); err != nil {
 		log.WithError(err).Fatal("Failed to run fetcher")
 	}
 }
