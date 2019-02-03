@@ -11,7 +11,6 @@ import (
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqliteutil"
-	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/golang/groupcache/lru"
 	"github.com/pkg/errors"
@@ -86,34 +85,22 @@ func Run(dbPath string, creds *Credentials) error {
 	config := oauth1.NewConfig(creds.APIKey, creds.APISecret)
 	for i, account := range creds.Accounts {
 		token := oauth1.NewToken(account.Token, account.TokenSecret)
-
 		httpClient := config.Client(oauth1.NoContext, token)
-		client := twitter.NewClient(httpClient)
+		httpClient.Timeout = 10 * time.Second
 
-		user, _, err := client.Accounts.VerifyCredentials(nil)
+		user, err := verifyCredentials(ctx, httpClient)
 		if err != nil {
 			return errors.Wrapf(err, "invalid credetials at position %d", i)
 		}
 
-		params := &twitter.StreamUserParams{
-			With:          "followings",
-			StallWarnings: twitter.Bool(true),
-		}
-		stream, err := client.Streams.User(params)
-		if err != nil {
-			log.WithError(err).WithField("account", user.ScreenName).Error("Failed to open twitter stream")
-		}
-
 		streamsWG.Add(1)
 		go func() {
-			log.WithField("account", user.ScreenName).WithField("id", user.ID).Info("Starting streaming")
-			for msg := range StreamWithContext(ctx, stream) {
-				messages <- &Message{account: user, msg: msg}
-			}
-			if ctx.Err() == nil {
-				log.WithField("account", user.ScreenName).Error("Stream terminated")
-				cancel() // TODO: retry and reopen
-			}
+			log.WithField("account", user.ScreenName).WithField("id", user.ID).Info(
+				"Starting to monitor timeline")
+			err := followTimeline(ctx, httpClient, user, messages)
+			log.WithField("account", user.ScreenName).WithError(err).Error(
+				"Stopped following timeline") // TODO: retry
+			cancel()
 			streamsWG.Done()
 		}()
 	}
@@ -122,35 +109,4 @@ func Run(dbPath string, creds *Credentials) error {
 	close(messages)
 	c.wg.Wait()
 	return nil
-}
-
-type Message struct {
-	account *twitter.User
-	msg     []byte
-	id      int64
-}
-
-func StreamWithContext(ctx context.Context, stream *twitter.Stream) chan []byte {
-	c := make(chan []byte)
-	go func() {
-	Loop:
-		for {
-			select {
-			case m, ok := <-stream.Messages:
-				if !ok {
-					break Loop
-				}
-				select {
-				case c <- m:
-				case <-ctx.Done():
-					break Loop
-				}
-			case <-ctx.Done():
-				break Loop
-			}
-		}
-		stream.Stop()
-		close(c)
-	}()
-	return c
 }
