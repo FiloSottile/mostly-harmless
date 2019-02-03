@@ -10,6 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type Message struct {
+	account *twitter.User
+	msg     []byte
+	id      int64
+}
+
 func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 	new, err := c.insertTweet(tweet, m.id)
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func getJSON(ctx context.Context, c *http.Client, url string, v interface{}) error {
@@ -50,32 +50,40 @@ func verifyCredentials(ctx context.Context, c *http.Client) (*twitter.User, erro
 	return u, nil
 }
 
-type Message struct {
-	account *twitter.User
-	msg     []byte
-	id      int64
+type timelineMonitor struct {
+	ctx context.Context
+	c   *http.Client
+	m   chan *Message
+	u   *twitter.User
 }
 
-func followTimeline(ctx context.Context, c *http.Client, u *twitter.User, m chan *Message) error {
-	tick := time.NewTicker(1 * time.Minute)
+func (t *timelineMonitor) followTimeline() error {
+	log := logrus.WithField("account", t.u.ScreenName)
+
+	tick := time.NewTicker(1*time.Minute + 5*time.Second)
 	defer tick.Stop()
 
 	var sinceID uint64
 	for {
+		select {
+		case <-t.ctx.Done():
+			return t.ctx.Err()
+		case <-tick.C:
+		}
+
 		url := "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200"
 		if sinceID != 0 { // Twitter hates devs.
 			url = fmt.Sprintf("%s&since_id=%d", url, sinceID)
 		}
 		var tweets []json.RawMessage
-		if err := getJSON(ctx, c, url, &tweets); err != nil {
+		if err := getJSON(t.ctx, t.c, url, &tweets); err != nil {
 			return err
 		}
 
-		log.WithField("account", u.ScreenName).WithField("tweets", len(tweets)).Debug(
-			"Fetched home timeline")
+		log.WithField("tweets", len(tweets)).Debug("Fetched home timeline")
 
-		for _, t := range tweets {
-			m <- &Message{account: u, msg: t}
+		for _, tweet := range tweets {
+			t.m <- &Message{account: t.u, msg: tweet}
 		}
 
 		if len(tweets) > 0 {
@@ -95,12 +103,6 @@ func followTimeline(ctx context.Context, c *http.Client, u *twitter.User, m chan
 		// https://developer.twitter.com/en/docs/tweets/timelines/guides/working-with-timelines
 		// because "count" is actually a limit, and getting less than 200 tweets
 		// does not mean we reached the "max_id". Twitter hates devs.
-
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-tick.C:
-		}
 	}
 }
 

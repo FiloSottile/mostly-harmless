@@ -72,14 +72,9 @@ func Run(dbPath string, creds *Credentials) error {
 		c.wg.Done()
 	}()
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		log.WithField("signal", <-ch).Info("Received signal, stopping...")
-		cancel()
-	}()
+	ctx, cancel := contextWithSignal(context.Background(), func(s os.Signal) {
+		log.WithField("signal", s).Info("Received signal, stopping...")
+	}, syscall.SIGINT, syscall.SIGTERM)
 
 	var streamsWG sync.WaitGroup
 	config := oauth1.NewConfig(creds.APIKey, creds.APISecret)
@@ -97,7 +92,10 @@ func Run(dbPath string, creds *Credentials) error {
 		go func() {
 			log.WithField("account", user.ScreenName).WithField("id", user.ID).Info(
 				"Starting to monitor timeline")
-			err := followTimeline(ctx, httpClient, user, messages)
+			m := &timelineMonitor{
+				ctx: ctx, c: httpClient, u: user, m: messages,
+			}
+			err := m.followTimeline()
 			log.WithField("account", user.ScreenName).WithError(err).Error(
 				"Stopped following timeline") // TODO: retry
 			cancel()
@@ -109,4 +107,27 @@ func Run(dbPath string, creds *Credentials) error {
 	close(messages)
 	c.wg.Wait()
 	return nil
+}
+
+// contextWithSignal acts like context.WithCancel, but the returned Context is
+// also cancelled when one of the passed signals is received. A function f, if
+// not nil, is called before cancelling the Context.
+func contextWithSignal(parent context.Context, f func(os.Signal), sig ...os.Signal) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(parent)
+
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, sig...)
+	go func() {
+		select {
+		case <-ctx.Done():
+		case s := <-ch:
+			if f != nil {
+				f(s)
+			}
+			cancel()
+		}
+		signal.Stop(ch)
+	}()
+
+	return ctx, cancel
 }
