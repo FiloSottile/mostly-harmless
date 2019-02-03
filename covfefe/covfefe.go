@@ -38,7 +38,7 @@ type Covfefe struct {
 }
 
 func Run(dbPath string, creds *Credentials) error {
-	db, err := sqlite.Open("file:"+dbPath, 0, 1) // https://github.com/crawshaw/sqlite/issues/6
+	db, err := sqlite.Open("file:"+dbPath, 0, 5)
 	if err != nil {
 		return errors.Wrap(err, "failed to open database")
 	}

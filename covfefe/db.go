@@ -103,8 +103,7 @@ func (c *Covfefe) insertTweet(tweet *twitter.Tweet, message int64) (new bool, er
 	err = c.execSQL(
 		`INSERT INTO Tweets (id, created, user, message) VALUES (?, ?, ?, ?)`,
 		tweet.ID, mustParseTime(tweet.CreatedAt), tweet.User.ID, message)
-	if sqlite.ErrCode(err) == sqlite.SQLITE_CONSTRAINT || // https://github.com/crawshaw/sqlite/issues/5
-		sqlite.ErrCode(err) == sqlite.SQLITE_CONSTRAINT_UNIQUE {
+	if sqlite.ErrCode(err) == sqlite.SQLITE_CONSTRAINT_PRIMARYKEY {
 		return false, nil
 	}
 	if err != nil {
