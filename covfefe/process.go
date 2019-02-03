@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
+	"github.com/dghubble/go-twitter/twitter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -193,21 +193,6 @@ func (c *Covfefe) Handle(m *Message) {
 			"user":      strconv.FormatInt(obj.ID, 10),
 			"countries": strings.Join(obj.WithheldInCountries, ","),
 		}).Info("User withheld")
-
-	case *twitter.StreamLimit:
-		log.WithFields(log.Fields{
-			"type": "StreamLimit", "track": obj.Track,
-		}).Warn("Warning message")
-	case *twitter.StreamDisconnect:
-		log.WithFields(log.Fields{
-			"type": "StreamDisconnect", "reason": obj.Reason,
-			"name": obj.StreamName, "code": obj.Code,
-		}).Warn("Warning message")
-	case *twitter.StallWarning:
-		log.WithFields(log.Fields{
-			"type": "StallWarning", "message": obj.Message,
-			"code": obj.Code, "percent": obj.PercentFull,
-		}).Warn("Warning message")
 
 	case *twitter.FriendsList:
 	default:

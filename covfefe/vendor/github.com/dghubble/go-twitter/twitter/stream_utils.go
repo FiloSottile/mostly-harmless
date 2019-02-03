@@ -48,6 +48,9 @@ func newStreamResponseBodyReader(body io.Reader) *streamResponseBodyReader {
 // content if exists. Returns io.EOF error if we reached the end of the stream
 // and there's no more message to read.
 func (r *streamResponseBodyReader) readNext() ([]byte, error) {
+	// Discard all the bytes from buf and continue to use the allocated memory
+	// space for reading the next message.
+	r.buf.Truncate(0)
 	for {
 		// Twitter stream messages are separated with "\r\n", and a valid
 		// message may sometimes contain '\n' in the middle.
@@ -84,7 +87,9 @@ func (r *streamResponseBodyReader) readNext() ([]byte, error) {
 		// the line to buf and continue to scan lines.
 		r.buf.Write(line)
 	}
-	res := make([]byte, r.buf.Len())
-	r.buf.Read(res)
-	return res, nil
+
+	// Get the stream message bytes from buf. Not that Bytes() won't mark the
+	// returned data as "read", and we need to explicitly call Truncate(0) to
+	// discard from buf before writing the next stream message to buf.
+	return r.buf.Bytes(), nil
 }

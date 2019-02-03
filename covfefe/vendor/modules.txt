@@ -3,6 +3,8 @@ crawshaw.io/sqlite
 crawshaw.io/sqlite/sqliteutil
 # github.com/cenkalti/backoff v2.1.1+incompatible
 github.com/cenkalti/backoff
+# github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
+github.com/dghubble/go-twitter/twitter
 # github.com/dghubble/oauth1 v0.5.0
 github.com/dghubble/oauth1
 github.com/dghubble/oauth1/twitter

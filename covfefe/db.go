@@ -6,7 +6,7 @@ import (
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqliteutil"
-	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
+	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/blake2b"

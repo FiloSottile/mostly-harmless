@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe/internal/twitter"
+	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -116,7 +116,6 @@ func getMessage(token []byte) interface{} {
 	switch {
 	case hasPath(data, "retweet_count"):
 		res = new(twitter.Tweet)
-
 	case hasPath(data, "event"):
 		res = new(twitter.Event)
 	case hasPath(data, "withheld_in_countries") && hasPath(data, "user_id"):
@@ -127,10 +126,6 @@ func getMessage(token []byte) interface{} {
 		fallthrough // migrated deletion events
 	case hasPath(data, "user_id_str"):
 		res = new(twitter.StatusDeletion)
-
-	case hasPath(data, "direct_message"):
-		res = new(twitter.DirectMessage)
-		token = data["direct_message"]
 	case hasPath(data, "delete"):
 		res = new(twitter.StatusDeletion)
 		notice := &struct {
@@ -138,32 +133,16 @@ func getMessage(token []byte) interface{} {
 		}{StatusDeletion: res}
 		json.Unmarshal(data["delete"], notice)
 		return res
-	case hasPath(data, "scrub_geo"):
-		res = new(twitter.LocationDeletion)
-		token = data["scrub_geo"]
-	case hasPath(data, "limit"):
-		res = new(twitter.StreamLimit)
-		token = data["limit"]
 	case hasPath(data, "status_withheld"):
 		res = new(twitter.StatusWithheld)
 		token = data["status_withheld"]
 	case hasPath(data, "user_withheld"):
 		res = new(twitter.UserWithheld)
 		token = data["user_withheld"]
-	case hasPath(data, "disconnect"):
-		res = new(twitter.StreamDisconnect)
-		token = data["disconnect"]
-	case hasPath(data, "warning"):
-		res = new(twitter.StallWarning)
-		token = data["warning"]
-	case hasPath(data, "friends"):
-		res = new(twitter.FriendsList)
 	case hasPath(data, "event"):
 		res = new(twitter.Event)
 	default:
-		res = make(map[string]interface{})
-		json.Unmarshal(token, &res)
-		return res
+		panic("unrecognized message")
 	}
 
 	json.Unmarshal(token, res)
