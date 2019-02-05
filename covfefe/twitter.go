@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"github.com/valyala/fastjson"
 )
 
 func getJSON(ctx context.Context, c *http.Client, url string, v interface{}) error {
@@ -106,52 +106,42 @@ func (t *timelineMonitor) followTimeline() error {
 	}
 }
 
-func getMessage(token []byte) interface{} {
-	var data map[string]json.RawMessage
-	err := json.Unmarshal(token, &data)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", token)
-		panic(err)
-	}
+func getMessage(message []byte) interface{} {
+	v := fastjson.MustParseBytes(message)
 
 	var res interface{}
 	switch {
-	case hasPath(data, "retweet_count"):
+	case v.Exists("retweet_count"):
 		res = new(twitter.Tweet)
-	case hasPath(data, "event"):
+	case v.Exists("event"):
 		res = new(twitter.Event)
-	case hasPath(data, "withheld_in_countries") && hasPath(data, "user_id"):
+	case v.Exists("withheld_in_countries") && v.Exists("user_id"):
 		res = new(twitter.StatusWithheld)
-	case hasPath(data, "withheld_in_countries"):
+	case v.Exists("withheld_in_countries"):
 		res = new(twitter.UserWithheld)
-	case hasPath(data, "synthetic"):
+	case v.Exists("synthetic"):
 		fallthrough // migrated deletion events
-	case hasPath(data, "user_id_str"):
+	case v.Exists("user_id_str"):
 		res = new(twitter.StatusDeletion)
-	case hasPath(data, "delete"):
+	case v.Exists("delete"):
 		res = new(twitter.StatusDeletion)
 		notice := &struct {
 			StatusDeletion interface{} `json:"status"`
 		}{StatusDeletion: res}
-		json.Unmarshal(data["delete"], notice)
+		json.Unmarshal(v.Get("delete").MarshalTo(nil), notice)
 		return res
-	case hasPath(data, "status_withheld"):
+	case v.Exists("status_withheld"):
 		res = new(twitter.StatusWithheld)
-		token = data["status_withheld"]
-	case hasPath(data, "user_withheld"):
+		message = v.Get("status_withheld").MarshalTo(nil)
+	case v.Exists("user_withheld"):
 		res = new(twitter.UserWithheld)
-		token = data["user_withheld"]
-	case hasPath(data, "event"):
+		message = v.Get("user_withheld").MarshalTo(nil)
+	case v.Exists("event"):
 		res = new(twitter.Event)
 	default:
 		panic("unrecognized message")
 	}
 
-	json.Unmarshal(token, res)
+	json.Unmarshal(message, res)
 	return res
-}
-
-func hasPath(data map[string]json.RawMessage, key string) bool {
-	_, ok := data[key]
-	return ok
 }

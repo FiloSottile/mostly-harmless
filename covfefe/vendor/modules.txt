@@ -20,8 +20,12 @@ github.com/h2non/filetype/matchers
 github.com/h2non/filetype/types
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/mitchellh/colorstring v0.0.0-20150917214807-8631ce90f286
+github.com/mitchellh/colorstring
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
+# github.com/schollz/progressbar/v2 v2.9.1
+github.com/schollz/progressbar/v2
 # github.com/sirupsen/logrus v1.3.0
 github.com/sirupsen/logrus
 github.com/sirupsen/logrus/hooks/syslog
@@ -29,6 +33,9 @@ github.com/sirupsen/logrus/hooks/syslog
 github.com/v2pro/plz/gls
 github.com/v2pro/plz/reflect2
 github.com/v2pro/plz/concurrent
+# github.com/valyala/fastjson v1.4.0
+github.com/valyala/fastjson
+github.com/valyala/fastjson/fastfloat
 # golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/ssh/terminal

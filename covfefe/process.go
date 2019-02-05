@@ -155,18 +155,6 @@ func (c *Covfefe) HandleChan(messages <-chan *Message) {
 func (c *Covfefe) Handle(m *Message) {
 	msg := getMessage(m.msg)
 
-	if m.id != 0 {
-		log.WithFields(log.Fields{
-			"type": fmt.Sprintf("%T", msg),
-			"id":   m.id,
-		}).Debug("Read message")
-	} else {
-		log.WithFields(log.Fields{
-			"type":    fmt.Sprintf("%T", msg),
-			"account": m.account.ScreenName,
-		}).Debug("Received message")
-	}
-
 	if isProtected(msg) {
 		log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
 		return
@@ -223,7 +211,6 @@ func (c *Covfefe) Handle(m *Message) {
 			"countries": strings.Join(obj.WithheldInCountries, ","),
 		}).Info("User withheld")
 
-	case *twitter.FriendsList:
 	default:
 		log.Warningf("Unhandled message type: %T", msg)
 	}

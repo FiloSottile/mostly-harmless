@@ -1,9 +1,13 @@
 package covfefe
 
 import (
+	"fmt"
+	"os"
+
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqliteutil"
 	"github.com/pkg/errors"
+	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/v2pro/plz/gls"
 )
@@ -47,17 +51,25 @@ func Rescan(dbPath string) (err error) {
 
 	log.Info("Starting rescan...")
 
+	count, err := sqliteutil.ResultInt64(conn.Prep("SELECT COUNT(*) FROM Messages;"))
+	if err != nil {
+		return errors.Wrap(err, "failed to count messages")
+	}
+	pb := progressbar.NewOptions64(count, progressbar.OptionShowCount())
+
 	if err := sqliteutil.Exec(conn, "SELECT id, json FROM Messages;",
 		func(stmt *sqlite.Stmt) error {
 			c.Handle(&Message{
 				id:  stmt.GetInt64("id"),
 				msg: []byte(stmt.GetText("json")),
 			})
+			pb.Add(1)
 			return nil
 		}); err != nil {
 		return errors.Wrap(err, "listing Messages failed")
 	}
 
+	fmt.Fprintf(os.Stderr, "\n")
 	log.Info("Finishing up...")
 	return nil
 }

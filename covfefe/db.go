@@ -53,6 +53,7 @@ func (c *Covfefe) initDB() error {
 
 func (c *Covfefe) insertMessage(m *Message) error {
 	if m.id != 0 {
+		log.WithField("id", m.id).Debug("Read message")
 		return nil
 	}
 
