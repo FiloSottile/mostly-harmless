@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqliteutil"
+	"crawshaw.io/sqlite/sqlitex"
 	"github.com/dghubble/oauth1"
 	"github.com/golang/groupcache/lru"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type Credentials struct {
@@ -38,7 +39,7 @@ type Covfefe struct {
 }
 
 func Run(dbPath, mediaPath string, creds *Credentials) error {
-	db, err := sqlite.Open("file:"+dbPath, 0, 5)
+	db, err := sqlitex.Open("file:"+dbPath, 0, 5)
 	if err != nil {
 		return errors.Wrap(err, "failed to open database")
 	}
@@ -46,19 +47,23 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 
 	c := &Covfefe{
 		withConn: func(f func(conn *sqlite.Conn) error) error {
-			conn := db.Get(nil)
+			conn := db.Get(context.Background())
 			defer db.Put(conn)
-			if err := sqliteutil.Exec(conn, "PRAGMA foreign_keys = ON;", nil); err != nil {
+			if err := sqlitex.Exec(conn, "PRAGMA foreign_keys = ON;", nil); err != nil {
 				return err
 			}
 			return f(conn)
 		},
-		httpClient: &http.Client{
-			Timeout: 1 * time.Minute,
-		},
 		msgIDs:    lru.New(1 << 16),
 		mediaPath: mediaPath,
 	}
+
+	c.httpClient = (&clientcredentials.Config{
+		ClientID:     creds.APIKey,
+		ClientSecret: creds.APISecret,
+		TokenURL:     "https://api.twitter.com/oauth2/token",
+	}).Client(context.Background())
+	c.httpClient.Timeout = 1 * time.Minute
 
 	if err := c.initDB(); err != nil {
 		return err

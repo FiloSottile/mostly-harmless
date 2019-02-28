@@ -1,12 +1,11 @@
 package covfefe
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/h2non/filetype"
@@ -15,16 +14,16 @@ import (
 )
 
 type Message struct {
-	account *twitter.User
-	msg     []byte
-	id      int64
+	source string
+	msg    []byte
+	id     int64
 }
 
-func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
-	new, err := c.insertTweet(tweet, m.id)
+func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
+	new, err := c.insertTweet(tweet, id)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err, "message": m.id, "tweet": tweet.ID,
+			"err": err, "message": id, "tweet": tweet.ID,
 		}).Error("Failed to insert tweet")
 		return
 	}
@@ -32,7 +31,20 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 		return
 	}
 
-	c.processUser(m, tweet.User)
+	c.processUser(id, tweet.User)
+
+	if tweet.RetweetedStatus != nil {
+		c.processTweet(id, tweet.RetweetedStatus)
+	}
+	if tweet.QuotedStatus != nil {
+		c.processTweet(id, tweet.QuotedStatus)
+	}
+
+	// The rest of the function generates new Media and Message entries with
+	// contemporaneous discovery or fetch requests.
+	if c.rescan {
+		return
+	}
 
 	var media []twitter.MediaEntity
 	if tweet.Entities != nil {
@@ -49,39 +61,46 @@ func (c *Covfefe) processTweet(m *Message, tweet *twitter.Tweet) {
 			media = tweet.ExtendedTweet.ExtendedEntities.Media
 		}
 	}
-	if len(media) != 0 && !c.rescan {
-		c.wg.Add(1)
-		go func() {
-			for _, m := range media {
-				if m.SourceStatusID != 0 {
-					// We'll find this media attached to the retweet.
-					continue
-				}
-				log := log.WithFields(log.Fields{
-					"url": m.MediaURLHttps, "media": m.ID, "tweet": tweet.ID,
-				})
-				body, err := c.httpGet(m.MediaURLHttps)
-				if err != nil {
-					log.WithError(err).Error("Failed to download media")
-					continue
-				}
-				if err := c.saveMedia(body, m.ID); err != nil {
-					log.WithError(err).Error("Failed to save media")
-					continue
-				}
-				// TODO: archive videos?
-			}
-			c.wg.Done()
-		}()
+	for _, m := range media {
+		if m.SourceStatusID != 0 {
+			// We'll find this media attached to the retweet.
+			continue
+		}
+		log := log.WithFields(log.Fields{
+			"url": m.MediaURLHttps, "media": m.ID, "tweet": tweet.ID,
+		})
+		body, err := c.httpGet(m.MediaURLHttps)
+		if err != nil {
+			log.WithError(err).Error("Failed to download media")
+			continue
+		}
+		if err := c.saveMedia(body, m.ID); err != nil {
+			log.WithError(err).Error("Failed to save media")
+			continue
+		}
 	}
 
-	if tweet.RetweetedStatus != nil {
-		c.processTweet(m, tweet.RetweetedStatus)
+	if tweet.InReplyToStatusID != 0 {
+		log := log.WithFields(log.Fields{
+			"tweet": tweet.ID, "parent": tweet.InReplyToStatusID,
+		})
+		if seen, err := c.seenTweet(tweet.InReplyToStatusID); err != nil {
+			log.WithError(err).Error("Failed to check if parent tweet was already seen")
+		} else if seen {
+			log.Debug("Parent already in the database")
+		} else {
+			log.Debug("Fetching parent tweet")
+			parent, err := c.hydrateTweet(context.TODO(), tweet.InReplyToStatusID)
+			if err != nil {
+				log.WithError(err).Error("Failed to hydrate parent tweet")
+				return
+			}
+			c.Handle(&Message{
+				source: fmt.Sprintf("parent:%d", tweet.ID),
+				msg:    parent,
+			})
+		}
 	}
-	if tweet.QuotedStatus != nil {
-		c.processTweet(m, tweet.QuotedStatus)
-	}
-	// TODO: crawl thread, non-embedded linked tweets
 }
 
 func (c *Covfefe) saveMedia(data []byte, id int64) error {
@@ -100,16 +119,10 @@ func (c *Covfefe) saveMedia(data []byte, id int64) error {
 	return errors.WithStack(f.Close())
 }
 
-func (c *Covfefe) processUser(m *Message, user *twitter.User) {
-	if err := c.insertUser(user, m.id); err != nil {
-		log.WithError(err).WithField("message", m.id).Error("Failed to insert user")
+func (c *Covfefe) processUser(id int64, user *twitter.User) {
+	if err := c.insertUser(user, id); err != nil {
+		log.WithError(err).WithField("message", id).Error("Failed to insert user")
 	}
-	// Deprecated and removed, thankfully. It would break deduplication.
-	// if user.Following {
-	// 	if err := c.insertFollow(m.account.ID, user.ID, m.id); err != nil {
-	// 		log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
-	// 	}
-	// }
 }
 
 func isProtected(message interface{}) bool {
@@ -156,7 +169,7 @@ func (c *Covfefe) Handle(m *Message) {
 	msg := getMessage(m.msg)
 
 	if isProtected(msg) {
-		log.WithField("account", m.account.ScreenName).Debug("Dropped protected message")
+		log.Debug("Dropped protected message")
 		return
 	}
 
@@ -166,7 +179,7 @@ func (c *Covfefe) Handle(m *Message) {
 			log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
 			return
 		}
-		c.processTweet(m, obj)
+		c.processTweet(m.id, obj)
 	case *twitter.StatusDeletion:
 		if err := c.insertMessage(m); err != nil {
 			log.WithError(err).WithField("deletion", obj.ID).Error("Failed to insert message")
@@ -180,13 +193,13 @@ func (c *Covfefe) Handle(m *Message) {
 			return
 		}
 		if obj.Source != nil {
-			c.processUser(m, obj.Source)
+			c.processUser(m.id, obj.Source)
 		}
 		if obj.Target != nil {
-			c.processUser(m, obj.Target)
+			c.processUser(m.id, obj.Target)
 		}
 		if obj.TargetObject != nil {
-			c.processTweet(m, obj.TargetObject)
+			c.processTweet(m.id, obj.TargetObject)
 		}
 		if obj.Event == "follow" {
 			if err := c.insertFollow(obj.Source.ID, obj.Target.ID, m.id); err != nil {
@@ -194,22 +207,10 @@ func (c *Covfefe) Handle(m *Message) {
 			}
 		}
 
+	// There are a couple of these events in the stream from the Streaming APIs
+	// days, but no new ones are generated.
 	case *twitter.StatusWithheld:
-		if err := c.insertMessage(m); err != nil {
-			log.WithError(err).Error("Failed to insert message")
-		}
-		log.WithFields(log.Fields{
-			"id": strconv.FormatInt(obj.ID, 10), "user": strconv.FormatInt(obj.UserID, 10),
-			"countries": strings.Join(obj.WithheldInCountries, ","),
-		}).Info("Status withheld")
 	case *twitter.UserWithheld:
-		if err := c.insertMessage(m); err != nil {
-			log.WithError(err).Error("Failed to insert message")
-		}
-		log.WithFields(log.Fields{
-			"user":      strconv.FormatInt(obj.ID, 10),
-			"countries": strings.Join(obj.WithheldInCountries, ","),
-		}).Info("User withheld")
 
 	default:
 		log.Warningf("Unhandled message type: %T", msg)

@@ -83,7 +83,7 @@ func (t *timelineMonitor) followTimeline() error {
 		log.WithField("tweets", len(tweets)).Debug("Fetched home timeline")
 
 		for _, tweet := range tweets {
-			t.m <- &Message{account: t.u, msg: tweet}
+			t.m <- &Message{source: fmt.Sprintf("tl:%d", t.u.ID), msg: tweet}
 		}
 
 		if len(tweets) > 0 {
@@ -104,6 +104,16 @@ func (t *timelineMonitor) followTimeline() error {
 		// because "count" is actually a limit, and getting less than 200 tweets
 		// does not mean we reached the "max_id". Twitter hates devs.
 	}
+}
+
+func (c *Covfefe) hydrateTweet(ctx context.Context, id int64) ([]byte, error) {
+	url := "https://api.twitter.com/1.1/statuses/show.json?id=%d&include_ext_alt_text=true"
+	url = fmt.Sprintf(url, id)
+	var tweet json.RawMessage
+	if err := getJSON(ctx, c.httpClient, url, &tweet); err != nil {
+		return nil, err
+	}
+	return tweet, nil
 }
 
 func getMessage(message []byte) interface{} {

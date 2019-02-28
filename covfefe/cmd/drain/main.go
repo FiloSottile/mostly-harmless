@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqliteutil"
+	"crawshaw.io/sqlite/sqlitex"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -19,14 +19,14 @@ func main() {
 
 	log.SetLevel(log.DebugLevel)
 
-	db, err := sqlite.Open("file:"+*dbFile, 0, 2)
+	db, err := sqlitex.Open("file:"+*dbFile, 0, 2)
 	if err != nil {
 		log.WithError(err).Fatal("Failed to open database")
 	}
 	defer db.Close()
 	conn := db.Get(nil)
 
-	log.WithError(sqliteutil.Exec(db.Get(nil), `SELECT id, SUBSTR(media, 1, 4), media FROM Media`,
+	log.WithError(sqlitex.Exec(db.Get(nil), `SELECT id, SUBSTR(media, 1, 4), media FROM Media`,
 		func(stmt *sqlite.Stmt) error {
 			var ext string
 			switch stmt.ColumnText(1) {
@@ -53,7 +53,7 @@ func main() {
 				return err
 			}
 			log.WithField("file", name).Debug("Copied file")
-			return sqliteutil.Exec(conn, `DELETE FROM Media WHERE id = ?`, nil,
+			return sqlitex.Exec(conn, `DELETE FROM Media WHERE id = ?`, nil,
 				stmt.GetInt64("id"))
 		})).Info("Done")
 }

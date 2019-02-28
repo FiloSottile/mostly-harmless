@@ -6,7 +6,7 @@ This package provides a low-level Go interface to SQLite 3. Connections are [poo
 
 It has interfaces for some of SQLite's more interesting extensions, such as [incremental BLOB I/O](https://www.sqlite.org/c3ref/blob_open.html) and the [session extension](https://www.sqlite.org/sessionintro.html).
 
-A utility package, [sqliteutil](https://godoc.org/crawshaw.io/sqlite/sqliteutil), provides some higher-level tools for making it easier to perform common tasks with SQLite. In particular it provides support to make nested transactions easy to use via [sqliteutil.Save](https://godoc.org/crawshaw.io/sqlite/sqliteutil#Save).
+A utility package, [sqlitex](https://godoc.org/crawshaw.io/sqlite/sqlitex), provides some higher-level tools for making it easier to perform common tasks with SQLite. In particular it provides support to make nested transactions easy to use via [sqlitex.Save](https://godoc.org/crawshaw.io/sqlite/sqlitex#Save).
 
 This is not a database/sql driver.
 
@@ -17,20 +17,20 @@ This is not a database/sql driver.
 A HTTP handler that uses a multi-threaded pool of SQLite connections via a shared cache.
 
 ```go
-var dbpool *sqlite.Pool
+var dbpool *sqlitex.Pool
 
 func main() {
 	var err error
-	dbpool, err = sqlite.Open("file:memory:?mode=memory", 0, 10)
+	dbpool, err = sqlitex.Open("file:memory:?mode=memory", 0, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.Handle("/", handler)
+	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	conn := dbpool.Get(r.Context().Done())
+	conn := dbpool.Get(r.Context())
 	if conn == nil {
 		return
 	}

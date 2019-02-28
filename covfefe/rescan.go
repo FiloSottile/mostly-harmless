@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqliteutil"
+	"crawshaw.io/sqlite/sqlitex"
 	"github.com/pkg/errors"
 	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ func Rescan(dbPath string) (err error) {
 		return errors.Wrap(err, "failed to open database")
 	}
 	defer conn.Close()
-	defer sqliteutil.Save(conn)(&err)
+	defer sqlitex.Save(conn)(&err)
 
 	mainID := gls.GoID()
 	c := &Covfefe{
@@ -41,7 +41,7 @@ func Rescan(dbPath string) (err error) {
 	log.Info("Dropping tables...")
 
 	// Need to have foreign keys OFF for TRUNCATE
-	if err := sqliteutil.ExecScript(conn, `
+	if err := sqlitex.ExecScript(conn, `
 		DELETE FROM Tweets;
 		DELETE FROM Users;
 		DELETE FROM Follows;
@@ -51,13 +51,13 @@ func Rescan(dbPath string) (err error) {
 
 	log.Info("Starting rescan...")
 
-	count, err := sqliteutil.ResultInt64(conn.Prep("SELECT COUNT(*) FROM Messages;"))
+	count, err := sqlitex.ResultInt64(conn.Prep("SELECT COUNT(*) FROM Messages;"))
 	if err != nil {
 		return errors.Wrap(err, "failed to count messages")
 	}
 	pb := progressbar.NewOptions64(count, progressbar.OptionShowCount())
 
-	if err := sqliteutil.Exec(conn, "SELECT id, json FROM Messages;",
+	if err := sqlitex.Exec(conn, "SELECT id, json FROM Messages;",
 		func(stmt *sqlite.Stmt) error {
 			c.Handle(&Message{
 				id:  stmt.GetInt64("id"),

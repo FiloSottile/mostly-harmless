@@ -88,7 +88,7 @@ be called multiple times to reset the associated lifetime.
 When using pools, the shorthand for associating a context with a
 connection is:
 
-	conn := dbpool.Get(ctx.Done())
+	conn := dbpool.Get(ctx)
 	if conn == nil {
 		// ... handle error
 	}
@@ -99,7 +99,7 @@ Transactions
 
 SQLite transactions have to be managed manually with this package
 by directly calling BEGIN / COMMIT / ROLLBACK or
-SAVEPOINT / RELEASE/ ROLLBACK. The sqliteutil has a Savepoint
+SAVEPOINT / RELEASE/ ROLLBACK. The sqlitex has a Savepoint
 function that helps automate this.
 
 
@@ -111,16 +111,16 @@ Using a Pool to execute SQL in a concurrent HTTP handler.
 
 	func main() {
 		var err error
-		dbpool, err = sqlite.Open("file:memory:?mode=memory", 0, 10)
+		dbpool, err = sqlitex.Open("file:memory:?mode=memory", 0, 10)
 		if err != nil {
 			log.Fatal(err)
 		}
-		http.Handle("/", handler)
+		http.HandleFunc("/", handle)
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	}
 
 	func handle(w http.ResponseWriter, r *http.Request) {
-		conn := dbpool.Get(r.Context().Done())
+		conn := dbpool.Get(r.Context())
 		if conn == nil {
 			return
 		}
@@ -139,6 +139,6 @@ Using a Pool to execute SQL in a concurrent HTTP handler.
 	}
 
 For helper functions that make some kinds of statements easier to
-write see the sqliteutil package.
+write see the sqlitex package.
 */
 package sqlite // import "crawshaw.io/sqlite"

@@ -67,6 +67,7 @@ type Conn struct {
 	count  int // shared variable to help the race detector find Conn misuse
 
 	cancelCh   chan struct{}
+	tracer     Tracer
 	doneCh     <-chan struct{}
 	unlockNote *C.unlock_note
 	file       string
@@ -98,6 +99,10 @@ const (
 	SQLITE_OPEN_WAL            = OpenFlags(C.SQLITE_OPEN_WAL)
 )
 
+// sqlitex_pool is used by sqlitex.Open to tell OpenConn that there is
+// one more layer in the stack calls before reaching a user function.
+const sqlitex_pool = OpenFlags(0x01000000)
+
 // OpenConn opens a single SQLite database connection.
 // A flags value of 0 defaults to:
 //
@@ -127,6 +132,12 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
 
+	stackCallerLayers := 2 // caller of OpenConn or Open
+	if flags&sqlitex_pool != 0 {
+		stackCallerLayers = 3 // caller of sqlitex.Open
+	}
+	flags = flags &^ sqlitex_pool
+
 	res := C.sqlite3_open_v2(cpath, &conn.conn, C.int(flags), nil)
 	if res != 0 {
 		extres := C.sqlite3_extended_errcode(conn.conn)
@@ -139,11 +150,11 @@ func openConn(path string, flags OpenFlags) (*Conn, error) {
 	C.sqlite3_extended_result_codes(conn.conn, 1)
 
 	// TODO: only if Debug ?
-	_, file, line, _ := runtime.Caller(2) // caller of OpenConn or Open
+	_, file, line, _ := runtime.Caller(stackCallerLayers)
 	runtime.SetFinalizer(conn, func(conn *Conn) {
 		if !conn.closed {
 			var buf [20]byte
-			panic(file + ":" + string(itoa(buf[:], int64(line))) + ": *sqlite.Conn garbage collected, call Close method")
+			panic(file + ":" + string(itoa(buf[:], int64(line))) + ": *sqlite.Conn for " + path + " garbage collected, call Close method")
 		}
 	})
 
@@ -179,6 +190,37 @@ func (conn *Conn) Close() error {
 	C.unlock_note_free(conn.unlockNote)
 	conn.unlockNote = nil
 	return reserr("Conn.Close", "", "", res)
+}
+
+// CheckResult reports whether any statement on this connection
+// is in the process of returning results.
+func (conn *Conn) CheckReset() string {
+	for _, stmt := range conn.stmts {
+		if stmt.lastHasRow {
+			return stmt.query
+		}
+	}
+	return ""
+}
+
+type Tracer interface {
+	NewTask(name string) TracerTask
+	Push(name string)
+	Pop()
+}
+
+type TracerTask interface {
+	StartRegion(regionType string)
+	EndRegion()
+	End()
+}
+
+func (conn *Conn) Tracer() Tracer {
+	return conn.tracer
+}
+
+func (conn *Conn) SetTracer(tracer Tracer) {
+	conn.tracer = tracer
 }
 
 // SetInterrupt assigns a channel to control connection execution lifetime.
@@ -301,6 +343,11 @@ func (conn *Conn) Prepare(query string) (*Stmt, error) {
 		if err := stmt.ClearBindings(); err != nil {
 			return nil, err
 		}
+		if conn.tracer != nil {
+			// TODO: is query too long for a task name?
+			//       should we use trace.Log instead?
+			stmt.tracerTask = conn.tracer.NewTask(query)
+		}
 		return stmt, nil
 	}
 	stmt, trailingBytes, err := conn.prepare(query, C.SQLITE_PREPARE_PERSISTENT)
@@ -312,6 +359,9 @@ func (conn *Conn) Prepare(query string) (*Stmt, error) {
 		return nil, reserr("Conn.Prepare", query, "statement has trailing bytes", C.SQLITE_ERROR)
 	}
 	conn.stmts[query] = stmt
+	if conn.tracer != nil {
+		stmt.tracerTask = conn.tracer.NewTask(query)
+	}
 	return stmt, nil
 }
 
@@ -322,7 +372,7 @@ func (conn *Conn) Prepare(query string) (*Stmt, error) {
 // The number of trailing bytes not consumed from query is returned.
 //
 // To run a sequence of queries once as part of a script,
-// the sqliteutil package provides an ExecScript function built on this.
+// the sqlitex package provides an ExecScript function built on this.
 //
 // https://www.sqlite.org/c3ref/prepare.html
 func (conn *Conn) PrepareTransient(query string) (stmt *Stmt, trailingBytes int, err error) {
@@ -445,6 +495,7 @@ type Stmt struct {
 	bindErr      error
 	prepInterupt bool // set if Prep was interrupted
 	lastHasRow   bool // last bool returned by Step
+	tracerTask   TracerTask
 }
 
 func (stmt *Stmt) interrupted(loc string) error {
@@ -550,13 +601,26 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 		stmt.Reset()
 		return false, err
 	}
-	defer func() {
-		if err != nil {
-			C.sqlite3_reset(stmt.stmt)
-		}
-		stmt.lastHasRow = rowReturned
-	}()
 
+	if stmt.tracerTask != nil {
+		stmt.tracerTask.StartRegion("Step")
+	}
+	rowReturned, err = stmt.step()
+	if stmt.tracerTask != nil {
+		stmt.tracerTask.EndRegion()
+		if !rowReturned {
+			stmt.tracerTask.End()
+			stmt.tracerTask = nil
+		}
+	}
+	if err != nil {
+		C.sqlite3_reset(stmt.stmt)
+	}
+	stmt.lastHasRow = rowReturned
+	return rowReturned, err
+}
+
+func (stmt *Stmt) step() (bool, error) {
 	for {
 		stmt.conn.count++
 		if err := stmt.interrupted("Stmt.Step"); err != nil {
@@ -973,4 +1037,6 @@ func log_fn(_ unsafe.Pointer, code C.int, msg *C.char) {
 // Logger is written to by SQLite.
 // The Logger must be set before any connection is opened.
 // The msg slice is only valid for the duration of the call.
+//
+// It is very noisy.
 var Logger func(code ErrorCode, msg []byte)

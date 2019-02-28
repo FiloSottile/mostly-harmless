@@ -2,7 +2,7 @@ module github.com/FiloSottile/mostly-harmless/covfefe
 
 require (
 	crawshaw.io/iox v0.0.0-20181124134642-c51c3df30797 // indirect
-	crawshaw.io/sqlite v0.1.2
+	crawshaw.io/sqlite v0.1.3-0.20190227200648-22f24e1db70c
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
 	github.com/dghubble/oauth1 v0.5.0
@@ -17,5 +17,6 @@ require (
 	github.com/v2pro/plz v0.0.0-20180227161703-2d49b86ea382
 	github.com/valyala/fastjson v1.4.0
 	golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
+	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sys v0.0.0-20190124100055-b90733256f2e // indirect
 )

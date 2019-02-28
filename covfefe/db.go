@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqliteutil"
+	"crawshaw.io/sqlite/sqlitex"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -14,18 +14,18 @@ import (
 
 func (c *Covfefe) execSQL(query string, args ...interface{}) error {
 	return c.withConn(func(conn *sqlite.Conn) error {
-		return sqliteutil.Exec(conn, query, nil, args...)
+		return sqlitex.Exec(conn, query, nil, args...)
 	})
 }
 
 func (c *Covfefe) initDB() error {
 	return errors.Wrap(c.withConn(func(conn *sqlite.Conn) error {
-		return sqliteutil.ExecScript(conn, `
+		return sqlitex.ExecScript(conn, `
 			CREATE TABLE IF NOT EXISTS Messages (
 				id INTEGER PRIMARY KEY,
 				received DATETIME DEFAULT (DATETIME('now')),
 				json TEXT NOT NULL,
-				account TEXT NOT NULL -- JSON array of IDs
+				source TEXT NOT NULL -- JSON array of source IDs
 			);
 			CREATE TABLE IF NOT EXISTS Tweets (
 				id INTEGER PRIMARY KEY,
@@ -61,11 +61,11 @@ func (c *Covfefe) insertMessage(m *Message) error {
 
 	if id, ok := c.msgIDs.Get(h); ok {
 		log.WithFields(log.Fields{
-			"id": id, "account": m.account.ScreenName, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+			"id": id, "source": m.source, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
 		}).Debug("Duplicate message")
 
-		err := c.execSQL(`UPDATE Messages SET account = json_insert(
-			account, '$[' || json_array_length(account) || ']', ?) WHERE id = ?;`, m.account.ID, id)
+		err := c.execSQL(`UPDATE Messages SET source = json_insert(
+			source, '$[' || json_array_length(source) || ']', ?) WHERE id = ?;`, m.source, id)
 		if err != nil {
 			return errors.Wrap(err, "failed update query")
 		}
@@ -74,9 +74,8 @@ func (c *Covfefe) insertMessage(m *Message) error {
 	}
 
 	err := c.withConn(func(conn *sqlite.Conn) error {
-		err := sqliteutil.Exec(conn,
-			`INSERT INTO Messages (json, account) VALUES (?, json_array(?))`,
-			nil, m.msg, m.account.ID)
+		err := sqlitex.Exec(conn,
+			`INSERT INTO Messages (json, source) VALUES (?, json_array(?))`, nil, m.msg, m.source)
 		if err != nil {
 			return err
 		}
@@ -88,7 +87,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 	}
 
 	log.WithFields(log.Fields{
-		"id": m.id, "account": m.account.ScreenName, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
+		"id": m.id, "source": m.source, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
 	}).Debug("New message")
 
 	c.msgIDs.Add(h, m.id)
@@ -106,6 +105,17 @@ func (c *Covfefe) insertTweet(tweet *twitter.Tweet, message int64) (new bool, er
 		return false, errors.Wrap(err, "failed insert query")
 	}
 	return true, nil
+}
+
+func (c *Covfefe) seenTweet(id int64) (found bool, err error) {
+	err = errors.Wrap(c.withConn(func(conn *sqlite.Conn) error {
+		return sqlitex.Exec(conn, "SELECT id FROM Tweets WHERE id = ?",
+			func(stmt *sqlite.Stmt) error {
+				found = true
+				return nil
+			}, id)
+	}), "failed select query")
+	return
 }
 
 func (c *Covfefe) insertUser(user *twitter.User, message int64) error {
