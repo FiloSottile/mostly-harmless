@@ -47,6 +47,9 @@ def main(argv):
             if not from_['iata'].startswith(s['start_airport_code']): raise Exception
             to = flightradar.get_airport(s['end_airport_code'])
             if not to['iata'].startswith(s['end_airport_code']): raise Exception
+
+            if not 'time' in s['StartDateTime'] or not 'time' in s['EndDateTime']:
+                continue
     
             data = {
                 "departure-date": s['StartDateTime']['date'],
