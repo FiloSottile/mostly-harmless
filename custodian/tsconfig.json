@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "outDir": "./built",
+        "rootDir": "./src",
+        "target": "es2018",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "strict": true,
+        "sourceMap": true,
+        "lib": [
+            "es2015",
+            "dom",
+            "es2017.object",
+        ]
+    },
+}
