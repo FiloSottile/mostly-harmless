@@ -1,0 +1,29 @@
+# cloud.google.com/go v0.15.0
+cloud.google.com/go/compute/metadata
+# github.com/golang/protobuf v0.0.0-20170920220647-130e6b02ab05
+github.com/golang/protobuf/proto
+# golang.org/x/net v0.0.0-20171004034648-a04bdaca5b32
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+# golang.org/x/oauth2 v0.0.0-20170928010508-bb50c06baba3
+golang.org/x/oauth2
+golang.org/x/oauth2/google
+golang.org/x/oauth2/internal
+golang.org/x/oauth2/jws
+golang.org/x/oauth2/jwt
+# google.golang.org/api v0.0.0-20171011000306-8615d46d2e75
+google.golang.org/api/gmail/v1
+google.golang.org/api/gensupport
+google.golang.org/api/googleapi
+google.golang.org/api/googleapi/internal/uritemplates
+# google.golang.org/appengine v1.0.0
+google.golang.org/appengine/urlfetch
+google.golang.org/appengine
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/internal/app_identity
+google.golang.org/appengine/internal/modules
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/remote_api

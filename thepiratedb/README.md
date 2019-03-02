@@ -6,9 +6,7 @@ Download your SQLite mirror of The Pirate Bay using multiple concurrent keep-ali
 Installation
 ------------
 
-`go get -u github.com/FiloSottile/thepiratedb`
-
-Prebuilt binaries: [0.2.0 linux_amd64](https://mega.co.nz/#!ndxT0R7b!ez8HoC-LS4laVB0kxkMYqzZahYFX6dGGD0RQ4_5EHBA), [0.2.0 darwin_amd64](https://mega.co.nz/#!nBwBEIiQ!ez8HoC-LS4lJynPD0FGUFzZahYFX6dGGHNo-BOhWkKw)
+`go get github.com/FiloSottile/thepiratedb`
 
 Usage
 -----
