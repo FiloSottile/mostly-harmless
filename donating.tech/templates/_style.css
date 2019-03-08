@@ -1,0 +1,33 @@
+.container {
+    width: auto;
+    max-width: 600px;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+body, pre {
+    font-family: 'EB Garamond', serif;
+}
+header, h1, h2, h3 {
+    font-family: 'Quicksand', sans-serif;
+}
+header h1 {
+    margin: 1.5em 0 0.5em;
+}
+header p {
+    margin: 0.5em 0 2em;
+}
+a {
+    color: inherit;
+}
+table {
+    width: 100%;
+}
+thead {
+    font-weight: bold;
+}
+@media (min-width: 570px) {
+    .only-narrow { display: none; }
+}
+@media (max-width: 570px) {
+    .only-wide { display: none; }
+}
