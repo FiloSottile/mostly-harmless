@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            Superfish, Komodia, PrivDog vulnerability test
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+        <link href="css/flat-ui.css" rel="stylesheet" type="text/css">
+        <!--[if lt IE 9]>
+            <script src="js/html5shiv.js"></script>
+            <script src="js/respond.min.js"></script>
+        <![endif]-->
+
+        <style>
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 80px;
+}
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #f5f5f5;
+}
+
+.container {
+  width: auto;
+  max-width: 900px;
+  padding: 0 15px;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.result {
+    text-align: center;
+    border: 1px solid #34495E;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+        <div class="page-header">
+            <h1>
+                Superfish, Komodia, PrivDog vulnerability test (retired)
+            </h1>
+        </div>
+        <p class="lead">
+            This test has been retired in favor of the <a href="https://badssl.com/dashboard/">badssl.com Dashboard</a>.
+        </p>
+          
+        <p>
+            You can still find Superfish removal instructions <a href="removing.html">here</a>.
+        </p>
+
+        <p class="lead result" id="starting">
+            Test disabled.
+        </p>
+
+        <p class="lead result" id="san" style="display: none;">
+            YES, it looks like you have a Komodia<br> proxy running (but not Superfish).
+            <br><br>
+            Unfortunately there aren't detailed removal instructions at the moment, but you can follow the <a href="removing.html">Superfish ones</a> with the name of the software you installed instead of "Superfish".
+            <br><br>
+            Here is an incomplete list of known affected softwares: "Keep My Family Secure", "Kurupira", "Qustodio", "Staffcop", "Easy hide IP Classic", "Lavasoft Ad-aware Web Companion".
+        </p>
+        <p class="lead result" id="self" style="display: none;">
+            YES, you have a big problem - even if it's not Komodia.<br><br>
+            Apparently no certificates checks are happening. That's BAD. Anyone can intercept the connections you make.<br><br>
+            This might be due to the browser you are using (if it's not a major one) or to software you are running, like PrivDog.
+        </p>
+        <p class="lead result" id="super" style="display: none;">
+            <img src="yes.png" alt="Yes, your connections can be tampered with!" style="width: 300px; margin: 20px"><br>
+            See <a href="removing.html">here</a> for instructions on removal.
+        </p>
+        <p class="lead result" id="good" style="display: none;">
+            <img src="no2.png" alt="Good, you seem not to trust the Superfish CA." style="width: 500px"><br>
+            Also no other SSL-disabling product was detected on your system.
+        </p>
+
+        <p>
+            <b>What's this about?</b> Turns out Lenovo preloaded their laptops with adware that will intercept all your secure connections, and allow criminals to do it, too.
+        </p>
+
+        <p>
+            After investigating the Lenovo incident we found out that many other softwares - like some Parental Controls or security packages - do things even worse for your security. This test attempts to detect them all.
+        </p>
+
+        <p>
+            Thanks to Karl Koscher, Paul Pearce, Marc Rogers, @TheWack0lian and all the others that discovered and divulged this.
+        </p>
+
+        </div>
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted">
+                    Built in a frenzy by <a href="https://filippo.io">Filippo Valsorda</a>.
+                    <a href="https://twitter.com/FiloSottile">Twitter</a>,
+                    <a href="https://blog.filippo.io">Blog</a>.
+                </p>
+            </div>
+        </div>
+        <!-- Load JS here for greater good =============================-->
+        <script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
+        
+        <!-- Piwik -->
+        <script type="text/javascript">
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            _paq.push(['setTrackerUrl',  'https://api-0b836c1a160d7bee1cc2d7acf70821e8.filippo.sandcats.io']);
+            _paq.push(['setSiteId', 2]);
+            _paq.push(['setApiToken', 'Vbvrod10M6ujlvOxIvBj4sYSTQiK6TujF9PYtw6hLY7']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io/embed.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <!-- End Piwik Code -->
+
+        <script>
+        /* window.setTimeout(function() {
+            _paq.push(['trackEvent', 'Badfish', 'Start']);
+
+            var s = [
+              'https://san.filippo.io/yes.js?cachekill=' + Math.random(),
+              'https://untrusted.filippo.io/yes.js?cachekill=' + Math.random(),
+              'https://badfish.filippo.io/yes.js?cachekill=' + Math.random()
+            ];
+            for (var i = 0; i < s.length; ++i) {
+                var script = document.createElement('script');
+                script.src = s[i];
+                script.async = false;
+                document.getElementsByTagName('head')[0].appendChild(script);
+            }
+
+            window.setInterval(function() {
+                $('#starting').hide();
+
+                if (typeof BADFISH_UNTRUSTED !== 'undefined') triggeredSelf();
+                else if (typeof BADFISH_SUPER !== 'undefined') triggeredSuper();
+                else if (typeof BADFISH_SAN !== 'undefined') triggeredSan();
+                else { $('#san,#super,#self').hide(); $('#good').show(); }
+
+                if (typeof console !== 'undefined') console.log('Ran new');
+            }, 500);
+        }, 10000); */
+
+        var eventSentSelf = false;
+        function triggeredSelf() {
+            $('#good,#san,#super').hide(); $('#self').show();
+            if(!eventSentSelf) _paq.push(['trackEvent', 'Badfish', 'Result-Selfsigned']);
+            eventSentSelf = true;
+        }
+        var eventSentSuper = false;
+        function triggeredSuper() {
+            $('#good,#san,#self').hide(); $('#super').show();
+            if(!eventSentSuper) _paq.push(['trackEvent', 'Badfish', 'Result-Superfish']);
+            eventSentSuper = true;
+        }
+        var eventSentSan = false;
+        function triggeredSan() {
+            $('#good,#super,#self').hide(); $('#san').show();
+            if(!eventSentSan) _paq.push(['trackEvent', 'Badfish', 'Result-SAN']);
+            eventSentSan = true;
+        }
+        </script>
+    </body>
+</html>
