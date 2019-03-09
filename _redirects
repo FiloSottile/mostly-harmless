@@ -1,0 +1,26 @@
+https://dreamy-hawking-6b7da8.netlify.com/* https://filippo.io/:splat 301!
+
+/hitb https://imgur.com/a/3NkeN 302
+/hitb-slides https://www.dropbox.com/s/bzptq3bvbwr0vqf/HITB.pdf?dl=0 302
+/hack.lu https://speakerdeck.com/filosottile/the-heartbleed-test-adventure-at-hack-dot-lu-2014 302
+/fuzz-talk https://speakerdeck.com/filosottile/automated-testing-with-go-fuzz 302
+/entropy-talk https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy 302
+/entropy-talk-ccc https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy-at-32c3 302
+
+/Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 301
+
+# Hide the old home page and CVs
+/ https://blog.filippo.io 302!
+/CV/* https://blog.filippo.io/hi/ 302!
+
+# Migrated blog posts, including the /index.html path
+/psa-enable-automatic-updates-please/* https://blog.filippo.io/psa-enable-automatic-updates-please/ 301!
+/salt-and-pepper/* https://blog.filippo.io/salt-and-pepper/ 301!
+/the-heartbleed-test-at-owasp-slash-nyu-poly/* https://blog.filippo.io/the-heartbleed-test-at-owasp-slash-nyu-poly/ 301!
+/on-keybase-dot-io-and-encrypted-private-key-sharing/* https://blog.filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/ 301!
+/native-scrolling-and-iterm2/* https://blog.filippo.io/native-scrolling-and-iterm2/ 301!
+/my-remote-shell-session-setup/* https://blog.filippo.io/my-remote-shell-session-setup/ 301!
+/why-go-is-elegant-and-makes-my-code-elegant/* https://blog.filippo.io/why-go-is-elegant-and-makes-my-code-elegant/ 301!
+# TODO: make this blog post URL shorter
+/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/* https://blog.filippo.io/how-the-new-gmail-image-proxy-works-and-what-this-means-for-you/ 301!
+/the-ecb-penguin/* https://blog.filippo.io/the-ecb-penguin/ 301!
