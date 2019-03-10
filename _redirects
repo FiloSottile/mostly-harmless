@@ -9,10 +9,7 @@ https://dreamy-hawking-6b7da8.netlify.com/* https://filippo.io/:splat 301!
 
 /Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 301
 
-# Hide the old home page and CVs
-/ /root-redirect 302! # The first redirect needs to be to the same host for HSTS preloading
-/root-redirect https://blog.filippo.io 302
-/CV/* https://blog.filippo.io/hi/ 302!
+/CV/* https://blog.filippo.io/hi/ 302! # Hide the old CVs
 
 # Migrated blog posts, including the /index.html path
 /psa-enable-automatic-updates-please/* https://blog.filippo.io/psa-enable-automatic-updates-please/ 301!
