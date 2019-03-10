@@ -169,9 +169,9 @@ h1 {
             <form role="form">
             <div class="form-inline" >
               <div class="form-group">
-                <input type="text" class="form-control" id="hostname" placeholder="example.com" autocapitalize="off" autocorrect="off">
+                <input type="text" class="form-control" id="hostname" placeholder="The test has been discontinued in March 2019" autocapitalize="off" autocorrect="off" disabled>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg" id="go">Go!</button>
+              <button type="submit" disabled class="btn btn-primary btn-lg" id="go">Go!</button>
             </div>
               <!-- <label class="checkbox" for="ignore-cert">
                   <input type="checkbox" value="" id="ignore-cert" data-toggle="checkbox">
@@ -259,73 +259,6 @@ h1 {
 </script>
 <!-- End Piwik Code -->
 <script type="text/javascript">
-if (!String.prototype.startsWith) {
-  Object.defineProperty(String.prototype, 'startsWith', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: function (searchString, position) {
-      position = position || 0;
-      return this.indexOf(searchString, position) === position;
-    }
-  });
-}
-
-var pitch = 0;
-
-$( "form" ).submit(function( event ) {
-    $('button').attr('disabled', 'disabled');
-  var host = $( "input:first" ).val();
-    $(".bleed").hide()
-    NProgress.start();
-    _paq.push(['trackEvent', 'Heartbleed', 'Launch', host]);
-    get = {u: host};
-    // if ($('#ignore-cert').is(':checked')) {
-        get.skip = 1
-    // }
-    $.getJSON( "https://hbelb.filippo.io/bleed/query", get, function( data ) {
-        $('button').removeAttr('disabled')
-        NProgress.done();
-        // console.log(data);
-        $('.hostname').text(data.host);
-        window.location.hash = data.host;
-        if (data.code == 0){
-            $('#data').text(data.data);
-            $(".bleed-vuln").show()
-            _paq.push(['trackEvent', 'Heartbleed', 'Result-Vulnerable', data.host]);
-        } else if (data.code == 1) {
-            $(".bleed-safe").show()
-            _paq.push(['trackEvent', 'Heartbleed', 'Result-Safe', data.host]);
-        } else {
-            $('#error').text(data.error);
-            if (data.error.startsWith("x509")) {
-                $('.lookfaq').hide()
-                $('.cert').show()
-            } else {
-                $('.lookfaq').show()
-                $('.cert').hide()
-            }
-            $(".bleed-error").show()
-            _paq.push(['trackEvent', 'Heartbleed', 'Result-Error', data.host]);
-            _paq.push(['trackEvent', 'Heartbleed', 'Error', data.error]);
-        }
-        if (!pitch) {
-            pitch = 1;
-            // $("#pitch").animate({height: 100}, 1500);
-            // $("#footer").animate({height: "+=100"}, 1500);
-            // $("body").animate({"margin-bottom": "+=100"}, 1500);
-        }
-  });
-  event.preventDefault();
-});
-
-if (window.location.hash != "#" && window.location.hash != "") {
-    $( "input:first" ).val(window.location.hash.substr(1));
-    $( "form" ).submit();
-}
-
-if (document.referrer) $.post("https://hbref.filippo.io", document.referrer);
-
 $(".emaillink").each(function(){
    $(this).attr("href", 'mailto:hi' + '@filippo' + String.fromCharCode(46) + 'io');
 });
