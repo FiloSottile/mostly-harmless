@@ -46,6 +46,11 @@ func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
 		return
 	}
 
+	c.fetchMedia(tweet)
+	c.fetchParent(tweet)
+}
+
+func (c *Covfefe) fetchMedia(tweet *twitter.Tweet) {
 	var media []twitter.MediaEntity
 	if tweet.Entities != nil {
 		media = tweet.Entities.Media
@@ -79,28 +84,35 @@ func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
 			continue
 		}
 	}
+}
 
-	if tweet.InReplyToStatusID != 0 {
-		log := log.WithFields(log.Fields{
-			"tweet": tweet.ID, "parent": tweet.InReplyToStatusID,
-		})
-		if seen, err := c.seenTweet(tweet.InReplyToStatusID); err != nil {
-			log.WithError(err).Error("Failed to check if parent tweet was already seen")
-		} else if seen {
-			log.Debug("Parent already in the database")
-		} else {
-			log.Debug("Fetching parent tweet")
-			parent, err := c.hydrateTweet(context.TODO(), tweet.InReplyToStatusID)
-			if err != nil {
-				log.WithError(err).Error("Failed to hydrate parent tweet")
-				return
-			}
-			c.Handle(&Message{
-				source: fmt.Sprintf("parent:%d", tweet.ID),
-				msg:    parent,
-			})
-		}
+func (c *Covfefe) fetchParent(tweet *twitter.Tweet) {
+	if tweet.InReplyToStatusID == 0 {
+		return
 	}
+
+	log := log.WithFields(log.Fields{
+		"tweet": tweet.ID, "parent": tweet.InReplyToStatusID,
+	})
+	seen, err := c.seenTweet(tweet.InReplyToStatusID)
+	if err != nil {
+		log.WithError(err).Error("Failed to check if parent tweet was already seen")
+		return
+	}
+	if seen {
+		log.Debug("Parent already in the database")
+		return
+	}
+	log.Debug("Fetching parent tweet")
+	parent, err := c.hydrateTweet(context.TODO(), tweet.InReplyToStatusID)
+	if err != nil {
+		log.WithError(err).Error("Failed to hydrate parent tweet")
+		return
+	}
+	c.Handle(&Message{
+		source: fmt.Sprintf("parent:%d", tweet.ID),
+		msg:    parent,
+	})
 }
 
 func (c *Covfefe) saveMedia(data []byte, id int64) error {
