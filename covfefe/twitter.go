@@ -51,49 +51,63 @@ func verifyCredentials(ctx context.Context, c *http.Client) (*twitter.User, erro
 }
 
 type timelineMonitor struct {
-	ctx context.Context
-	c   *http.Client
-	m   chan *Message
-	u   *twitter.User
+	c *http.Client
+	m chan *Message
+	u *twitter.User
 }
 
-func (t *timelineMonitor) followTimeline() error {
-	log := logrus.WithField("account", t.u.ScreenName)
+func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) error {
+	log := logrus.WithFields(logrus.Fields{
+		"account": t.u.ScreenName, "timeline": timeline,
+	})
 
-	tick := time.NewTicker(1*time.Minute + 5*time.Second)
+	var (
+		interval time.Duration
+		source   string
+	)
+	switch timeline {
+	case "home":
+		interval = 1*time.Minute + 5*time.Second
+		source = fmt.Sprintf("tl:%d", t.u.ID)
+	case "mentions":
+		interval = 15 * time.Second
+		source = fmt.Sprintf("at:%d", t.u.ID)
+	default:
+		return errors.Errorf("unknown timeline %q", timeline)
+	}
+
+	tick := time.NewTicker(interval)
 	defer tick.Stop()
 
 	var sinceID uint64
 	for {
 		select {
-		case <-t.ctx.Done():
-			return t.ctx.Err()
+		case <-ctx.Done():
+			return ctx.Err()
 		case <-tick.C:
 		}
 
-		url := "https://api.twitter.com/1.1/statuses/home_timeline.json?count=200"
+		url := "https://api.twitter.com/1.1/statuses/%s_timeline.json?count=200"
+		url = fmt.Sprintf(url, timeline)
 		if sinceID != 0 { // Twitter hates devs.
 			url = fmt.Sprintf("%s&since_id=%d", url, sinceID)
 		}
 		var tweets []json.RawMessage
-		if err := getJSON(t.ctx, t.c, url, &tweets); err != nil {
+		if err := getJSON(ctx, t.c, url, &tweets); err != nil {
 			return err
 		}
 
-		log.WithField("tweets", len(tweets)).Debug("Fetched home timeline")
+		log.WithField("tweets", len(tweets)).Debug("Fetched timeline")
 
 		for _, tweet := range tweets {
-			t.m <- &Message{source: fmt.Sprintf("tl:%d", t.u.ID), msg: tweet}
+			t.m <- &Message{source: source, msg: tweet}
 		}
 
 		if len(tweets) > 0 {
-			var lastTweet struct {
-				ID uint64
+			sinceID = fastjson.MustParseBytes(tweets[0]).GetUint64("id")
+			if sinceID == 0 {
+				return errors.New("couldn't decode tweet ID")
 			}
-			if err := json.Unmarshal(tweets[0], &lastTweet); err != nil {
-				return errors.Wrap(err, "couldn't decode tweet ID")
-			}
-			sinceID = lastTweet.ID
 		}
 
 		// There's little point in trying to paginate: with a rate limit of 15

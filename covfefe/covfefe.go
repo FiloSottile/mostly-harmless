@@ -95,19 +95,20 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 			return errors.Wrapf(err, "invalid credetials at position %d", i)
 		}
 
-		streamsWG.Add(1)
-		go func() {
-			log.WithField("account", user.ScreenName).WithField("id", user.ID).Info(
-				"Starting to monitor timeline")
-			m := &timelineMonitor{
-				ctx: ctx, c: httpClient, u: user, m: messages,
-			}
-			err := m.followTimeline()
-			log.WithField("account", user.ScreenName).WithError(err).Error(
-				"Stopped following timeline") // TODO: retry
-			cancel()
-			streamsWG.Done()
-		}()
+		for _, timeline := range []string{"home", "mentions"} {
+			log := log.WithFields(log.Fields{
+				"account": user.ScreenName, "id": user.ID, "timeline": timeline,
+			})
+			streamsWG.Add(1)
+			go func(timeline string) {
+				log.Info("Starting to monitor timeline")
+				m := &timelineMonitor{c: httpClient, u: user, m: messages}
+				err := m.followTimeline(ctx, timeline)
+				log.WithError(err).Error("Stopped following timeline")
+				cancel()
+				streamsWG.Done()
+			}(timeline)
+		}
 	}
 	streamsWG.Wait()
 
