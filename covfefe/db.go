@@ -82,7 +82,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 		m.id = conn.LastInsertRowID()
 		return nil
 	})
-	if err != nil { // TODO: retry
+	if err != nil {
 		return errors.Wrap(err, "failed insert query")
 	}
 

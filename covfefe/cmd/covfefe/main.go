@@ -9,7 +9,6 @@ import (
 	"github.com/FiloSottile/mostly-harmless/covfefe"
 	log "github.com/sirupsen/logrus"
 	lsyslog "github.com/sirupsen/logrus/hooks/syslog"
-	// TODO: prometheus
 )
 
 func main() {

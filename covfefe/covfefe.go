@@ -35,7 +35,7 @@ type Covfefe struct {
 	httpClient *http.Client
 	msgIDs     *lru.Cache
 	mediaPath  string
-	rescan     bool // TODO: get rid of this field
+	rescan     bool
 }
 
 func Run(dbPath, mediaPath string, creds *Credentials) error {

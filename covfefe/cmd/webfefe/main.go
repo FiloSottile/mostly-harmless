@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -50,8 +51,19 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 1 * time.Minute,
 		IdleTimeout:  10 * time.Minute,
-		// TODO: ErrorLog to logrus
+		// logrus seems to provide WriterLevel for this, but it seems to start a
+		// goroutine, and set a finalizer!?
+		ErrorLog: log.New(WriterFunc(func(p []byte) (n int, err error) {
+			logrus.Error(string(p))
+			return len(p), nil
+		}), "", 0),
 	}).ListenAndServe()).Error("Exiting...")
+}
+
+type WriterFunc func(p []byte) (n int, err error)
+
+func (f WriterFunc) Write(p []byte) (n int, err error) {
+	return f(p)
 }
 
 type Server struct {

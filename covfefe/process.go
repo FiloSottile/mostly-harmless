@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -71,17 +72,22 @@ func (c *Covfefe) fetchMedia(tweet *twitter.Tweet) {
 			// We'll find this media attached to the retweet.
 			continue
 		}
-		log := log.WithFields(log.Fields{
-			"url": m.MediaURLHttps, "media": m.ID, "tweet": tweet.ID,
-		})
-		body, err := c.httpGet(m.MediaURLHttps)
-		if err != nil {
-			log.WithError(err).Error("Failed to download media")
-			continue
-		}
-		if err := c.saveMedia(body, m.ID); err != nil {
-			log.WithError(err).Error("Failed to save media")
-			continue
+		for retry := 0; retry < 3; retry++ {
+			log := log.WithFields(log.Fields{
+				"retry": retry,
+				"url":   m.MediaURLHttps,
+				"media": m.ID, "tweet": tweet.ID,
+			})
+			body, err := c.httpGet(m.MediaURLHttps)
+			if err != nil {
+				log.WithError(err).Error("Failed to download media")
+				continue
+			}
+			if err := c.saveMedia(body, m.ID); err != nil {
+				log.WithError(err).Error("Failed to save media")
+				continue
+			}
+			break
 		}
 	}
 }
@@ -230,12 +236,14 @@ func (c *Covfefe) Handle(m *Message) {
 }
 
 func (c *Covfefe) httpGet(url string) ([]byte, error) {
-	// TODO: retry
 	res, err := c.httpClient.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		return nil, errors.Errorf("fetching %q returned status %q", url, res.Status)
+	}
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
