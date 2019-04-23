@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -126,7 +127,10 @@ func (c *Covfefe) saveMedia(data []byte, id int64) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
 	name := filepath.Join(c.mediaPath, fmt.Sprintf("%d.%s", id, t.Extension))
+	base := filepath.Join(c.mediaPath, fmt.Sprintf("%d", id))
+
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
 		return errors.WithStack(err)
@@ -134,7 +138,11 @@ func (c *Covfefe) saveMedia(data []byte, id int64) error {
 	if _, err := f.Write(data); err != nil {
 		return errors.WithStack(err)
 	}
-	return errors.WithStack(f.Close())
+	if err := f.Close(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return exec.Command("tesseract", name, base).Run()
 }
 
 func (c *Covfefe) processUser(id int64, user *twitter.User) {
