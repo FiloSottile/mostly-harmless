@@ -2,6 +2,7 @@ package covfefe
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -17,6 +18,7 @@ import (
 
 type Message struct {
 	source string
+	kind   string
 	msg    []byte
 	id     int64
 }
@@ -118,6 +120,7 @@ func (c *Covfefe) fetchParent(tweet *twitter.Tweet) {
 	}
 	c.Handle(&Message{
 		source: fmt.Sprintf("parent:%d", tweet.ID),
+		kind:   "tweet",
 		msg:    parent,
 	})
 }
@@ -192,7 +195,11 @@ func (c *Covfefe) HandleChan(messages <-chan *Message) {
 }
 
 func (c *Covfefe) Handle(m *Message) {
-	msg := getMessage(m.msg)
+	msg := unmarshalMessage(m)
+	if msg == nil {
+		log.Debug("Dropped unknown message")
+		return
+	}
 
 	if isProtected(msg) {
 		log.Debug("Dropped protected message")
@@ -232,14 +239,33 @@ func (c *Covfefe) Handle(m *Message) {
 				log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
 			}
 		}
+	}
+}
 
-	// There are a couple of these events in the stream from the Streaming APIs
-	// days, but no new ones are generated.
-	case *twitter.StatusWithheld:
-	case *twitter.UserWithheld:
-
+func unmarshalMessage(m *Message) interface{} {
+	switch m.kind {
+	case "tweet":
+		res := new(twitter.Tweet)
+		json.Unmarshal(m.msg, res)
+		return res
+	case "event":
+		res := new(twitter.Event)
+		json.Unmarshal(m.msg, res)
+		return res
+	case "del":
+		res := new(twitter.StatusDeletion)
+		json.Unmarshal(m.msg, res)
+		return res
+	case "deletion":
+		res := new(struct {
+			Delete struct {
+				Status *twitter.StatusDeletion
+			}
+		})
+		json.Unmarshal(m.msg, res)
+		return res.Delete.Status
 	default:
-		log.Warningf("Unhandled message type: %T", msg)
+		return nil
 	}
 }
 

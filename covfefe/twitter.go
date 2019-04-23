@@ -10,7 +10,6 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/valyala/fastjson"
 )
 
 func getJSON(ctx context.Context, c *http.Client, url string, v interface{}) error {
@@ -100,14 +99,19 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 		log.WithField("tweets", len(tweets)).Debug("Fetched timeline")
 
 		for _, tweet := range tweets {
-			t.m <- &Message{source: source, msg: tweet}
+			t.m <- &Message{source: source, kind: "tweet", msg: tweet}
 		}
 
 		if len(tweets) > 0 {
-			sinceID = fastjson.MustParseBytes(tweets[0]).GetUint64("id")
-			if sinceID == 0 {
+			var lastTweet struct {
+				ID uint64
+			}
+			if err := json.Unmarshal(tweets[0], &lastTweet); err != nil {
+				return errors.Wrap(err, "couldn't decode tweet ID")
+			} else if lastTweet.ID == 0 {
 				return errors.New("couldn't decode tweet ID")
 			}
+			sinceID = lastTweet.ID
 		}
 
 		// There's little point in trying to paginate: with a rate limit of 15
@@ -128,44 +132,4 @@ func (c *Covfefe) hydrateTweet(ctx context.Context, id int64) ([]byte, error) {
 		return nil, err
 	}
 	return tweet, nil
-}
-
-func getMessage(message []byte) interface{} {
-	v := fastjson.MustParseBytes(message)
-
-	var res interface{}
-	switch {
-	case v.Exists("retweet_count"):
-		res = new(twitter.Tweet)
-	case v.Exists("event"):
-		res = new(twitter.Event)
-	case v.Exists("withheld_in_countries") && v.Exists("user_id"):
-		res = new(twitter.StatusWithheld)
-	case v.Exists("withheld_in_countries"):
-		res = new(twitter.UserWithheld)
-	case v.Exists("synthetic"):
-		fallthrough // migrated deletion events
-	case v.Exists("user_id_str"):
-		res = new(twitter.StatusDeletion)
-	case v.Exists("delete"):
-		res = new(twitter.StatusDeletion)
-		notice := &struct {
-			StatusDeletion interface{} `json:"status"`
-		}{StatusDeletion: res}
-		json.Unmarshal(v.Get("delete").MarshalTo(nil), notice)
-		return res
-	case v.Exists("status_withheld"):
-		res = new(twitter.StatusWithheld)
-		message = v.Get("status_withheld").MarshalTo(nil)
-	case v.Exists("user_withheld"):
-		res = new(twitter.UserWithheld)
-		message = v.Get("user_withheld").MarshalTo(nil)
-	case v.Exists("event"):
-		res = new(twitter.Event)
-	default:
-		panic("unrecognized message")
-	}
-
-	json.Unmarshal(message, res)
-	return res
 }

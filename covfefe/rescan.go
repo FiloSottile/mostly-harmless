@@ -57,11 +57,12 @@ func Rescan(dbPath string) (err error) {
 	}
 	pb := progressbar.NewOptions64(count, progressbar.OptionShowCount())
 
-	if err := sqlitex.Exec(conn, "SELECT id, json FROM Messages;",
+	if err := sqlitex.Exec(conn, "SELECT id, json, kind FROM Messages;",
 		func(stmt *sqlite.Stmt) error {
 			c.Handle(&Message{
-				id:  stmt.GetInt64("id"),
-				msg: []byte(stmt.GetText("json")),
+				id:   stmt.GetInt64("id"),
+				kind: stmt.GetText("kind"),
+				msg:  []byte(stmt.GetText("json")),
 			})
 			pb.Add(1)
 			return nil

@@ -25,7 +25,8 @@ func (c *Covfefe) initDB() error {
 				id INTEGER PRIMARY KEY,
 				received DATETIME DEFAULT (DATETIME('now')),
 				json TEXT NOT NULL,
-				source TEXT NOT NULL -- JSON array of source IDs
+				source TEXT NOT NULL, -- JSON array of source IDs
+				kind TEXT -- tweet / event / del / deletion
 			);
 			CREATE TABLE IF NOT EXISTS Tweets (
 				id INTEGER PRIMARY KEY,
@@ -52,17 +53,19 @@ func (c *Covfefe) initDB() error {
 }
 
 func (c *Covfefe) insertMessage(m *Message) error {
+	log := log.WithFields(log.Fields{"source": m.source, "kind": m.kind})
+
 	if m.id != 0 {
 		log.WithField("id", m.id).Debug("Read message")
 		return nil
 	}
 
-	h := blake2b.Sum256(m.msg)
+	h, _ := blake2b.New256([]byte(m.kind))
+	h.Write(m.msg)
+	log = log.WithField("hash", base64.RawURLEncoding.EncodeToString(h.Sum(nil)))
 
 	if id, ok := c.msgIDs.Get(h); ok {
-		log.WithFields(log.Fields{
-			"id": id, "source": m.source, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
-		}).Debug("Duplicate message")
+		log.WithField("id", id).Debug("Duplicate message")
 
 		err := c.execSQL(`UPDATE Messages SET source = json_insert(
 			source, '$[' || json_array_length(source) || ']', ?) WHERE id = ?;`, m.source, id)
@@ -74,8 +77,8 @@ func (c *Covfefe) insertMessage(m *Message) error {
 	}
 
 	err := c.withConn(func(conn *sqlite.Conn) error {
-		err := sqlitex.Exec(conn,
-			`INSERT INTO Messages (json, source) VALUES (?, json_array(?))`, nil, m.msg, m.source)
+		query := `INSERT INTO Messages (json, source, kind) VALUES (?, json_array(?), ?)`
+		err := sqlitex.Exec(conn, query, nil, m.msg, m.source, m.kind)
 		if err != nil {
 			return err
 		}
@@ -86,9 +89,7 @@ func (c *Covfefe) insertMessage(m *Message) error {
 		return errors.Wrap(err, "failed insert query")
 	}
 
-	log.WithFields(log.Fields{
-		"id": m.id, "source": m.source, "hash": base64.RawURLEncoding.EncodeToString(h[:]),
-	}).Debug("New message")
+	log.WithField("id", m.id).Debug("New message")
 
 	c.msgIDs.Add(h, m.id)
 	return nil

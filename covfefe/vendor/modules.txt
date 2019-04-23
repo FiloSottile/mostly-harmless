@@ -35,9 +35,6 @@ github.com/sirupsen/logrus/hooks/syslog
 github.com/v2pro/plz/gls
 github.com/v2pro/plz/reflect2
 github.com/v2pro/plz/concurrent
-# github.com/valyala/fastjson v1.4.0
-github.com/valyala/fastjson
-github.com/valyala/fastjson/fastfloat
 # golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/ssh/terminal
