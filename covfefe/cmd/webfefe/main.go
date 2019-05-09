@@ -44,7 +44,7 @@ func main() {
 			return f(conn)
 		},
 		mediaPath: *mediaPath,
-		tmpl:      template.Must(vfstemplate.ParseGlob(data.Templates, nil, "*")),
+		tmpl:      template.Must(vfstemplate.ParseGlob(data.Templates, nil, "*.tmpl")),
 	}
 
 	logrus.Info("Starting...")
