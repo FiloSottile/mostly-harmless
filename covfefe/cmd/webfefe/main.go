@@ -7,16 +7,18 @@ import (
 	"flag"
 	"fmt"
 	"html"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/dghubble/go-twitter/twitter"
-
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqlitex"
+	"github.com/FiloSottile/mostly-harmless/covfefe/cmd/webfefe/data"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/shurcooL/httpfs/html/vfstemplate"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,6 +44,7 @@ func main() {
 			return f(conn)
 		},
 		mediaPath: *mediaPath,
+		tmpl:      template.Must(vfstemplate.ParseGlob(data.Templates, nil, "*")),
 	}
 
 	logrus.Info("Starting...")
@@ -69,6 +72,7 @@ func (f WriterFunc) Write(p []byte) (n int, err error) {
 type Server struct {
 	withConn  func(f func(conn *sqlite.Conn) error) error
 	mediaPath string
+	tmpl      *template.Template
 }
 
 func (s *Server) Handler() http.Handler {
@@ -81,7 +85,7 @@ func (s *Server) Handler() http.Handler {
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	if err := s.withConn(func(conn *sqlite.Conn) error {
 		return sqlitex.Exec(conn, "SELECT COUNT(*) FROM Messages;", func(stmt *sqlite.Stmt) error {
-			return tmplHome.Execute(w, stmt.ColumnInt64(0))
+			return s.tmpl.ExecuteTemplate(w, "home.html.tmpl", stmt.ColumnInt64(0))
 		})
 	}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,7 +114,7 @@ func (s *Server) Tweet(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
-			if err := tmplTweet.Execute(w, tweet); err != nil {
+			if err := s.tmpl.ExecuteTemplate(w, "tweet_page.html.tmpl", tweet); err != nil {
 				return err
 			}
 			fmt.Fprintf(w, "<pre><code>%s</code></pre>", html.EscapeString(out.String()))

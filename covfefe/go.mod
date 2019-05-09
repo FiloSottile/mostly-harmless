@@ -12,10 +12,12 @@ require (
 	github.com/h2non/filetype v1.0.6
 	github.com/pkg/errors v0.8.1
 	github.com/schollz/progressbar/v2 v2.9.1
+	github.com/shurcooL/httpfs v0.0.0-20181222201310-74dc9339e414
+	github.com/shurcooL/vfsgen v0.0.0-20181202132449-6a9ea43bcacd
 	github.com/sirupsen/logrus v1.3.0
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/v2pro/plz v0.0.0-20180227161703-2d49b86ea382
-	golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
-	golang.org/x/sys v0.0.0-20190124100055-b90733256f2e // indirect
+	golang.org/x/tools v0.0.0-20190508150211-cf84161cff3f // indirect
 )

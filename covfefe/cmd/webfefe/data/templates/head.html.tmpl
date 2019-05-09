@@ -1,10 +1,3 @@
-package main
-
-import (
-	"html/template"
-)
-
-var htmlHeader = `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,7 +14,7 @@ var htmlHeader = `
         .container {
             width: auto;
             max-width: 700px;
-            padding: 0 15px;
+            padding: 100px 15px 0;
         }
 
         body {
@@ -31,10 +24,6 @@ var htmlHeader = `
         h1,
         h2 {
             font-family: "Bitter";
-		}
-		
-		code {
-            -webkit-font-smoothing: antialiased;
         }
 
         input {
@@ -60,38 +49,3 @@ var htmlHeader = `
 <body>
     <div class="container">
         <h1>Covfefe</h1>
-
-`
-
-var tmplHome = template.Must(template.New("Home").Parse(htmlHeader + `
-<p>There are {{.}} entries in the database.
-`))
-
-var tmplTweet = template.Must(template.New("TweetPage").Parse(htmlHeader + `
-{{define "Tweet"}}
-	<p>{{.User.Name}} <a href="https://twitter.com/{{.User.ScreenName}}">@{{.User.ScreenName}}</a>
-	<p><blockquote>{{with .ExtendedTweet}}{{.FullText}}{{else}}{{.Text}}{{end}}</blockquote>
-	<p>{{.CreatedAt}}
-	<p>{{with printf "https://twitter.com/%s/status/%d" .User.ScreenName .ID}}
-		<a href="{{.}}">{{.}}</a>
-	{{end}}
-{{end}}
-
-<h2>Tweet number {{.ID}}</h2>
-{{template "Tweet" .}}
-
-{{with .RetweetedStatus}}
-	<h3>Retweet of {{.ID}}</h3>
-	{{template "Tweet" .}}
-
-	{{with .QuotedStatus}}
-		<h4>Quote of {{.ID}}</h4>
-		{{template "Tweet" .}}
-	{{end}}
-{{end}}
-
-{{with .QuotedStatus}}
-	<h3>Quote of {{.ID}}</h3>
-	{{template "Tweet" .}}
-{{end}}
-`))

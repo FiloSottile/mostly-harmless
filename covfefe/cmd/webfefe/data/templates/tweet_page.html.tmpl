@@ -1,0 +1,28 @@
+{{template "head.html.tmpl"}}
+
+{{define "tweet"}}
+	<p>{{.User.Name}} <a href="https://twitter.com/{{.User.ScreenName}}">@{{.User.ScreenName}}</a>
+	<p><blockquote>{{with .ExtendedTweet}}{{.FullText}}{{else}}{{.Text}}{{end}}</blockquote>
+	<p>{{.CreatedAt}}
+	<p>{{with printf "https://twitter.com/%s/status/%d" .User.ScreenName .ID}}
+		<a href="{{.}}">{{.}}</a>
+	{{end}}
+{{end}}
+
+<h2>Tweet number {{.ID}}</h2>
+{{template "tweet" .}}
+
+{{with .RetweetedStatus}}
+	<h3>Retweet of {{.ID}}</h3>
+	{{template "tweet" .}}
+
+	{{with .QuotedStatus}}
+		<h4>Quote of {{.ID}}</h4>
+		{{template "tweet" .}}
+	{{end}}
+{{end}}
+
+{{with .QuotedStatus}}
+	<h3>Quote of {{.ID}}</h3>
+	{{template "tweet" .}}
+{{end}}
