@@ -24,14 +24,21 @@ type Message struct {
 }
 
 func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
-	new, err := c.insertTweet(tweet, id)
-	if err != nil {
+	// Just in case we forget the magic tweet_mode=extended and end up archiving
+	// truncated tweets without full_text again, ugh.
+	// https://developer.twitter.com/en/docs/tweets/tweet-updates
+	if tweet.Truncated && !c.rescan {
+		log.WithFields(log.Fields{
+			"message": id, "tweet": tweet.ID,
+		}).Warn("Truncated tweet")
+	}
+
+	if new, err := c.insertTweet(tweet, id); err != nil {
 		log.WithFields(log.Fields{
 			"err": err, "message": id, "tweet": tweet.ID,
 		}).Error("Failed to insert tweet")
 		return
-	}
-	if !new {
+	} else if !new {
 		return
 	}
 
@@ -44,17 +51,15 @@ func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
 		c.processTweet(id, tweet.QuotedStatus)
 	}
 
-	// The rest of the function generates new Media and Message entries with
-	// contemporaneous discovery or fetch requests.
-	if c.rescan {
-		return
-	}
-
 	c.fetchMedia(tweet)
 	c.fetchParent(tweet)
 }
 
 func (c *Covfefe) fetchMedia(tweet *twitter.Tweet) {
+	if c.rescan {
+		return
+	}
+
 	var media []twitter.MediaEntity
 	if tweet.Entities != nil {
 		media = tweet.Entities.Media
@@ -96,22 +101,22 @@ func (c *Covfefe) fetchMedia(tweet *twitter.Tweet) {
 }
 
 func (c *Covfefe) fetchParent(tweet *twitter.Tweet) {
-	if tweet.InReplyToStatusID == 0 {
+	if c.rescan || tweet.InReplyToStatusID == 0 {
 		return
 	}
 
 	log := log.WithFields(log.Fields{
 		"tweet": tweet.ID, "parent": tweet.InReplyToStatusID,
 	})
-	seen, err := c.seenTweet(tweet.InReplyToStatusID)
-	if err != nil {
+
+	if seen, err := c.seenTweet(tweet.InReplyToStatusID); err != nil {
 		log.WithError(err).Error("Failed to check if parent tweet was already seen")
 		return
-	}
-	if seen {
+	} else if seen {
 		log.Debug("Parent already in the database")
 		return
 	}
+
 	log.Debug("Fetching parent tweet")
 	parent, err := c.hydrateTweet(context.TODO(), tweet.InReplyToStatusID)
 	if err != nil {

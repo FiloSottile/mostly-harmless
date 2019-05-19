@@ -97,7 +97,7 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 		case <-tick.C:
 		}
 
-		url := "https://api.twitter.com/1.1/%s.json?count=200"
+		url := "https://api.twitter.com/1.1/%s.json?count=200&tweet_mode=extended"
 		url = fmt.Sprintf(url, endpoint)
 		if sinceID != 0 { // Twitter hates devs.
 			url = fmt.Sprintf("%s&since_id=%d", url, sinceID)
@@ -136,7 +136,8 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 }
 
 func (c *Covfefe) hydrateTweet(ctx context.Context, id int64) ([]byte, error) {
-	url := "https://api.twitter.com/1.1/statuses/show.json?id=%d&include_ext_alt_text=true"
+	url := "https://api.twitter.com/1.1/statuses/show.json?id=%d" +
+		"&include_ext_alt_text=true&tweet_mode=extended"
 	url = fmt.Sprintf(url, id)
 	var tweet json.RawMessage
 	if err := getJSON(ctx, c.httpClient, url, &tweet); err != nil {
