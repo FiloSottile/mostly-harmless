@@ -63,14 +63,25 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 	var (
 		interval time.Duration
 		source   string
+		endpoint string
 	)
 	switch timeline {
 	case "home":
 		interval = 1*time.Minute + 5*time.Second
 		source = fmt.Sprintf("tl:%d", t.u.ID)
+		endpoint = "statuses/home_timeline"
 	case "mentions":
 		interval = 15 * time.Second
 		source = fmt.Sprintf("at:%d", t.u.ID)
+		endpoint = "statuses/mentions_timeline"
+	case "user":
+		interval = 10 * time.Second
+		source = fmt.Sprintf("us:%d", t.u.ID)
+		endpoint = "statuses/user_timeline"
+	case "likes":
+		interval = 15 * time.Second
+		source = fmt.Sprintf("lk:%d", t.u.ID)
+		endpoint = "favorites/list"
 	default:
 		return errors.Errorf("unknown timeline %q", timeline)
 	}
@@ -86,8 +97,8 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 		case <-tick.C:
 		}
 
-		url := "https://api.twitter.com/1.1/statuses/%s_timeline.json?count=200"
-		url = fmt.Sprintf(url, timeline)
+		url := "https://api.twitter.com/1.1/%s.json?count=200"
+		url = fmt.Sprintf(url, endpoint)
 		if sinceID != 0 { // Twitter hates devs.
 			url = fmt.Sprintf("%s&since_id=%d", url, sinceID)
 		}

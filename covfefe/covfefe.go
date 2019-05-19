@@ -95,7 +95,7 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 			return errors.Wrapf(err, "invalid credetials at position %d", i)
 		}
 
-		for _, timeline := range []string{"home", "mentions"} {
+		for _, timeline := range []string{"home", "mentions", "user", "likes"} {
 			log := log.WithFields(log.Fields{
 				"account": user.ScreenName, "id": user.ID, "timeline": timeline,
 			})
