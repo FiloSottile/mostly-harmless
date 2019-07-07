@@ -5,10 +5,12 @@ require (
 	crawshaw.io/sqlite v0.1.3-0.20190227200648-22f24e1db70c
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
+	github.com/dghubble/gologin v2.1.0+incompatible
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20181024230925-c65c006176ff
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/gorilla/sessions v1.1.3
 	github.com/h2non/filetype v1.0.6
 	github.com/pkg/errors v0.8.1
 	github.com/schollz/progressbar/v2 v2.9.1

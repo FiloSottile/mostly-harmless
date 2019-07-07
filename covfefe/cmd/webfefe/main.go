@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -15,8 +16,14 @@ import (
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqlitex"
+	"github.com/FiloSottile/mostly-harmless/covfefe"
 	"github.com/FiloSottile/mostly-harmless/covfefe/cmd/webfefe/data"
 	"github.com/dghubble/go-twitter/twitter"
+	oauth1Login "github.com/dghubble/gologin/oauth1"
+	twitterLogin "github.com/dghubble/gologin/twitter"
+	"github.com/dghubble/oauth1"
+	twitterOAuth1 "github.com/dghubble/oauth1/twitter"
+	"github.com/gorilla/sessions"
 	"github.com/shurcooL/httpfs/html/vfstemplate"
 	"github.com/sirupsen/logrus"
 )
@@ -25,8 +32,18 @@ func main() {
 	dbFile := flag.String("db", "twitter.db", "The path of the SQLite DB")
 	mediaPath := flag.String("media", "twitter-media", "The folder to store media files in")
 	credsFile := flag.String("creds", "creds.json", "The path of the credentials JSON")
-	listenAddr := flag.String("listen", "0.0.0.0:6052", "The address to listen on for HTTP")
+	listenAddr := flag.String("listen", "127.0.0.1:6052", "The address to listen on for HTTP")
+	baseAddr := flag.String("base", "http://localhost:6052", "The base address at which we run")
 	flag.Parse()
+
+	credsJSON, err := ioutil.ReadFile(*credsFile)
+	if err != nil {
+		logrus.WithError(err).Fatal("Failed to read credentials file")
+	}
+	creds := &covfefe.Credentials{}
+	if err := json.Unmarshal(credsJSON, creds); err != nil {
+		logrus.WithError(err).Fatal("Failed to parse credentials file")
+	}
 
 	db, err := sqlitex.Open("file:"+*dbFile, 0, 5)
 	if err != nil {
@@ -46,6 +63,13 @@ func main() {
 		mediaPath: *mediaPath,
 		credsPath: *credsFile,
 		tmpl:      template.Must(vfstemplate.ParseGlob(data.Templates, nil, "*.tmpl")),
+		store:     sessions.NewCookieStore([]byte(creds.APISecret)),
+		oauth1Config: &oauth1.Config{
+			ConsumerKey:    creds.APIKey,
+			ConsumerSecret: creds.APISecret,
+			CallbackURL:    *baseAddr + "/callback",
+			Endpoint:       twitterOAuth1.AuthorizeEndpoint,
+		},
 	}
 
 	logrus.WithField("address", *listenAddr).Info("Starting...")
@@ -77,13 +101,51 @@ type Server struct {
 
 	credsMu   sync.Mutex
 	credsPath string
+
+	store        sessions.Store
+	oauth1Config *oauth1.Config
 }
 
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.Home)
-	mux.HandleFunc("/id/", s.Tweet)
+	mux.HandleFunc("/", s.loggedIn(s.Home))
+	mux.HandleFunc("/id/", s.loggedIn(s.Tweet))
+	mux.Handle("/login", twitterLogin.LoginHandler(s.oauth1Config, nil))
+	mux.Handle("/callback", twitterLogin.CallbackHandler(s.oauth1Config, http.HandlerFunc(s.Login), nil))
 	return mux
+}
+
+func (s *Server) loggedIn(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := s.store.Get(r, "webfefe")
+		if loggedIn, ok := session.Values["logged-in"].(bool); ok && loggedIn {
+			fn(w, r)
+			return
+		}
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+}
+
+func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
+	twitterUser, err := twitterLogin.UserFromContext(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	accessToken, accessSecret, err := oauth1Login.AccessTokenFromContext(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	_, _ = accessToken, accessSecret
+	logrus.WithFields(logrus.Fields{
+		"name": twitterUser.ScreenName, "ID": twitterUser.ID,
+	}).Info("User logged in")
+	session, _ := s.store.Get(r, "webfefe")
+	session.Values["logged-in"] = true
+	session.Values["twitter-user"] = twitterUser.ID
+	session.Save(r, w)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
