@@ -3,16 +3,14 @@
 {{define "tweet"}}
 	<p>{{.User.Name}} <a href="https://twitter.com/{{.User.ScreenName}}">@{{.User.ScreenName}}</a>
 	<p><blockquote>{{with .ExtendedTweet}}{{.FullText}}{{else}}{{.Text}}{{end}}</blockquote>
-	<p>{{.CreatedAt}}
-	<p>{{with printf "https://twitter.com/%s/status/%d" .User.ScreenName .ID}}
-		<a href="{{.}}">{{.}}</a>
-	{{end}}
+	<p><a href="https://twitter.com/{{.User.ScreenName}}/status/{{.ID}}">{{.CreatedAt}}</a>
 {{end}}
 
-<h2>Tweet number {{.ID}}</h2>
-{{template "tweet" .}}
+<h2>Tweet number {{.Tweet.ID}}</h2>
 
-{{with .RetweetedStatus}}
+{{template "tweet" .Tweet}}
+
+{{with .Tweet.RetweetedStatus}}
 	<h3>Retweet of {{.ID}}</h3>
 	{{template "tweet" .}}
 
@@ -22,7 +20,11 @@
 	{{end}}
 {{end}}
 
-{{with .QuotedStatus}}
+{{with .Tweet.QuotedStatus}}
 	<h3>Quote of {{.ID}}</h3>
 	{{template "tweet" .}}
 {{end}}
+
+<p>Source: <code>{{.Source}}</code></p>
+
+<pre><code>{{.JSON}}</code></pre>

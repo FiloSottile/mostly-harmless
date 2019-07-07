@@ -5,13 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
-	"html"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"crawshaw.io/sqlite"
@@ -25,6 +24,7 @@ import (
 func main() {
 	dbFile := flag.String("db", "twitter.db", "The path of the SQLite DB")
 	mediaPath := flag.String("media", "twitter-media", "The folder to store media files in")
+	credsFile := flag.String("creds", "creds.json", "The path of the credentials JSON")
 	listenAddr := flag.String("listen", "0.0.0.0:6052", "The address to listen on for HTTP")
 	flag.Parse()
 
@@ -44,10 +44,11 @@ func main() {
 			return f(conn)
 		},
 		mediaPath: *mediaPath,
+		credsPath: *credsFile,
 		tmpl:      template.Must(vfstemplate.ParseGlob(data.Templates, nil, "*.tmpl")),
 	}
 
-	logrus.Info("Starting...")
+	logrus.WithField("address", *listenAddr).Info("Starting...")
 	logrus.WithError((&http.Server{
 		Addr:         *listenAddr,
 		Handler:      s.Handler(),
@@ -73,6 +74,9 @@ type Server struct {
 	withConn  func(f func(conn *sqlite.Conn) error) error
 	mediaPath string
 	tmpl      *template.Template
+
+	credsMu   sync.Mutex
+	credsPath string
 }
 
 func (s *Server) Handler() http.Handler {
@@ -100,26 +104,43 @@ func (s *Server) Tweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var (
+		tweetJSON   []byte
+		tweetSource string
+	)
 	if err := s.withConn(func(conn *sqlite.Conn) error {
-		sql := `SELECT Messages.json FROM Messages, Tweets
+		sql := `SELECT Messages.json, Messages.source FROM Messages, Tweets
 			WHERE Messages.id = Tweets.message AND Tweets.id = ?;`
-		return sqlitex.Exec(conn, sql, func(stmt *sqlite.Stmt) error {
-			var out bytes.Buffer
-			if err := json.Indent(&out, []byte(stmt.ColumnText(0)), "", "    "); err != nil {
-				return err
-			}
-
-			var tweet twitter.Tweet
-			if err := json.Unmarshal([]byte(stmt.ColumnText(0)), &tweet); err != nil {
-				return err
-			}
-
-			if err := s.tmpl.ExecuteTemplate(w, "tweet_page.html.tmpl", tweet); err != nil {
-				return err
-			}
-			fmt.Fprintf(w, "<pre><code>%s</code></pre>", html.EscapeString(out.String()))
+		fn := func(stmt *sqlite.Stmt) error {
+			tweetJSON = []byte(stmt.ColumnText(0))
+			tweetSource = stmt.ColumnText(1)
 			return nil
-		}, n)
+		}
+		return sqlitex.Exec(conn, sql, fn, n)
+	}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if tweetJSON == nil {
+		http.Error(w, "Tweet not found.", http.StatusNotFound)
+		return
+	}
+
+	var out bytes.Buffer
+	if err := json.Indent(&out, tweetJSON, "", "    "); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var tweet twitter.Tweet
+	if err := json.Unmarshal(tweetJSON, &tweet); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := s.tmpl.ExecuteTemplate(w, "tweet_page.html.tmpl", map[string]interface{}{
+		"Tweet": tweet, "Source": tweetSource, "JSON": out.String(),
 	}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
