@@ -2,7 +2,7 @@
 
 {{define "tweet"}}
 	<p>{{.User.Name}} <a href="https://twitter.com/{{.User.ScreenName}}">@{{.User.ScreenName}}</a>
-	<p><blockquote>{{with .ExtendedTweet}}{{.FullText}}{{else}}{{.Text}}{{end}}</blockquote>
+	<p><blockquote>{{with .FullText}}{{.}}{{else}}{{.Text}}{{end}}</blockquote>
 	<p><a href="https://twitter.com/{{.User.ScreenName}}/status/{{.ID}}">{{.CreatedAt}}</a>
 {{end}}
 
