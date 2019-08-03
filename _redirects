@@ -7,11 +7,13 @@ https://dreamy-hawking-6b7da8.netlify.com/* https://filippo.io/:splat 301!
 /entropy-talk https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy 302
 /entropy-talk-ccc https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy-at-32c3 302
 /newsletter https://buttondown.email/cryptography-dispatches 302
-/age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/view 302
+/age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302
 
 /Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 301
 
 /CV/* https://blog.filippo.io/hi/ 302! # Hide the old CVs
+
+/atom.xml https://blog.filippo.io/rss/ 301
 
 # Migrated blog posts, including the /index.html path
 /psa-enable-automatic-updates-please/* https://blog.filippo.io/psa-enable-automatic-updates-please/ 301!
