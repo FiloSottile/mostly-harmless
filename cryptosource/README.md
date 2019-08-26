@@ -24,3 +24,7 @@ func main() {
 ```
 
 [Try this on the Go Playground](https://play.golang.org/p/QurtNQbNHRs).
+
+The code is released in the Public Domain (and comes with a
+fallback license with no requirements) so you can just copy-paste
+it if you want. It's short.

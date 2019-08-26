@@ -39,8 +39,8 @@ func (s source) Seed(seed int64) {
 
 func (s source) Uint64() uint64 {
 	var buf [8]byte
-	if _, err := s.r.Read(buf[:]); err != nil {
-		panic("cryptosource read error: " + err.Error())
+	if _, err := io.ReadFull(s.r, buf[:]); err != nil {
+		panic("cryptosource randomness read error: " + err.Error())
 	}
 	return binary.LittleEndian.Uint64(buf[:])
 }
