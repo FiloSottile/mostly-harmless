@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2/clientcredentials"
+	"golang.org/x/sync/errgroup"
 )
 
 type Credentials struct {
@@ -79,11 +80,11 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 		c.wg.Done()
 	}()
 
-	ctx, cancel := contextWithSignal(context.Background(), func(s os.Signal) {
+	ctx, _ := contextWithSignal(context.Background(), func(s os.Signal) {
 		log.WithField("signal", s).Info("Received signal, stopping...")
 	}, syscall.SIGINT, syscall.SIGTERM)
 
-	var streamsWG sync.WaitGroup
+	g, ctx := errgroup.WithContext(ctx)
 	config := oauth1.NewConfig(creds.APIKey, creds.APISecret)
 	for i, account := range creds.Accounts {
 		token := oauth1.NewToken(account.Token, account.TokenSecret)
@@ -96,21 +97,18 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 		}
 
 		for _, timeline := range []string{"home", "mentions", "user", "likes"} {
-			log := log.WithFields(log.Fields{
-				"account": user.ScreenName, "id": user.ID, "timeline": timeline,
-			})
-			streamsWG.Add(1)
-			go func(timeline string) {
-				log.Info("Starting to monitor timeline")
+			timeline := timeline
+			g.Go(func() error {
+				log.WithFields(log.Fields{
+					"account": user.ScreenName, "id": user.ID, "timeline": timeline,
+				}).Info("Starting to monitor timeline")
 				m := &timelineMonitor{c: httpClient, u: user, m: messages}
-				err := m.followTimeline(ctx, timeline)
-				log.WithError(err).Error("Stopped following timeline")
-				cancel()
-				streamsWG.Done()
-			}(timeline)
+				return errors.Wrapf(m.followTimeline(ctx, timeline),
+					"%s of %d", timeline, user.ID)
+			})
 		}
 	}
-	streamsWG.Wait()
+	log.WithError(g.Wait()).Error("Stopped following timelines")
 
 	close(messages)
 	c.wg.Wait()

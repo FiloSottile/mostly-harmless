@@ -21,5 +21,8 @@ require (
 	github.com/v2pro/plz v0.0.0-20180227161703-2d49b86ea382
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/tools v0.0.0-20190508150211-cf84161cff3f // indirect
 )
+
+go 1.12

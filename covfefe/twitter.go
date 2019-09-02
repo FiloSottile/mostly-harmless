@@ -103,8 +103,18 @@ func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) e
 			url = fmt.Sprintf("%s&since_id=%d", url, sinceID)
 		}
 		var tweets []json.RawMessage
-		if err := getJSON(ctx, t.c, url, &tweets); err != nil {
-			return err
+		const maxRetry = 4
+		for retry := 0; retry <= maxRetry; retry++ {
+			if err := getJSON(ctx, t.c, url, &tweets); err != nil {
+				if retry == maxRetry {
+					return err
+				} else {
+					log.WithField("retry", retry).WithError(err).Error("Failed to fetch timeline")
+					time.Sleep(60 * time.Second)
+					continue
+				}
+			}
+			break
 		}
 
 		log.WithField("tweets", len(tweets)).Debug("Fetched timeline")
