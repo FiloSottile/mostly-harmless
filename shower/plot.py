@@ -23,14 +23,13 @@ score = lambda x: x[1] / (x[1] + x[2]) * 50
 data.sort(key=score)
 
 with plt.xkcd():
-    plt.rc("font", family="xkcd")
-    ind = np.arange(len(data))  # the x locations for the groups
-    width = 0.45  # the width of the bars: can also be len(x) sequence
+    ind = np.arange(len(data))
+    width = 0.45
     fig = plt.figure(figsize=(9, 9))
     ax = plt.subplot(111)
     ax.spines["right"].set_visible(False)
     ax.spines["top"].set_visible(False)
-    p1 = plt.bar(ind, [score(p) for p in data], width, color="black")
+    plt.bar(ind, [score(p) for p in data], width, color="black")
     plt.title("Is it ok to eat it in the shower?".upper())
     plt.xticks(ind, [p[0].upper() for p in data])
     plt.yticks(np.arange(0, 51, 10))
