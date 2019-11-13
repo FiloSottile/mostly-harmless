@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -40,11 +41,11 @@ type Rare struct {
 
 func (r *Rare) fetchSitemaps(next time.Time) {
 	for {
-		r.fetchSitemap(next)
-		next = next.AddDate(0, 0, 1)
 		if next.After(time.Now()) {
 			return
 		}
+		r.fetchSitemap(next)
+		next = next.AddDate(0, 0, 1)
 		if err := ioutil.WriteFile("bookmark", []byte(next.Format("2006-01-02")), 0664); err != nil {
 			log.Fatal(err)
 		}
@@ -57,8 +58,7 @@ func (r *Rare) fetchSitemap(t time.Time) {
 	<-r.rate.C
 	resp, err := r.hc.Get(fmt.Sprintf(postsSitemap, t.Format("2006"), date))
 	if err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
 	buf := &bytes.Buffer{}
 	f, err := createFile(fmt.Sprintf("sitemap/posts-%s.xml", date))
@@ -66,8 +66,7 @@ func (r *Rare) fetchSitemap(t time.Time) {
 		log.Fatal(err)
 	}
 	if _, err := io.Copy(io.MultiWriter(buf, f), resp.Body); err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
 	resp.Body.Close()
 	if err := f.Close(); err != nil {
@@ -78,28 +77,28 @@ func (r *Rare) fetchSitemap(t time.Time) {
 		URLs []string `xml:"url>loc"`
 	}
 	if err := xml.Unmarshal(buf.Bytes(), &sitemap); err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
 
 	for _, url := range sitemap.URLs {
-		r.fetchPost(url)
+		if err := r.fetchPost(url); err != nil {
+			log.Printf("error fetching post %q: %v", url, err)
+		}
 	}
 }
 
-func (r *Rare) fetchPost(url string) {
+func (r *Rare) fetchPost(url string) error {
 	name := filepath.Clean(strings.TrimPrefix(url, "https://medium.com/"))
 	dir, _ := filepath.Split(name)
 	if dir == ".." || dir == "" || dir == "." {
-		log.Println(url)
-		return
+		return errors.New("invalid url")
 	}
 	<-r.rate.C
 	resp, err := r.hc.Get(url)
 	if err != nil {
-		log.Println(name, err)
-		return
+		return err
 	}
+	defer resp.Body.Close()
 	var prefix string
 	if strings.HasPrefix(dir, "@") {
 		prefix = dir[:min(len(dir), 3)]
@@ -108,16 +107,13 @@ func (r *Rare) fetchPost(url string) {
 	}
 	f, err := createFile(prefix + "/" + name + ".html")
 	if err != nil {
-		log.Fatalln(name, err)
+		return err
 	}
 	if _, err := io.Copy(f, resp.Body); err != nil {
-		log.Println(name, err)
-		return
+		return err
 	}
-	resp.Body.Close()
-	if err := f.Close(); err != nil {
-		log.Fatalln(name, err)
-	}
+	return f.Close()
+
 }
 
 func min(a, b int) int {
