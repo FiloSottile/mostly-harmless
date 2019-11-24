@@ -12,24 +12,63 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
 )
 
 func main() {
-	f, err := os.Open(os.Args[1])
+	f, err := os.Open(os.Args[3])
 	if err != nil {
 		log.Fatalln("Failed to open file:", err)
 	}
+	defer f.Close()
 
-	if err := uploadFile(f); err != nil {
+	log.Println("Connecting via SSH...")
+	sshc, err := sshConnect(os.Args[1], os.Args[2])
+	if err != nil {
+		log.Fatalln("Failed to connect via SSH:", err)
+	}
+	defer sshc.Close()
+
+	log.Println("Uploading file to Web UI...")
+	if err := uploadFile(sshc.Dial, f); err != nil {
 		log.Fatalln("Failed to upload file:", err)
 	}
+
+	log.Println("Success!")
 }
 
-func uploadFile(f *os.File) error {
+func sshConnect(endpoint, fingerprint string) (*ssh.Client, error) {
+	socket := os.Getenv("SSH_AUTH_SOCK")
+	conn, err := net.Dial("unix", socket)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open SSH_AUTH_SOCK: %v", err)
+	}
+
+	agentClient := agent.NewClient(conn)
+	config := &ssh.ClientConfig{
+		User: "root",
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeysCallback(agentClient.Signers),
+		},
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			if ssh.FingerprintSHA256(key) != fingerprint {
+				return fmt.Errorf("incorrect host key: %v", key)
+			}
+			return nil
+		},
+	}
+
+	return ssh.Dial("tcp", endpoint, config)
+}
+
+func uploadFile(dial func(network, addr string) (net.Conn, error), f *os.File) error {
 	body := &bytes.Buffer{}
 	w := multipart.NewWriter(body)
 	name := filepath.Base(f.Name())
@@ -42,8 +81,14 @@ func uploadFile(f *os.File) error {
 		return err
 	}
 
-	client := &http.Client{Timeout: 1 * time.Minute}
-	url := "http://10.11.99.1/upload"
+	client := &http.Client{
+		Transport: &http.Transport{
+			Dial:              dial,
+			DisableKeepAlives: true,
+		},
+		Timeout: 1 * time.Minute,
+	}
+	url := "http://127.0.0.1/upload"
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return err

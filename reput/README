@@ -1,0 +1,35 @@
+reput connects to a reMarkable via SSH and uploads a file.
+
+    $ reput 172.27.5.215:22 SHA256:HXpOPttnW8Atwy9mnW0tXaMWk8WfFPEN0hgOfFxPnss example.pdf
+
+The reMarkable needs to be awake for the SSH server to be available, and the Web
+UI needs to be enabled in settings. Both PDFs and EPUBs are supported.
+
+Authentication is handled through ssh-agent. Install your SSH keys on the root
+account of the reMarkable. The password is in the About tab.
+
+While reput uses SSH for convenience, it just tunnels to the Web UI (instead of
+having to deal with the internal file structure and restart the UI).
+
+The Web UI is disabled every time the reMarkable boots. Use the
+webui_invincibility.sh script to patch this behavior.
+
+    https://github.com/reHackable/scripts/wiki/webui_invincibility.sh
+
+If you want to backup your files, since you're probably not using the cloud if
+you're reading this, they are at this path.
+
+    /home/root/.local/share/remarkable/xochitl
+
+As a personal note, I also disabled crashuploader.
+
+    systemctl disable crashuploader && systemctl stop crashuploader
+
+Finally, here's a script that works as an Automator Print Plugin or Folder
+Action with a YubiKey-provided ssh-agent via gpg-agent.
+
+    export SSH_AUTH_SOCK=~/.gnupg/S.gpg-agent.ssh
+    for f in "$@"
+    do
+        ~/bin/reput 172.27.5.215:22 SHA256:HXpOPttnW8Atwy9mnW0tXaMWk8WfFPEN0hgOfFxPnss "$f"
+    done
