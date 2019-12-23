@@ -1,8 +1,10 @@
-/ https://github.com/FiloSottile/age 302
+http://age-encryption.org/* https://age-encryption.org/:splat 301! # HSTS priming
+https://age-tool.com/* https://age-encryption.org/:splat 302!
+https://reverent-turing-84c38e.netlify.com/* https://age-encryption.org/:splat 301!
 
+/ https://github.com/FiloSottile/age 302
 /ml https://groups.google.com/d/forum/age-dev 302
 /v1 https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302
-/spec /v1 302
 
-# TODO: move /report to filippo.io/age/report, as it's implementation-specific.
-/report https://github.com/FiloSottile/age/issues/new/choose 302
+https://age-tool.com/spec https://age-encryption.org/v1 302
+https://age-tool.com/report https://filippo.io/age/report 302
