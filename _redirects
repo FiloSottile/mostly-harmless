@@ -10,6 +10,8 @@ https://ticketbleed.com/* https://filippo.io/Ticketbleed 301!
 /newsletter https://buttondown.email/cryptography-dispatches 302
 /age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302
 /age/report https://github.com/FiloSottile/age/issues/new/choose 302
+/age go-get=1 /age-go-get.html 200
+/age https://github.com/FiloSottile/age 302
 
 /Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 301
 
