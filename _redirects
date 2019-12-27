@@ -12,6 +12,7 @@ https://ticketbleed.com/* https://filippo.io/Ticketbleed 301!
 /age/report https://github.com/FiloSottile/age/issues/new/choose 302
 /age go-get=1 /age-go-get.html 200
 /age https://github.com/FiloSottile/age 302
+/age/info/refs https://github.com/FiloSottile/age.git/info/refs 302
 
 /Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 301
 
