@@ -5,6 +5,11 @@ reput connects to a reMarkable via SSH and uploads a file.
 The reMarkable needs to be awake for the SSH server to be available, and the Web
 UI needs to be enabled in settings. Both PDFs and EPUBs are supported.
 
+[ Firmware version 2.0.2.0 note: the Web UI will only work wile the usb0    ]
+[ interface has an address, either because the rM is plugged in, or by      ]
+[                                                                           ]
+[   $ ifconfig usb0 10.11.99.1 netmask 255.255.255.248 up                   ]
+
 Authentication is handled through ssh-agent. Install your SSH keys on the root
 account of the reMarkable. The password is in the About tab.
 
@@ -15,6 +20,8 @@ The Web UI is disabled every time the reMarkable boots. Use the
 webui_invincibility.sh script to patch this behavior.
 
     https://github.com/reHackable/scripts/wiki/webui_invincibility.sh
+
+[ Unfortunately this script has not yet been updated for firmware 2.0.2.0.  ]
 
 If you want to backup your files, since you're probably not using the cloud if
 you're reading this, they are at this path.

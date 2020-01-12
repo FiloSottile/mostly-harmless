@@ -88,7 +88,7 @@ func uploadFile(dial func(network, addr string) (net.Conn, error), f *os.File) e
 		},
 		Timeout: 1 * time.Minute,
 	}
-	url := "http://127.0.0.1/upload"
+	url := "http://10.11.99.1/upload"
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return err
@@ -98,7 +98,7 @@ func uploadFile(dial func(network, addr string) (net.Conn, error), f *os.File) e
 	if err != nil {
 		return err
 	}
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		return fmt.Errorf("got HTTP status %d: %s", res.StatusCode, res.Status)
 	}
 	return nil
