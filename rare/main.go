@@ -88,24 +88,31 @@ func (r *Rare) fetchSitemap(t time.Time) {
 }
 
 func (r *Rare) fetchPost(url string) error {
-	name := filepath.Clean(strings.TrimPrefix(url, "https://medium.com/"))
-	dir, _ := filepath.Split(name)
+	dir, file := filepath.Split(filepath.Clean(
+		strings.TrimPrefix(url, "https://medium.com/")))
 	if dir == ".." || dir == "" || dir == "." {
 		return errors.New("invalid url")
 	}
+	if len(file) > 250 {
+		parts := strings.Split(file, "-")
+		file = parts[len(parts)-1]
+	}
+
 	<-r.rate.C
 	resp, err := r.hc.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+
 	var prefix string
 	if strings.HasPrefix(dir, "@") {
 		prefix = dir[:min(len(dir), 3)]
 	} else {
 		prefix = dir[:min(len(dir), 2)]
 	}
-	f, err := createFile(prefix + "/" + name + ".html")
+
+	f, err := createFile(prefix + "/" + dir + file + ".html")
 	if err != nil {
 		return err
 	}
@@ -113,7 +120,6 @@ func (r *Rare) fetchPost(url string) error {
 		return err
 	}
 	return f.Close()
-
 }
 
 func min(a, b int) int {
