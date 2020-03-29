@@ -32,6 +32,10 @@ https://mta-sts.bip.filippo.io/* https://filippo.io 302!
 /mkcert go-get=1 /mkcert-go-get.html 200!
 /mkcert https://github.com/FiloSottile/mkcert 302!
 
+# filippo.io/cpace Go import path
+/cpace go-get=1 /cpace-go-get.html 200!
+/cpace https://pkg.go.dev/filippo.io/cpace 302!
+
 # Hide the old CVs
 /CV/* https://blog.filippo.io/hi/ 302!
 
