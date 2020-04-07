@@ -1,0 +1,12 @@
+FROM golang
+
+RUN apt-get update && apt-get install -y perl curl
+RUN curl -O -L https://github.com/curl/curl/raw/master/lib/mk-ca-bundle.pl && \
+    chmod +x mk-ca-bundle.pl && \
+    ./mk-ca-bundle.pl /usr/local/share/ca-bundle.crt && \
+    rm mk-ca-bundle.pl
+
+ADD . /usr/local/src/survey-roots
+RUN cd /usr/local/src/survey-roots && go install
+
+ENTRYPOINT ["survey-roots", "/usr/local/share/ca-bundle.crt"]
