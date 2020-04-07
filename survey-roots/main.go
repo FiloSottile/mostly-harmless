@@ -15,13 +15,21 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gwatts/rootcerts/certparse"
 )
 
+type Root struct {
+	c      *x509.Certificate
+	source []string
+}
+
+type Fingerprint [32]byte
+
 func main() {
-	var roots []*x509.Certificate
+	var roots []*Root
 	switch len(os.Args) {
 	case 1:
 		roots = loadSystemRoots()
@@ -30,7 +38,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		roots = appendFromPEM(roots, data)
+		roots = appendFromPEM(roots, data, os.Args[1])
 	default:
 		log.Fatal("usage: survey-roots [roots.pem]")
 	}
@@ -39,10 +47,15 @@ func main() {
 	// The loading logic, which intentionally matches the crypto/x509
 	// one, ends up brining in a lot of duplicates because it does not
 	// stop at the first source.
-	uniqueRoots := make(map[[32]byte]*x509.Certificate)
+	uniqueRoots := make(map[Fingerprint]*Root)
 	for _, root := range roots {
-		fingerprint := spkiSubjectFingerprint(root)
-		uniqueRoots[fingerprint] = root
+		fingerprint := spkiSubjectFingerprint(root.c)
+		r, ok := uniqueRoots[fingerprint]
+		if !ok {
+			uniqueRoots[fingerprint] = root
+		} else {
+			r.source = append(r.source, root.source...)
+		}
 	}
 	log.Printf("[+] Found %d unique roots in target set", len(uniqueRoots))
 
@@ -59,7 +72,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mozillaGood := make(map[[32]byte]bool)
+	mozillaGood := make(map[Fingerprint]bool)
 	for _, c := range mozillaCerts {
 		if c.Trust&certparse.ServerTrustedDelegator != 0 {
 			mozillaGood[spkiSubjectFingerprint(c.Cert)] = true
@@ -82,7 +95,7 @@ func main() {
 	if err := json.NewDecoder(resp.Body).Decode(&ctCerts); err != nil {
 		log.Fatal(err)
 	}
-	ctGood := make(map[[32]byte]bool)
+	ctGood := make(map[Fingerprint]bool)
 	for _, der := range ctCerts.Certificates {
 		c, err := x509.ParseCertificate(der)
 		if err != nil {
@@ -93,7 +106,7 @@ func main() {
 	log.Printf("[+] Loaded %d roots from Argon%s CT log", len(ctGood), year)
 
 	for _, root := range uniqueRoots {
-		fingerprint := spkiSubjectFingerprint(root)
+		fingerprint := spkiSubjectFingerprint(root.c)
 		if mozillaGood[fingerprint] {
 			continue
 		}
@@ -102,17 +115,18 @@ func main() {
 		} else {
 			log.Printf("[!] Unknown root")
 		}
-		log.Printf("\t%v", root.Subject)
+		log.Printf("\t%v", root.c.Subject)
+		log.Printf("\tfrom %s", strings.Join(root.source, ", "))
 		log.Printf("\t\thttps://censys.io/authorities/%x", fingerprint)
-		log.Printf("\t\thttps://crt.sh/?q=%x", sha256.Sum256(root.Raw))
+		log.Printf("\t\thttps://crt.sh/?q=%x", sha256.Sum256(root.c.Raw))
 	}
 }
 
-func spkiSubjectFingerprint(c *x509.Certificate) [32]byte {
+func spkiSubjectFingerprint(c *x509.Certificate) Fingerprint {
 	h := sha256.New()
 	h.Write(c.RawSubjectPublicKeyInfo)
 	h.Write(c.RawSubject)
-	var out [32]byte
+	var out Fingerprint
 	h.Sum(out[:0])
 	return out
 }
@@ -135,12 +149,12 @@ var certDirectories = []string{
 	"/var/ssl/certs",               // AIX
 }
 
-func loadSystemRoots() []*x509.Certificate {
-	var roots []*x509.Certificate
+func loadSystemRoots() []*Root {
+	var roots []*Root
 
 	for _, file := range certFiles {
 		if data, err := ioutil.ReadFile(file); err == nil {
-			roots = appendFromPEM(roots, data)
+			roots = appendFromPEM(roots, data, file)
 			break
 		}
 	}
@@ -151,8 +165,9 @@ func loadSystemRoots() []*x509.Certificate {
 			continue
 		}
 		for _, fi := range fis {
-			if data, err := ioutil.ReadFile(directory + "/" + fi.Name()); err == nil {
-				roots = appendFromPEM(roots, data)
+			file := directory + "/" + fi.Name()
+			if data, err := ioutil.ReadFile(file); err == nil {
+				roots = appendFromPEM(roots, data, file)
 			}
 		}
 	}
@@ -160,7 +175,7 @@ func loadSystemRoots() []*x509.Certificate {
 	return roots
 }
 
-func appendFromPEM(roots []*x509.Certificate, pemCerts []byte) []*x509.Certificate {
+func appendFromPEM(roots []*Root, pemCerts []byte, source string) []*Root {
 	for len(pemCerts) > 0 {
 		var block *pem.Block
 		block, pemCerts = pem.Decode(pemCerts)
@@ -176,7 +191,7 @@ func appendFromPEM(roots []*x509.Certificate, pemCerts []byte) []*x509.Certifica
 			continue
 		}
 
-		roots = append(roots, cert)
+		roots = append(roots, &Root{c: cert, source: []string{source}})
 	}
 	return roots
 }
