@@ -2,4 +2,7 @@ module github.com/FiloSottile/mostly-harmless/reput
 
 go 1.13
 
-require golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c
+require (
+	github.com/kr/binarydist v0.1.0
+	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
+)
