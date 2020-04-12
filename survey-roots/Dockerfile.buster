@@ -1,6 +1,0 @@
-FROM golang:buster
-
-ADD . /usr/local/src/survey-roots
-RUN cd /usr/local/src/survey-roots && go install
-
-ENTRYPOINT ["survey-roots"]

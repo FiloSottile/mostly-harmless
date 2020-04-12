@@ -11,10 +11,14 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
+	"flag"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -29,37 +33,54 @@ type Root struct {
 type Fingerprint [32]byte
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, "usage: survey-roots [roots.pem]")
+	}
+	verbose := flag.Bool("v", false, "print source and hashes of roots")
+	flag.Parse()
+
+	var verboseOut, verboseErr io.Writer = os.Stdout, os.Stderr
+	if !*verbose {
+		verboseOut, verboseErr = ioutil.Discard, ioutil.Discard
+	}
+
 	var roots []*Root
-	switch len(os.Args) {
-	case 1:
+	switch len(flag.Args()) {
+	case 0:
 		roots = loadSystemRoots()
-	case 2:
+	case 1:
 		data, err := ioutil.ReadFile(os.Args[1])
 		if err != nil {
 			log.Fatal(err)
 		}
 		roots = appendFromPEM(roots, data, os.Args[1])
 	default:
-		log.Fatal("usage: survey-roots [roots.pem]")
+		flag.Usage()
+		os.Exit(1)
 	}
-	log.Printf("[+] Loaded %d roots", len(roots))
+	fmt.Fprintf(verboseErr, "[+] Loaded %d roots\n", len(roots))
 
 	// The loading logic, which intentionally matches the crypto/x509
 	// one, ends up brining in a lot of duplicates because it does not
 	// stop at the first source.
-	uniqueRoots := make(map[Fingerprint]*Root)
+	var uniqueRoots []*Root
+	seen := make(map[Fingerprint]*Root)
 	for _, root := range roots {
 		fingerprint := spkiSubjectFingerprint(root.c)
-		r, ok := uniqueRoots[fingerprint]
+		r, ok := seen[fingerprint]
 		if !ok {
-			uniqueRoots[fingerprint] = root
+			uniqueRoots = append(uniqueRoots, root)
+			seen[fingerprint] = root
 		} else {
 			r.source = append(r.source, root.source...)
 		}
 	}
-	log.Printf("[+] Found %d unique roots in target set", len(uniqueRoots))
+	sort.Slice(uniqueRoots, func(i, j int) bool {
+		return uniqueRoots[i].c.Subject.String() < uniqueRoots[j].c.Subject.String()
+	})
+	fmt.Fprintf(verboseErr, "[+] Found %d unique roots in target set\n", len(uniqueRoots))
 
-	log.Printf("[ ] Fetching Mozilla root store...")
+	fmt.Fprintf(verboseErr, "[ ] Fetching Mozilla root store...\n")
 	c := &http.Client{Timeout: 20 * time.Second}
 	resp, err := c.Get("https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/certdata.txt")
 	if err != nil {
@@ -78,10 +99,10 @@ func main() {
 			mozillaGood[spkiSubjectFingerprint(c.Cert)] = true
 		}
 	}
-	log.Printf("[+] Loaded %d Mozilla roots", len(mozillaGood))
+	fmt.Fprintf(verboseErr, "[+] Loaded %d Mozilla roots\n", len(mozillaGood))
 
 	year := time.Now().Format("2006")
-	log.Printf("[ ] Fetching Argon%s root store...", year)
+	fmt.Fprintf(verboseErr, "[ ] Fetching Argon%s root store...\n", year)
 	resp, err = c.Get("https://ct.googleapis.com/logs/argon" + year + "/ct/v1/get-roots")
 	if err != nil {
 		log.Fatal(err)
@@ -103,23 +124,31 @@ func main() {
 		}
 		ctGood[spkiSubjectFingerprint(c)] = true
 	}
-	log.Printf("[+] Loaded %d roots from Argon%s CT log", len(ctGood), year)
+	fmt.Fprintf(verboseErr, "[+] Loaded %d roots from Argon%s CT log\n", len(ctGood), year)
 
+	var notInMozilla, unknown int
 	for _, root := range uniqueRoots {
 		fingerprint := spkiSubjectFingerprint(root.c)
 		if mozillaGood[fingerprint] {
 			continue
 		}
 		if ctGood[fingerprint] {
-			log.Printf("[-] Root not in the Mozilla store")
+			notInMozilla++
+			fmt.Printf(" - %v\n", root.c.Subject)
 		} else {
-			log.Printf("[!] Unknown root")
+			unknown++
+			fmt.Printf("!! %v\n", root.c.Subject)
 		}
-		log.Printf("\t%v", root.c.Subject)
-		log.Printf("\tfrom %s", strings.Join(root.source, ", "))
-		log.Printf("\t\thttps://censys.io/authorities/%x", fingerprint)
-		log.Printf("\t\thttps://crt.sh/?q=%x", sha256.Sum256(root.c.Raw))
+		fmt.Fprintf(verboseOut, "\tfrom %s\n", strings.Join(root.source, ", "))
+		fmt.Fprintf(verboseOut, "\thttps://censys.io/authorities/%x\n", fingerprint)
+		fmt.Fprintf(verboseOut, "\thttps://crt.sh/?q=%x\n", sha256.Sum256(root.c.Raw))
+		fmt.Fprintf(verboseOut, "\n")
 	}
+	if notInMozilla+unknown > 0 && !*verbose {
+		fmt.Printf("\n")
+	}
+
+	fmt.Printf("Found %d root(s) not in the Mozilla store, and %d completely unknown one(s).\n", notInMozilla, unknown)
 }
 
 func spkiSubjectFingerprint(c *x509.Certificate) Fingerprint {

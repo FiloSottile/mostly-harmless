@@ -1,0 +1,252 @@
+### alpine:3.11
+
+ - CN=AddTrust Class 1 CA Root,OU=AddTrust TTP Network,O=AddTrust AB,C=SE
+ - CN=Certum CA,O=Unizeto Sp. z o.o.,C=PL
+ - CN=Chambers of Commerce Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=D-TRUST Root CA 3 2013,O=D-Trust GmbH,C=DE
+ - CN=Global Chambersign Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=SwissSign Platinum CA - G2,O=SwissSign AG,C=CH
+ - CN=Symantec Class 1 Public Primary Certification Authority - G4,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 1 Public Primary Certification Authority - G6,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 2 Public Primary Certification Authority - G4,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 2 Public Primary Certification Authority - G6,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=VeriSign Class 1 Public Primary Certification Authority - G3,OU=VeriSign Trust Network+OU=(c) 1999 VeriSign\, Inc. - For authorized use only,O=VeriSign\, Inc.,C=US
+ - CN=VeriSign Class 2 Public Primary Certification Authority - G3,OU=VeriSign Trust Network+OU=(c) 1999 VeriSign\, Inc. - For authorized use only,O=VeriSign\, Inc.,C=US
+
+Found 12 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### alpine:3.8
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+
+Found 10 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### debian:buster (with ca-certificates)
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+
+Found 3 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### debian:stretch (with ca-certificates)
+
+ - CN=AC Raíz Certicámara S.A.,O=Sociedad Cameral de Certificación Digital - Certicámara S.A.,C=CO
+ - CN=AddTrust Class 1 CA Root,OU=AddTrust TTP Network,O=AddTrust AB,C=SE
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Certum CA,O=Unizeto Sp. z o.o.,C=PL
+ - CN=Chambers of Commerce Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=ComSign CA,O=ComSign,C=IL
+ - CN=D-TRUST Root CA 3 2013,O=D-Trust GmbH,C=DE
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=Global Chambersign Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=S-TRUST Universal Root CA,OU=S-TRUST Certification Services,O=Deutscher Sparkassen Verlag GmbH,C=DE
+ - CN=SwissSign Platinum CA - G2,O=SwissSign AG,C=CH
+ - CN=Swisscom Root CA 2,OU=Digital Certificate Services,O=Swisscom,C=ch
+ - CN=Symantec Class 1 Public Primary Certification Authority - G4,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 1 Public Primary Certification Authority - G6,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 2 Public Primary Certification Authority - G4,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=Symantec Class 2 Public Primary Certification Authority - G6,OU=Symantec Trust Network,O=Symantec Corporation,C=US
+ - CN=TC TrustCenter Class 3 CA II,OU=TC TrustCenter Class 3 CA,O=TC TrustCenter GmbH,C=DE
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=UTN-USERFirst-Client Authentication and Email,OU=http://www.usertrust.com,O=The USERTRUST Network,L=Salt Lake City,ST=UT,C=US
+ - CN=VeriSign Class 1 Public Primary Certification Authority - G3,OU=VeriSign Trust Network+OU=(c) 1999 VeriSign\, Inc. - For authorized use only,O=VeriSign\, Inc.,C=US
+ - CN=VeriSign Class 2 Public Primary Certification Authority - G3,OU=VeriSign Trust Network+OU=(c) 1999 VeriSign\, Inc. - For authorized use only,O=VeriSign\, Inc.,C=US
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+
+Found 28 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### gcr.io/distroless/static-debian10
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+
+Found 3 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### ubuntu:20.04 (with ca-certificates)
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+
+Found 3 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### ubuntu:18.04 (with ca-certificates)
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+
+Found 10 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### ubuntu:16.04 (with ca-certificates)
+
+ - CN=ACEDICOM Root,OU=PKI,O=EDICOM,C=ES
+ - CN=AddTrust Class 1 CA Root,OU=AddTrust TTP Network,O=AddTrust AB,C=SE
+ - CN=AddTrust Public CA Root,OU=AddTrust TTP Network,O=AddTrust AB,C=SE
+ - CN=AddTrust Qualified CA Root,OU=AddTrust TTP Network,O=AddTrust AB,C=SE
+ - CN=CA Disig Root R1,O=Disig a.s.,L=Bratislava,C=SK
+ - CN=CNNIC ROOT,O=CNNIC,C=CN
+ - CN=Certinomis - Autorité Racine,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Certum CA,O=Unizeto Sp. z o.o.,C=PL
+ - CN=Chambers of Commerce Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=China Internet Network Information Center EV Certificates Root,O=China Internet Network Information Center,C=CN
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=DST ACES CA X6,OU=DST ACES,O=Digital Signature Trust,C=US
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=GeoTrust Global CA 2,O=GeoTrust Inc.,C=US
+ - CN=Global Chambersign Root,OU=http://www.chambersign.org,O=AC Camerfirma SA CIF A82743287,C=EU
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=PSCProcert,OU=Proveedor de Certificados PROCERT,O=Sistema Nacional de Certificacion Electronica,L=Chacao,ST=Miranda,C=VE
+ - CN=Secure Certificate Services,O=Comodo CA Limited,L=Salford,ST=Greater Manchester,C=GB
+ - CN=Swisscom Root CA 1,OU=Digital Certificate Services,O=Swisscom,C=ch
+ - CN=Swisscom Root CA 2,OU=Digital Certificate Services,O=Swisscom,C=ch
+ - CN=Swisscom Root EV CA 2,OU=Digital Certificate Services,O=Swisscom,C=ch
+ - CN=Trusted Certificate Services,O=Comodo CA Limited,L=Salford,ST=Greater Manchester,C=GB
+ - CN=TÜBİTAK UEKAE Kök Sertifika Hizmet Sağlayıcısı - Sürüm 3,OU=Ulusal Elektronik ve Kriptoloji Araştırma Enstitüsü - UEKAE+OU=Kamu Sertifikasyon Merkezi,O=Türkiye Bilimsel ve Teknolojik Araştırma Kurumu - TÜBİTAK,L=Gebze - Kocaeli,C=TR
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş. (c) Aralık 2007,L=Ankara,C=TR
+ - CN=UTN-USERFirst-Hardware,OU=http://www.usertrust.com,O=The USERTRUST Network,L=Salt Lake City,ST=UT,C=US
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+ - OU=Security Communication EV RootCA1,O=SECOM Trust Systems CO.\,LTD.,C=JP
+
+Found 33 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### centos:8
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+
+Found 3 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### centos:7
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+
+Found 10 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### centos:6
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=Entrust.net Secure Server Certification Authority,OU=www.entrust.net/CPS incorp. by ref. (limits liab.)+OU=(c) 1999 Entrust.net Limited,O=Entrust.net,C=US
+ - CN=Equifax Secure Global eBusiness CA-1,O=Equifax Secure Inc.,C=US
+ - CN=Equifax Secure eBusiness CA-1,O=Equifax Secure Inc.,C=US
+ - CN=GTE CyberTrust Global Root,OU=GTE CyberTrust Solutions\, Inc.,O=GTE Corporation,C=US
+ - CN=NetLock Expressz (Class C) Tanusitvanykiado,OU=Tanusitvanykiadok,O=NetLock Halozatbiztonsagi Kft.,L=Budapest,C=HU
+ - CN=NetLock Uzleti (Class B) Tanusitvanykiado,OU=Tanusitvanykiadok,O=NetLock Halozatbiztonsagi Kft.,L=Budapest,C=HU
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=Thawte Premium Server CA,OU=Certification Services Division,O=Thawte Consulting cc,L=Cape Town,ST=Western Cape,C=ZA
+ - CN=Thawte Server CA,OU=Certification Services Division,O=Thawte Consulting cc,L=Cape Town,ST=Western Cape,C=ZA
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+ - CN=http://www.valicert.com/,OU=ValiCert Class 1 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - CN=http://www.valicert.com/,OU=ValiCert Class 2 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - CN=http://www.valicert.com/,OU=ValiCert Class 3 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - OU=Class 3 Public Primary Certification Authority - G2+OU=(c) 1998 VeriSign\, Inc. - For authorized use only+OU=VeriSign Trust Network,O=VeriSign\, Inc.,C=US
+ - OU=Class 3 Public Primary Certification Authority,O=VeriSign\, Inc.,C=US
+ - OU=Equifax Secure Certificate Authority,O=Equifax,C=US
+
+Found 24 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### amazonlinux:2
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+
+Found 3 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### amazonlinux:1
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=Entrust.net Secure Server Certification Authority,OU=www.entrust.net/CPS incorp. by ref. (limits liab.)+OU=(c) 1999 Entrust.net Limited,O=Entrust.net,C=US
+ - CN=Equifax Secure Global eBusiness CA-1,O=Equifax Secure Inc.,C=US
+ - CN=Equifax Secure eBusiness CA-1,O=Equifax Secure Inc.,C=US
+ - CN=GTE CyberTrust Global Root,OU=GTE CyberTrust Solutions\, Inc.,O=GTE Corporation,C=US
+ - CN=NetLock Expressz (Class C) Tanusitvanykiado,OU=Tanusitvanykiadok,O=NetLock Halozatbiztonsagi Kft.,L=Budapest,C=HU
+ - CN=NetLock Uzleti (Class B) Tanusitvanykiado,OU=Tanusitvanykiadok,O=NetLock Halozatbiztonsagi Kft.,L=Budapest,C=HU
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=Thawte Premium Server CA,OU=Certification Services Division,O=Thawte Consulting cc,L=Cape Town,ST=Western Cape,C=ZA
+ - CN=Thawte Server CA,OU=Certification Services Division,O=Thawte Consulting cc,L=Cape Town,ST=Western Cape,C=ZA
+ - CN=TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5,O=TÜRKTRUST Bilgi İletişim ve Bilişim Güvenliği Hizmetleri A.Ş.,L=Ankara,C=TR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+ - CN=http://www.valicert.com/,OU=ValiCert Class 1 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - CN=http://www.valicert.com/,OU=ValiCert Class 2 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - CN=http://www.valicert.com/,OU=ValiCert Class 3 Policy Validation Authority,O=ValiCert\, Inc.,L=ValiCert Validation Network
+ - OU=Class 3 Public Primary Certification Authority - G2+OU=(c) 1998 VeriSign\, Inc. - For authorized use only+OU=VeriSign Trust Network,O=VeriSign\, Inc.,C=US
+ - OU=Class 3 Public Primary Certification Authority,O=VeriSign\, Inc.,C=US
+ - OU=Equifax Secure Certificate Authority,O=Equifax,C=US
+
+Found 24 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### fedora:31
+
+Found 0 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### archlinux
+
+Found 0 root(s) not in the Mozilla store, and 0 completely unknown one(s).
+
+### macOS Catalina /etc/ssl/cert.pem
+
+ - CN=Certinomis - Root CA,OU=0002 433998903,O=Certinomis,C=FR
+ - CN=Certplus Root CA G1,O=Certplus,C=FR
+ - CN=Certplus Root CA G2,O=Certplus,C=FR
+ - CN=Class 2 Primary CA,O=Certplus,C=FR
+ - CN=Deutsche Telekom Root CA 2,OU=T-TeleSec Trust Center,O=Deutsche Telekom AG,C=DE
+ - CN=OpenTrust Root CA G1,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G2,O=OpenTrust,C=FR
+ - CN=OpenTrust Root CA G3,O=OpenTrust,C=FR
+ - CN=Visa eCommerce Root,OU=Visa International Service Association,O=VISA,C=US
+
+Found 9 root(s) not in the Mozilla store, and 0 completely unknown one(s).
