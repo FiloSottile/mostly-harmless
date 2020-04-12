@@ -149,6 +149,10 @@ func main() {
 	}
 
 	fmt.Printf("Found %d root(s) not in the Mozilla store, and %d completely unknown one(s).\n", notInMozilla, unknown)
+
+	if notInMozilla+unknown > 0 {
+		os.Exit(1)
+	}
 }
 
 func spkiSubjectFingerprint(c *x509.Certificate) Fingerprint {
