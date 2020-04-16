@@ -1,0 +1,57 @@
+# Alternative domains
+https://dreamy-hawking-6b7da8.netlify.com/* https://filippo.io/:splat 301!
+https://ticketbleed.com/* https://filippo.io/Ticketbleed 301!
+https://filosottile.info/* https://filippo.io 302!
+
+# MTA-STS
+https://mta-sts.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
+https://mta-sts.filippo.io/* https://filippo.io 302!
+https://mta-sts.bip.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
+https://mta-sts.bip.filippo.io/* https://filippo.io 302!
+https://mta-sts.ml.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
+https://mta-sts.ml.filippo.io/* https://filippo.io 302!
+
+# Short links
+/hitb https://imgur.com/a/3NkeN 302!
+/hitb-slides https://www.dropbox.com/s/bzptq3bvbwr0vqf/HITB.pdf?dl=0 302!
+/hack.lu https://speakerdeck.com/filosottile/the-heartbleed-test-adventure-at-hack-dot-lu-2014 302!
+/fuzz-talk https://speakerdeck.com/filosottile/automated-testing-with-go-fuzz 302!
+/entropy-talk https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy 302!
+/entropy-talk-ccc https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy-at-32c3 302!
+/Badfish/installer https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg 302!
+/newsletter https://buttondown.email/cryptography-dispatches 302!
+/age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302!
+/age/report https://github.com/FiloSottile/age/issues/new/choose 302!
+
+# filippo.io/age Go import path
+/age go-get=1 /age-go-get.html 200!
+/age https://github.com/FiloSottile/age 302!
+
+# filippo.io/age Homebrew Tap (via git clone)
+/age/info/refs service=git-upload-pack https://github.com/FiloSottile/age.git/info/refs?service=git-upload-pack 302!
+
+# filippo.io/mkcert Go import path
+/mkcert go-get=1 /mkcert-go-get.html 200!
+/mkcert https://github.com/FiloSottile/mkcert 302!
+
+# filippo.io/cpace Go import path
+/cpace go-get=1 /cpace-go-get.html 200!
+/cpace https://pkg.go.dev/filippo.io/cpace 302!
+
+# Hide the old CVs
+/CV/* https://blog.filippo.io/hi/ 302!
+
+# Hide the old RSS feed
+/atom.xml https://blog.filippo.io/rss/ 301!
+
+# Migrated blog posts, including the /index.html path
+/psa-enable-automatic-updates-please/* https://blog.filippo.io/psa-enable-automatic-updates-please/ 301!
+/salt-and-pepper/* https://blog.filippo.io/salt-and-pepper/ 301!
+/the-heartbleed-test-at-owasp-slash-nyu-poly/* https://blog.filippo.io/the-heartbleed-test-at-owasp-slash-nyu-poly/ 301!
+/on-keybase-dot-io-and-encrypted-private-key-sharing/* https://blog.filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/ 301!
+/native-scrolling-and-iterm2/* https://blog.filippo.io/native-scrolling-and-iterm2/ 301!
+/my-remote-shell-session-setup/* https://blog.filippo.io/my-remote-shell-session-setup/ 301!
+/why-go-is-elegant-and-makes-my-code-elegant/* https://blog.filippo.io/why-go-is-elegant-and-makes-my-code-elegant/ 301!
+# TODO: make this blog post URL shorter
+/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/* https://blog.filippo.io/how-the-new-gmail-image-proxy-works-and-what-this-means-for-you/ 301!
+/the-ecb-penguin/* https://blog.filippo.io/the-ecb-penguin/ 301!

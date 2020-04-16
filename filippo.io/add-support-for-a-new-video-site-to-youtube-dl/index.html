@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Add support for a new video site to youtube-dl | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="youtube-dl is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js" type="text/javascript"></script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+<a href="https://filippo.io/Heartbleed/">
+<img class="heartbleed" src="/images/heartbleed.png">
+<div class="heartbleed">Go to the Heartbleed test!</div>
+</a>
+
+</header>
+  <nav role="navigation">
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+  <li><a href="/CV">CV</a></li>
+  <li><a href="https://github.com/FiloSottile">GitHub</a></li>
+</ul>
+
+</nav>
+
+<nav role="navigation">
+
+<ul class="main-navigation"><li><a><strong>Projects</strong></a></li>
+    <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+    <li><a href="https://filippo.io/Biglumber-map/">Biglumber map</a></li>
+    <li><a href="https://apps.facebook.com/coverflipper/">Cover flipper</a></li>
+    <li><a href="https://traviscron.pythonanywhere.com/">Travis cron trigger</a></li>
+    <li><a href="https://ruzzlemap.it/">Ruzzle map</a></li>
+    <li><a href="https://www.recapthelaw.org/">RECAP</a></li>
+    <li><a href="/linux-syscall-table">Syscall table</a></li>
+    <li><a href="https://twitter.com/HNTitles">HN Titles</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Add support for a new video site to youtube-dl</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-01-27T02:12:00+00:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://github.com/rg3/youtube-dl">youtube-dl</a> is a very feature packed command line video downloader. Contrary to what the name might make you think, it supports way more sites than YouTube. <strong>240</strong> as of <a href="https://github.com/rg3/youtube-dl/tree/5700e7792aed45d6504ae957610d8254d5bb073f"><code>5700e77</code></a>.</p>
+
+<p>What makes this possible is the structure of ytdl and its awesome community: all the common stuff (CLI, Downloading, Postprocessing) is in the core, and websites support is added in a plugin fashion (with a lot of helper functions available). So anyone can add support for its favorite video site by using another plugin as a template, with no need to understand the whole codebase. And a lot of people indeed did: <a href="https://github.com/rg3/youtube-dl/pulls">we’re nearing <strong>500 Pull Requests</strong></a>!</p>
+
+<p>So, what I’m going to show you today is how to add support to ytdl for a simple site (I picked <a href="https://vine.co/">Vine</a> for the tutorial) and how to contribute to ytdl in general.</p>
+
+<!-- more -->
+
+<h2 id="how-ytdl-is-organized">How ytdl is organized</h2>
+
+<p>The website plugins are called Information Extractors – IE – and their role is clear and simple:</p>
+
+<ol>
+  <li>they describe what URLs they are able to interpret (with a regex)</li>
+  <li>they get a input URL, usually interact with the site and return a dictionary of information about the video, including its video file URL and its title <em>(over-simplified)</em></li>
+</ol>
+
+<p>You can find IEs in <code>youtube_dl/extractor</code>.</p>
+
+<p>The rest of ytdl deals with parsing the input arguments (<code>youtube_dl/__init__.py</code>), downloading the file (<code>youtube_dl.downloader</code>) and post-processing (<code>youtube_dl.postprocessor</code>)</p>
+
+<h2 id="lets-get-started">Let’s get started</h2>
+
+<p>Of course, if you didn’t already <code>git clone</code> ytdl GitHub repository and make sure it’s up-to-date.</p>
+
+<p>Remove the existing Vine IE if you want to follow along the tutorial step by step</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rm youtube_dl/extractor/vine.py
+</span><span class="line">sed -i <span class="s1">&#39;/VineIE/d&#39;</span> youtube_dl/extractor/__init__.py
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="anatomy-of-a-ie">Anatomy of a IE</h2>
+
+<p>We already know that a IE is found in <code>youtube_dl/extractor</code>, but how does it look like?</p>
+
+<p>Each site has its own file, named <code>lowercase_site.py</code>. Inside it, a subclass of <code>youtube_dl.extractor.common.InfoExtractor</code> named <code>CameCaseSiteIE</code> is defined.</p>
+
+<p>That subclass has a property, <code>_VALID_URL</code>, a regex that defines what URLs will be handled by the IE (a <code>re.match</code> is performed) and is usually reused to extract for example the video id.</p>
+
+<p>The only other thing needed is the <code>_real_extract</code> method. It takes a URL as its only argument and return a list of dicts, one for each video (usually just one), with <em>at least</em> the following fields:</p>
+
+<ul>
+  <li><code>id</code>: a short video id, should be unique for the site, usually it is site-internal</li>
+  <li><code>url</code>: the URL of the actual downloadable video file</li>
+  <li><code>ext</code>: the extension of the video file</li>
+  <li><code>title</code>: the human-readable full title of the video, all characters allowed, Unicode possibly</li>
+</ul>
+
+<p>So, this is how our bare VineIE should start looking like:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">InfoExtractor</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">VineIE</span><span class="p">(</span><span class="n">InfoExtractor</span><span class="p">):</span>
+</span><span class="line">    <span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/.*&#39;</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">_real_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+</span><span class="line">        <span class="k">return</span> <span class="p">[]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Finally, each IE is imported inside <code>youtube_dl/extractor/__init__.py</code> to be exposed. So, you’ll want to add a line like this to that file (please note that the IEs are alphabetically sorted)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">.vine</span> <span class="kn">import</span> <span class="n">VineIE</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Just this line will be enough.</p>
+
+<p><strong>A note about syntax</strong>: ytdl is a Python2/3 double codebase – that means, it runs both on Python 2 and Python 3, so be careful to use features and statements that are cross-compatible. You’ll find all the compatibility imports already done for you in <code>youtube_dl.utils</code>.</p>
+
+<h2 id="how-to-run-it">How to run it</h2>
+
+<p>Before digging deeper, let’s see how to test-run our development ytdl.</p>
+
+<p>Since youtube_dl is a executable Python package, you can run it from inside your working directory like this</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">URL</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So to run our Vine IE we would use something like</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">vine</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">foo</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>That indeed does not generate any output or error, great.</p>
+
+<h2 id="now-lets-look-at-vine">Now let’s look at Vine</h2>
+
+<p>The first thing you want to do is get a bunch of different videos from your target site, and try to spot the differences. In particular, start with the URL pattern and test assumptions about what parts of it are required or optional.</p>
+
+<p>Here is a Vine for you: <a href="https://vine.co/v/b9KOOWX7HUx"><code>https://vine.co/v/b9KOOWX7HUx</code></a></p>
+
+<p>The Vine URL pattern is really simple “<code>https://vine.co/v/VIDEO_ID</code>” so we can rewrite <code>_VALID_URL</code> as:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/v/(?P&lt;id&gt;\w+)&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So we can start doing some useful stuff in <code>_real_extract</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">mobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VALID_URL</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">video_id</span> <span class="o">=</span> <span class="n">mobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">webpage_url</span> <span class="o">=</span> <span class="s">&#39;https://vine.co/v/&#39;</span> <span class="o">+</span> <span class="n">video_id</span>
+</span><span class="line"><span class="n">webpage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_webpage</span><span class="p">(</span><span class="n">webpage_url</span><span class="p">,</span> <span class="n">video_id</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>InfoExtractor._download_webpage</code> downloads a webpage logging progress (this is what <code>video_id</code> is used for) and handles errors.</p>
+
+<p>Feel free to add a <code>print webpage</code> at the bottom of the function and run with <code>python -m youtube_dl https://vine.co/v/b9KOOWX7HUx</code> to check that everything is working.</p>
+
+<h2 id="the-fun-part-reversing">The fun part: reversing</h2>
+
+<p>Ok, so we have the page HTML and we know what we want to extract, now let’s dissect the page to get our file out.</p>
+
+<p>For this I usually turn to Chrome and its Developer Tools. The Network tab is invaluable in identifying what your final goal is, and so what you should be looking for.</p>
+
+<p>However Vine is really friendly, and a simple right-click &gt; Inspect Element on the playing video will be enough</p>
+
+<p><img src="/images/Jack Dorsey's post on Vine 2014-01-27 04-25-35.png" alt="The video tag" /></p>
+
+<p>So, we just have to get the mp4 URL out of the <code>source</code> tag. <em>Tip</em>: use the Developer Tools to spot what you’re looking for, but then build your regex based on the actual page source, as pretty printing WILL get in your way and the live DOM might be substantially different from the source.</p>
+
+<p>A regex like this should fit: <code>&lt;source src="([^"]+)" type="video/mp4"&gt;</code></p>
+
+<p>Here comes the next step in our IE:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># Log that we are starting to parse the page</span>
+</span><span class="line"><span class="bp">self</span><span class="o">.</span><span class="n">report_extraction</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">video_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html_search_regex</span><span class="p">(</span><span class="s">r&#39;&lt;meta property=&quot;twitter:player:stream&quot; content=&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">webpage</span><span class="p">,</span> <span class="s">u&#39;video URL&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>InfoExtractor._html_search_regex</code>, as above, is a helper function that does the boilerplate searching, logging and error handling for you.</p>
+
+<p>Only the title to go. Again, modern pages help: we can piggyback on Facebook-targeted OpenGraph metadata to reliably extract the title</p>
+
+<p><img src="/images/Jack Dorsey's post on Vine 2014-01-27 04-37-45.png" alt="The OpenGraph tag" /></p>
+
+<p>Aaaand, there’s a helper for that! The whole <code>InfoExtractor._og_search_*</code> suite.</p>
+
+<p>Let’s put this last piece in place and return our data</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">return</span> <span class="p">[{</span>
+</span><span class="line">    <span class="s">&#39;id&#39;</span><span class="p">:</span>        <span class="n">video_id</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;url&#39;</span><span class="p">:</span>       <span class="n">video_url</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;ext&#39;</span><span class="p">:</span>       <span class="s">&#39;mp4&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&#39;title&#39;</span><span class="p">:</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_og_search_title</span><span class="p">(</span><span class="n">webpage</span><span class="p">),</span>
+</span><span class="line"><span class="p">}]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong>Note</strong>: there are better ways to parse HTML than regexes, but ytdl is Public Domain and self-contained, so using external libraries is not an option.</p>
+
+<h2 id="finish">Finish</h2>
+
+<p>Putting it all together, this should be more or less your final result</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">re</span>
+</span><span class="line">
+</span><span class="line"><span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">InfoExtractor</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">VineIE</span><span class="p">(</span><span class="n">InfoExtractor</span><span class="p">):</span>
+</span><span class="line">    <span class="n">_VALID_URL</span> <span class="o">=</span> <span class="s">r&#39;(?:https?://)?(?:www\.)?vine\.co/v/(?P&lt;id&gt;\w+)&#39;</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">_real_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+</span><span class="line">        <span class="n">mobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VALID_URL</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">video_id</span> <span class="o">=</span> <span class="n">mobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="n">webpage_url</span> <span class="o">=</span> <span class="s">&#39;https://vine.co/v/&#39;</span> <span class="o">+</span> <span class="n">video_id</span>
+</span><span class="line">        <span class="n">webpage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_webpage</span><span class="p">(</span><span class="n">webpage_url</span><span class="p">,</span> <span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># Log that we are starting to parse the page</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">report_extraction</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">video_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html_search_regex</span><span class="p">(</span><span class="s">r&#39;&lt;meta property=&quot;twitter:player:stream&quot; content=&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">webpage</span><span class="p">,</span> <span class="s">u&#39;video URL&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">return</span> <span class="p">[{</span>
+</span><span class="line">            <span class="s">&#39;id&#39;</span><span class="p">:</span>        <span class="n">video_id</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;url&#39;</span><span class="p">:</span>       <span class="n">video_url</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;ext&#39;</span><span class="p">:</span>       <span class="s">&#39;mp4&#39;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;title&#39;</span><span class="p">:</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_og_search_title</span><span class="p">(</span><span class="n">webpage</span><span class="p">),</span>
+</span><span class="line">        <span class="p">}]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>With this few lines of code, you get all the power and the features of ytdl, for a new site!</p>
+
+<p>Now just run it, sit back and enjoy (and test a bunch of videos to be sure!)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">youtube_dl</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">vine</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">b9KOOWX7HUx</span>
+</span><span class="line"><span class="p">[</span><span class="n">Vine</span><span class="p">]</span> <span class="n">b9KOOWX7HUx</span><span class="p">:</span> <span class="n">Downloading</span> <span class="n">webpage</span>
+</span><span class="line"><span class="p">[</span><span class="n">Vine</span><span class="p">]</span> <span class="n">b9KOOWX7HUx</span><span class="p">:</span> <span class="n">Extracting</span> <span class="n">information</span>
+</span><span class="line"><span class="p">[</span><span class="n">download</span><span class="p">]</span> <span class="n">Destination</span><span class="p">:</span> <span class="n">Chicken</span><span class="o">.-</span><span class="n">b9KOOWX7HUx</span><span class="o">.</span><span class="n">mp4</span>
+</span><span class="line"><span class="p">[</span><span class="n">download</span><span class="p">]</span> <span class="mi">100</span><span class="o">%</span> <span class="n">of</span> <span class="mf">884.30</span><span class="n">KiB</span> <span class="ow">in</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Finally, please <a href="https://github.com/rg3/youtube-dl/pulls">submit a PR</a> to get your IE included in ytdl. Don’t worry, if it downloads, we will be happy to merge it, and if it doesn’t, we will be happy to help!</p>
+
+<h2 id="ah-add-a-test">Ah, add a test</h2>
+
+<p>Forgot to mention, ytdl has a complete testing system built in. It is really important that you add a test to your IE before submitting it, as otherwise it would not be possible to do maintenance of so many IEs that break all the time when sites change layout.</p>
+
+<p>Try to write one for each video or URL type.</p>
+
+<p>You just need to add a <code>_TEST</code> dict property (or a <code>_TESTS</code> list of dicts) looking like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">_TEST</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">u&#39;url&#39;</span><span class="p">:</span> <span class="s">u&#39;https://vine.co/v/b9KOOWX7HUx&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;file&#39;</span><span class="p">:</span> <span class="s">u&#39;b9KOOWX7HUx.mp4&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;md5&#39;</span><span class="p">:</span> <span class="s">u&#39;2f36fed6235b16da96ce9b4dc890940d&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">u&#39;info_dict&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s">u&quot;id&quot;</span><span class="p">:</span> <span class="s">u&quot;b9KOOWX7HUx&quot;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">u&quot;ext&quot;</span><span class="p">:</span> <span class="s">u&quot;mp4&quot;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">u&quot;title&quot;</span><span class="p">:</span> <span class="s">u&quot;Chicken.&quot;</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The properties are as follows:</p>
+
+<ul>
+  <li><code>url</code> is the input URL</li>
+  <li><code>md5</code> is the md5 hash <strong>of the first 10KB</strong> of the file, to get it download the video with the <code>--test</code> flag and run <code>md5sum</code> on it</li>
+  <li><code>info_dict</code> is just a dict of fields that will be checked against the <code>_real_extract</code> return value (missing fields will be ignored)</li>
+  <li>
+    <strike>`file` is the filename of the resulting video, with this format &#8220;`{id}.{ext}`&#8221;</strike>
+    <p><code>file</code> is deprecated, simply add <code>info_dict.id</code> and <code>info_dict.ext</code></p>
+  </li>
+</ul>
+
+<p>You can run a single IE test on all the supported Python environments using <a href="https://testrun.org/tox/latest/">tox</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">tox</span> <span class="n">test</span><span class="o">.</span><span class="n">test_download</span><span class="p">:</span><span class="n">TestDownload</span><span class="o">.</span><span class="n">test_Vine</span>
+</span><span class="line"><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</span><span class="line"><span class="n">__________</span> <span class="n">summary</span> <span class="n">__________</span>
+</span><span class="line">  <span class="n">py26</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">py27</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">py33</span><span class="p">:</span> <span class="n">commands</span> <span class="n">succeeded</span>
+</span><span class="line">  <span class="n">congratulations</span> <span class="p">:)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<hr />
+
+<p>In the next article we will have a look at how to write a IE for a more picky/obfuscated video site.</p>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-01-27T02:12:00+00:00" pubdate data-updated="true" class="updated">Jan 27<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/python/'>python</a>, <a class='category' href='/categories/youtube-dl/'>youtube-dl</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/" data-via="FiloSottile" data-counturl="https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/callback-based-combinations-in-go/" title="Previous Post: Callback-based combinations (in Go)">&laquo; Callback-based combinations (in Go)</a>
+      
+      
+        <a class="basic-alignment right" href="/scraping-a-video-out-of-a-more-stubborn-site/" title="Next Post: Scraping the hell out of a more stubborn site">Scraping the hell out of a more stubborn site &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section class="aboutme">
+  <h1>About Me</h1>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python, Go and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I attended <a href="http://hackerschool.com">Hacker School</a> in NYC. Now I'm in Milan.</p>
+
+  <p><span style="cursor: pointer" onclick="this.textContent = ('hi' + '@filippo' + String.fromCharCode(46) + 'io'); this.onclick = null; this.style.cursor='default'">Click here to reveal my email.</span></p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
+        <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+</a>
+      </li>
+    
+      <li class="post">
+        <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
+      </li>
+    
+      <li class="post">
+        <a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="coderwall">
+  <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
+  src="//api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'https://coderwall.com/' + options.user + '.json?callback=call19543'
+            , type: 'jsonp'
+            , jsonpCallback: 'callback'
+            , jsonpCallbackName: 'call19543'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'FiloSottile',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+  <style type="text/css">
+    .cw_badge img {
+      padding: 5px;
+      border: 0 none !important;
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'FiloSottile',
+            count: 5,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets" class="reset-zoom">
+    <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile"  data-widget-id="369235929669435393"  data-link-color="#1863a1" data-tweet-limit="4" data-chrome="noheader nofooter transparent noscrollbar">Tweets by @FiloSottile</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </ul>
+  
+    <p>Follow <a href="http://twitter.com/FiloSottile">@FiloSottile</a></p>
+  
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "FiloSottile"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // you can set up to 5 custom variables for each visitor
+  _paq.push(["setCustomVariable", 1, "Blog", "Old", "visit"]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    _paq.push(['setTrackerUrl',  'https://api-4b4bd720d6ef85c684c33816a968da60.filippo.sandcats.io:6080']);
+    _paq.push(['setSiteId', 1]);
+    _paq.push(['setApiToken', 'P3F3g6_zNsWCtIPEACXj2H0ct2NIN3_XvKjDqSfz9oY']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io:6080/embed.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'pytux';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/';
+        var disqus_url = 'https://filippo.io/add-support-for-a-new-video-site-to-youtube-dl/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<!-- (MIT License) - Copyright (c) 2012 Ilya Grigorik -->
+<script>
+    (function(d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = '//hnbutton.appspot.com/static/hn.min.js';
+        s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+</script>
+
+
+
+</body>
+</html>

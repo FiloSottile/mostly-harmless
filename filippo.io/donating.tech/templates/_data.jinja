@@ -1,0 +1,43 @@
+{% set projects = [
+    ("Freedom of the Press Foundation", "Internet Freedom", 3, True, False, """
+The <a href=\"https://freedom.press/\">Freedom of the Press Foundation</a> works primarily to protect and empower journalists, but its work benefits all vulnerable populations in need of security and privacy. An extremely digitally-aware organization, it often <a href=\"https://freedom.press/tools/\">sponsors</a> projects like SecureDrop and Secure the News.
+    """, "https://freedom.press/donate/", ""),
+
+    ("Signal", "Internet Freedom", 1, True, False, """
+<a href=\"https://whispersystems.org/\">Open Whisper Systems</a> develops the Signal messaging app, which pioneered the protocol now in use by WhatsApp and Messenger secret mode. They keep pushing the state of the art of privacy-protecting tech.
+    """, "https://freedom.press/crowdfunding/signal/", ""),
+
+    ("The Tor Project", "Internet Freedom", 4, True, True, """
+<a href=\"https://torproject.org/\">The Tor Project</a> develops open-source software to protect users' privacy on the Internet and fight censorship. Individual donations are a critical source of diversified and non-earmarked funding that lets the project invest in research that benefits the whole Internet.
+    """, "https://donate.torproject.org/pdr", "https://donate.torproject.org/donor-faq"),
+
+    ("OnionBrowser", "Internet Freedom", 1, False, False, """
+The iOS app store is filled with Tor browsers at varying levels of integrity. <a href=\"https://mike.tig.as/onionbrowser/\">OnionBrowser</a> stands out as a solid, audited, and free option, which is critical to keep users safe. The app used to be paid, but now its development relies on donations.
+    """, "https://www.patreon.com/OnionBrowser/", ""),
+
+
+    ("The Internet Archive", "Underfunded infra", 3, True, True, """
+You might have used the Wayback machine, but that is not the only critical history-preserving service that <a href=\"https://archive.org/\">The Internet Archive</a> provides. It's a modern day library, saving books, media, websites and even programs from the oblivion of bit rot.
+    """, "https://archive.org/donate/", "http://blog.archive.org/donation-faqs/"),
+
+    ("OpenBSD", "Underfunded infra", 3, False, False, """
+The <a href=\"https://www.openbsd.org/\">OpenBSD</a> project brings you OpenSSH. If that's not enough, it also performs research that often drives the state of the art of system hardening. It runs on a stunningly low budget, with fundraiser targets in the low 6 figures.
+    """, "http://www.openbsdfoundation.org/donations.html", "http://www.openbsdfoundation.org/campaign2017.html"),
+
+    ("Qubes OS", "Underfunded infra", 1, False, False, """
+<a href=\"https://www.qubes-os.org/\">Qubes OS</a> is an operating system that uses virtualization to enable compartmentalized workflows providing a high security everyday platform for at-risk settings. The project also drives important research in practical platform security.
+    """, "https://opencollective.com/qubes-os", "https://www.qubes-os.org/donate/"),
+
+    ("Let's Encrypt", "Underfunded infra", 1, True, False, """
+<a href=\"https://letsencrypt.org/\">Let's Encrypt</a> changed the Certificate Authority landscape. Free, automated TLS certificates pushed HTTPS adoption across the Internet, which improves all users' security on multiple levels.
+    """, "https://letsencrypt.org/donate/", "https://letsencrypt.org/sponsors/"),
+
+    ("Wireguard", "Underfunded infra", 1, False, False, """
+<a href=\"https://www.wireguard.com/\">Wireguard</a> is a breath of fresh air in the space of VPN software. Simple, with a small attack surface, and a well defined robust protocol, it can become the gold standard. The project is now aiming for mainline kernel integration and cross-platform support.
+    """, "https://www.patreon.com/zx2c4", ""),
+
+
+    ("Project Alloy", "Inclusivity", 2, True, False, """
+At conferences it's painfully easy to experience the imbalance of our field. But conferences are also one of the greatest tools of career advancement. <a href=\"https://projectalloy.org/\">Project Alloy</a> aims to use the latter to fix the former, by enabling people from underrepresented groups to attend and offering coaching and resources so that they can make the most out of the opportunity.
+    """, "https://projectalloy.org/", ""),
+] %}

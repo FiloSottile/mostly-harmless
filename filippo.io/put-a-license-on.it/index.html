@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            Put a LICENSE on it
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href='//fonts.googleapis.com/css?family=Source+Code+Pro:700|Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+        <style>
+        body {
+            background-image: url(img/graphy.png);
+            font-family: 'Open Sans';
+        }
+
+        h1 {
+            font-family: 'Source Code Pro';
+              font-weight: bold;
+              text-align: center;
+              font-size: 60px;
+        }
+
+        label {
+            font-size: 18pt;
+            line-height: 30pt;
+            font-weight: normal;
+        }
+
+        tr {
+            border: 1px solid #858585;
+        }
+        td {
+            border: none !important;
+        }
+
+        .with-license {
+            background: #F2F2F2;
+        }
+        .with-license a {
+            color: inherit;
+        }
+
+        .without-license {
+            background: #FD8181;
+        }
+        .without-license a {
+            color: #333;
+        }
+
+        .click-here {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .corpo {
+            background: #F2F2F2;
+            border-radius: 5px;
+            padding: 15px 80px;
+            font-size: 20px;
+            margin: 40px auto 20px;
+            width: 910px;
+        }
+
+        .foot {
+            background: #F2F2F2;
+            border-radius: 5px;
+            padding: 15px 40px;
+            font-size: 13px;
+            margin: 40px auto 20px;
+            width: 550px;
+        }
+
+        @media only screen and (max-width: 1000px) {
+          h1 {
+            font-size: 50px;
+          }
+
+          .corpo {
+            padding: 15px 40px;
+            margin: 40px 20px 20px;
+            width: auto;
+          }
+        }
+
+        @media only screen and (max-width: 720px) {
+          h1 {
+                      font-size: 40px;
+                    }
+
+          .foot {
+              padding: 15px 40px;
+              font-size: 13px;
+              margin: 40px auto 20px;
+              width: auto;
+          }
+        }
+
+        @media only screen and (max-width: 480px) {
+
+          .corpo {
+            padding: 15px 20px;
+            margin: 40px 0 20px;
+            width: 100%;
+            border-radius: 0;
+            font-size: 15px;
+          }
+          label {
+              font-size: 20px;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header">
+                <h1>
+                    If you like your code,<br>put a LICENSE on it!
+                </h1>
+            </div>
+
+            <div class="text-center">
+            <form class="form-inline">
+              <div>
+                <label for="focusedInput">Your GitHub username:</label>
+              </div>
+              <div>
+                <input class="form-control input-lg" id="focusedInput" type="text">
+                <button type="submit" class="btn btn-default btn-lg">Go</button>
+              </div>
+            </form>
+            </div>
+
+            <div class="corpo">
+              <p>This site will check your public GitHub repositories with the (beta!) <a href="https://developer.github.com/v3/licenses/">Licenses API</a> and show you links to add LICENSE files to those that miss it.</p>
+              <p>To add a license just follow the link, name the new file "LICENSE" and pick a template from the dropdown that appears on the right.</p>
+              <p>Remember, if it does not have a license, it's not Open Source!</p>
+              <p>If you need help choosing a license, GitHub made this: <a href="http://choosealicense.com">choosealicense.com</a></p>
+            </div>
+
+            <table class="table">
+            </table>
+
+            <p class="foot">
+              Built with &lt;3 by <a href="https://blog.filippo.io">Filippo Valsorda</a> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) &amp; Anna Bernardi (<a href="https://twitter.com/AnnaOpss">@AnnaOpss</a>)
+            </p>
+        </div>
+
+        <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="bower_components/underscore/underscore-min.js" type="text/javascript"></script>
+        <script>
+            function getRepo(name, callback) {
+                $.ajax({
+                    headers: {"Accept": "application/vnd.github.drax-preview+json"},
+                    dataType: "json",
+                    url: "https://api.github.com/repos/" + name,
+                    success: callback
+                });
+            }
+
+            function listRepos(name, callback) {
+                $.ajax({
+                    dataType: "json",
+                    url: "https://api.github.com/users/" + name + "/repos",
+                    success: function(data) {
+                        _.map(
+                            _.filter(data, function(repo) { return !repo.fork }),
+                            function(repo) { getRepo(repo.full_name, callback) }
+                        );
+                    }
+                });
+            }
+
+            function addTableLineGreen(name, license, fullName) {
+                var row = $('<tr class="with-license"></tr>')
+                row.append($('<td></td>').append($('<a></a>').attr('href', 'https://github.com/' + fullName).text(name)))
+                row.append($('<td></td>').text(license))
+                $("table").append(row)
+                $(window).scrollTop($("table").position().top);
+            }
+
+            function addTableLineRed(name, fullName) {
+                var row = $('<tr class="without-license"></tr>')
+                row.append($('<td></td>').append($('<a></a>').attr('href', 'https://github.com/' + fullName).text(name)))
+                row.append($('<td></td>').append(
+                  $('<a class="click-here">Click here!</a>').attr('href', 'https://github.com/' + fullName + '/new/master')
+                ))
+                $("table").append(row)
+                $(window).scrollTop($("table").position().top);
+            }
+
+            $("form").submit(function(){
+                $("table").html('')
+                listRepos($("input").val(), function(repo) {
+                    if (repo.license) {
+                      addTableLineGreen(repo.name, repo.license.name, repo.full_name)
+                    } else {
+                      addTableLineRed(repo.name, repo.full_name)
+                    }
+                });
+                return false
+            })
+        </script>
+
+        <!-- Piwik -->
+        <script type="text/javascript">
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            _paq.push(['setTrackerUrl',  'https://api-3a5a081273fe4e8f2060480a5335e30c.filippo.sandcats.io:6080']);
+            _paq.push(['setSiteId', 2]);
+            _paq.push(['setApiToken', 'aBLdtU47geM5bZzMF2SwLjQI4tH1jPtartz1s0s78Mk']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io:6080/embed.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <!-- End Piwik Code -->
+    </body>
+</html>

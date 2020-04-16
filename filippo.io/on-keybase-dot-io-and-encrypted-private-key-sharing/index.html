@@ -1,0 +1,866 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>On Keybase.io and encrypted private key uploading | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="One thing in particular of Keybase.io attracts a lot heat recently: they support uploading your encrypted key on their servers. This usually is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js" type="text/javascript"></script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+<a href="https://filippo.io/Heartbleed/">
+<img class="heartbleed" src="/images/heartbleed.png">
+<div class="heartbleed">Go to the Heartbleed test!</div>
+</a>
+
+</header>
+  <nav role="navigation">
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+  <li><a href="/CV">CV</a></li>
+  <li><a href="https://github.com/FiloSottile">GitHub</a></li>
+</ul>
+
+</nav>
+
+<nav role="navigation">
+
+<ul class="main-navigation"><li><a><strong>Projects</strong></a></li>
+    <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+    <li><a href="https://filippo.io/Biglumber-map/">Biglumber map</a></li>
+    <li><a href="https://apps.facebook.com/coverflipper/">Cover flipper</a></li>
+    <li><a href="https://traviscron.pythonanywhere.com/">Travis cron trigger</a></li>
+    <li><a href="https://ruzzlemap.it/">Ruzzle map</a></li>
+    <li><a href="https://www.recapthelaw.org/">RECAP</a></li>
+    <li><a href="/linux-syscall-table">Syscall table</a></li>
+    <li><a href="https://twitter.com/HNTitles">HN Titles</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">On Keybase.io and encrypted private key uploading</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-31T21:15:00+01:00" pubdate data-updated="true" class="updated">Mar 31<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One thing in particular of Keybase.io attracts a lot heat recently: they support uploading your encrypted key on their servers. This usually is pointed at as a mortal sin.</p>
+
+<p>Well, here is my private key, the untouched output of <code>gpg --armor --export-secret-keys filippo.io | gpg --armor --clearsign</code>.</p>
+
+<div class="bogus-wrapper short"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+<span class="line-number">96</span>
+<span class="line-number">97</span>
+<span class="line-number">98</span>
+<span class="line-number">99</span>
+<span class="line-number">100</span>
+<span class="line-number">101</span>
+<span class="line-number">102</span>
+<span class="line-number">103</span>
+<span class="line-number">104</span>
+<span class="line-number">105</span>
+<span class="line-number">106</span>
+<span class="line-number">107</span>
+<span class="line-number">108</span>
+<span class="line-number">109</span>
+<span class="line-number">110</span>
+<span class="line-number">111</span>
+<span class="line-number">112</span>
+<span class="line-number">113</span>
+<span class="line-number">114</span>
+<span class="line-number">115</span>
+<span class="line-number">116</span>
+<span class="line-number">117</span>
+<span class="line-number">118</span>
+<span class="line-number">119</span>
+<span class="line-number">120</span>
+<span class="line-number">121</span>
+<span class="line-number">122</span>
+<span class="line-number">123</span>
+<span class="line-number">124</span>
+<span class="line-number">125</span>
+<span class="line-number">126</span>
+<span class="line-number">127</span>
+<span class="line-number">128</span>
+<span class="line-number">129</span>
+<span class="line-number">130</span>
+<span class="line-number">131</span>
+<span class="line-number">132</span>
+<span class="line-number">133</span>
+<span class="line-number">134</span>
+<span class="line-number">135</span>
+<span class="line-number">136</span>
+<span class="line-number">137</span>
+<span class="line-number">138</span>
+<span class="line-number">139</span>
+<span class="line-number">140</span>
+<span class="line-number">141</span>
+<span class="line-number">142</span>
+<span class="line-number">143</span>
+<span class="line-number">144</span>
+<span class="line-number">145</span>
+<span class="line-number">146</span>
+<span class="line-number">147</span>
+<span class="line-number">148</span>
+<span class="line-number">149</span>
+<span class="line-number">150</span>
+<span class="line-number">151</span>
+<span class="line-number">152</span>
+<span class="line-number">153</span>
+<span class="line-number">154</span>
+<span class="line-number">155</span>
+<span class="line-number">156</span>
+<span class="line-number">157</span>
+<span class="line-number">158</span>
+<span class="line-number">159</span>
+<span class="line-number">160</span>
+<span class="line-number">161</span>
+<span class="line-number">162</span>
+<span class="line-number">163</span>
+<span class="line-number">164</span>
+<span class="line-number">165</span>
+<span class="line-number">166</span>
+<span class="line-number">167</span>
+<span class="line-number">168</span>
+<span class="line-number">169</span>
+<span class="line-number">170</span>
+<span class="line-number">171</span>
+<span class="line-number">172</span>
+<span class="line-number">173</span>
+<span class="line-number">174</span>
+<span class="line-number">175</span>
+<span class="line-number">176</span>
+<span class="line-number">177</span>
+<span class="line-number">178</span>
+<span class="line-number">179</span>
+<span class="line-number">180</span>
+<span class="line-number">181</span>
+<span class="line-number">182</span>
+<span class="line-number">183</span>
+<span class="line-number">184</span>
+<span class="line-number">185</span>
+<span class="line-number">186</span>
+<span class="line-number">187</span>
+<span class="line-number">188</span>
+<span class="line-number">189</span>
+<span class="line-number">190</span>
+<span class="line-number">191</span>
+<span class="line-number">192</span>
+<span class="line-number">193</span>
+<span class="line-number">194</span>
+<span class="line-number">195</span>
+<span class="line-number">196</span>
+<span class="line-number">197</span>
+<span class="line-number">198</span>
+<span class="line-number">199</span>
+<span class="line-number">200</span>
+<span class="line-number">201</span>
+<span class="line-number">202</span>
+<span class="line-number">203</span>
+<span class="line-number">204</span>
+<span class="line-number">205</span>
+<span class="line-number">206</span>
+<span class="line-number">207</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">-----BEGIN PGP SIGNED MESSAGE-----
+</span><span class="line">Hash: SHA512
+</span><span class="line">
+</span><span class="line">- -----BEGIN PGP PRIVATE KEY BLOCK-----
+</span><span class="line">Version: GnuPG v1
+</span><span class="line">
+</span><span class="line">lQIVBFA/TqwBEACugv9eTIochvPlZAvL1D8qtVMgUodkZ9AfkYFHcFlRFktYHu+z
+</span><span class="line">XQ8UDjGTpUcWix627ZzlxbYIowsUiGz0JE2E15KXpwyK/xLJstGLpnhXB2Wr9oUY
+</span><span class="line">FEP0qUDDUDK9NBdsHvH1J6SvUCDFPloRZQih3En8b7WeafxFDp6lxDcWNRgOko3J
+</span><span class="line">qDrwdvkNSjlXg9banE0bryWogCZuoqsGwkOWjXRccLM0e1yGHWvPRESd5pkK5F7t
+</span><span class="line">eGdKxJGRsd4IFXkfCk4/h01XWLFUHpT3iWm8CS3hu5Rf6Fk/L4F1RUJSKHaH4G1Y
+</span><span class="line">hvSw5UHJBuvHHHP76X+oPsUOpA+HzONhFf/hehqS859ocSwmuLWhUaIObN/liC+7
+</span><span class="line">+LegRZLTSeDTYruq3CzI8Q2syN7gCjtpkqf3Xqg3WzFf+iJIgGR4u8sXLNmA2mi9
+</span><span class="line">1qDSCXOZleqvOaphjI7/gAm/gBoIldh5fzmyhELDsxiUOs50C3tHO2RnEm87wVKB
+</span><span class="line">cbgS3vhArvWc5O+ZVbSJRIlGVLHRKKbRB9qlewAsNrT8/v0sHRTS3kP5GGW9cHRu
+</span><span class="line">DSTifBCXvwA59TNg72glWAFMJZ7U36wcKCL8Lycwuno63aH+l69fFQ0xlhe1/rJg
+</span><span class="line">gd6OVIOs+N6lQLHLB3vCAfAqMVDoVdVxiI1K/LqO+68OtbwCOF3PgnIDVQARAQAB
+</span><span class="line">/gNlAkdOVQG0LUZpbGlwcG8gVmFsc29yZGEgPGZpbGlwcG8udmFsc29yZGFAZ21h
+</span><span class="line">aWwuY29tPokCOAQTAQIAIgUCUD9OrAIbLwYLCQgHAwIGFQgCCQoLBBYCAwECHgEC
+</span><span class="line">F4AACgkQ6/AYBLzwX2vOaQ/7BfycHTXAE/0Ehg5DIgEjUes15fhZwnPMl4XGFMeB
+</span><span class="line">nf7tUlL4nrcNhgM3+YPLW4eqypylF6XbwVP7ruIeHJAS3jcVgZaHcc37jGdNLbCf
+</span><span class="line">CxwasK9szuaTkZrIEZTcmYIdI0BBIJjE4Ry2Fel15KOVpoZkUYMHVT3k6jRC1dOB
+</span><span class="line">s5FxCPSs7RBrNUbqSDcrb42WJuinvv58E6Mr5nlm5+b7Wxw7S6EJdL0tNlv7r8XN
+</span><span class="line">tRwQb/b46TIFrZKW1libE8bfuXqRh7vVv+Ml1QHGvNoVEGaQKM9EbvnBiTsHuE9x
+</span><span class="line">XBCIX5rmPBtYl+nejmeMHNuMTp4fYJk5SwcR6Cc7Ku+wDKzY1SUC9JRZlGDUeB5C
+</span><span class="line">FwgVNSleDZDSLYbhqPk94oec3f5C7dgQtrYoO9ZIfOhdeDzrvlMJoWjlH1OzU9ET
+</span><span class="line">5I9T4YXgAF0ILb3D2Wv65+2yD8AFo+1AbldHjnX2sX3kfjzuFbQqC/olPNEQyxqr
+</span><span class="line">VQ8QiIvctR6O/PzAt771PwJnJ6cmVaH6Jl8QPXlShir3tu0VBUSYYP3u/iX8s/rh
+</span><span class="line">qhcY0rGv2V8faLaCHmNsEghsIOhhaM445nVjO/JQbUlo2JfBgFpS1ZrCQ6t8kdS5
+</span><span class="line">Ey9GwTyNxQFo/SiFuSwRuwHIOzfjc/YvIQn4tsWHFEqzYBHBCrZYP9SFhDhDtLAn
+</span><span class="line">iK20LUZpbGlwcG8gVmFsc29yZGEgPGZpbG9zb3R0aWxlLndpa2lAZ21haWwuY29t
+</span><span class="line">PokCOAQTAQIAIgUCURgF7AIbLwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQ
+</span><span class="line">6/AYBLzwX2vlSA//V6qMmRsDrfg4IAtoqJVuGrpDivuHjjgyPB7MPAgGhr6/q4Sr
+</span><span class="line">b6oPPosP0L5VKLnr+k/4rNbZWCSvzeBEQdKhev+RxgwKPIYpUcvcLEtkDP7CDd3T
+</span><span class="line">k/NCBr679lhireEJjpj+Q714PRuKahaJ/mSUD7fH2giE3gpXzNkEEKqTD3jJ7nhM
+</span><span class="line">n/AsQSDE5cBYq3LLQG3DkuRumKT75P0Fiz6tMvQBLwpBml4c/Sigzy7Lpg85Tj7x
+</span><span class="line">cmSNwSrbiYuuT9gev/7Qj2ulfoMzJwZuzls5T9KbBgaZ9LJ05XfGDdvFk7J3hVER
+</span><span class="line">+YJsdgHgP0GC+iw55+9cSqkM00Igo9LPg4VH9rIcz2TbGdlI64XLoZk55J3bCWwF
+</span><span class="line">a/2X64KABdaDBN8XI7jehi4Kykcniau3TAeC63aRGoXyeZwqwU+PkByApY9wGvVa
+</span><span class="line">wRyisFLbvrOeIzOaUIKwzKIpZiFl8HOj8i+2H5YTFi0BuVDx5gq2pN6XR+fMYZci
+</span><span class="line">IVHgpqIkyVdni0C40BGPmHX5eqqdiWtuQOgjPlxwrUxSBlCIT2Nn0PnwWD3QL/ct
+</span><span class="line">XPqEmZ5Uxmmeu/AERgciR0CQOUu169fP4QulamGOc1oQWnN+eCGtzl+ntJR2Tl9a
+</span><span class="line">g7FnNOMXOEV9jBzdFEJW4iwAhiR5GpE9AymZM/pUyKq4kJ+IsoZ5QojcjJu0IEZp
+</span><span class="line">bGlwcG8gVmFsc29yZGEgPGZ2QGZpbGlwcG8uaW8+iQI4BBMBAgAiBQJSxCrbAhsv
+</span><span class="line">BgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDr8BgEvPBfayLcD/9WheYBmFEu
+</span><span class="line">HOy5gARLaetGhxB1xPpsFqVTgKs1aSV8c+oiHxNc3dchhawazJqP2u9ecqYmuLzm
+</span><span class="line">HTZOSVpTNeXTTDXJzJ1iyndkgkIOXR8JtGjPoyj/7XJ7uRvwoaXLHw91rTzks1dB
+</span><span class="line">MLIrXKdey/8C/eMyiaENE+oIPaBtYwHo5ju+t3k0wu0nqIsQXN3J/GEPSzhZYL0x
+</span><span class="line">xsAg+c6mI0i0qNJFfC0KloACVaFA9621nc1IuDW4/yGmrRmSoPSWOIgDotsPbOyO
+</span><span class="line">Dnj5kSr6E6sH2ol4h6oLodtRRivZ83h24V2s4tW+rmHUx9UGMVQx5WS3BeI0RGrG
+</span><span class="line">VSbit2qBPBdJIvb1C5Tdm3s0T7NVKi3KxeRftT5giXORP2zl6375ubijr2NF1zlC
+</span><span class="line">pa1X73YIRESzjXRvUt2jYUSEZzlOuzBBKi0ZhDVmA6dSMv8JA51/P+5YZ2QHUmxG
+</span><span class="line">ExU6dgadWNyS4xaskwhiNjKsh/ecpMMKDvzBy7Vm/NOnprAbqJahKIqI7wes8kTJ
+</span><span class="line">oQylYiqUm2/94Udwjao1C5SYiE3MT6SoCpvtnIlos3AuHMaRLiqCd0W2ZXDOxfAb
+</span><span class="line">5ZtXAMPSby2epkgZNmGGHF07ncpJkFZBX3cBXi8Hdg0B2M4crmjrPnNesFryOf4w
+</span><span class="line">+0vhcas3REJ9on2N3MaHliP1wLmRO+q9t50DvgRRGAZtAQgA5yR7x4FHQ4ahh6S/
+</span><span class="line">m7/vHUpi2C6i6Uzod1EOkERLY0bXDqKLtOCfRzG+XOYpX8YrxfEVAL9buz3IHHuu
+</span><span class="line">ImIoljkSTSNcLB0/Xk2fS9HUtD55H9krAVJtmHb9NHJNBLzBbeAm1Khm1mSIpOFI
+</span><span class="line">AaoCJ/fVLAWiP0lJeIJhX4y1oszb599cnU3qRbgXc+dSDG+mNGL65UzpT+nG9ubi
+</span><span class="line">0hwsXffbZ4eHjAXmNGk/wJcIdFkxCdm9cvJoNsd2e6xRp11ZR7hF+HilnWocPzL2
+</span><span class="line">yAQnQrb8bSFO8Wylwazngg4uCPbbYgBfbHxRPVWfwU2P0ErQMxIH351cYaP7fZJ/
+</span><span class="line">jJ76mQARAQAB/gMDAsti2mE+O8u0YFW0ca5RohrFiWE6WE0tZDdCgvQdEzOC4QPg
+</span><span class="line">kMlzPLSkihbJRAD8tcfs3gNYTxRR9qNJiY35Sl4A54m3Y9lTqr06leRQ6NHlrz3r
+</span><span class="line">AfhZB6VUwM6K9Lr2vwXiVDsp+x71qvU0FQW3Ws+PCnGoMNpnGrM4ZNCJLotaI6dY
+</span><span class="line">1c7alf1fS1vPxbBE5U/+UYdOhhXql1+n3iYWadMydhPmxAm0BkJiBK0gch5N5ZYv
+</span><span class="line">OjrsDBZdP/tT3QX0qjMhuhBq/XGrRw0aCmpTpAJuvxz1bZH4lylI4sneOzfdowc+
+</span><span class="line">YfnRTLs1aYLf/by5rfHbb5trbLuXewGzWT37FYBROLXJKsgPE1y009TLXATv/l9+
+</span><span class="line">UhXuV64+DjwXGIJyU1wdnxgqAsrX34XuCNEkmfHpQF4JJfkxfS5ed5vrNHJ7kXKZ
+</span><span class="line">O9yle1Kqj/oK8wVLck4AL204knZHEzETeVi5tX+r0gqsT8WYxAIRjXtVGFls0D4c
+</span><span class="line">D61c1IJITBCQDnsY2PUYVi14p7cqB9i90ixz0OsBs8aO3TUdrqSFBgllwi+WEYkS
+</span><span class="line">/8QT6tS/qggihRrpdMELsYnzjDi0hIKYR19l/Sl5O+GhKJeJ83g/NmqYr202/aX/
+</span><span class="line">dF7DPo+KGUEIjL1Hx+AVBhfwBP1si217IbiEOAQag/BwxhGM+9wYOPUJE/Nfs4Yq
+</span><span class="line">fqBNhWsUlvUd9gNj5unxow3fLsL8xE0mbzKg9gGqI1kq22tdt846/TzM5QpHkfIf
+</span><span class="line">FK2pJR8K6xhd0eF4GO+Dv1ydoEIY57wxnD77m/EJQtM/0KKMuxYjsqE7BNht1yiJ
+</span><span class="line">N/DVwqc4YswpkJ+M5seprCwwrykwjtYL4Sw/uxemmG6LJ5l+2bHSPDBPJuRZ8gMV
+</span><span class="line">9ZoHHHjPAf3QUp+zFc8dOFZn30GilAGPvMGJA0QEGAECAA8FAlEYBm0CGwIFCQHh
+</span><span class="line">M4ABKQkQ6/AYBLzwX2vAXSAEGQECAAYFAlEYBm0ACgkQUCI0JfFJqiVwGQf9Fvql
+</span><span class="line">tfcJIKasSl6xDC83j3qxgKKUYdFj1jA3C2ZOtREPk8YyOSksHQjpCI51Y5gZ6uvG
+</span><span class="line">4NKfPfN7sIyxCtvDnJtiDnGmqRmckub/RnxuOjU9hxejrkWTM3zQFMWa1ohbx/CZ
+</span><span class="line">vYyqgNBUKc7IB8rgjK2190s6B6fDZ27xE5glfhy4rONBCvvVtF450+YX/mlgvMWr
+</span><span class="line">daaENPNVK9cJ1Wb+rZFVmiZxo/OVSMhX8YMP7MVanSTCqixp8Ep8KO0YduIpMU3z
+</span><span class="line">oOT4uMV94kE/kSXjk+XlQFeJmy97HkRbTxKjpFfYIekwrdUS9vI1HS5v9oApRsri
+</span><span class="line">xN/DEwC9EQK6mNq7ulcfEACq+5BC9vBzdDsq2CwphhQdj2tcouGGBslc4AWHwN1F
+</span><span class="line">jYif1/wIJgG6ykA5DvZvnsTzesgxKtZLKugINnyuNeGc7Ct1+3NEzUW+vpJhcFzk
+</span><span class="line">iWTGThT8GGQ/g/QV0NXChGiOAr8f9cYdVcjNBfa0XjRJUQ7RAm9lg6EkBCIz8E/q
+</span><span class="line">6r7nK3jYtRpLVqYd6Tg6HkY+7geP662CvQmNpe2pNraQOACxN79Uw272UpWLBOz9
+</span><span class="line">4G5KZCxInu7L60yARsR/6+/OddmGhE4SImFwp1OIR/XP7oP16I9WtilXNgq/Oii+
+</span><span class="line">InG0TimyrBj05CN3PFzs6lkmy49UTpfxYf5jyHh44xmUklLHbSMqp3GHUHDqzF3U
+</span><span class="line">0xbYcb+Z+TPWX/0kvTeb22XjeXmsEhWfRHb78xeZwSR6YTaMsa85vmrbNqft26jS
+</span><span class="line">GOLp4E1n1R431zIjlFIynYdH8ilwQLbpTCQ6UzDBnVMfRv1UefkurP6+msBtXnfH
+</span><span class="line">HrSx1bDCIkcrLhg8Z4P9YnNpY5+gYrjIL9yrgHy/iGCAXF+3V050AfhcIzF21sOt
+</span><span class="line">q1eS7aMX02+bU0bTC1zEWOxrws9PlTc2KyeSv/afLG7aKc1J/jaMEaUKp7fORCRP
+</span><span class="line">SnkdwAH8HqIukHr3DQH6MuXz1w7sEQ4lCMcTf39/rJKMaGw52Sa3nEphhvhDA+m7
+</span><span class="line">f50DvgRRGAcnAQgAxByki7KXBGn19S3IinMVEvOMD+OUWvxsuvUTe/r9siGCRkbp
+</span><span class="line">qMxNzEJiWlSnfBfqKkkigT8HFflhydl+qYjRBk/yB9eG6pTZ34m4f+30S+GIFn9p
+</span><span class="line">PwU3gJevE2z0OpeJn/vF1VsuQrd2t03OAyclhyNQ3mjjDPfIRQQOJ4sNRqYo6dZ0
+</span><span class="line">IuN2tF9N74FEmNHu75+tgjZ4Sj8xuvTP8GIy88fC7YpxmcdxrA3WQkWXuessA52C
+</span><span class="line">nEKDgDGRiSwLeTTgZFG3GY5PhAfYgmsyWzCCk363d1F68qN8t/1LtkZUwKWssBIi
+</span><span class="line">u/dkRu2eRDMCYRywMqEU3C61jTKLXx/strEHowARAQAB/gMDAsti2mE+O8u0YE8m
+</span><span class="line">U4iCCZGiy3JMCF3BD7AytlkHQsERwW9cd5bw0awyJ6H/EV5BmCNjFSjojHIOrFr6
+</span><span class="line">F7mCHELJ725gcsMShuN2PtMvdoko201/NtsGLoMwBN5V+sfYKyhoX84qyDE0/nrQ
+</span><span class="line">yba/ZChfA0mGKi30WdJcwPTiutBS9xhJJAVK8oJyl/u5qKB6LoPflUT7gpoM76WJ
+</span><span class="line">x1p+L0OpsTpEFLORQGELkgQWYc4tIe3edtV8Bi1D/K7IpFrvxOdhw1B5f0Rppn67
+</span><span class="line">UyVTe5E422q4AeU+rjeQa3NcmwukJffcVr2rqNszFQw2JChX38GEoQfyQNLfodYr
+</span><span class="line">92WpGllwWamQf+ijNou8NIplAwoYpsUgT8pURwX3ajz7VBEk69zi4CO6yHXOMGJ9
+</span><span class="line">4WI6M2EZ7B3Xe7DaemghjxIOY8WLy9b2qcFvsIQHCN9O1FN4oaR9N8faUV02LcI5
+</span><span class="line">HdX9omFcVzJalYwPctZmXP7qhJWvw47VMywMc31khx7kV+rPHndyFL77jMS1IMtW
+</span><span class="line">YEllwUmj3vRSEVgr1yNyqg70wZszuwBVuJJjyjZRDMXoOqq4lkmf2flRb39SKQ4j
+</span><span class="line">n62NjSMZJuMeXkof58FNmJH2sCgoO56sS4ai/OVtc0Aqt3rPQ6iD7zLTNwx3nhmW
+</span><span class="line">UJF/gEsfPD9vG6pmfaxvvXDn36bgI6FGBhk2TjUE65vM2DCURPPrLGCgCr9wHXwL
+</span><span class="line">NoFrCGuWv3cZobS6VdVirWbbz2/mc9+bz4UzVsvNhidYMV8zKUDKXDjJLqilnC8t
+</span><span class="line">VRR9TW0bVmNQXjsrRYX7il4O9jrexZCzZgFKltQOHgdF3xyz6v8HSNCx5UOdOj7E
+</span><span class="line">WQmJzffEE7O3Oj4YjHw8LwV2Nwroo6mNCfw9gCoU1m44lDu+togi6cmisFm3WLbC
+</span><span class="line">pzuJAiUEGAECAA8FAlEYBycCGwwFCQHhM4AACgkQ6/AYBLzwX2tsuw//dkHtBIHb
+</span><span class="line">gUbij9gfZgGLQ9zRjprcxtIyWY6Y6oGkh4yCaNnW3+5Yg3Uh6sX14J9TUMX/mBc4
+</span><span class="line">wcxq3kMfzon1Z+nlhVw/mNFlGj+04RFKoDen+/wxbmWIkPdqetAVFb+/7Jzpcldy
+</span><span class="line">k86wjRBQ0TMw+16iqRZaLh3/8kyW6IQ06aEAoOdZVtRKUOaFgRv2bbJZq3K9x22R
+</span><span class="line">LKeVemvpfVpUaOFUSE6pcHmPaBUTKtcCcz2DcL+E29jHuVCsO9SVQT0GVKYO1pkD
+</span><span class="line">097Vgcp+IF5ZU0p7mA/7kwaPrgBtLLpGr+E1olUDcf8yn9uPjk3BrkXGlQH2cDsP
+</span><span class="line">FB5m11futjcjbMp1aZ6i09UkmQW3ZqMCUEHXe0luqXAtHpCCkj/LP21QY8Vu1Ye9
+</span><span class="line">NytNx1zjTRCUNG74BGG35IEHDb17XZUlIaxasvyWMtJT7KvBZCoCzY21vQKc+Yhk
+</span><span class="line">U83KAexxV54HVc2hUapZLngSsTb2bExmgSeWb/gvXLcQJEBotUuinMhSruz0td85
+</span><span class="line">daNZekkjQZrM6mxB/GFRsCkVQprnEghFk+URkxPCVEawC6Dzom8ZrJEkcIeuSyxn
+</span><span class="line">7cKNJYF6+G4wY7U2VKO9tY4AMsfXtitTGsh7ipa+raMnXsvlGcBK+QvzNediGIWo
+</span><span class="line">cEaTayTurc9v+tt1t0S7v5Fb1OkC2aPad3KdA74EUsQregEIALEMPqUx3m9l1ycS
+</span><span class="line">5anJinv5NEM+Xjyrl5aTk853r1nrYjwEneOtvqxpNGL2vptQH0NhPx0RVOurhJQE
+</span><span class="line">0ipaiPmgt7GnkP2e0FfqpZuBOKQvIt8YX3620Hv8ZgMmElWUlWnZdH0LJzuQ91PR
+</span><span class="line">zxnmycd7EFhomnMeHroEkaSrfG7FN54DaGEG5mhbkqdGEMaVeLsA7M6bTj0CQhx3
+</span><span class="line">TMBRUDY49NlYlD6Y0rxfS8oNJyoUj+Gkr7SSZcYYbDRWCO/hwd0jd8p5RN9/g08K
+</span><span class="line">BAMTT5Qyb8su1iMPxqI6cdjol6VlXiExFhWxVYeFpiA74EuYAenbxDddGLHtYnSj
+</span><span class="line">lhXZ+XkAEQEAAf4DAwLLYtphPjvLtGD/5wMK0kL127p0KT6/pxqfqYFrHYsgqmxE
+</span><span class="line">MGN050gDaN70Xa9c5wFI6EozBSWdLJ8cyTK92QfFgNMLZzWDMqqi1CuTiG3AVJiw
+</span><span class="line">lzkvpCMmX03BA7BbuwuJZNloMDMLeqxXPNc2utnp5Y8TNxIhVHJaAyRrfn8upTZ6
+</span><span class="line">rzHdMFCZ76psp3smkvQ0ucJdZNgB4KIiasCQaaEQziLPyOfexkslHoAln59Lzbxu
+</span><span class="line">jlFTnnttGtgv+BSi5VYvvqObKJVDmQhLCbuYom/0/tyUR04SYxlPicLFMkXpLJtF
+</span><span class="line">bHo3wYCrEoznXYlRmBiKbi8FZqwrpyL4OOE/TtVhhHXuSMUQXcTFiyCGjxT+NgZr
+</span><span class="line">PrHlukcbPZntYTQLTU44J7F0m6e2K0FLy40axLtwauzoJENhHFsePCeixg2f93ha
+</span><span class="line">bVDja5uK5r5i9hKJWh4XfW0H7zkI/o+OQsiMtwsHNYKsgn4BxxUZUc5LP1PJZiQP
+</span><span class="line">0F4Srsub61HCy6vpbNwjIS7nbvEq5GgcPmuls/XyUeJ78LHQ+XJgaBHf87kO+lSx
+</span><span class="line">D6xj2k0pD5EgWQNJQJ/q0Sn7ZUQR0JWjwn1FhbpTmHadrUM+j6v67dxBTfYQnRmE
+</span><span class="line">aVk1dPXVKhoCOUUgJDXfaNHX4fiAUv01FUDu9+qshor4491BLchAY+4tXqIGqSu0
+</span><span class="line">5P1rGEBsJUAZxKV5o9JchEKFpfWA6nt7WYPPnwAOqQJza4mzOlPW7i7Fu2fLgN1p
+</span><span class="line">hhzM257ZB6p82LcO/KC+OMcBf2ieTE1YYVHogLXS29ya9LBv4lVO/lCsBO8A2lSZ
+</span><span class="line">5yAGn4BIdw3+80GAjYNOujYUWYR7Ng3nZGQ3g75WI144+Se5QeKvPFqAYmJWBeww
+</span><span class="line">Q7oM99RT+g1EiEv/NObh8kod1zJAPLYCTUBNiQNEBBgBAgAPBQJSxCt6AhsCBQkB
+</span><span class="line">4TOAASkJEOvwGAS88F9rwF0gBBkBAgAGBQJSxCt6AAoJECBNgkAQH1IW2TEIAJwY
+</span><span class="line">09mxjxk8R4t5hd2U80Ua/MO/QMQzF8C1/hgkskSVT8AkHlOE73m/ipjoY6n/7aiP
+</span><span class="line">Ev05MSgZHHWjED7yHBTdzZsDrMr1p6ykqKohhqPzNUEZ/1KFEIS0+LUTAMg7kIHk
+</span><span class="line">/SKhP6GSVoGw/DhSTLgXiw/zRuByHTf3VbitA8X+4LQkwgqnit9SR0JgS013IqiH
+</span><span class="line">811v+w3CTEuUypW3oN6T2AyzYh0qv0raO0Apd16999FqhDNRIrZJCmhBdrfNeu0C
+</span><span class="line">JftDpgQiKmj+VoJgTDz0f0Jso6QeKCcbjiDArog74fBZzQhQXfV+U3hBj5YHM3KU
+</span><span class="line">uQfaPt5zpPYCYMPFmG1TwBAAoRA4h0mxzKBJdOen0QiYHPnnXsJZxdKO4SJatAmB
+</span><span class="line">agaxdelGQAwhbaRH91IuicZeUftZ+cWBTF2LYih/fdV5BWjAWVdddAzLBqSQkTKF
+</span><span class="line">+8HCtg8ezTeEKvrYDWJUmtaETNX58lLbBd8TvqXEkKjII3DDYO5Au98vZATV+JxH
+</span><span class="line">bLmoYHhYzcQOTMg6l7CMq/XXWksS1GJcPKJuJ6gLpYuZHM257vPjU1AfpukZfiP8
+</span><span class="line">2P2GYY1BY9onPqe8x5Cllyr9zlgER7Pf2RjuuBPt2OW2L8uYD7+BsU6KlRb3Nx+o
+</span><span class="line">b/JQLorI8yaNdtnHRlns8c/dtRCFydQGxOi1fMu+4JjaG72sYB74o5ifM98ar0Dw
+</span><span class="line">5a9H5nrYwsdMfGuIacfEZwRK/zLsSMzRJ3R7zbS9g05hviP0DbwtN00vVXhHLQ1L
+</span><span class="line">G/W/kY27KMVhgzOHH5uPRoqUA1vH79Oh7tZ8gcHFPCDQkvU4VpALmXmOn+hPwHWq
+</span><span class="line">Uk60QiFg68Wp4S6U72poiefsz6VfO4a+hysDoArZWLK0lIWkT46t6q3NFLcYhqrI
+</span><span class="line">eV3pK3CjCC8hzhsNaoJLS1jiAeIUYd7XPoQO9Oc/vn679unufYMQidNW0syF5P2r
+</span><span class="line">ykrghzzcEZZRVLY1/gsnzOPGcj69hMlN6v10ofJRgts+ayHMW2Q7g5tAGDgsFYH+
+</span><span class="line">xf6dA74EUsQr+QEIAK6sE8TOTJGp6HiOT9CTT8WBIh4okvpJAbzGM9hNdepIZWit
+</span><span class="line">mDiAJXVU/uN+zCaQcekFe0qEe0RqLhJIGyMNyu0f8ibjkt6SIeACvuDoP+V7m+vw
+</span><span class="line">2S5QMdR9mlMVRSq3ClfR5uiPy0qL/GMdWHCPaR207MO5saXm/0jxUtsra6t1FYn+
+</span><span class="line">FRVMBevTvT1HVCTfpme6q6FzV9sQ9xiyAE7/g9oZoo1QIRiZxTBB/9k4e0MDGzW0
+</span><span class="line">acT8I2BZ2K7UUFnXJTydvKwzUIEbQ3hQ6YxtNhpZw5uQAd/hnz7ZXr8YMTR6/jDB
+</span><span class="line">FyOHWanX8qzMhu62ZSPGA9jZdVA8yy87YJccLoMAEQEAAf4DAwLLYtphPjvLtGD4
+</span><span class="line">A2SG4sC5bTyjwkoUA4uNOBedh37+cXcKHCG4aPVHSjlzWvEyuQxYsoUIMQZYcQB5
+</span><span class="line">u+sdNH4g1r6AwP7Xv1UU1pLzoFomQxdvAW3nhSAlEernnvsz+ndbTVBwzKfx1KGI
+</span><span class="line">WsAp78IVK1o1kEkUy48lzqcnJ8qISlGH8dsX0R84NJiBdhOCIaPUqKljBnb3HZKO
+</span><span class="line">S1LuW3B4T75C5C43vx9lMjSIkWwD5NoHTmzNPBz7nTWqTG90cnLIY22T3LShLF7z
+</span><span class="line">TpZDhpv8n1gmRRv/+NMgKUVN98QffUBr6fTV9yg3ltwoP7x0Bsua+fmhresW2aY8
+</span><span class="line">wAbIMwUSwYRshJ+Zbu5qub5fPPO3xHEukhrmcwy/g0a6phdDvkVMm6Wx3UvsGf06
+</span><span class="line">DHvrN/LB95tkgaSCkbO76zX4VVxdeGU9s2mT+ZzDC9aPK6yj+K8dGqN3ltwHn9JA
+</span><span class="line">JzA7Jxr9+2bafypnLJI5HXiWvx9yfR/q8M0PTpqOox/IMtURZzLvhdp4jlxKBoEd
+</span><span class="line">0BRtRkFQOgotDophxmFBPWOBGi5Kbkq+t0txKo1qA9kmnAH3sARkWeELbmu3Bqwm
+</span><span class="line">q7HFbi48T7NMX/ml6W1H3XJo3Mq8PY7jRAJoY5FkR9Ej4Bgm5OqBEXizvPEZayN1
+</span><span class="line">xfj0gfJQHuc2qTeBeiFeeOhkaBlXWAPYgQbtrSmkkFE8lbdLmQ6coUypZ6QSZynJ
+</span><span class="line">NclfWj8thS2dIHIMl60iRioCvhlH13RoZeQHyBfUar/COz9sPCnEdSZMKgrK8eGY
+</span><span class="line">Elv0dNHw70xmS+j/9DzL4qf7Zw7akl3Y4b/RF6g6LYlNObpstNjXWaL5a8Y8+r6u
+</span><span class="line">z52h4g9nj5wzwVtLLP83nvnbqxBMqUYsZMZbg0iVoCBPHms29oofb1s2/FRdEaMb
+</span><span class="line">o4YGiQIlBBgBAgAPBQJSxCv5AhsMBQkB4TOAAAoJEOvwGAS88F9rnvUP/1qcSHDQ
+</span><span class="line">E7CzMMhx9JRign7qkCHMHqtaRHKi8/vj9ww2XSZBlNl2mUmIKMWJEQeto6QZugAC
+</span><span class="line">BHJF4PLpEHm7bcx3IYiMedHq4H0BVmq3qRTSdnXXDiCxYDjqX1tfJFPhx5+kyH2P
+</span><span class="line">1j0dN9F7CxsmmfO610kItyOTBTNSUNLpKC3VcEJADu6xqNa+C8p4bN5BcRdmvYni
+</span><span class="line">2yk5tNkIg+0byHUQfh1UhD8fEf6BtA8gnECjdJ2AIWV3Kx4p/K9GgvJUxLgdxyIq
+</span><span class="line">XxNNcri4F4xFIrwArNi3iJAmgCBINfa/SnyJMdZAyPbZQsfmfLRaZwjwVFsgTpQN
+</span><span class="line">a+xTPBXsdbEOBsyqxTbAieMM7peozScHDam/DfdbKtiSoshxuUnYhJ9qiTcauNWb
+</span><span class="line">J9AEzwfbEBJ7nr53FleOwIi+1yEWPDqZ6x8AP2G/EPSlWfvlzDeafxAMA9vPP/Ca
+</span><span class="line">JifhTgErrj/i4KaDecDtDgUOvJCjCrsNaQKm85zWrBWgvvmcIvCBwGAFsnY9C8v6
+</span><span class="line">lTvmq9aZXKhVAeWAmfDKGVMt13ANhnxYU3+LB2CE+XE65e3aIC14R4w1Tr10Sx6V
+</span><span class="line">cC8ETfMar0UrgGNCrQrTkDAP0alC4oodPBw7bNj3qymHjlE8dWaodF8v0dPFJ5HQ
+</span><span class="line">roqkWuFinvGPsdX//BcJPMZyAGfCa577lT+Y
+</span><span class="line">=ROzK
+</span><span class="line">- -----END PGP PRIVATE KEY BLOCK-----
+</span><span class="line">-----BEGIN PGP SIGNATURE-----
+</span><span class="line">Version: GnuPG v1
+</span><span class="line">
+</span><span class="line">iQEcBAEBCgAGBQJTOcOhAAoJECBNgkAQH1IWD5gH/2lGtDIu3d5GWA+GRRc1mL1I
+</span><span class="line">FA1w2jdB1m4RGDgQWi7xX38cx0/8J8b+OzYKxC0pYezoKBmWMEa/xCdKIwrDLcBg
+</span><span class="line">bx89qYgbeyJYY3B0PrVMBa2NdkNr8J1RXv+GVOUpkhJiVJY9OSJKmjDbVnpL5jEZ
+</span><span class="line">3+j3DXK+5c56LdsWAQ5x5ZPyDWL6vEAUTxwL89Uy7GQSmeA7yh2j+xrjd2wBgAzq
+</span><span class="line">FC/2wKJZYDLLuFFqMwi8fsX1vfsll/eAlb++vbel4pdunqqG4eW0C69jqe+RMyNK
+</span><span class="line">1+YkPzGAJf7KWMcYzk9bzpFBEHmNh+0ZWiXkfrOsOw+vQjHJbXN8wE5pszBD0og=
+</span><span class="line">=2qD5
+</span><span class="line">-----END PGP SIGNATURE-----</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>What you have now on me <strong>is what Keybase would have</strong> on anyone that uploaded their private key, and this is not even TripleSec’d, is just my very own, signed by many people, regular PGP key as it lives password protected on my laptop. And now on my blog. (Isn’t it Backup Day or something?)</p>
+
+<p>If this is indeed dangerous you will shortly see messages signed by me saying that I stink, and immediately after me waving revocation certificates in the air. But it’s not going to happen, because decrypting the above is arguably as difficult as computing my secret key from the public one.</p>
+
+<!-- more -->
+
+<h2 id="the-sensible-argument">The sensible argument</h2>
+
+<p>There is however a more informed point that is made against uploading your key: “<em>what if they start serving a keylogger on their site?</em>”</p>
+
+<p>However here the issue <strong>is not</strong> having uploaded the private key to the Keybase servers <strong>but using the in-browser client</strong>. If the server turns malicious and you are doing crypto in the browser, you are pwn’d, otherwise you are not.</p>
+
+<p>Let’s look at the threat models.</p>
+
+<h4 id="keybase-is-compromised-you-use-the-website-to-do-crypto">Keybase is compromised; you use the website to do crypto</h4>
+
+<p>The attacker does not need to upload any keylogger, they just modify the code to catch your decrypted private key while you use it and send it hidden in the next upload. The End.</p>
+
+<h4 id="keybase-is-compromised-you-use-the-cli-client-uncompromised">Keybase is compromised; you use the CLI client (uncompromised)</h4>
+
+<p>Here the attacker has only an encryption of the private key as the one above, you keep using your client happily and when he desperately upload a keylogger to the site you just go like “WTF!? I don’t do crypto in the browser, why is it asking me some password? MAX!”</p>
+
+<h4 id="the-cli-client-is-compromised">The CLI client is compromised</h4>
+
+<p>Goodbye. Your computer is compromised, don’t even try. But this holds true of any tool, even the very GnuPG.</p>
+
+<hr />
+
+<p><a href="https://news.ycombinator.com/item?id=7503931">Discuss (or post messages signed by me) on HN</a></p>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-31T21:15:00+01:00" pubdate data-updated="true" class="updated">Mar 31<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/crypto/'>crypto</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/" data-via="FiloSottile" data-counturl="https://filippo.io/on-keybase-dot-io-and-encrypted-private-key-sharing/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/why-go-is-elegant-and-makes-my-code-elegant/" title="Previous Post: Why Go is elegant and makes my code elegant">&laquo; Why Go is elegant and makes my code elegant</a>
+      
+      
+        <a class="basic-alignment right" href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/" title="Next Post: SQLAlchemy + MySQL + Python 3 + pip">SQLAlchemy + MySQL + Python 3 + pip &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section class="aboutme">
+  <h1>About Me</h1>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python, Go and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I attended <a href="http://hackerschool.com">Hacker School</a> in NYC. Now I'm in Milan.</p>
+
+  <p><span style="cursor: pointer" onclick="this.textContent = ('hi' + '@filippo' + String.fromCharCode(46) + 'io'); this.onclick = null; this.style.cursor='default'">Click here to reveal my email.</span></p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
+        <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+</a>
+      </li>
+    
+      <li class="post">
+        <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
+      </li>
+    
+      <li class="post">
+        <a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="coderwall">
+  <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
+  src="//api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'https://coderwall.com/' + options.user + '.json?callback=call19543'
+            , type: 'jsonp'
+            , jsonpCallback: 'callback'
+            , jsonpCallbackName: 'call19543'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'FiloSottile',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+  <style type="text/css">
+    .cw_badge img {
+      padding: 5px;
+      border: 0 none !important;
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'FiloSottile',
+            count: 5,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets" class="reset-zoom">
+    <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile"  data-widget-id="369235929669435393"  data-link-color="#1863a1" data-tweet-limit="4" data-chrome="noheader nofooter transparent noscrollbar">Tweets by @FiloSottile</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </ul>
+  
+    <p>Follow <a href="http://twitter.com/FiloSottile">@FiloSottile</a></p>
+  
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "FiloSottile"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // you can set up to 5 custom variables for each visitor
+  _paq.push(["setCustomVariable", 1, "Blog", "Old", "visit"]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    _paq.push(['setTrackerUrl',  'https://api-4b4bd720d6ef85c684c33816a968da60.filippo.sandcats.io:6080']);
+    _paq.push(['setSiteId', 1]);
+    _paq.push(['setApiToken', 'P3F3g6_zNsWCtIPEACXj2H0ct2NIN3_XvKjDqSfz9oY']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io:6080/embed.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+
+</footer>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<!-- (MIT License) - Copyright (c) 2012 Ilya Grigorik -->
+<script>
+    (function(d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = '//hnbutton.appspot.com/static/hn.min.js';
+        s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+</script>
+
+
+
+</body>
+</html>

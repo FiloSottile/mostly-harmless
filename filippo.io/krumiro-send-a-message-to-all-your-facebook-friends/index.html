@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Krumiro - send a message to all your Facebook friends | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Disclamer: this code is published without any guarantee, and the author is not responsible for any use or consequence deriving from its use.
+By &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js" type="text/javascript"></script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+<a href="https://filippo.io/Heartbleed/">
+<img class="heartbleed" src="/images/heartbleed.png">
+<div class="heartbleed">Go to the Heartbleed test!</div>
+</a>
+
+</header>
+  <nav role="navigation">
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/links">Links</a></li>
+  <li><a href="/CV">CV</a></li>
+  <li><a href="https://github.com/FiloSottile">GitHub</a></li>
+</ul>
+
+</nav>
+
+<nav role="navigation">
+
+<ul class="main-navigation"><li><a><strong>Projects</strong></a></li>
+    <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+    <li><a href="https://filippo.io/Biglumber-map/">Biglumber map</a></li>
+    <li><a href="https://apps.facebook.com/coverflipper/">Cover flipper</a></li>
+    <li><a href="https://traviscron.pythonanywhere.com/">Travis cron trigger</a></li>
+    <li><a href="https://ruzzlemap.it/">Ruzzle map</a></li>
+    <li><a href="https://www.recapthelaw.org/">RECAP</a></li>
+    <li><a href="/linux-syscall-table">Syscall table</a></li>
+    <li><a href="https://twitter.com/HNTitles">HN Titles</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Krumiro - send a message to all your Facebook friends</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2012-12-22T19:20:00+00:00" pubdate data-updated="true" class="updated">Dec 22<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote>
+  <p><strong>Disclamer</strong>: this code is published without any guarantee, and <strong>the author is not responsible for any use or consequence deriving from its use</strong>.
+By using it you are accepting this and you accept not to consider the author liable for your use.</p>
+
+  <p>For the technically inclined, it’s all under <a href="http://filosottile.mit-license.org">MIT License</a>.</p>
+</blockquote>
+
+<p>This is a simple script allowing you to send a message to all your Facebook friends.</p>
+
+<h3 id="features">Features</h3>
+<ul>
+  <li>Different messages for male and female friends;</li>
+  <li>Replace <code>%name</code> with the name of the recipient in the messages (like <code>Hi %name! ...</code>);</li>
+  <li>Configurable time to wait between a message and the next, with total duration prediction;</li>
+  <li>List of friends to exclude.</li>
+</ul>
+
+<p>If you have any request or suggestion, simply leave a comment.</p>
+
+<h3 id="installation">Installation</h3>
+<ul>
+  <li>Drag this “<a href="javascript:(function(d){var js, ref = d.getElementsByTagName('script')[0];js = d.createElement('script'); js.async = true;js.src = 'https://gist.github.com/raw/4215248/krumiro_en.js';ref.parentNode.insertBefore(js, ref);}(document));">Krumiro</a>” to your bookmarks bar;</li>
+  <li>Done! Now the Krumiro button is ready.</li>
+</ul>
+
+<h3 id="use">Use</h3>
+<ul>
+  <li>While on a Facebook page, simply click it;</li>
+  <li>Some windows asking you what to do will show up;</li>
+  <li>The page will freeze until the script has finished, go grab a coffee, and maybe <a href="https://www.twitter.com">follow me on Twitter</a>.
+<!-- more --></li>
+</ul>
+
+<h3 id="code-for-the-curious---its-ugly">Code (for the curious - it’s ugly)</h3>
+<div><script src="https://gist.github.com/4215248.js?file=krumiro_en.js"></script>
+<noscript><pre><code>var msg_m_prompt = &#39;Insert the message for males. I\&#39;ll replace %name with the recipient name.&#39;;
+var msg_f_prompt = &#39;Insert the message for females. I\&#39;ll replace %name with the recipient name.&#39;;
+var throttle_prompt = &#39;Insert the pause in milliseconds between a friend and the next.&#39;;
+var exclude_prompt = &#39;Insert the list of friends to ignore, comma separated.&#39;;
+var exerror_alert = &#39;%s is not in your friends, you might have made a mistake. Do you want to continue?&#39;;
+var time_alert = &#39;The script will take %s seconds!&#39;;
+var done = &#39;Done!&#39;;
+
+if(!Array.prototype.indexOf){Array.prototype.indexOf=function(d){if(void 0===this||null===this)throw new TypeError;var c=Object(this),b=c.length&gt;&gt;&gt;0;if(0===b)return-1;var a=0;0&lt;arguments.length&amp;&amp;(a=Number(arguments[1]),a!==a?a=0:0!==a&amp;&amp;(a!==1/0&amp;&amp;a!==-(1/0))&amp;&amp;(a=(0&lt;a||-1)*Math.floor(Math.abs(a))));if(a&gt;=b)return-1;for(a=0&lt;=a?a:Math.max(b-Math.abs(a),0);a&lt;b;a++)if(a in c&amp;&amp;c[a]===d)return a;return-1};}
+
+function size(obj) {
+    var s = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) s++;
+    }
+    return s;
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i &lt; 1e7; i++) {
+        if ((new Date().getTime() - start) &gt; milliseconds){
+          break;
+        }
+    }
+}
+
+function send(msg, to) {
+    function serialize(obj) {
+      var str = [];
+      for(var p in obj)
+         str.push(p + &quot;=&quot; + encodeURIComponent(obj[p]));
+      return str.join(&quot;&amp;&quot;);
+    }
+    function random(len) {
+        var min = Math.pow(10, len-1);
+        var max = Math.pow(10, len);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function generatePhstamp(qs, dtsg) {
+        var input_len = qs.length;
+        numeric_csrf_value=&#39;&#39;;
+
+        for(var ii=0;ii&lt;dtsg.length;ii++) {
+            numeric_csrf_value+=dtsg.charCodeAt(ii);
+        }
+        return &#39;1&#39; + numeric_csrf_value + input_len;
+    }
+    var fbid = window.require(&#39;Env&#39;).user;
+    var d = new Date();
+    var data = {
+       &quot;message_batch[0][timestamp_relative]&quot;: &quot;&quot; + (&#39;0&#39;+d.getHours()).slice(-2) + &quot;:&quot; + (&#39;0&#39;+d.getMinutes()).slice(-2), 
+       &quot;message_batch[0][author]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][is_cleared]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][message_id]&quot;: &quot;&lt;&quot; + random(14) + &quot;:&quot; + random(10) + &quot;-&quot; + random(10) + &quot;@mail.projektitan.com&gt;&quot;, 
+       &quot;message_batch[0][specific_to_list][0]&quot;: &quot;fbid:&quot; + to, 
+       &quot;__user&quot;: fbid, 
+       &quot;message_batch[0][timestamp_absolute]&quot;: &quot;Oggi&quot;, 
+       &quot;message_batch[0][spoof_warning]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][client_thread_id]&quot;: &quot;user:&quot; + to, 
+       &quot;message_batch[0][source]&quot;: &quot;source:chat:web&quot;, 
+       &quot;message_batch[0][has_attachment]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][source_tags][0]&quot;: &quot;source:chat&quot;, 
+       &quot;message_batch[0][body]&quot;: msg, 
+       &quot;message_batch[0][is_filtered_content]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][timestamp]&quot;: &quot;&quot; + Math.round(new Date().getTime() / 1000), 
+       &quot;message_batch[0][is_unread]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][action_type]&quot;: &quot;ma-type:user-generated-message&quot;, 
+       &quot;__a&quot;: &quot;1&quot;, 
+       &quot;message_batch[0][specific_to_list][1]&quot;: &quot;fbid:&quot; + fbid, 
+       &quot;message_batch[0][html_body]&quot;: &quot;false&quot;, 
+       &quot;message_batch[0][status]&quot;: &quot;0&quot;, 
+       &quot;client&quot;: &quot;mercury&quot;, 
+       &quot;message_batch[0][is_forward]&quot;: &quot;false&quot;, 
+       &quot;fb_dtsg&quot;: window.require(&#39;Env&#39;).fb_dtsg
+    };
+    var req = serialize(data);
+    // Thanks http://pastebin.com/VJAhUw30
+    req += &quot;&amp;phstamp=&quot; + generatePhstamp(req, data.fb_dtsg);
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open(&#39;POST&#39;, &#39;/ajax/mercury/send_messages.php&#39;);
+    xmlhttp.send(req);
+}
+
+function buddy(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(&quot;GET&quot;, &quot;https://www.facebook.com/ajax/chat/user_info_all.php?__user=&quot; + window.require(&#39;Env&#39;).user + &quot;&amp;__a=1&amp;viewer=&quot; + window.require(&#39;Env&#39;).user, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        var resp = JSON.parse(xhr.responseText.slice(9));
+        callback(resp.payload);
+      }
+    };
+    xhr.send();
+}
+
+function spam() {
+    var msg_m, msg_f, buddy_num, msg, pos = 1, throttle, exclude, present;
+    buddy(function(buddy_list) {
+        buddy_num = size(buddy_list);
+        msg_m = prompt(msg_m_prompt);
+        msg_f = prompt(msg_f_prompt);
+        exclude = prompt(exclude_prompt).split(&quot;,&quot;);
+        if (exclude.length == 1 &amp;&amp; exclude[0].trim() == &#39;&#39;) exclude = Array();
+        for (var i = 0; i &lt; exclude.length; i++) {
+            present = false;
+            for (var id in buddy_list)
+                if (buddy_list[id].name == exclude[i].trim()) present = true;
+            if (!present)
+                if (!confirm(exerror_alert.replace(&#39;%s&#39;, exclude[i].trim()))) return;
+        }
+        throttle = +prompt(throttle_prompt);
+        if (!confirm(time_alert.replace(&#39;%s&#39;, buddy_num*throttle/1000))) return;
+        for (var id in buddy_list) {
+            if (buddy_list[id].gender === 1) msg = msg_f;
+            else msg = msg_m;
+            msg = msg.replace(&#39;%name&#39;, buddy_list[id].firstName);
+            // if (buddy_list[id].name == &#39;&#39;) send(msg, id);
+            if (exclude.indexOf(buddy_list[id].name) == -1) send(msg, id);
+            if (pos % Math.floor(buddy_num/100) == 0) console.log(Math.floor(pos/(buddy_num/100)) + &#39; %&#39;);
+            pos++;
+            sleep(throttle);
+        }
+        alert(done);
+    });
+}
+
+spam();</code></pre></noscript></div>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2012-12-22T19:20:00+00:00" pubdate data-updated="true" class="updated">Dec 22<span>nd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/" data-via="FiloSottile" data-counturl="https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/please-take-this-and-go-signing-those-updates/" title="Previous Post: Please take this and go signing those updates">&laquo; Please take this and go signing those updates</a>
+      
+      
+        <a class="basic-alignment right" href="/github-checkout-a-pull-request-as-a-branch/" title="Next Post: GitHub: checkout a pull request as a branch">GitHub: checkout a pull request as a branch &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section class="aboutme">
+  <h1>About Me</h1>
+  <p>I am <span class="name">Filippo Valsorda</span> (<a href="https://twitter.com/FiloSottile">@FiloSottile</a>) an Italian consultant specialized in cryptography and security with a passion for Python, Go and maths.
+  	I am one of the guys currently behind <a href="https://github.com/rg3/youtube-dl">youtube-dl</a> and I attended <a href="http://hackerschool.com">Hacker School</a> in NYC. Now I'm in Milan.</p>
+
+  <p><span style="cursor: pointer" onclick="this.textContent = ('hi' + '@filippo' + String.fromCharCode(46) + 'io'); this.onclick = null; this.style.cursor='default'">Click here to reveal my email.</span></p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/psa-enable-automatic-updates-please/">PSA: enable automatic updates. Please.</a>
+      </li>
+    
+      <li class="post">
+        <a href="/the-heartbleed-test-at-owasp-slash-nyu-poly/">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+</a>
+      </li>
+    
+      <li class="post">
+        <a href="/salt-and-pepper/">Salt &amp; Pepper, please: a note on password storage</a>
+      </li>
+    
+      <li class="post">
+        <a href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">SQLAlchemy + MySQL + Python 3 + pip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/on-keybase-dot-io-and-encrypted-private-key-sharing/">On Keybase.io and encrypted private key uploading</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="coderwall">
+  <h1>Coderwall<a href="https://coderwall.com/filosottile"><img alt="Endorse"
+  src="//api.coderwall.com/filosottile/endorsecount.png" /></a></h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'https://coderwall.com/' + options.user + '.json?callback=call19543'
+            , type: 'jsonp'
+            , jsonpCallback: 'callback'
+            , jsonpCallbackName: 'call19543'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'FiloSottile',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+  <style type="text/css">
+    .cw_badge img {
+      padding: 5px;
+      border: 0 none !important;
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/FiloSottile">@FiloSottile</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'FiloSottile',
+            count: 5,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets" class="reset-zoom">
+    <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/FiloSottile"  data-widget-id="369235929669435393"  data-link-color="#1863a1" data-tweet-limit="4" data-chrome="noheader nofooter transparent noscrollbar">Tweets by @FiloSottile</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </ul>
+  
+    <p>Follow <a href="http://twitter.com/FiloSottile">@FiloSottile</a></p>
+  
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:FiloSottile">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "FiloSottile"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // you can set up to 5 custom variables for each visitor
+  _paq.push(["setCustomVariable", 1, "Blog", "Old", "visit"]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    _paq.push(['setTrackerUrl',  'https://api-4b4bd720d6ef85c684c33816a968da60.filippo.sandcats.io:6080']);
+    _paq.push(['setSiteId', 1]);
+    _paq.push(['setApiToken', 'P3F3g6_zNsWCtIPEACXj2H0ct2NIN3_XvKjDqSfz9oY']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://ls4an735rucvfa6ps6bb.filippo.sandcats.io:6080/embed.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'pytux';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/';
+        var disqus_url = 'https://filippo.io/krumiro-send-a-message-to-all-your-facebook-friends/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<!-- (MIT License) - Copyright (c) 2012 Ilya Grigorik -->
+<script>
+    (function(d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = '//hnbutton.appspot.com/static/hn.min.js';
+        s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+</script>
+
+
+
+</body>
+</html>

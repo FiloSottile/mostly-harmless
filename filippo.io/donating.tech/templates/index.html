@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<title>donating.tech — giving well for a free and secure Internet</title>
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="donating.tech — giving well for a free and secure Internet" />
+<meta name="twitter:description" content="10 hand-picked projects where individual donations can have a direct impact on Internet freedom, underfunded infrastructure and inclusivity." />
+<meta name="twitter:image" content="https://donating.tech/screen.png?2">
+
+<link href="https://fonts.googleapis.com/css?family=EB+Garamond:400,400i,600|Quicksand" rel="stylesheet">
+<style>{% include '_style.css' %}</style>
+
+{% include '_piwik.html' %}
+
+<div class="container">
+
+<header>
+    <h1>donating.tech</h1>
+    <p>giving well for a free and secure Internet</p>
+</header>
+
+<p>When donating funds it's hard to know and choose where they will have the most impact. There are organizations dedicated to researching that for general philanthropy, but none focused on tech.</p>
+
+<p>We hand-picked 10 projects where individual donations can have a direct impact on <strong>Internet freedom, underfunded infrastructure and inclusivity</strong>.</p>
+
+<p>We judged and scored projects not only by their absolute importance, but also by</p>
+
+<ul>
+    <li>how much of a difference individual donations can make</li>
+    <li>how we think extra money will be spent</li>
+    <li>how much visibility we personally have into how the project is run</li>
+</ul>
+
+<p>In particular, you won't see some of the most popular names not because we don't believe in their work, but because we believe a bump in individual contributions would not affect the world as much as it would if directed to one of the ones below.</p>
+
+<!--<p>This page will guide you through allocating funds, setting up your donations, recurring or otherwise, and possibly point you towards US tax-deductions and employer matching. You can also sign up to be notified when we make changes.</p>-->
+
+<h2>Allocating funds</h2>
+
+<p>Each project comes with a suggested proportion. Decide how much you want to donate in total, and then split funds based on the proportions. All are multiples of 5%.</p>
+
+<p>We recommend monthly donations as they provide a dependable stream for future planning, unless they amount to less than $5 per month, in which case a yearly donation would be more fee-efficient.</p>
+
+<p>Donations to projects which are US nonprofits are potentially eligible for both <strong>tax deductions and employer matching</strong>. Do look into employer matching!</p>
+
+<h2>The projects</h2>
+
+{% from '_data.jinja' import projects %}
+
+<table>
+    <thead><tr>
+        <td class="only-wide">Category</td>
+        <td>Project</td>
+        <td>Proportion</td>
+        <td class="only-wide">Nonprofit</td>
+    </tr></thead>
+    <tbody>
+{% for project in projects %}
+        <tr>
+            <td class="only-wide">{{ project[1] }}</td>
+            <td><a href="#{{ project[0] | urlencode }}">{{ project[0] }}</a></td>
+            <td>{{ project[2] * 5 }}%</td>
+            <td class="only-wide">{{ "Yes" if project[3] }}</td>
+            <td><a href="{{ project[6] }}">Donate</a></td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% for project in projects %}
+
+<h3 id="{{ project[0] | urlencode }}">{{ project[0] }}</h3>
+
+<p>
+    Category: <em>{{ project[1] }}</em> 
+    <span class="only-wide"> — </span>
+    <span class="only-narrow"><br></span>
+    US Nonprofit: <em>{{ "Yes" if project[3] else "No" }}</em>
+    <span class="only-wide"> — </span>
+    <span class="only-narrow"><br></span>
+    Proportion: <strong>{{ project[2] * 5 }}%</strong>
+</p>
+
+<p>{{ project[5].strip() }}</p>
+
+<p>
+    <a href="{{ project[6] }}">Donate</a>
+    {% if project[7] %} — <a href="{{ project[7] }}">More info</a>{% endif %}
+    {% if project[4] %}<span class="only-wide"> — [Amazon Smile recipient]</span>{% endif %}
+</p>
+
+{% endfor %}
+
+<h2>Staying up to date</h2>
+
+<p>You can sign up for this <em>extremely</em> low-volume newsletter to be notified if and when we change the list, or for the occasional impactful fundraising event.</p>
+
+{% include '_mailchimp.html' %}
+
+<h2>FAQ</h2>
+
+<h3>You are missing my favorite/obvious/better/local charity!</h3>
+
+<p>There's a number of reasons a project might not be on the list:</p>
+
+<ul>
+    <li>it might be a very popular target for donations, with a robust stream of funding</li>
+    <li>it might receive significant funding from other sources</li>
+    <li>it might not have a clear purpose towards which more funding could be invested</li>
+    <li>it might not accept recurring donations</li>
+    <li>it might be off-topic</li>
+    <li>it might be a local organization with no clear global impact</li>
+    <li>we might not have enough visibility into it to know how it operates</li>
+    <li>we might have missed it</li>
+</ul>
+
+<p>If you feel like a project meets all the criteria and we should know about it, feel free to email us: hello at donating tech.</p>
+
+<h3>Who are you?</h3>
+
+<p><a href="https://twitter.com/gtank__">George Tankersley</a> and <a href="https://twitter.com/FiloSottile">Filippo Valsorda</a>. We worked on Internet infrastructure and in the online privacy activism space for some time, and interacted in various ways with a number of projects we wish to see succeed.</p>
+
+<h3>Why should I trust you?</h3>
+
+<p>No strong reason. We believe we developed a certain level of insight into projects in the space, and built this page while deciding how to direct our own donations. We wished it existed, so now it does, and we hope it will bring some funding to projects we like.</p>
+
+<h2>Misc disclaimers</h2>
+
+<p>Nothing on this page is tax advice, we recommend talking to your accountant about your specific tax implications.</p>
+
+<p>None of this is the opinion of any of our past, present or future employers or customers.</p>
+
+<p>While we like these projects and personally believe in them, we are not vouching for them or their past, present or future actions. The decision on how to donate your money is ultimately yours and we take no responsibility in it.</p>
+
+<p>We have no affiliations with these projects and organizations, nor did they sanction this advice.</p>
+
+<p>These recommendations are made in good faith and based entirely on personal opinions.</p>
+
+</div>
