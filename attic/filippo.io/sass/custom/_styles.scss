@@ -1,0 +1,234 @@
+// This File is imported last, and will override other styles in the cascade
+// Add styles here to make changes without digging in too much
+
+html {
+  background: $page-bg image-url('inflicted.png') top left;
+}
+
+a.external-link:after {
+	content: " \27A6";
+}
+
+body > header {
+	background: none;
+}
+
+#content {
+	background-image: url(/images/grey.png);
+}
+
+body {
+	zoom: 0.9;
+}
+.sharing, #disqus_thread {
+	zoom: 1.11111;
+}
+
+div.sharing {
+	margin: .8em 0;
+}
+
+.permalink {
+	background: darken($main-bg, 5);
+	display: inline-block;
+	padding: .4em .8em;
+	margin-right: .5em;
+	text-decoration: none;
+	color: mix($text-color, $text-color-light);
+	@extend .serif;
+	@include transition(background-color .5s);
+	&:visited {
+	  color: mix($text-color, $text-color-light);
+	}
+	&:hover {
+	  background: $link-color-hover;
+	  text-shadow: none;
+	  color: $main-bg;
+	}
+}
+
+.coderwall h1 {
+	position: relative;
+}
+
+.coderwall h1 img {
+	border: none;
+	bottom: .3em;
+	position: absolute;
+	right: 0;
+}
+
+section.aboutme {
+	iframe {
+		display: block;
+		margin: 0 auto;
+	}
+	img {
+		display: block;
+		margin: 20px auto 0;
+	}
+	.name {
+		font-family: "vallimedium";
+	}
+}
+
+.gist .line-data {
+	width: 100%;
+}
+
+article table {
+	margin-bottom: 1em;
+	td {
+		padding: 0 10px;
+	}
+	th {
+		padding: 0 10px;
+	}
+}
+
+.img_right img {
+	float: right;
+	margin: 0 0 10px 15px;
+}
+
+.img_left img {
+	float: left;
+	margin: 0 15px 10px 0;
+}
+
+.img_center img {
+	display: block;
+	margin: 0 auto;
+}
+
+@font-face {
+    font-family: 'vallimedium';
+    src: url('/assets/valli_3-webfont.eot');
+    src: url('/assets/valli_3-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/assets/valli_3-webfont.woff') format('woff'),
+         url('/assets/valli_3-webfont.ttf') format('truetype'),
+         url('/assets/valli_3-webfont.svg#vallimedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body > header h1, body > header h2 {
+	font-family: "vallimedium";
+}
+
+.line-pre {
+	font-size: 13px !important;
+	line-height: 1.45em !important;
+}
+
+.gutter {
+	padding: 0;
+}
+
+.code table {
+	margin-bottom: 0;
+}
+
+html .gist .gist-file .gist-meta {
+	text-shadow: none;
+}
+html .gist .gist-file .gist-meta a[href*='#file'] {
+	right: 0;
+}
+
+a code {
+	color: #1863a1;
+}
+
+.footnotes {
+	padding-top: 0.8em;
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAABCAYAAACsXeyTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFUlEQVQIHWNIS0sr/v//PwMMDzY+ADqMahlW4J91AAAAAElFTkSuQmCC') top left repeat-x;
+	p {
+		margin-bottom: 0.2em;
+	}
+	font-size: 0.8em;
+	a[rel=reference] {
+		padding-left: 3px;
+		text-decoration: none;
+	}
+}
+
+#cv {
+	font-size: 17px;
+	a {
+		text-decoration: none;
+	}
+	a:visited {
+		color: #1863a1;
+	}
+	a:first-of-type, a:hover {
+		color: #0181eb;
+	}
+	b {
+		font-weight: bold;
+	}
+	position: relative;
+	.cv-download {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		padding: 10px;
+		background: #f2f2f2 url('/images/noise.png?1359196381') top left;
+		border-radius: 5px 0 0 0;
+		font-size: 16px;
+	}
+}
+
+.reset-zoom {
+	zoom: 1.11111111111111111111111111111111111111111;
+}
+
+article hr {
+	padding-top: 0.8em;
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAABCAYAAACsXeyTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFUlEQVQIHWNIS0sr/v//PwMMDzY+ADqMahlW4J91AAAAAElFTkSuQmCC') top left repeat-x;
+	border: none;
+	margin-bottom: 0.3em;
+}
+
+.entry-content .short figure.code {
+	height: 400px;
+	overflow: scroll;
+}
+
+div.heartbleed {
+position: absolute;
+top: 55px;
+font-size: 1em;
+color: #f2f2f2;
+font-weight: normal;
+font-family: vallimedium;
+right: 130px;
+width: 250px;
+}
+img.heartbleed {
+position: absolute;
+right: 400px;
+width: 100px;
+top: 30px;
+}
+
+@media only screen
+and (max-width : 991px) {
+  img.heartbleed {
+  	width: 70px;
+  }
+  div.heartbleed {
+  	right: 30px;
+  	width: 350px;
+  }
+}
+
+@media only screen
+and (max-width : 650px) {
+  img.heartbleed {
+  	display: none;
+  }
+  div.heartbleed {
+  	display: none;
+  }
+}
