@@ -8,6 +8,8 @@ https://mta-sts.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
 https://mta-sts.filippo.io/* https://filippo.io 302!
 https://mta-sts.bip.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
 https://mta-sts.bip.filippo.io/* https://filippo.io 302!
+https://mta-sts.ml.filippo.io/.well-known/mta-sts.txt /mta-sts.txt 200!
+https://mta-sts.ml.filippo.io/* https://filippo.io 302!
 
 # Short links
 /hitb https://imgur.com/a/3NkeN 302!
