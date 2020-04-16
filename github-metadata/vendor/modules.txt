@@ -1,2 +1,0 @@
-# github.com/peterhellberg/link v1.0.0
-github.com/peterhellberg/link
