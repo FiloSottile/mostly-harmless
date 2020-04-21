@@ -11,14 +11,11 @@ class Iodine < Formula
     depends_on :tuntap
   end
 
-  # Requires tuntap for < 10.10
-  depends_on :macos => :yosemite
-
   def install
     system "make", "install", "prefix=#{prefix}"
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
       To use the native utun devices instead of tuntap, install
       the HEAD version, and use "-d utunX"
     EOS
