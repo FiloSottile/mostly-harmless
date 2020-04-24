@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/russross/blackfriday"
 )
@@ -44,6 +45,11 @@ func main() {
 	seen := make(map[string]struct{})
 
 	f := func(reference string) (ref *blackfriday.Reference, overridden bool) {
+		// Ignore footnotes.
+		if strings.HasPrefix(reference, "^") {
+			return nil, false
+		}
+
 		if _, ok := seen[reference]; ok || reference == "" {
 			return nil, false
 		}
