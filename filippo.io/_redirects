@@ -30,6 +30,13 @@ https://mta-sts.ml.filippo.io/* https://filippo.io 302!
 # filippo.io/age Homebrew Tap (via git clone)
 /age/info/refs service=git-upload-pack https://github.com/FiloSottile/age.git/info/refs?service=git-upload-pack 302!
 
+# filippo.io/yubikey-agent Go import path
+/yubikey-agent go-get=1 /yubikey-agent-go-get.html 200!
+/yubikey-agent https://github.com/FiloSottile/yubikey-agent 302!
+
+# filippo.io/yubikey-agent Homebrew Tap (via git clone)
+/yubikey-agent/info/refs service=git-upload-pack https://github.com/FiloSottile/yubikey-agent.git/info/refs?service=git-upload-pack 302!
+
 # filippo.io/mkcert Go import path
 /mkcert go-get=1 /mkcert-go-get.html 200!
 /mkcert https://github.com/FiloSottile/mkcert 302!
