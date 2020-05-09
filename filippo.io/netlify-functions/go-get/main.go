@@ -1,7 +1,6 @@
 package main
 
 import (
-	"go/build"
 	"html/template"
 	"strings"
 
@@ -10,18 +9,39 @@ import (
 )
 
 var templateHTML = template.Must(template.New("go-get.html").Parse(`
+{{ $repo := or .GitRepo "https://github.com/FiloSottile/" + .Name }}
+<head>
+    <meta name="go-import" content="filippo.io/{{ .Name }} git {{ $repo }}">
+    <meta http-equiv="refresh" content="0;URL='{{ or .Redirect $repo }}'">
 <body>
-    <p>GOPATH is {{.GOPATH}} 
-    <p>path is {{.PATH}} 
+    Nothing to see here, move along...
 `))
 
 func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	path := strings.TrimPrefix(request.Path, "/.netlify/functions/go-get")
+	var data struct {
+		Name     string
+		GitRepo  string
+		Redirect string
+	}
+	switch strings.TrimPrefix(request.Path, "/.netlify/functions/go-get") {
+	case "/age":
+		data.Name = "age"
+	case "/cpace":
+		data.Name = "cpace"
+		data.GitRepo = "https://github.com/FiloSottile/go-cpace-ristretto255"
+		data.Redirect = "https://pkg.go.dev/filippo.io/cpace"
+	case "/mkcert":
+		data.Name = "mkcert"
+	case "/yubikey-agent":
+		data.Name = "yubikey-agent"
+	default:
+		return &events.APIGatewayProxyResponse{
+			StatusCode: 404,
+			Body:       "unknown package",
+		}, nil
+	}
 	buf := &strings.Builder{}
-	templateHTML.Execute(buf, map[string]string{
-		"GOPATH": build.Default.GOPATH,
-		"PATH":   path,
-	})
+	templateHTML.Execute(buf, data)
 	return &events.APIGatewayProxyResponse{
 		StatusCode: 200,
 		Headers: map[string]string{
