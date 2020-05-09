@@ -14,7 +14,7 @@ var templateHTML = template.Must(template.New("go-get.html").Parse(`
     <meta name="go-import" content="filippo.io/{{ .Name }} git {{ $repo }}">
     <meta http-equiv="refresh" content="0;URL='{{ or .Redirect $repo }}'">
 <body>
-    Nothing to see here, move along...
+    Redirecting you to the <a href="{{ or .Redirect $repo }}">project page</a>...
 `))
 
 func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
