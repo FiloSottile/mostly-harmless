@@ -1,3 +1,5 @@
 [build]
   command = "make"
   functions = ".netlify/functions"
+[build.environment]
+  GO_VERSION = "stable"

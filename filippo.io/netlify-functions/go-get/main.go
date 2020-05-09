@@ -9,7 +9,7 @@ import (
 )
 
 var templateHTML = template.Must(template.New("go-get.html").Parse(`
-{{ $repo := or .GitRepo "https://github.com/FiloSottile/" + .Name }}
+{{ $repo := or .GitRepo (printf "https://github.com/FiloSottile/%s" .Name) }}
 <head>
     <meta name="go-import" content="filippo.io/{{ .Name }} git {{ $repo }}">
     <meta http-equiv="refresh" content="0;URL='{{ or .Redirect $repo }}'">
