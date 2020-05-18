@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"html/template"
 	"strings"
 
@@ -37,7 +38,7 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
 	default:
 		return &events.APIGatewayProxyResponse{
 			StatusCode: 404,
-			Body:       "unknown package",
+			Body:       "unknown package " + hex.EncodeToString([]byte(request.Path)),
 		}, nil
 	}
 	buf := &strings.Builder{}
