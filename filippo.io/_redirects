@@ -23,17 +23,17 @@ https://mta-sts.ml.filippo.io/* https://filippo.io 302!
 /age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302!
 /age/report https://github.com/FiloSottile/age/issues/new/choose 302!
 
-# Go import paths
-/age/* /.netlify/functions/go-get/age 200!
-/yubikey-agent/* /.netlify/functions/go-get/yubikey-agent 200!
-/mkcert/* /.netlify/functions/go-get/mkcert 200!
-/cpace/* /.netlify/functions/go-get/cpace 200!
-
 # filippo.io/age Homebrew Tap (via git clone)
 /age/info/refs service=git-upload-pack https://github.com/FiloSottile/age.git/info/refs?service=git-upload-pack 302!
 
 # filippo.io/yubikey-agent Homebrew Tap (via git clone)
 /yubikey-agent/info/refs service=git-upload-pack https://github.com/FiloSottile/yubikey-agent.git/info/refs?service=git-upload-pack 302!
+
+# Go import paths
+/age/* /.netlify/functions/go-get/age 200!
+/yubikey-agent/* /.netlify/functions/go-get/yubikey-agent 200!
+/mkcert/* /.netlify/functions/go-get/mkcert 200!
+/cpace/* /.netlify/functions/go-get/cpace 200!
 
 # Hide the old CVs
 /CV/* https://blog.filippo.io/hi/ 302!
