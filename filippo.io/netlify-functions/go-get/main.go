@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"html/template"
 	"strings"
 
@@ -24,21 +23,24 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
 		GitRepo  string
 		Redirect string
 	}
-	switch strings.TrimPrefix(request.Path, "/.netlify/functions/go-get") {
-	case "/age":
+	// Note that when a "200 redirect" is followed, request.Path is the original one.
+	path := strings.TrimPrefix(request.Path, "/.netlify/functions/go-get")
+	pkg := func(n string) bool { return path == "/"+n || strings.HasPrefix(path, "/"+n+"/") }
+	switch {
+	case pkg("age"):
 		data.Name = "age"
-	case "/cpace":
+	case pkg("cpace"):
 		data.Name = "cpace"
 		data.GitRepo = "https://github.com/FiloSottile/go-cpace-ristretto255"
 		data.Redirect = "https://pkg.go.dev/filippo.io/cpace"
-	case "/mkcert":
+	case pkg("mkcert"):
 		data.Name = "mkcert"
-	case "/yubikey-agent":
+	case pkg("yubikey-agent"):
 		data.Name = "yubikey-agent"
 	default:
 		return &events.APIGatewayProxyResponse{
 			StatusCode: 404,
-			Body:       "unknown package " + hex.EncodeToString([]byte(request.Path)),
+			Body:       "unknown package",
 		}, nil
 	}
 	buf := &strings.Builder{}
