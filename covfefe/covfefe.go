@@ -1,3 +1,4 @@
+// Package covfefe is a mystery.
 package covfefe
 
 import (
@@ -93,20 +94,34 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 
 		user, err := verifyCredentials(ctx, httpClient)
 		if err != nil {
-			return errors.Wrapf(err, "invalid credetials at position %d", i)
+			return errors.Wrapf(err, "invalid credentials at position %d", i)
 		}
+
+		log := log.WithFields(log.Fields{
+			"account": user.ScreenName, "id": user.ID,
+		})
 
 		for _, timeline := range []string{"home", "mentions", "user", "likes"} {
 			timeline := timeline
 			g.Go(func() error {
-				log.WithFields(log.Fields{
-					"account": user.ScreenName, "id": user.ID, "timeline": timeline,
-				}).Info("Starting to monitor timeline")
-				m := &timelineMonitor{c: httpClient, u: user, m: messages}
+				log.WithField("timeline", timeline).Info("Starting to monitor timeline")
+				m := &twitterClient{c: httpClient, u: user, m: messages}
 				return errors.Wrapf(m.followTimeline(ctx, timeline),
 					"%s of %d", timeline, user.ID)
 			})
 		}
+
+		g.Go(func() error {
+			log.Info("Starting to fetch followers")
+			m := &twitterClient{c: httpClient, u: user, m: messages}
+			for {
+				if err := m.fetchFollowers(ctx, user.ID); err != nil {
+					return errors.Wrapf(err, "followers of %d", user.ID)
+				}
+				log.Debug("Starting over fetching followers")
+				time.Sleep(24 * time.Hour)
+			}
+		})
 	}
 	log.WithError(g.Wait()).Error("Stopped following timelines")
 

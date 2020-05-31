@@ -49,13 +49,65 @@ func verifyCredentials(ctx context.Context, c *http.Client) (*twitter.User, erro
 	return u, nil
 }
 
-type timelineMonitor struct {
+type twitterClient struct {
 	c *http.Client
 	m chan *Message
 	u *twitter.User
 }
 
-func (t *timelineMonitor) followTimeline(ctx context.Context, timeline string) error {
+func (t *twitterClient) fetchFollowers(ctx context.Context, followed int64) error {
+	log := logrus.WithFields(logrus.Fields{
+		"account": t.u.ScreenName, "followed": followed,
+	})
+
+	source := fmt.Sprintf("fl:%d", followed)
+
+	interval := 1*time.Minute + 5*time.Second
+	tick := time.NewTicker(interval)
+	defer tick.Stop()
+
+	var cursor int64 = -1
+	for cursor != 0 {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-tick.C:
+		}
+
+		url := "https://api.twitter.com/1.1/followers/list.json?cursor=%d&user_id=%d&count=200"
+		url = fmt.Sprintf(url, cursor, followed)
+
+		var result struct {
+			Users      []json.RawMessage
+			NextCursor int64 `json:"next_cursor"`
+		}
+		const maxRetry = 4
+		for retry := 0; retry <= maxRetry; retry++ {
+			if err := getJSON(ctx, t.c, url, &result); err != nil {
+				if retry == maxRetry {
+					return err
+				} else {
+					log.WithField("retry", retry).WithError(err).Error("Failed to fetch timeline")
+					time.Sleep(interval)
+					continue
+				}
+			}
+			break
+		}
+
+		log.WithFields(logrus.Fields{
+			"users": len(result.Users), "next": result.NextCursor,
+		}).Debug("Fetched followers")
+
+		for _, user := range result.Users {
+			t.m <- &Message{source: source, kind: "follower", msg: user}
+		}
+		cursor = result.NextCursor
+	}
+	return nil
+}
+
+func (t *twitterClient) followTimeline(ctx context.Context, timeline string) error {
 	log := logrus.WithFields(logrus.Fields{
 		"account": t.u.ScreenName, "timeline": timeline,
 	})

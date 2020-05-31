@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/h2non/filetype"
@@ -24,19 +26,25 @@ type Message struct {
 }
 
 func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
+	log := log.WithFields(log.Fields{"message": id, "tweet": tweet.ID})
 	// Just in case we forget the magic tweet_mode=extended and end up archiving
 	// truncated tweets without full_text again, ugh.
 	// https://developer.twitter.com/en/docs/tweets/tweet-updates
 	if tweet.Truncated && !c.rescan {
-		log.WithFields(log.Fields{
-			"message": id, "tweet": tweet.ID,
-		}).Warn("Truncated tweet")
+		log.Warn("Truncated tweet")
+	}
+
+	// User objects drop the user field not only of the top-level tweet, for
+	// which we know and set the user, but also for nested tweets not by the
+	// same user :(
+	if tweet.User == nil {
+		// TODO: switch back to log.Debug, nothing we can do.
+		log.Warning("User-less tweet :(")
+		return
 	}
 
 	if new, err := c.insertTweet(tweet, id); err != nil {
-		log.WithFields(log.Fields{
-			"err": err, "message": id, "tweet": tweet.ID,
-		}).Error("Failed to insert tweet")
+		log.WithError(err).Error("Failed to insert tweet")
 		return
 	} else if !new {
 		return
@@ -157,40 +165,11 @@ func (c *Covfefe) processUser(id int64, user *twitter.User) {
 	if err := c.insertUser(user, id); err != nil {
 		log.WithError(err).WithField("message", id).Error("Failed to insert user")
 	}
-}
-
-func isProtected(message interface{}) bool {
-	switch m := message.(type) {
-	case *twitter.Tweet:
-		if m.User.Protected {
-			return true
-		}
-	case *twitter.Event:
-		if (m.Source != nil && m.Source.Protected) ||
-			(m.Target != nil && m.Target.Protected) ||
-			(m.TargetObject != nil && m.TargetObject.User.Protected) {
-			return true
-		}
-		switch m.Event {
-		case "quoted_tweet":
-		case "favorite", "unfavorite":
-		case "favorited_retweet":
-		case "retweeted_retweet":
-		case "follow", "unfollow":
-		case "user_update":
-		case "list_created", "list_destroyed", "list_updated", "list_member_added",
-			"list_member_removed", "list_user_subscribed", "list_user_unsubscribed":
-			return true // lists can be private
-		case "block", "unblock":
-			return true
-		case "mute", "unmute":
-			return true
-		default:
-			log.WithField("event", m.Event).Warning("Unknown event type")
-			return true // when in doubt...
-		}
+	if user.Status != nil {
+		user.Status.User = user
+		c.processTweet(id, user.Status)
+		user.Status.User = nil
 	}
-	return false
 }
 
 func (c *Covfefe) HandleChan(messages <-chan *Message) {
@@ -200,77 +179,110 @@ func (c *Covfefe) HandleChan(messages <-chan *Message) {
 }
 
 func (c *Covfefe) Handle(m *Message) {
-	msg := unmarshalMessage(m)
-	if msg == nil {
-		log.Debug("Dropped unknown message")
-		return
-	}
+	switch m.kind {
+	case "tweet":
+		tweet := new(twitter.Tweet)
+		if err := json.Unmarshal(m.msg, tweet); err != nil {
+			log.WithError(err).Warning("Failed to unmarshal message")
+			return
+		}
 
-	if isProtected(msg) {
-		log.Debug("Dropped protected message")
-		return
-	}
+		if tweet.User.Protected {
+			log.Debug("Dropped protected message")
+			return
+		}
 
-	switch obj := msg.(type) {
-	case *twitter.Tweet:
 		if err := c.insertMessage(m); err != nil {
-			log.WithError(err).WithField("tweet", obj.ID).Error("Failed to insert message")
+			log.WithError(err).Error("Failed to insert message")
 			return
 		}
-		c.processTweet(m.id, obj)
-	case *twitter.StatusDeletion:
-		if err := c.insertMessage(m); err != nil {
-			log.WithError(err).WithField("deletion", obj.ID).Error("Failed to insert message")
+
+		c.processTweet(m.id, tweet)
+
+	case "event":
+		event := new(twitter.Event)
+		if err := json.Unmarshal(m.msg, event); err != nil {
+			log.WithError(err).Warning("Failed to unmarshal message")
 			return
 		}
-		log.WithField("id", obj.ID).Debug("Deleted Tweet")
-		c.deletedTweet(obj.ID, m.id)
-	case *twitter.Event:
+
 		if err := c.insertMessage(m); err != nil {
-			log.WithError(err).WithField("event", obj.Event).Error("Failed to insert message")
+			log.WithError(err).Error("Failed to insert message")
 			return
 		}
-		if obj.Source != nil {
-			c.processUser(m.id, obj.Source)
+
+		if event.Source != nil {
+			c.processUser(m.id, event.Source)
 		}
-		if obj.Target != nil {
-			c.processUser(m.id, obj.Target)
+		if event.Target != nil {
+			c.processUser(m.id, event.Target)
 		}
-		if obj.TargetObject != nil {
-			c.processTweet(m.id, obj.TargetObject)
+		if event.TargetObject != nil {
+			c.processTweet(m.id, event.TargetObject)
 		}
-		if obj.Event == "follow" {
-			if err := c.insertFollow(obj.Source.ID, obj.Target.ID, m.id); err != nil {
+		if event.Event == "follow" {
+			if err := c.insertFollow(event.Source.ID, event.Target.ID, m.id); err != nil {
 				log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
 			}
 		}
-	}
-}
 
-func unmarshalMessage(m *Message) interface{} {
-	switch m.kind {
-	case "tweet":
-		res := new(twitter.Tweet)
-		json.Unmarshal(m.msg, res)
-		return res
-	case "event":
-		res := new(twitter.Event)
-		json.Unmarshal(m.msg, res)
-		return res
 	case "del":
-		res := new(twitter.StatusDeletion)
-		json.Unmarshal(m.msg, res)
-		return res
+		del := new(twitter.StatusDeletion)
+		if err := json.Unmarshal(m.msg, del); err != nil {
+			log.WithError(err).Warning("Failed to unmarshal message")
+			return
+		}
+
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).Error("Failed to insert message")
+			return
+		}
+
+		c.deletedTweet(del.ID, m.id)
+
 	case "deletion":
-		res := new(struct {
+		del := new(struct {
 			Delete struct {
 				Status *twitter.StatusDeletion
 			}
 		})
-		json.Unmarshal(m.msg, res)
-		return res.Delete.Status
+		if err := json.Unmarshal(m.msg, del); err != nil {
+			log.WithError(err).Warning("Failed to unmarshal message")
+			return
+		}
+
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).Error("Failed to insert message")
+			return
+		}
+
+		c.deletedTweet(del.Delete.Status.ID, m.id)
+
+	case "follower":
+		user := new(twitter.User)
+		if err := json.Unmarshal(m.msg, user); err != nil {
+			log.WithError(err).Warning("Failed to unmarshal message")
+			return
+		}
+
+		if err := c.insertMessage(m); err != nil {
+			log.WithError(err).Error("Failed to insert message")
+			return
+		}
+
+		c.processUser(m.id, user)
+		target, err := strconv.ParseInt(strings.TrimPrefix(m.source, "fl:"), 10, 64)
+		if err != nil {
+			log.WithError(err).WithField("source", m.source).Error("Could not reconstruct target")
+		} else {
+			if err := c.insertFollow(user.ID, target, m.id); err != nil {
+				log.WithError(err).WithField("message", m.id).Error("Failed to insert follow")
+			}
+		}
+
 	default:
-		return nil
+		log.Warning("Dropped unknown message")
+		return
 	}
 }
 

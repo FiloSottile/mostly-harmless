@@ -26,7 +26,7 @@ func (c *Covfefe) initDB() error {
 				received DATETIME DEFAULT (DATETIME('now')),
 				json TEXT NOT NULL,
 				source TEXT NOT NULL, -- JSON array of source IDs
-				kind TEXT -- tweet / event / del / deletion
+				kind TEXT -- tweet / event / del / deletion / follower
 			);
 			CREATE TABLE IF NOT EXISTS Tweets (
 				id INTEGER PRIMARY KEY,

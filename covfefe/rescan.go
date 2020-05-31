@@ -60,6 +60,7 @@ func Rescan(dbPath string) (err error) {
 	if err := sqlitex.Exec(conn, "SELECT id, json, kind FROM Messages;",
 		func(stmt *sqlite.Stmt) error {
 			c.Handle(&Message{
+				// TODO: needs source for follower processing.
 				id:   stmt.GetInt64("id"),
 				kind: stmt.GetText("kind"),
 				msg:  []byte(stmt.GetText("json")),
