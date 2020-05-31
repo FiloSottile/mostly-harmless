@@ -28,7 +28,8 @@ type Message struct {
 func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
 	log := log.WithFields(log.Fields{"message": id, "tweet": tweet.ID})
 	// Just in case we forget the magic tweet_mode=extended and end up archiving
-	// truncated tweets without full_text again, ugh.
+	// truncated tweets without full_text again, ugh. (This also works where not
+	// documented like followers/list.json. Sigh.)
 	// https://developer.twitter.com/en/docs/tweets/tweet-updates
 	if tweet.Truncated && !c.rescan {
 		log.Warn("Truncated tweet")
@@ -38,8 +39,8 @@ func (c *Covfefe) processTweet(id int64, tweet *twitter.Tweet) {
 	// which we know and set the user, but also for nested tweets not by the
 	// same user :(
 	if tweet.User == nil {
-		// TODO: switch back to log.Debug, nothing we can do.
-		log.Warning("User-less tweet :(")
+		// TODO: hydrate this tweet instead.
+		log.Debug("User-less tweet :(")
 		return
 	}
 

@@ -120,7 +120,11 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 					return errors.Wrapf(err, "followers of %d", user.ID)
 				}
 				log.Debug("Starting over fetching followers")
-				time.Sleep(24 * time.Hour)
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				case <-time.NewTimer(24 * time.Hour).C:
+				}
 			}
 		})
 	}

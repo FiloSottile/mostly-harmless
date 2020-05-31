@@ -74,7 +74,7 @@ func (t *twitterClient) fetchFollowers(ctx context.Context, followed int64) erro
 		case <-tick.C:
 		}
 
-		url := "https://api.twitter.com/1.1/followers/list.json?cursor=%d&user_id=%d&count=200"
+		url := "https://api.twitter.com/1.1/followers/list.json?cursor=%d&user_id=%d&count=200&tweet_mode=extended"
 		url = fmt.Sprintf(url, cursor, followed)
 
 		var result struct {
