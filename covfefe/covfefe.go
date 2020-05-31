@@ -94,7 +94,8 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 
 		user, err := verifyCredentials(ctx, httpClient)
 		if err != nil {
-			return errors.Wrapf(err, "invalid credentials at position %d", i)
+			log.WithField("position", i).WithError(err).Error("Invalid credentials")
+			continue
 		}
 
 		log := log.WithFields(log.Fields{
