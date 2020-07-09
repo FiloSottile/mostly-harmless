@@ -1,5 +1,6 @@
 [build]
   command = "make"
   functions = ".netlify/functions"
+  publish = "."
 [build.environment]
   GO_VERSION = "1.14.2" # https://github.com/netlify/build-image/issues/205
