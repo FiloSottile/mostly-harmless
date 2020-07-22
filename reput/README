@@ -12,7 +12,7 @@ account of the reMarkable. The password is in the About tab.
 While reput uses SSH for convenience, it just tunnels to the Web UI (instead of
 having to deal with the internal file structure and restart the UI).
 
-On supported firware versions (currently only 2.1.1.3), reput will automatically
+On supported firware versions (currently only 2.2.0.48), reput will automatically
 patch xochitl to keep the Web UI from turning off at each reboot, and to bind it
 to the loopback interface, as usb0 isn't configured with an IP at boot.
 
@@ -21,7 +21,10 @@ you're reading this, they are at this path.
 
     /home/root/.local/share/remarkable/xochitl
 
-As a personal note, I also disabled crashuploader.
+As a personal note, I also installed rsync and disabled crashuploader.
+
+    ./configure CFLAGS="-static" --host="arm-linux-musleabi" && make
+    scp rsync root@remarkable.home.arpa:/usr/bin/
 
     systemctl disable crashuploader && systemctl stop crashuploader
 

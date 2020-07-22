@@ -45,7 +45,8 @@ func main() {
 		log.Fatalln("Failed to hash xochitl:", err)
 	}
 	switch hash {
-	case "c9434d88cab1d2af224d7c45bcb860ba426e5fb0ed4d60df96ceadfb56bd9b25":
+	case "3391b1647c290d9ab41d90b5f5ca4c21e81eb63f2f5380427e98cf15432fbd5f":
+		// Version 2.2.0.48, unpatched.
 		log.Println("Backing up xochitl to /home/root...")
 		if err := xochitlBackup(sshc); err != nil {
 			log.Fatalln("Failed to backup xochitl:", err)
@@ -59,6 +60,12 @@ func main() {
 		}
 		fmt.Fprint(os.Stderr, "Enable the Web UI in Storage settings, and press enter: ")
 		fmt.Scanln()
+	case "8a9a51d40e070a25528b8f2ee1cbbdf34be787a27edcf74c16b304b16375f14f":
+		// Version 2.2.0.48, already patched.
+	case "c9434d88cab1d2af224d7c45bcb860ba426e5fb0ed4d60df96ceadfb56bd9b25":
+		// Version 2.1.1.3, unpatched.
+		log.Println("Warning: firmware is old, Web UI might not be available at localhost.")
+		log.Println("Update and rerun reput to automatically patch the latest firmware.")
 	case "79f67ea4ac8dbe0ce8baeb3c91bbbf7574c200bb75eb87c3c89b7f56eb849b89":
 		// Version 2.1.1.3, already patched.
 	default:
@@ -153,18 +160,14 @@ func xochitlBackup(c *ssh.Client) error {
 		return err
 	}
 	defer s.Close()
-	return s.Run("cp /usr/bin/xochitl /home/root/xochitl-v2.1.1.3.bak")
+	return s.Run("cp /usr/bin/xochitl /home/root/xochitl-v2.2.0.48.bak")
 }
 
-var xochitl2113WebUIEnabled, _ = base64.RawStdEncoding.DecodeString("" +
-	"QlNESUZGNDA5AAAAAAAAAEQAAAAAAAAAnG8/AAAAAABCWmg5MUFZJlNZu1wJDwAACHlgQCAAAgQ" +
-	"AAACAAMAAAAQgACGjTCEMCCiAFZvS+LuSKcKEhdrgSHhCWmg5MUFZJlNZJAmYDgAf18ETwAACAE" +
-	"AAAKAAAQAIIABQhgBNUozTSqkjmElLv6qIDcVEBubkJAeF3JFOFCQJAmYDgEJaaDkXckU4UJAAAAAA")
-var xochitl2113WebUILocalhost, _ = base64.RawStdEncoding.DecodeString("" +
-	"QlNESUZGNDA6AAAAAAAAAEoAAAAAAAAAnG8/AAAAAABCWmg5MUFZJlNZ+maq3wAACGtgQCAEAAA" +
-	"AgAQAAMAAAAQgACGjR6mhDAh40lYEJ4u5IpwoSH0zVW+AQlpoOTFBWSZTWfqXccwAH9fAMsAAAA" +
-	"EQCEAAQo0gAFCAaaaBNUoGjTfyESeYgkWZKVR51VKgLeWtcXuUSA3v8XckU4UJD6l3HMBCWmg5F" +
-	"3JFOFCQAAAAAA")
+var xochitl22048WebUILocalhost, _ = base64.RawStdEncoding.DecodeString("" +
+	"QlNESUZGNDA1AAAAAAAAAEsAAAAAAAAA9BNAAAAAAABCWmg5MUFZJlNZgEChzQAACGRAwCCoAEA" +
+	"AQAAEACAAMQwIGg2pppiS4kgeLuSKcKEhAIFDmkJaaDkxQVkmU1kLRUDNACAqxDLAAAAEAAURAE" +
+	"AAAI0gAFCAaaaApSgNNNN5VSUWsIlmSiU76IEC3j3X3KJAN7/F3JFOFCQC0VAzQEJaaDkXckU4U" +
+	"JAAAAAA")
 
 func xochitlPatch(c *ssh.Client) error {
 	s, err := c.NewSession()
@@ -177,14 +180,9 @@ func xochitlPatch(c *ssh.Client) error {
 		return err
 	}
 
-	intermediate := &bytes.Buffer{}
-	if err := binarydist.Patch(bytes.NewReader(old), intermediate,
-		bytes.NewReader(xochitl2113WebUIEnabled)); err != nil {
-		return err
-	}
 	patched := &bytes.Buffer{}
-	if err := binarydist.Patch(intermediate, patched,
-		bytes.NewReader(xochitl2113WebUILocalhost)); err != nil {
+	if err := binarydist.Patch(bytes.NewReader(old), patched,
+		bytes.NewReader(xochitl22048WebUILocalhost)); err != nil {
 		return err
 	}
 
