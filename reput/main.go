@@ -122,7 +122,7 @@ func uploadFile(dial func(network, addr string) (net.Conn, error), f *os.File) e
 			Dial:              dial,
 			DisableKeepAlives: true,
 		},
-		Timeout: 1 * time.Minute,
+		Timeout: 5 * time.Minute,
 	}
 	url := "http://localhost/upload"
 	req, err := http.NewRequest("POST", url, body)
