@@ -29,9 +29,9 @@ As a personal note, I also installed rsync and disabled crashuploader.
     systemctl disable crashuploader && systemctl stop crashuploader
 
 Finally, here's a script that works as an Automator Print Plugin or Folder
-Action with a YubiKey-provided ssh-agent via gpg-agent.
+Action with a YubiKey-provided ssh-agent via yubikey-agent.
 
-    export SSH_AUTH_SOCK=~/.gnupg/S.gpg-agent.ssh
+    export SSH_AUTH_SOCK=/usr/local/var/run/yubikey-agent.sock
     for f in "$@"
     do
         ~/bin/reput 172.27.5.215:22 SHA256:HXpOPttnW8Atwy9mnW0tXaMWk8WfFPEN0hgOfFxPnss "$f"
