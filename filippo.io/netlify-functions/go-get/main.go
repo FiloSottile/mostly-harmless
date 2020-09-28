@@ -29,6 +29,9 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
 	switch {
 	case pkg("age"):
 		data.Name = "age"
+	case pkg("edwards25519"):
+		data.Name = "edwards25519"
+		data.Redirect = "https://pkg.go.dev/filippo.io/edwards25519"
 	case pkg("cpace"):
 		data.Name = "cpace"
 		data.GitRepo = "https://github.com/FiloSottile/go-cpace-ristretto255"

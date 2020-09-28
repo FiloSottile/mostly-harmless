@@ -34,6 +34,7 @@ https://mta-sts.ml.filippo.io/* https://filippo.io 302!
 /yubikey-agent/* /.netlify/functions/go-get/yubikey-agent 200!
 /mkcert/* /.netlify/functions/go-get/mkcert 200!
 /cpace/* /.netlify/functions/go-get/cpace 200!
+/edwards25519/* /.netlify/functions/go-get/edwards25519 200!
 
 # Hide the old CVs
 /CV/* https://blog.filippo.io/hi/ 302!
