@@ -13,7 +13,7 @@ def get_trips():
         'page_size/500/include_objects/true', auth=auth).json()
 
 def main():
-    print json.dumps(get_trips(), indent=4)
+    print(json.dumps(get_trips(), indent=4))
 
 if __name__ == '__main__':
     main()

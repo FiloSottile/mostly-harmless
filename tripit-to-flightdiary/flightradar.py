@@ -64,7 +64,7 @@ def add_flight(data):
 
 def main():
     for f in get_flights():
-        print f.date, f.from_, f.to, f.flight
+        print(f.date, f.from_, f.to, f.flight)
 
 if __name__ == '__main__':
     main()

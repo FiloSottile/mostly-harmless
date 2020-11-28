@@ -10,14 +10,14 @@ def main(argv):
         pass # No input file detected, that's okay!
     for opt, arg in opts:
         if opt == '-h':
-            print 'sync.py [-i <tripit json inputfile>]'
+            print('sync.py [-i <tripit json inputfile>]')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-            print 'Input file is', inputfile
+            print('Input file is', inputfile)
     
     if inputfile == '':
-        print 'No input file detected, querying TripIt for trips...'
+        print('No input file detected, querying TripIt for trips...')
         trips = tripit.get_trips()
     else:
         with open(inputfile) as f:
@@ -32,12 +32,16 @@ def main(argv):
         if type(segments) not in (tuple, list):
             segments = (segments, )
         for s in segments:
-            if (s['StartDateTime']['date'], s['marketing_airline_code']
-                + s['marketing_flight_number']) in flights:
+            if 'operating_airline_code' in s and \
+                'operating_flight_number' in s and (s['StartDateTime']['date'],
+                s['operating_airline_code'] + s['operating_flight_number']) in flights:
                 continue
     
-            airline_code = s.get('operating_airline_code', s['marketing_airline_code'])
-            flight_number = s.get('operating_flight_number', s['marketing_flight_number'])
+            airline_code = s.get('marketing_airline_code', s.get('operating_airline_code'))
+            flight_number = s.get('marketing_flight_number', s.get('operating_flight_number'))
+            if airline_code == None or flight_number == None:
+                print("Invalid segment:", s)
+                continue
             if (s['StartDateTime']['date'], airline_code + flight_number) in flights:
                 continue
 
@@ -78,12 +82,12 @@ def main(argv):
     
             flightradar.add_flight(data)
     
-            print 'Added flight %s %s %s %s' % (
+            print('Added flight %s %s %s %s' % (
                 s['StartDateTime']['date'],
                 s['start_airport_code'],
                 s['end_airport_code'],
                 airline_code + flight_number,
-            )
+            ))
 
 if __name__ == '__main__':
     main(sys.argv[1:])
