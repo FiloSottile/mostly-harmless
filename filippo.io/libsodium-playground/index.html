@@ -1,0 +1,17 @@
+<title>libsodium playground</title>
+<script>
+    window.sodium = {
+        onload: function (sodium) {
+            window.sodium = sodium;
+            for (const key in sodium) {
+                window[key] = sodium[key];
+            }
+            document.getElementById("loading").innerText =
+                "libsodium version: " + sodium.SODIUM_VERSION_STRING;
+        }
+    };
+</script>
+<script src="sodium.js" async></script>
+<p id="loading">Loading...</p>
+<p><a href="https://libsodium.gitbook.io/doc/">libsodium docs</a>.</p>
+<p><a href="https://github.com/jedisct1/libsodium.js/#additional-helpers">Additional js helpers</a>.</p>
