@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log/syslog"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe"
+	"filippo.io/mostly-harmless/covfefe"
 	log "github.com/sirupsen/logrus"
 	lsyslog "github.com/sirupsen/logrus/hooks/syslog"
 )

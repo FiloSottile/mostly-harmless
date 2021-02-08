@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe"
+	"filippo.io/mostly-harmless/covfefe"
 	"github.com/dghubble/oauth1"
 	"github.com/dghubble/oauth1/twitter"
 	log "github.com/sirupsen/logrus"

@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe/cmd/webfefe/data"
+	"filippo.io/mostly-harmless/covfefe/cmd/webfefe/data"
 	"github.com/shurcooL/vfsgen"
 )
 

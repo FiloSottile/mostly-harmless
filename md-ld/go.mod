@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/md-ld
+module filippo.io/mostly-harmless/md-ld
 
 go 1.12
 

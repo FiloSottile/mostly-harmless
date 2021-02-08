@@ -1,3 +1,3 @@
-module github.com/FiloSottile/mostly-harmless/osx-nvram
+module filippo.io/mostly-harmless/osx-nvram
 
 go 1.12

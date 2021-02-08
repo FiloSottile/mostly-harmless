@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/reput
+module filippo.io/mostly-harmless/reput
 
 go 1.13
 

@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe"
+	"filippo.io/mostly-harmless/covfefe"
 	"github.com/dghubble/go-twitter/twitter"
 	oauth1Login "github.com/dghubble/gologin/oauth1"
 	twitterLogin "github.com/dghubble/gologin/twitter"

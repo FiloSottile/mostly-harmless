@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/filippo.io/dnskey-to-ds
+module filippo.io/mostly-harmless/filippo.io/dnskey-to-ds
 
 go 1.14
 

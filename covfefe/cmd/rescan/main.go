@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime/pprof"
 
-	"github.com/FiloSottile/mostly-harmless/covfefe"
+	"filippo.io/mostly-harmless/covfefe"
 	log "github.com/sirupsen/logrus"
 )
 

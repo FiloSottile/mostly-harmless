@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/FiloSottile/mostly-harmless/cryptosource"
+	"filippo.io/mostly-harmless/cryptosource"
 )
 
 func main() {

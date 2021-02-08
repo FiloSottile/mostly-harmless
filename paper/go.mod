@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/paper
+module filippo.io/mostly-harmless/paper
 
 go 1.12
 

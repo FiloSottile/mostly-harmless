@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/thepiratedb
+module filippo.io/mostly-harmless/thepiratedb
 
 go 1.12
 

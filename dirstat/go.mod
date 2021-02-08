@@ -1,3 +1,3 @@
-module github.com/FiloSottile/mostly-harmless/dirstat
+module filippo.io/mostly-harmless/dirstat
 
 go 1.12

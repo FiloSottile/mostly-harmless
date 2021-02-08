@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/FiloSottile/mostly-harmless/cryptosource"
+	"filippo.io/mostly-harmless/cryptosource"
 )
 
 func TestInt63(t *testing.T) {

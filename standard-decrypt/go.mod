@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/standard-decrypt
+module filippo.io/mostly-harmless/standard-decrypt
 
 go 1.12
 

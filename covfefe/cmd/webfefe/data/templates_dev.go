@@ -14,7 +14,7 @@ import (
 //go:generate go run -tags=generate templates_generate.go
 
 var Templates http.FileSystem = filter.Skip(http.Dir(importPathToDir(
-	"github.com/FiloSottile/mostly-harmless/covfefe/cmd/webfefe/data/_templates")),
+	"filippo.io/mostly-harmless/covfefe/cmd/webfefe/data/_templates")),
 	filter.FilesWithExtensions(".go"))
 
 func importPathToDir(importPath string) string {

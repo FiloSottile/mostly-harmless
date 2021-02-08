@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/twitchy
+module filippo.io/mostly-harmless/twitchy
 
 go 1.12
 

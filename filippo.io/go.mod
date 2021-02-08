@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/filippo.io
+module filippo.io/mostly-harmless/filippo.io
 
 go 1.14
 

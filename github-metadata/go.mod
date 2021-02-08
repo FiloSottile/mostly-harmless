@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/github-metadata
+module filippo.io/mostly-harmless/github-metadata
 
 go 1.12
 

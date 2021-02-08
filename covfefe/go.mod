@@ -1,4 +1,4 @@
-module github.com/FiloSottile/mostly-harmless/covfefe
+module filippo.io/mostly-harmless/covfefe
 
 require (
 	crawshaw.io/iox v0.0.0-20181124134642-c51c3df30797 // indirect

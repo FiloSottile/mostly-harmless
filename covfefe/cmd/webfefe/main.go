@@ -13,8 +13,8 @@ import (
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqlitex"
-	"github.com/FiloSottile/mostly-harmless/covfefe"
-	"github.com/FiloSottile/mostly-harmless/covfefe/cmd/webfefe/data"
+	"filippo.io/mostly-harmless/covfefe"
+	"filippo.io/mostly-harmless/covfefe/cmd/webfefe/data"
 	twitterLogin "github.com/dghubble/gologin/twitter"
 	"github.com/dghubble/oauth1"
 	twitterOAuth1 "github.com/dghubble/oauth1/twitter"

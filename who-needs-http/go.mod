@@ -1,3 +1,3 @@
-module github.com/FiloSottile/mostly-harmless/who-needs-http
+module filippo.io/mostly-harmless/who-needs-http
 
 go 1.12
