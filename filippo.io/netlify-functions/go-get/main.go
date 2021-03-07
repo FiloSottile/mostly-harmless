@@ -40,6 +40,8 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
 		data.Name = "mkcert"
 	case pkg("yubikey-agent"):
 		data.Name = "yubikey-agent"
+	case pkg("mostly-harmless"):
+		data.Name = "mostly-harmless"
 	default:
 		return &events.APIGatewayProxyResponse{
 			StatusCode: 404,
