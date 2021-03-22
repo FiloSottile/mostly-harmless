@@ -112,6 +112,10 @@ func main() {
 	e.Encode(GenerateVectors())
 }
 
+// If jumbo is set, generate vectors for all k mod 8 values, not just the ones
+// that lead to a different low order residue.
+const jumbo = false
+
 func GenerateVectors() []Vector {
 	// Pick an arbitrary private scalar and compute the public key.
 	sBytes := bytes.Repeat([]byte{0x42}, 32)
@@ -144,6 +148,7 @@ func GenerateVectors() []Vector {
 		AA.Add(AA, lowA.Point)
 		RR.Add(RR, lowR.Point)
 
+		found := make(map[bool]bool) // LowOrderResidue: true
 		for kMod8 := byte(0); kMod8 < 8; kMod8++ {
 			message := "use ristretto255"
 			k := computeK(AA, RR, message)
@@ -154,15 +159,19 @@ func GenerateVectors() []Vector {
 
 			S := (&edwards25519.Scalar{}).MultiplyAdd(k, ss, rr)
 
-			v := Vector{
-				A: &Point{*AA}, R: &Point{*RR}, S: &Scalar{*S}, M: message,
+			lowOrderResidue := !lowOrderComponentsAddUpToZero(lowA.Point, lowR.Point, k)
+			if !found[lowOrderResidue] || jumbo {
+				v := Vector{
+					A: &Point{*AA}, R: &Point{*RR}, S: &Scalar{*S}, M: message,
+				}
+				v.SetF(LowOrderR, rZero)
+				v.SetF(LowOrderA, sZero)
+				v.SetF(LowOrderComponentR, lowR.Point.Equal(I) != 1)
+				v.SetF(LowOrderComponentA, lowA.Point.Equal(I) != 1)
+				v.SetF(LowOrderResidue, lowOrderResidue)
+				vectors = append(vectors, v)
+				found[lowOrderResidue] = true
 			}
-			v.SetF(LowOrderR, rZero)
-			v.SetF(LowOrderA, sZero)
-			v.SetF(LowOrderComponentR, lowR.Point.Equal(I) != 1)
-			v.SetF(LowOrderComponentA, lowA.Point.Equal(I) != 1)
-			v.SetF(LowOrderResidue, !lowOrderComponentsAddUpToZero(lowA.Point, lowR.Point, k))
-			vectors = append(vectors, v)
 		}
 	}
 

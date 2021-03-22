@@ -62,8 +62,8 @@ func testLowOrderPoint(t *testing.T, p *LowOrderPoint) {
 func TestVectors(t *testing.T) {
 	vectors := GenerateVectors()
 
-	if len(vectors) != 8*8*8*2*2 {
-		t.Errorf("expected 8*8*8*2*2 vectors, got %d", len(vectors))
+	if exp := 8 * 8 * 2 * 2; exp > len(vectors) || len(vectors) > exp*2 {
+		t.Errorf("expected %d to %d vectors, got %d", exp, exp*2, len(vectors))
 	}
 
 	for i, v := range vectors {
