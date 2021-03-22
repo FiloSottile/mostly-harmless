@@ -23,38 +23,35 @@ var I = edwards25519.NewIdentityPoint()
 type LowOrderPoint struct {
 	*edwards25519.Point
 	Order int
+
+	NonCanonicalEncodings [][]byte
 }
 
 var LowOrderPoints = []*LowOrderPoint{
-	{mustDecodePoint("0000000000000000000000000000000000000000000000000000000000000000"), 4},
-	{mustDecodePoint("0000000000000000000000000000000000000000000000000000000000000080"), 4},
-	{mustDecodePoint("0100000000000000000000000000000000000000000000000000000000000000"), 1},
-	{mustDecodePoint("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05"), 8},
-	{mustDecodePoint("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85"), 8},
-	{mustDecodePoint("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a"), 8},
-	{mustDecodePoint("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa"), 8},
-	{mustDecodePoint("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), 2},
+	{mustDecodePoint("0000000000000000000000000000000000000000000000000000000000000000"), 4, [][]byte{
+		mustDecodeHex("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), // y > p
+	}},
+	{mustDecodePoint("0000000000000000000000000000000000000000000000000000000000000080"), 4, [][]byte{
+		mustDecodeHex("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), // y > p
+	}},
+	{mustDecodePoint("0100000000000000000000000000000000000000000000000000000000000000"), 1, [][]byte{
+		mustDecodeHex("0100000000000000000000000000000000000000000000000000000000000080"), // x = 0
+		mustDecodeHex("eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), // y > p
+		mustDecodeHex("eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), // x = 0, y > p
+	}},
+	{mustDecodePoint("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05"), 8, nil},
+	{mustDecodePoint("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85"), 8, nil},
+	{mustDecodePoint("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a"), 8, nil},
+	{mustDecodePoint("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa"), 8, nil},
+	{mustDecodePoint("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), 2, [][]byte{
+		mustDecodeHex("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), // x = 0
+	}},
 }
 
 type Vector struct {
-	A *Point
-	R *Point
-	S *Scalar
-	M string
+	A, R, S, M string
 
 	Flags Flag
-}
-
-type Point struct{ edwards25519.Point }
-
-func (p *Point) MarshalText() ([]byte, error) {
-	return []byte(hex.EncodeToString(p.Bytes())), nil
-}
-
-type Scalar struct{ edwards25519.Scalar }
-
-func (p *Scalar) MarshalText() ([]byte, error) {
-	return []byte(hex.EncodeToString(p.Bytes())), nil
 }
 
 type Flag int
@@ -72,6 +69,9 @@ const (
 	// add up to I. That makes these signatures verify only with the formulae
 	// that multiply by the cofactor.
 	LowOrderResidue
+	// NonCanonicalX is true when X is a non-canonical encoding.
+	NonCanonicalA
+	NonCanonicalR
 )
 
 func (s Vector) F(f Flag) bool {
@@ -103,6 +103,12 @@ func (f Flag) MarshalJSON() ([]byte, error) {
 	if f&LowOrderResidue != 0 {
 		flags = append(flags, "LowOrderResidue")
 	}
+	if f&NonCanonicalA != 0 {
+		flags = append(flags, "NonCanonicalA")
+	}
+	if f&NonCanonicalR != 0 {
+		flags = append(flags, "NonCanonicalR")
+	}
 	return json.Marshal(flags)
 }
 
@@ -130,23 +136,38 @@ func GenerateVectors() []Vector {
 
 	var vectors []Vector
 
-	addVector := func(lowA, lowR *LowOrderPoint, sZero, rZero bool) {
+	addVector := func(lowA, lowR *LowOrderPoint, ncA, ncR []byte, sZero, rZero bool) {
 		ss := edwards25519.NewScalar()
-		AA := edwards25519.NewIdentityPoint()
-		if !sZero {
+		var AA []byte
+		if sZero {
+			if ncA == nil {
+				AA = lowA.Point.Bytes()
+			} else {
+				AA = ncA
+			}
+		} else {
+			if ncA != nil {
+				panic("can't use non-canonical encoding when adding prime order component")
+			}
 			ss.Set(s)
-			AA.Set(A)
+			AA = (&edwards25519.Point{}).Add(A, lowA.Point).Bytes()
 		}
 
 		rr := edwards25519.NewScalar()
-		RR := edwards25519.NewIdentityPoint()
-		if !rZero {
+		var RR []byte
+		if rZero {
+			if ncR == nil {
+				RR = lowR.Point.Bytes()
+			} else {
+				RR = ncR
+			}
+		} else {
+			if ncR != nil {
+				panic("can't use non-canonical encoding when adding prime order component")
+			}
 			rr.Set(r)
-			RR.Set(R)
+			RR = (&edwards25519.Point{}).Add(R, lowR.Point).Bytes()
 		}
-
-		AA.Add(AA, lowA.Point)
-		RR.Add(RR, lowR.Point)
 
 		found := make(map[bool]bool) // LowOrderResidue: true
 		for kMod8 := byte(0); kMod8 < 8; kMod8++ {
@@ -162,13 +183,18 @@ func GenerateVectors() []Vector {
 			lowOrderResidue := !lowOrderComponentsAddUpToZero(lowA.Point, lowR.Point, k)
 			if !found[lowOrderResidue] || jumbo {
 				v := Vector{
-					A: &Point{*AA}, R: &Point{*RR}, S: &Scalar{*S}, M: message,
+					A: hex.EncodeToString(AA),
+					R: hex.EncodeToString(RR),
+					S: hex.EncodeToString(S.Bytes()),
+					M: message,
 				}
 				v.SetF(LowOrderR, rZero)
 				v.SetF(LowOrderA, sZero)
 				v.SetF(LowOrderComponentR, lowR.Point.Equal(I) != 1)
 				v.SetF(LowOrderComponentA, lowA.Point.Equal(I) != 1)
 				v.SetF(LowOrderResidue, lowOrderResidue)
+				v.SetF(NonCanonicalA, ncA != nil)
+				v.SetF(NonCanonicalR, ncR != nil)
 				vectors = append(vectors, v)
 				found[lowOrderResidue] = true
 			}
@@ -177,19 +203,32 @@ func GenerateVectors() []Vector {
 
 	for _, lowA := range LowOrderPoints {
 		for _, lowR := range LowOrderPoints {
-			addVector(lowA, lowR, true, true)
-			addVector(lowA, lowR, true, false)
-			addVector(lowA, lowR, false, true)
-			addVector(lowA, lowR, false, false)
+			addVector(lowA, lowR, nil, nil, true, true)
+			addVector(lowA, lowR, nil, nil, true, false)
+			addVector(lowA, lowR, nil, nil, false, true)
+			addVector(lowA, lowR, nil, nil, false, false)
+			for _, encodingA := range lowA.NonCanonicalEncodings {
+				addVector(lowA, lowR, encodingA, nil, true, true)
+				addVector(lowA, lowR, encodingA, nil, true, false)
+			}
+			for _, encodingR := range lowR.NonCanonicalEncodings {
+				addVector(lowA, lowR, nil, encodingR, true, true)
+				addVector(lowA, lowR, nil, encodingR, false, true)
+			}
+			for _, encodingA := range lowA.NonCanonicalEncodings {
+				for _, encodingR := range lowR.NonCanonicalEncodings {
+					addVector(lowA, lowR, encodingA, encodingR, true, true)
+				}
+			}
 		}
 	}
 	return vectors
 }
 
-func computeK(A, R *edwards25519.Point, message string) *edwards25519.Scalar {
+func computeK(A, R []byte, message string) *edwards25519.Scalar {
 	kh := sha512.New()
-	kh.Write(R.Bytes())
-	kh.Write(A.Bytes())
+	kh.Write(R)
+	kh.Write(A)
 	io.WriteString(kh, message)
 	hramDigest := make([]byte, 0, sha512.Size)
 	hramDigest = kh.Sum(hramDigest)
@@ -201,13 +240,17 @@ func lowOrderComponentsAddUpToZero(A, R *edwards25519.Point, k *edwards25519.Sca
 	return p.Add(p, R).Equal(I) == 1
 }
 
-func mustDecodePoint(s string) *edwards25519.Point {
+func mustDecodeHex(s string) []byte {
 	b, err := hex.DecodeString(s)
 	if err != nil {
 		panic(s + ": " + err.Error())
 	}
+	return b
+}
+
+func mustDecodePoint(s string) *edwards25519.Point {
 	p := &edwards25519.Point{}
-	if _, err := p.SetBytes(b); err != nil {
+	if _, err := p.SetBytes(mustDecodeHex(s)); err != nil {
 		panic(s + ": " + err.Error())
 	}
 	return p

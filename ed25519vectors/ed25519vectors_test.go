@@ -7,6 +7,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/ed25519"
 	"fmt"
 	"math/rand"
@@ -44,6 +45,18 @@ func testLowOrderPoint(t *testing.T, p *LowOrderPoint) {
 		t.Errorf("[8]P != I")
 	}
 
+	for _, encoding := range p.NonCanonicalEncodings {
+		if _, err := q.SetBytes(encoding); err != nil {
+			t.Errorf("non-canonical encoding didn't decode: %v", err)
+		}
+		if q.Equal(p.Point) != 1 {
+			t.Errorf("non-canonical doesn't decode to point")
+		}
+		if bytes.Equal(encoding, p.Point.Bytes()) {
+			t.Errorf("non-canonical encoding matches canonical encoding")
+		}
+	}
+
 	q.Set(p.Point)
 	for i := 1; i <= p.Order; i++ {
 		if !knownLowOrderPoint(q) {
@@ -62,12 +75,12 @@ func testLowOrderPoint(t *testing.T, p *LowOrderPoint) {
 func TestVectors(t *testing.T) {
 	vectors := GenerateVectors()
 
-	if exp := 8 * 8 * 2 * 2; exp > len(vectors) || len(vectors) > exp*2 {
-		t.Errorf("expected %d to %d vectors, got %d", exp, exp*2, len(vectors))
+	if min, max := 8*8*2*2, (8+6)*(8+6)*2*2*2; min > len(vectors) || len(vectors) > max {
+		t.Errorf("expected %d to %d vectors, got %d", min, max, len(vectors))
 	}
 
 	for i, v := range vectors {
-		eightA := (&edwards25519.Point{}).MultByCofactor(&v.A.Point)
+		eightA := (&edwards25519.Point{}).MultByCofactor(mustDecodePoint(v.A))
 		if v.F(LowOrderA) {
 			if eightA.Equal(I) != 1 {
 				t.Errorf("#%d: LowOrderA is true but [8]A != I", i)
@@ -78,7 +91,7 @@ func TestVectors(t *testing.T) {
 			}
 		}
 
-		eightR := (&edwards25519.Point{}).MultByCofactor(&v.R.Point)
+		eightR := (&edwards25519.Point{}).MultByCofactor(mustDecodePoint(v.R))
 		if v.F(LowOrderR) {
 			if eightR.Equal(I) != 1 {
 				t.Errorf("#%d: LowOrderR is true but [8]R != I", i)
@@ -89,7 +102,7 @@ func TestVectors(t *testing.T) {
 			}
 		}
 
-		lA := multByPrimeOrder(&v.A.Point)
+		lA := multByPrimeOrder(mustDecodePoint(v.A))
 		if v.F(LowOrderComponentA) {
 			if lA.Equal(I) == 1 {
 				t.Errorf("#%d: LowOrderComponentA is true but [l]A == I", i)
@@ -100,7 +113,7 @@ func TestVectors(t *testing.T) {
 			}
 		}
 
-		lR := multByPrimeOrder(&v.R.Point)
+		lR := multByPrimeOrder(mustDecodePoint(v.R))
 		if v.F(LowOrderComponentR) {
 			if lR.Equal(I) == 1 {
 				t.Errorf("#%d: LowOrderComponentR is true but [l]R == I", i)
@@ -115,21 +128,21 @@ func TestVectors(t *testing.T) {
 			t.Errorf("#%d: there are no low order components but LowOrderResidue is true", i)
 		}
 
-		publicKey := v.A.Bytes()
+		publicKey := mustDecodeHex(v.A)
 		message := []byte(v.M)
-		signature := append(v.R.Bytes(), v.S.Bytes()...)
+		signature := append(mustDecodeHex(v.R), mustDecodeHex(v.S)...)
 
 		if !ed25519consensus.Verify(publicKey, message, signature) {
 			t.Errorf("#%d: ZIP215 rejected signature", i)
 		}
 
-		if !v.F(LowOrderResidue) {
+		if !v.F(LowOrderResidue) && !v.F(NonCanonicalR) {
 			if !ed25519.Verify(publicKey, message, signature) {
-				t.Errorf("#%d: crypto/ed25519 rejected signature with no low order residue", i)
+				t.Errorf("#%d: crypto/ed25519 unexpectedly rejected signature", i)
 			}
 		} else {
 			if ed25519.Verify(publicKey, message, signature) {
-				t.Errorf("#%d: crypto/ed25519 accepted signature with low order residue", i)
+				t.Errorf("#%d: crypto/ed25519 unexpectedly accepted signature", i)
 			}
 		}
 	}

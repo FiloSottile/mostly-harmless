@@ -92,6 +92,139 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "3b783f06abcd1e468359e1b95fe503d11c5d76b25a65906e76f39ae7a09d8e0f",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "a442b812628d6f13163deb30f1e2fa9668b96d9f4e70e03fe65ff1b981c80b0b",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000000",
 		"R": "0000000000000000000000000000000000000000000000000000000000000080",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -184,6 +317,139 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "02a9e0270b7f294e86cd67fa7dc53027d7271ee0bfc97eccb3bdec00c4254809",
+		"M": "use ristretto255 24",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0feecd3b13ee1edde5dcc6f1a9067e89ba650340a2a0da55129f7d527f43e20b",
+		"M": "use ristretto255 35",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000000",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -268,6 +534,279 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 21",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "51bdbb2e023a8f2a6ae3edcd3a204ce99e8630583ddb8ea23ec61c9deac32208",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "f28a6f6e60f223b04abf911f7abd4736341e8900328a770dee1180cf00f27b07",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "d8e607a6b18930ccc5f73b1a3d19f4d042c96209cea934372600af9cbed8ae0c",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "1b213e0b25366d347a3270c806c5e06b244c94c863cd76698427f529c7b1420f",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "5f35319260f4f725535647d028c47936996dd8d4b11446794518230769d0af0b",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "56982f54a005d577634aff843cd9c2cbf9bf3b7e3357f0a7ab621dead5e0ce03",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 17",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000000",
 		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -313,6 +852,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 21",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -364,6 +930,33 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000000",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -412,6 +1005,33 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 42",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000000",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -457,6 +1077,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -552,6 +1199,139 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000000",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "cc7d5c19ee442f1dbcd85a320fee0942780b9747be4e41918ec3e99be49cd30e",
+		"M": "use ristretto255 30",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "10eb7c3acfb2bed3e0d6ab89bf5a3d6afddd1176ce4812e38d9fd485058fdb1f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "9c6a0a7a9454861046ab94aa9a46f7415edecdb17e86c935a8ee4fc6130bf50b",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000080",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -641,6 +1421,139 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderComponentA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "8dd8964e40f758775d58d13ea8b38ad0746a6fe8c91029a1815cd3d18b217e0e",
+		"M": "use ristretto255 17",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "fb2cdb700212cf339efd5344fd93a2ee258aab896f77e0b255ee0b314ce1060d",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -736,6 +1649,139 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "2512b8635909a8e37efbf506233304f7696d19a21421a5387e6efd0e5e76bc0f",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0b71cffc1670d4f28489cc5855dd9517ad5178b137a2609ca7c6c90280dd800b",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000080",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -820,6 +1866,279 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "047bf3c6b308f724cb5fdb16d6d62e681cb3f721e0e53327f6bd463738cac80b",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "d8fba3cdf5018b76501e9b3641ab30299439dce6136a8a18574c1bab5267f90d",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "3b34bba0bd5d3e84145f2277a6d2f3613ac5a0550e148546ba3ae5d2fc378503",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "d61e86e871650c3bd3fac1f73949e20a6959f90a8c1b1df0869062d8ede26606",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 15",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 41",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "8b2e2a36c49175be121d598f12660c2fd0ef945e20cd6030682eb8e7d55cac06",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "40757f7ec8db01f6ad1cc54635faad77541706001faf19258b5b614ade30cb00",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000080",
 		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -865,6 +2184,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -916,6 +2262,33 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000080",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -964,6 +2337,33 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0000000000000000000000000000000000000000000000000000000000000080",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -1009,6 +2409,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -1104,6 +2531,139 @@
 		]
 	},
 	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0000000000000000000000000000000000000000000000000000000000000080",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 46",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "1253f8773bfc026ad7087e5bc0d3accc60d0250498a85ff25f7ac521b985480f",
+		"M": "use ristretto255 15",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "dd1483c5304d412c1f29547640a5c2950222ee8931b7ed1c72602b7afa7024e0",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "331810bbdfd04b34d90fc394efa6ff13ec750bf89f527091da6f02fd61b45801",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0100000000000000000000000000000000000000000000000000000000000000",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -1145,6 +2705,148 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "560a20326dc24df68d6f24c2906958cf9fe96ed0fadf921497354d0176239206",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 28",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -1192,6 +2894,148 @@
 		]
 	},
 	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 15",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 28",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "182abd179926b8e4c10f13fb2ebeac5687f86cf898788291e72fe01baa21b005",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "0100000000000000000000000000000000000000000000000000000000000000",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -1225,6 +3069,240 @@
 		"S": "e765a9b6f121a36646a202ee936550996384c27bf0a6661aed1410a04a657501",
 		"M": "use ristretto255 2",
 		"Flags": null
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 24",
+		"Flags": [
+			"LowOrderA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "ec5acaa3711508388c273078fef0efd7a70a54c404587d95aabf56f7ac612300",
+		"M": "use ristretto255 39",
+		"Flags": [
+			"LowOrderR",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 28",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "d7f5e9d745a66a8612928f874033aafe13b07b1b065045de2731fe714169240b",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "2ee30b155059c1f934c37c5b69910170209697dd7b8834e2c69d5b8dc318000c",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
 	},
 	{
 		"A": "0100000000000000000000000000000000000000000000000000000000000000",
@@ -1268,6 +3346,81 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 36",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -1315,6 +3468,81 @@
 		]
 	},
 	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 21",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0100000000000000000000000000000000000000000000000000000000000000",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -1356,6 +3584,81 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -1403,6 +3706,81 @@
 		]
 	},
 	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "0100000000000000000000000000000000000000000000000000000000000000",
 		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -1444,6 +3822,148 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000000",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ef75b20e7540e3dff77404193652ba2bd13df99c1508eee1515e27ae25f28076",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "939f3af107d02c69739d36d12135ff84e240a5ae631392643f22b88148cb5a00",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "0100000000000000000000000000000000000000000000000000000000000080",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -1540,6 +4060,58 @@
 	},
 	{
 		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "c553dd2b6a2a79bdc2da9c2bd77be8f6af03a8a32b7f0c2187c75a9375a2c105",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "92a62f3754eda1df42098c38ef1841312502ceadb97f657de9abacbaa32b1307",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
 		"R": "0000000000000000000000000000000000000000000000000000000000000080",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
 		"M": "use ristretto255 2",
@@ -1632,6 +4204,58 @@
 	},
 	{
 		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 21",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "73452ff2baf095ba91ce0c2025904ab83ed34a8cca31a0ecee916c8842103e05",
+		"M": "use ristretto255 31",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "d93cc7ffef6abbb0e9c597ce116c2dbaa32874f7db2ce85791982ea8831f4202",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
 		"M": "use ristretto255 10",
@@ -1712,6 +4336,150 @@
 		"Flags": [
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "c038d362f724a91dbe62a59b7a0dc0188142fdb4abf98a7fbbac8b55d6635c07",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "832ea24208106954de4ce56bbaaec371c9b9fe9c5558f1b55e07f3e340f62f07",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "1c7451d07d0c0045138a2538f81f31f14a525185238150b6a34309e2b5ce2a05",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "22ffcbd91438b418599db5779f6f0248dc5f0dd1a234baef6da4237069437708",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "13539afe5b815bdfa28216bf77bddf38d9ee107f6851654cec2533e8cf871f07",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "ff0fc4da18b6284a0b00cdf6fb1bfad0fa25dca876ea9a0db0212e6ed4c2bc05",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -2175,6 +4943,58 @@
 		]
 	},
 	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "391562a47bfab8f948f627c2132978812b4345983fa4d7f5a5151bef2f6b7206",
+		"M": "use ristretto255 15",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "6718d0a3d58deaeaefa655eae3f119071deaa2cfebfd0ca28b670f879d657086",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0c6598518494af73b04ade52d830217347d3d2a4987f435cd056d24d8c4e2705",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -2264,6 +5084,58 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderComponentA"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "22e327fc8407867ce929bb614dd66f09d93d303c491133b2cfe6aedea0f7d208",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "603f99df894c0b2e8289cffdbc5db7d7e5dbbccf52575099a834a23292e06d04",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -2360,6 +5232,58 @@
 	},
 	{
 		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "718b57eb9694a0123670035990d2d7ca77443842d7da2f75c453690c7ae66507",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "4355d6b71b3254f1dcbbf443d6b075a869445574f1f603933934def4ca786b0a",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
 		"M": "use ristretto255 4",
@@ -2440,6 +5364,150 @@
 		"Flags": [
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "77cca07ca697ca55f8391cd3fa17ca4836a31c86b760b5fc6562a4bf46fd8807",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "3396d3de04a946694f84f95d89d638b62b517e8346246cdf7b323937864ffc0a",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 23",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "2bf1af3b1efddb26ce020f9f0b3630fa741593e7b9cbf27d5462eeca0d51ac08",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "a299461cccee90af7d91a120408fa8b2d8e039d342ae5eca4244068e044eec02",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "312019963e7caedf5fa851696fde90c6a134e7a80cfbef9d76527246bd8c5900",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "9c08a073ea9620b04d0e25424be2bb306a08d4f1a071bd368ebbfd361d413c06",
+		"M": "use ristretto255 28",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -2903,6 +5971,58 @@
 		]
 	},
 	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "a69e4b3f8238dbfcbba9d32622e28f2153d66e2fcb58e1b5c35da511ff4e3004",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "eca00a6a1b1f522ff2217691059915b097b73bc69bef396c36ddcd559b79e2b0",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "ef0919486e4b0353e025a5af1823855865e74abad83693e8e948c42c45181e0a",
+		"M": "use ristretto255 19",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -2992,6 +6112,58 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderComponentA"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 36",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "5609c3f7534172e5691c8dd3caff0fa393136f58adf0c2c2479fb35cb7b0e60b",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "21710b0f40487f579edec4b12de3a93f2a2aa9459d736f0bf2210390fd25dd0d",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -3088,6 +6260,58 @@
 	},
 	{
 		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "04bf4b324d2368da6e78feddc5602811638158723d7aebd4be7f87f0af759304",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "d9536e5eaef5900a5786612495e8175f556360a8b747d16d142e16828c19c203",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
 		"M": "use ristretto255 14",
@@ -3168,6 +6392,150 @@
 		"Flags": [
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "b1208fbec674de6275e466ff164c11ec7c23d055fb87b99eaf1468e6e2a98d00",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "47f09d829d6f24f6c291aff8f6994cbdaddbfbebc41205d704f31dd5158a510f",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "5e6830cdee9b3f077df014449c4d1cdbdb732d0c4bb2efbb1f82bfdf1f7ead0e",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "fb6dec3e29b895c6b05f8cecba91ace166b431cd32c7161da218d508e6fd350a",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 22",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "bab489d1598bafecd1fcab08d94805e3cca7354b24a4355466844aab25af8705",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "09e64adaa8d68a097200723403bf56f6eda3007a9ef851f45ef8159e42c9f60e",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -3631,6 +6999,58 @@
 		]
 	},
 	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "130e39d8af1d0392155c0b7e23ac9be6effdc0d937b24c7bca87c606f6a8a906",
+		"M": "use ristretto255 30",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "015ff595e4e0add00dde896efa66ea4f6848c4396410c693c92232aa64861d4f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "88284eba2113c5350ac3ce4272ab83a5d9c6505d04bbd4c267a8f13ac9b10008",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -3720,6 +7140,58 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderComponentA"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0487e7c974c10e8224e9fb186a1ee182074068b450e8b2028722bb276a408707",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "b1e595c21ad00b420de27afe15804cf1f915dbf58793fea8137d3ff880c4d802",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -3816,6 +7288,58 @@
 	},
 	{
 		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "6479b03da82cb9e75a3a8a29ff14e0256ccc4c37dc09800cf32bbb70a0bf9709",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "a8589da41e34e86b5e5aeaa80cfd1ab91c78ceb4a9a1c9160514ddc5cad10f00",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
 		"R": "0100000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
 		"M": "use ristretto255 4",
@@ -3896,6 +7420,150 @@
 		"Flags": [
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0f547e90965d7a2bdab0cd1288f1b0e71732213f62e9d10fd60bdc92effc9a0d",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "1b8e15c3b9a0a97da026e1ac917ab6ac88dc18c82ecf0a69232836cbf7b0460a",
+		"M": "use ristretto255 20",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "04f15d1e412afced72414492238f233bbae7dc23b9c16bd8e741f34c66a57d02",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "bacaf0dd8ba448355caf3385233ab4079a87b16e27c97468882f4cf18527c90d",
+		"M": "use ristretto255 29",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 18",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "f5fd0a982535c7c029f03ac5442b42475ce112aef0c58c98aa05c84a0074690c",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "92b9ed15576da36fe65c69fdc5ef49798b7cd10a9a50cba2401ee43d5f22d10a",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -4359,6 +8027,58 @@
 		]
 	},
 	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 16",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "1e97ef2aaf7673adbe754d972a28b93dd0ff191d7823787c3332e5c03d89d00e",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "86e72f5c2a7215151059aa151c0ee6f8e2155d301402f35d7498f078629a8f79",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "7d737a1a33af7ccb6d33a448271b2f8cc42c50f50c5f5f4a7bdf8e13cd1baa01",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"R": "0000000000000000000000000000000000000000000000000000000000000000",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -4407,6 +8127,75 @@
 		]
 	},
 	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "36684ea91032ba5b1dbab2d02f4debc74c3327f2b3802e2e4d371aa42b12b56b",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "d657123e4ad359aeab38658452f13cdb0aa2f538742d7182369b023bf4485102",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"R": "0000000000000000000000000000000000000000000000000000000000000080",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -4452,6 +8241,75 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0000000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b797b156efcd45a4e2454d2fd0b21438b3ccd80d4c7fd1d1b2c8e55bd4ed4a94",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "8a223dac2e33e6c07f8f40bd1c2b1da73abc10aae2df21dd4978243d7f79910c",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
 		]
 	},
 	{
@@ -4539,6 +8397,279 @@
 		]
 	},
 	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000000",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "b62cf890de42c413b11b1411c9f01f1c4d77aa87ef182258d1251f69af2a3506",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "b0c35a93a1b0d4bc5690d73ca38bd4d8e75e018251beb2c9d0f7dbc770fee106",
+		"M": "use ristretto255 9",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "21a2da5bc23b860bd3af234ba9618a0205f97177947b1a29dc1cf7d97c88330d",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 17",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "e26d886ee642df42e63dd49298f87b0977f333157f41bce89e0f4cfb91c0d109",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "2a980a5813611e0cd5a6aeec4e6b85fb1563cec0dce19f3f1cd935f172cf1907",
+		"M": "use ristretto255 3",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 25",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "cf8485f6bd645da98dfcb22e76d32d155857a87d34ab7eaec2bf2704bacdf907",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "7734e7fc94cecde6ff34448536a278a70ceea4fd15898721445b5c2d8f16c201",
+		"M": "use ristretto255 4",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "0100000000000000000000000000000000000000000000000000000000000080",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 8",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
 		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -4584,6 +8715,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "5ae36d433a7bd0efb150b6b04610d1986e3044c46b6ad69bae17aaf76b608d21",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -4635,6 +8793,33 @@
 		]
 	},
 	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 17",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "fa9dde274f4820efb19a890f8ba2d8791710a4303ceef4aedf9dddc4e81a1f11",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -4683,6 +8868,33 @@
 		]
 	},
 	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 14",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "f36121d8b0b7df104e6576f0745d2786e8ef5bcfc3110b512062223b17e5e0ee",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 11",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
 		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
 		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
 		"S": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -4728,6 +8940,33 @@
 			"LowOrderComponentR",
 			"LowOrderComponentA",
 			"LowOrderResidue"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 10",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "931c92bcc5842f104eaf494fb9ef2e6791cfbb3b9495296451e85508949f72de",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
 		]
 	},
 	{
@@ -4820,6 +9059,139 @@
 		"Flags": [
 			"LowOrderComponentR",
 			"LowOrderComponentA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "37d3076f21bd3bec4ee4ebee360fe0e3b288557810e7dda72edae09650d5caf9",
+		"S": "05ba9a796274d80437afa36f1236563f2f3b0aa84cecddc3d20914615ba4fe02",
+		"M": "use ristretto255 6",
+		"Flags": [
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 12",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 1",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "454cb7ab76214e36de7ec826f140459c47155ef431749fce51848ef8d8507b05",
+		"M": "use ristretto255 2",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "fe894df18abf1c20088bfbe6c9ad45d42ec20663eaf7111eaea1d851da0d7f89",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "35296202c37ed0f005651edd4f79af92a357e7812711d71ec3fc0130c8188508",
+		"M": "use ristretto255 7",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 5",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"LowOrderResidue",
+			"NonCanonicalA",
+			"NonCanonicalR"
+		]
+	},
+	{
+		"A": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"R": "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		"S": "0000000000000000000000000000000000000000000000000000000000000000",
+		"M": "use ristretto255 13",
+		"Flags": [
+			"LowOrderR",
+			"LowOrderA",
+			"LowOrderComponentR",
+			"LowOrderComponentA",
+			"NonCanonicalA",
+			"NonCanonicalR"
 		]
 	}
 ]
