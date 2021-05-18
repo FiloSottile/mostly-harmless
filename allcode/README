@@ -1,0 +1,27 @@
+$ ~/allcode -z > allcode.$(date -u +"%Y-%m-%d").tar.gz
+Fetching index... 4384682 / 4384733 [------------------------------------------->] 100.00% 1m11s
+Fetching modules... 417186 / 417186 [-------------------------------------------] 100.00% 11m49s
+
+Unique modules:        417186 -
+Vendor paths:            5123 -
+Spam:                    2890 -
+Invalid names:              1 -
+Gone:                   83085 -
+Invalid go.mod files:     225 -
+Mismatching go.mod:     72292 -
+No go.mod file:        118308 -
+No .go files:           17377 =
+                      -------
+                       117885
+
+Downloaded 298330808987 bytes (205777941331 from GCS).
+Wrote 4362085 Go files (45289889988 bytes).
+
+$ tar xvf allcode.2021-05-21.tar.gz filippo.io
+$ ls filippo.io
+age@v1.0.0-rc.1.0.20210502224421-85763d390a45
+cpace@v0.0.0-20210101143347-24d601e2e469
+edwards25519@v1.0.0-beta.3.0.20210419044535-8e7780424d7c
+mkcert@v1.4.3
+mostly-harmless
+yubikey-agent@v0.1.5-0.20210430161625-217b58a73aac
