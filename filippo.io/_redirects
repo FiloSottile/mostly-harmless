@@ -22,6 +22,8 @@ https://mta-sts.ml.filippo.io/* https://filippo.io 302!
 /newsletter https://buttondown.email/cryptography-dispatches?tag=redirect 302!
 /age-design https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview 302!
 /age/report https://github.com/FiloSottile/age/issues/new/choose 302!
+/age/age.1 https://htmlpreview.github.io/?https://github.com/FiloSottile/age/blob/master/doc/age.1.html 200!
+/age/age-keygen.1 https://htmlpreview.github.io/?https://github.com/FiloSottile/age/blob/master/doc/age-keygen.1.html 200!
 
 # filippo.io/age Homebrew Tap (via git clone)
 /age/info/refs service=git-upload-pack https://github.com/FiloSottile/age.git/info/refs?service=git-upload-pack 302!
