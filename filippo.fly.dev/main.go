@@ -17,6 +17,7 @@ func main() {
 	mux := http.NewServeMux()
 	ageEncryption(mux)
 	dlFilippo(mux)
+	mkcert(mux)
 
 	s := &http.Server{
 		Addr: ":" + port,
