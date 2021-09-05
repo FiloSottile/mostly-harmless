@@ -14,7 +14,7 @@
 
 // Command github-metadata downloads various metadata of a GitHub repository.
 // The results are saved in the form of JSON files containing the responses to a
-// series of API  requests. It is meant to capture information about a
+// series of API requests. It is meant to capture information about a
 // repository before deleting it.
 package main
 
@@ -50,7 +50,9 @@ func main() {
 		path = strings.Replace(path, ":repo", repo, -1)
 		path = strings.TrimPrefix(path, "https://api.github.com")
 		log.Printf("%s => %s", path, filename)
-		path = "https://api.github.com" + path
+		if !strings.HasPrefix(path, "https://") {
+			path = "https://api.github.com" + path
+		}
 		req, err := http.NewRequest("GET", path, nil)
 		fatalIfErr(err)
 		req.Header.Set("Accept", "application/vnd.github.full+json, application/vnd.github.mercy-preview+json, application/vnd.github.squirrel-girl-preview, application/vnd.github.thor-preview+json, application/vnd.github.machine-man-preview, application/vnd.github.mockingbird-preview")
@@ -102,12 +104,20 @@ func main() {
 		// download(n("pulls/:number/issue.json"), pull.Links.Issue.Href, nil)
 		// download(n("pulls/:number/comments.json"), pull.Links.Comments.Href, nil)
 		download(n("pulls/:number/review_comments.json"), pull.Links.ReviewComments.Href, nil)
-		download(n("pulls/:number/commits.json"), pull.Links.Commits.Href, nil)
+		var commits []struct {
+			SHA     string
+			HTMLURL string `json:"html_url"`
+		}
+		download(n("pulls/:number/commits.json"), pull.Links.Commits.Href, &commits)
+		// for _, commit := range commits {
+		// 	download(n("pulls/:number/"+commit.SHA+".patch"), commit.HTMLURL+".patch", nil)
+		// }
 		download(n("pulls/:number/reviews.json"), n("/repos/:owner/:repo/pulls/:number/reviews"), nil)
 		download(n("pulls/:number/requested_reviewers.json"), n("/repos/:owner/:repo/pulls/:number/requested_reviewers"), nil)
 		// download(n("pulls/:number/timeline.json"), n("/repos/:owner/:repo/issues/:number/timeline"), nil)
 		// download(n("pulls/:number/events.json"), n("/repos/:owner/:repo/issues/:number/events"), nil)
 		// download(n("pulls/:number/reactions.json"), n("/repos/:owner/:repo/issues/:number/reactions"), nil)
+		download(n("pulls/:number/pull.patch"), n("https://patch-diff.githubusercontent.com/raw/:owner/:repo/pull/:number.patch"), nil)
 	}
 
 	var issues []struct {
