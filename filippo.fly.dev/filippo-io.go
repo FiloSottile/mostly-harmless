@@ -105,6 +105,9 @@ func filippoIO(mux *http.ServeMux) {
 	// Miscellaneous redirects
 	for path, url := range map[string]string{
 		"/ticketbleed/":                         "https://filippo.io/Ticketbleed/",
+		"/heartbleed/":                          "https://filippo.io/Heartbleed/",
+		"/cve-2016-2107/":                       "https://filippo.io/CVE-2016-2107/",
+		"/badfish/":                             "https://filippo.io/Badfish/",
 		"/hitb":                                 "https://imgur.com/a/3NkeN",
 		"/hitb-slides":                          "https://www.dropbox.com/s/bzptq3bvbwr0vqf/HITB.pdf?dl=0",
 		"/hack.lu":                              "https://speakerdeck.com/filosottile/the-heartbleed-test-adventure-at-hack-dot-lu-2014",
