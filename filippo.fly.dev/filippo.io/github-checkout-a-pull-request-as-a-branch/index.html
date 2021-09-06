@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GitHub: checkout a pull request as a branch | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Today looking at the Travis log of a Pull request build I saw this interesting command: 1
+git fetch origin +refs/pull/611/merge: Turns out that &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/github-checkout-a-pull-request-as-a-branch/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title"><a class="external-link" href="https://coderwall.com/p/z5rkga">GitHub: checkout a pull request as a branch</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-01-01T06:36:00+00:00" pubdate data-updated="true" class="updated">Jan 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today looking at the Travis log of a Pull request build I saw this interesting command:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git fetch origin +refs/pull/611/merge:</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Turns out that GitHub makes available from your main remote the PR branches as remote refs.</p>
+
+<p>Also (discovered by blind guessing), if you change <code>/merge</code> with <code>/head</code> you get a ref to the clean PR head, unmerged with its target branch. What can be the most useful is up to you, I guess.</p>
+
+<p>This is probably easy because GH on its side stores all the forks of a repo as the same Git repository.</p>
+
+<p>An example in the Coderwall ProTip linked at the title.</p>
+</div>
+
+  
+    <footer>
+      <a class="permalink" href="/github-checkout-a-pull-request-as-a-branch/">Permalink</a>
+    </footer>
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-01-01T06:36:00+00:00" pubdate data-updated="true" class="updated">Jan 1<span>st</span>, 2013</time>
+      
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

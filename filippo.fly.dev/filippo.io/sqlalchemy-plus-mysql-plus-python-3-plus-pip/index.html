@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SQLAlchemy + MySQL + Python 3 + pip | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip. tl;dr: pip https:// &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/sqlalchemy-plus-mysql-plus-python-3-plus-pip/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">SQLAlchemy + MySQL + Python 3 + pip</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-02T00:40:00+01:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A short PSA/reference blog post: how to make SQLAlchemy work with MySQL on Python 3, with requirements installable via pip.</p>
+
+<p><strong>tl;dr</strong>: pip <code>https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</code>, connection string <code>mysql+oursql://</code> and Unicode everywhere.</p>
+
+<p>This is a common pain of the Python 3 adopter: even if a project supports it, add-ons and testing are falling behind.</p>
+
+<p>SQLAlchemy supports <a href="http://docs.sqlalchemy.org/en/rel_0_9/dialects/mysql.html">a number of MySQL interfaces</a>. Most of them don’t work on Python 3 (the common MySQLdb/mysql-python will error out with <code>ImportError: No module named 'ConfigParser'</code>) or only come as a DMG (mysql-connector – ugh).</p>
+
+<!-- more -->
+
+<p><a href="https://launchpad.net/oursql/">OurSQL</a> advertises Python 3 support, and seems an elegant/modern implementation, but installing it with pip will fail with an error that smells of Python 3 incompatibility:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">print "cython not found, using previously-cython'd .c file."
+</span><span class="line">                                                           ^
+</span><span class="line">SyntaxError: invalid syntax</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Turns out they maintain <a href="https://launchpad.net/oursql/py3k/">a branch</a> for Python 3 support, so pointing pip at the zip below will work.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">https://launchpad.net/oursql/py3k/py3k-0.9.4/+download/oursql-0.9.4.zip</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A note on Unicode: disabling Unicode or setting a charset simply won’t work (they do things as <code>'foo' in returned_value</code> that breaks with Python 3 strings). Just use Unicode, it’s what you should be doing on Python 3 anyway.</p>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-02T00:40:00+01:00" pubdate data-updated="true" class="updated">May 2<span>nd</span>, 2014</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

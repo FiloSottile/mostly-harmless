@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Facebook organizes this cool competition called the Hacker Cup. Yesterday the Qualification Round finished, and the user solutions got published. So &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/pythonic-solutions-to-the-facebook-hacker-cup-2014-qualification-round/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Pythonic solutions to the Facebook Hacker Cup 2014 Qualification Round</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-25T10:52:00+00:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Facebook organizes this cool competition called the <a href="https://www.facebook.com/hackercup">Hacker Cup</a>. Yesterday the Qualification Round finished, and the user solutions got published. So, since the problems text is under a <a href="https://creativecommons.org/">CC license</a> (thanks FB!) I’m publishing here the problems and my answers.</p>
+
+<p>This code pretty much embodies why I love Python: it’s clear, fast to write and reads almost like English. When I (thought I) needed speed, I just turned at <a href="http://cython.org/">Cython</a> with a few edits to the code.</p>
+
+<p><em>NOTE: if for some reason I misunderstood and I wasn’t allowed to do this, please get in contact with me ASAP and I’ll take this down.</em></p>
+
+<!-- more -->
+
+<h2 id="square-detector">Square Detector</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-square-detector-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-square_detector-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-square_detector_answer-txt">the answer</a>.</p>
+
+<p>This was an easy one, I just scanned the grid until I found a <code>#</code>, assumed it was the upper-left corner and counted the following <code>#</code> to learn the edge length. At this point I had all the info to build a model of how a correct grid should look like, so I just checked the real one against it.</p>
+
+<div><script src="https://gist.github.com/7643628.js?file=Square%20Detector.py"></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import sys
+
+T = int(sys.stdin.readline().strip())
+
+for t in range(1, T + 1):
+    N = int(sys.stdin.readline().strip())
+    GRID = [sys.stdin.readline().strip() for i in range(N)]
+
+    # Find the the upper-left corner (J, I) and the edge K
+    for I, row in enumerate(GRID):
+        if not &#39;#&#39; in row: continue
+        K = 0
+        J = row.index(&#39;#&#39;)
+        for x in range(J, N):
+            if row[x] == &#39;#&#39;: K += 1
+            else: break
+        break
+
+    # If the square would not fit, fail
+    if I + K &gt; N:
+        print(&#39;Case #%i: NO&#39; % t)
+        continue
+    
+    # Build a module of how a row including the square should look like
+    MOD = (J * &#39;.&#39; + K * &#39;#&#39;).ljust(N, &#39;.&#39;)
+
+    # Check that the grid looks like what it should
+    for i, row in enumerate(GRID):
+        if i &gt;= I and i &lt; I + K:
+            if row != MOD: break
+        else:
+            if row != N * &#39;.&#39;: break
+    else:
+        # Reached if we didn&#39;t break out of the loop
+        # Ok, I&#39;ll admit that for-else is not that clear
+        print(&#39;Case #%i: YES&#39; % t)
+        continue
+
+    print(&#39;Case #%i: NO&#39; % t)
+</code></pre></noscript></div>
+
+<h2 id="basketball-game">Basketball Game</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-basketball-game-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-basketball_game-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-basketball_game_answer-txt">the answer</a>.</p>
+
+<p>This is actually my favorite. The problem was fun and the Python code reads as if it was English. It makes hard use of mutable objects and their properties.</p>
+
+<div><script src="https://gist.github.com/7643628.js?file=Basketball%20Game.py"></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import sys
+INPUT = open(sys.argv[1])
+
+class Player():
+    name = None
+    shot_percentage = None
+    height = None
+    draft = None
+    time_played = 0
+
+T = int(INPUT.readline().strip())
+
+for t in range(1, T + 1):
+    N, M, P = [int(x) for x in INPUT.readline().strip().split(&#39; &#39;)]
+    PLAYERS = []
+    for _ in range(N):
+        player = Player()
+        player.name, s, h = INPUT.readline().strip().split(&#39; &#39;)
+        player.shot_percentage, player.height = int(s), int(h)
+        PLAYERS.append(player)
+
+    PLAYERS.sort(reverse=True, key=lambda p: (p.shot_percentage, p.height))
+    for n, p in enumerate(PLAYERS):
+        p.draft = n + 1
+
+    TEAM_A = [p for p in PLAYERS if p.draft % 2 != 0]
+    TEAM_B = [p for p in PLAYERS if p.draft % 2 == 0]
+
+    PLAYING_A = TEAM_A[:P]
+    PLAYING_B = TEAM_B[:P]
+
+    for _ in range(M):
+        for TEAM, PLAYING in ((TEAM_A, PLAYING_A), (TEAM_B, PLAYING_B)):
+            if len(TEAM) == len(PLAYING): continue
+
+            for p in PLAYING: p.time_played += 1
+
+            BENCH = [p for p in TEAM if p not in PLAYING]
+
+            leaving = sorted(PLAYING, key=lambda p: (p.time_played, p.draft))[-1]
+            entering = sorted(BENCH, key=lambda p: (p.time_played, p.draft))[0]
+
+            PLAYING.remove(leaving)
+            PLAYING.append(entering)
+
+            BENCH.remove(entering)
+            BENCH.append(leaving)
+
+    print(&#39;Case #%i: &#39; % t + &#39; &#39;.join(sorted(p.name for p in PLAYING_A + PLAYING_B)))
+
+</code></pre></noscript></div>
+
+<h2 id="tennison">Tennison</h2>
+
+<p>Read the <a href="https://gist.github.com/FiloSottile/7643628#file-tennison-md">problem</a> and check out <a href="https://gist.github.com/FiloSottile/7643628#file-tennison-txt">the test cases</a> and <a href="https://gist.github.com/FiloSottile/7643628#file-tennison_answer-txt">the answer</a>.</p>
+
+<p>Finally the hardest one. This was a nice recursive problem. The constrains allowed for a lot of big test cases, so I went a bit overkill with speed, wrote some custom caching, ported my actual recursive function to Cython (it’s awesome! Just check out the <code>-a</code> HTML output to figure out what you have to optimize and you’re done) and made the program parallelizable.</p>
+
+<p>Turns out, memoization would have been enough. Still, it has been really fun!</p>
+
+<div><script src="https://gist.github.com/7643628.js?file=Tennison.py"></script>
+<noscript><pre><code>#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
+import pyximport; pyximport.install()
+from fast_Tennison import play_a_set
+
+from multiprocessing import Pool
+
+import sys
+
+T = int(sys.stdin.readline().strip())
+
+TEST_CASES = []
+for t in range(1, T + 1):
+    l = sys.stdin.readline().strip().split(&#39; &#39;)
+    K = int(l[0])
+    ps, pr, pi, pu, pw, pd, pl = (float(x) for x in l[1:])
+    won, lost = 0, 0
+    TEST_CASES.append((t, {}, K, won, lost, pi, ps, pr, pu, pw, pd, pl))
+
+def do(x):
+    r = play_a_set(*x[1:])
+    sys.stderr.write(&#39;#{}: {:f}\n&#39;.format(x[0], r))
+    return r
+pool = Pool(processes=8)
+RESULTS = pool.map(do, TEST_CASES, chunksize=1)
+
+for t in range(1, T + 1):
+    print(&#39;Case #{}: {:f}&#39;.format(t, RESULTS[t-1]))
+</code></pre></noscript></div>
+
+<div><script src="https://gist.github.com/7643628.js?file=fast_Tennison.pyx"></script>
+<noscript><pre><code>cpdef double play_a_set(cache, int K, int won, int lost, double p_sun, double ps, double pr, double pu, double pw, double pd, double pl):
+    cdef double new_p_sun, positive
+
+    if won == K: return 1
+    if lost == K: return 0
+
+    if won * 1000 + lost * 10 + p_sun in cache:
+      return cache[won * 1000 + lost * 10 + p_sun]
+
+    positive = 0
+
+    ## There is sun     P: p_sun
+    #### He wins            P: ps
+    ###### p_sun changes        P: pw
+    new_p_sun = min(1, p_sun + pu)
+    positive += p_sun * ps * pw * play_a_set(cache, K, won+1, lost, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pw
+    positive += p_sun * ps * (1 - pw) * play_a_set(cache, K, won+1, lost, p_sun, ps, pr, pu, pw, pd, pl)
+    #### He loses           P: 1 - ps
+    ###### p_sun changes        P: pl
+    new_p_sun = max(0, p_sun - pd)
+    positive += p_sun * (1 - ps) * pl * play_a_set(cache, K, won, lost+1, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pl
+    positive += p_sun * (1 - ps) * (1 - pl) * play_a_set(cache, K, won, lost+1, p_sun, ps, pr, pu, pw, pd, pl)
+    ## There is rain    P: 1 - p_sun
+    #### He wins            P: pr
+    ###### p_sun changes        P: pw
+    new_p_sun = min(1, p_sun + pu)
+    positive += (1 - p_sun) * pr * pw * play_a_set(cache, K, won+1, lost, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pw
+    positive += (1 - p_sun) * pr * (1 - pw) * play_a_set(cache, K, won+1, lost, p_sun, ps, pr, pu, pw, pd, pl)
+    #### He loses           P: 1 - pr
+    ###### p_sun changes        P: pl
+    new_p_sun = max(0, p_sun - pd)
+    positive += (1 - p_sun) * (1 - pr) * pl * play_a_set(cache, K, won, lost+1, new_p_sun, ps, pr, pu, pw, pd, pl)
+    ###### p_sun stays          P: 1 - pl
+    positive += (1 - p_sun) * (1 - pr) * (1 - pl) * play_a_set(cache, K, won, lost+1, p_sun, ps, pr, pu, pw, pd, pl)
+
+    cache[won * 1000 + lost * 10 + p_sun] = positive
+
+    return positive
+</code></pre></noscript></div>
+
+<p>That’s all! I got admitted to the next round, so maybe <a href="https://twitter.com/FiloSottile">follow me on Twitter</a> if you want to read the next batch of problems and solutions!</p>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-25T10:52:00+00:00" pubdate data-updated="true" class="updated">Nov 25<span>th</span>, 2013</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

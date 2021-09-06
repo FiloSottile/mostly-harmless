@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Making system calls from Assembly in Mac OS X | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="The next step in my playing with chroot escapes is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/making-system-calls-from-assembly-in-mac-os-x/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Making system calls from Assembly in Mac OS X</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-04T02:05:00+00:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The next step in my <a href="/escaping-a-chroot-jail-slash-1/">playing with chroot escapes</a> is crafting some shellcode. Recently my main dev machine is a MacBook running OS X, so it felt reasonable to fiddle with making system calls of that platform.</p>
+
+<p>By the way, a system call is a function of the kernel invoked by a userspace program and it can be something like writing to a file descriptor, or even exiting. Usually, these are wrapped by C functions in the standard library.</p>
+
+<h3 id="the-system-calls">The system calls</h3>
+
+<p>First, we need to know what system call we want to make, and what arguments it pretends.</p>
+
+<p>A full list is hosted by Apple <a href="http://www.opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master">here</a>. The header also hints at the fact that they are inherited from BSD. Yeah, <a href="https://en.wikipedia.org/wiki/OS_X">that makes sense</a>.</p>
+
+<p>So, to write our proverbial <em>Hello world</em> we will pick the syscall 4</p>
+
+<pre><code>4   AUE_NULL    ALL { user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); }
+</code></pre>
+
+<!-- more -->
+
+<h3 id="bit">32-bit</h3>
+
+<p>Let’s start easy. A cute 32-bit program, written in <a href="http://alien.dowling.edu/~rohit/nasmdoc3.html">NASM assembler language</a>. Compile with <code>nasm</code> or <code>yasm</code>, output format <code>MachO</code>, and link with <code>ld</code>.</p>
+
+<p>I’m on a Intel machine, so what we are looking for is the x86 syscall calling conventions for the OS X or BSD platform. They are pretty simple:</p>
+
+<ul>
+  <li>arguments passed on the stack, pushed right-to-left</li>
+  <li>stack 16-bytes aligned</li>
+  <li>syscall number in the <code>eax</code> register</li>
+  <li>call by interrupt <code>0x80</code></li>
+</ul>
+
+<p>So what we have to do to print a “Hello world” is:</p>
+
+<ul>
+  <li>push the length of the string (<code>int</code>) to the stack</li>
+  <li>push a pointer to the string to the stack</li>
+  <li>push the stdout file descriptor (1) to the stack</li>
+  <li>align the stack by moving the stack pointer 4 more bytes (16 - 4 * 3)</li>
+  <li>set the <code>eax</code> register to the <code>write</code> syscall number (4)</li>
+  <li>interrupt <code>0x80</code></li>
+</ul>
+
+<div><script src="https://gist.github.com/7125822.js?file=32.asm"></script>
+<noscript><pre><code>; /usr/local/bin/nasm -f macho 32.asm &amp;&amp; ld -macosx_version_min 10.7.0 -o 32 32.o &amp;&amp; ./32
+
+global start
+
+section .text
+start:
+    push    dword msg.len
+    push    dword msg
+    push    dword 1
+    mov     eax, 4
+    sub     esp, 4
+    int     0x80
+    add     esp, 16
+
+    push    dword 0
+    mov     eax, 1
+    sub     esp, 12
+    int     0x80
+
+section .data
+
+msg:    db      &quot;Hello, world!&quot;, 10
+.len:   equ     $ - msg
+</code></pre></noscript></div>
+
+<h3 id="bit-1">64-bit</h3>
+
+<p>64-bit is a bit cleaner, but completely different: OS X (and GNU/Linux and everyone except Windows) on 64 architectures adopt the <a href="http://x86-64.org/documentation/abi.pdf">System V AMD64 ABI reference</a>. Jump to section <strong>A.2.1</strong> for the syscall calling convention.</p>
+
+<ul>
+  <li>arguments are passed on the registers <code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>r10</code>, <code>r8</code> and <code>r9</code></li>
+  <li>syscall number in the <code>rax</code> register</li>
+  <li>the call is done via the <code>syscall</code> instruction</li>
+  <li>what OS X contributes to the mix is that you have to add <code>0x20000000</code> to the syscall number (still have to figure out why)</li>
+</ul>
+
+<p>So, here is the (IMHO) much more clean 64-bit “Hello world”. Ah, if you want to do this at home and have it actually run, generate a <code>macho64</code> object with <strong>a new version of</strong> NASM or with YASM, and link with <code>ld</code> as usual.</p>
+
+<div><script src="https://gist.github.com/7125822.js?file=64.asm"></script>
+<noscript><pre><code>; /usr/local/bin/nasm -f macho64 64.asm &amp;&amp; ld -macosx_version_min 10.7.0 -lSystem -o 64 64.o &amp;&amp; ./64
+
+global start
+
+
+section .text
+
+start:
+    mov     rax, 0x2000004 ; write
+    mov     rdi, 1 ; stdout
+    mov     rsi, msg
+    mov     rdx, msg.len
+    syscall
+
+    mov     rax, 0x2000001 ; exit
+    mov     rdi, 0
+    syscall
+
+
+section .data
+
+msg:    db      &quot;Hello, world!&quot;, 10
+.len:   equ     $ - msg
+</code></pre></noscript></div>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-04T02:05:00+00:00" pubdate data-updated="true" class="updated">Nov 4<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

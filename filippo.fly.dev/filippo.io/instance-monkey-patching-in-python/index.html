@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Instance monkey-patching in Python | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Monkey-patching is the technique of swapping functions or methods with others in order to change a module, library or class behavior. There are some &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/instance-monkey-patching-in-python/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Instance monkey-patching in Python</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-07T00:19:00+01:00" pubdate data-updated="true" class="updated">Oct 7<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey-patching</a> is the technique of swapping functions or methods with others in order to change a module, library or class behavior.</p>
+
+<p>There are some people with strong opinions about it. I haven’t, but it comes really useful when testing, to simulate side-effecting functions or to silence expected errors and warnings.</p>
+
+<p><strong>Class methods</strong> monkey patching in Python is really easy, as you can freely assign function to class method names:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">not_exactly_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">not_exactly_add</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">9</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- more -->
+
+<p>This way <strong>all the instances</strong> of the target class will have the method monkey-patched and there is no problem with arguments, bindings… Everything really straight-forward.</p>
+
+<p>We can also call the old existing method, to handle only some cases or to add some functionality while not repeating code (<a href="https://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>):</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">old_boring_add</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">add_is_not_enough</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">return</span> <span class="n">old_boring_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">6</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">Class</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">add_is_not_enough</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">7</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- Finally, we might want to monkey-patch repeatedly, maybe dinamically, and so have each monkey-patch to **build on top of the previous one**. Easy done,  -->
+
+<p>But what if we wanted to do the same, patching <strong>just a single instance</strong>?</p>
+
+<p>To recap, the requirements are:</p>
+
+<ul>
+  <li>we want just the current instance to be patched;</li>
+  <li>we want to build something on top of the existing method, not to replace it entirely;</li>
+  <li>we want each monkey-patch not to rollback all the previous ones (so no <a href="http://docs.python.org/2/library/functions.html#super"><code>super()</code></a> or class method call);</li>
+  <li>we want to be able to do so also from inside a method.</li>
+</ul>
+
+<p>The trick is to save and use the existing method as we did above, and then <strong>bind the new function to the instance</strong> with <a href="http://docs.python.org/2/library/types.html#types.MethodType"><code>types.MethodType</code></a> before assigning it to the method name.</p>
+
+<p>The binding is the magic that causes the instance to be passed as first argument (<code>self</code>) each time the method is called. See <a href="http://stackoverflow.com/questions/114214/class-method-differences-in-python-bound-unbound-and-static">these</a> <a href="http://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python">two</a> StackOverflow questions to get an idea.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">types</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Class</span><span class="p">():</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class="line"><span class="o">...</span>    <span class="k">def</span> <span class="nf">become_more_powerful</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>       <span class="n">old_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span>
+</span><span class="line"><span class="o">...</span>       <span class="k">def</span> <span class="nf">more_powerful_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+</span><span class="line"><span class="o">...</span>          <span class="k">return</span> <span class="n">old_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">...</span>       <span class="bp">self</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">more_powerful_add</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+</span><span class="line"><span class="o">...</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">6</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">7</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">become_more_powerful</span><span class="p">()</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And here we go!</p>
+
+<h2 id="a-practical-example">A practical example</h2>
+
+<p>You can see this technique being used in <a href="https://github.com/rg3/youtube-dl"><em>youtube-dl</em></a> to silence expected warnings in <a href="https://github.com/rg3/youtube-dl/commit/00fcc17aeeab11ce694699bf183d33a3af75aab6">this commit</a>.</p>
+
+<p>The monkey-patching of the instance is done on itself by a method of a testing subclass of the downloader.</p>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-10-07T00:19:00+01:00" pubdate data-updated="true" class="updated">Oct 7<span>th</span>, 2013</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

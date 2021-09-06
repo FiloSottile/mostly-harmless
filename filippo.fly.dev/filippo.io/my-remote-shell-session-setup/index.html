@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My remote shell session setup | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like telnet. After searching for &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/my-remote-shell-session-setup/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">My remote shell session setup</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-18T04:08:00+00:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It’s 2014 and I feel entitled to a good experience connecting to a remote server, instead the default still feels like <code>telnet</code>.</p>
+
+<p>After searching for quite a long time, I finally built my dream setup. These were the requirements:</p>
+
+<ul>
+  <li>I want a single window/tab/panel of the terminal I’m using to be dedicated to the remote shell (without any new window, etc.)</li>
+  <li>I want the shell to survive unaffected with no context loss the following events
+    <ul>
+      <li>connection failure</li>
+      <li>route change (like, toggling the VPN or changing Wi-fi)</li>
+      <li>laptop sleep (like, me closing the lid)</li>
+      <li>local terminal restart or laptop reboot</li>
+    </ul>
+  </li>
+  <li>I want to be able to scroll back with my touchpad</li>
+  <li>I want to be able to copy-paste</li>
+  <li>I want colors</li>
+  <li>I want to launch it with a single command</li>
+</ul>
+
+<p>And a unicorn.</p>
+
+<!-- more -->
+
+<p>(Some fellow travelers in search for the same utopia are <a href="">here</a>)</p>
+
+<h2 id="the-setup">The setup</h2>
+
+<p>I managed to get this with the following combination: iTerm2 + mosh + tmux.</p>
+
+<h3 id="iterm2">iTerm2</h3>
+
+<p>The terminal.</p>
+
+<p>I’m on the nightly, but stable should work the same. Just make sure to <em>Enable xterm mouse reporting</em> in the <em>Terminal</em> Profile settings, and set <em>Terminal Type</em> to <code>xterm-256color</code>.</p>
+
+<h3 id="tmux">tmux</h3>
+
+<p>The session manager.</p>
+
+<p><code>tmux</code> is the new <code>screen</code>. It has a ton of features, but I’m using it here just to keep track of my session server side. On 1.8 right now, the one that comes in packages.</p>
+
+<p><code>~/.tmux.conf</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">new-session
+</span><span class="line">set-window-option -g mode-mouse on
+</span><span class="line">set -g history-limit 30000</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The first line makes sure that if I try to attach and no sessions are alive, one is created. This means that I can invoke it like this <code>tmux a</code> all the time.</p>
+
+<p>The second enables mouse interactions. This will allow us to scroll with the touchpad! (See below)</p>
+
+<p>NOTE: the key combination to detach is <code>C-b d</code>.</p>
+
+<p><a href="https://superuser.com/questions/210125/scroll-shell-output-with-mouse-in-tmux">Here</a> a decent explanation of <code>tmux</code> and mouse scrolling.</p>
+
+<h3 id="mosh">mosh</h3>
+
+<p>The bridge.</p>
+
+<p><code>mosh</code> is an awesome piece of software. All network-interacting software should behave like it. It will withstand whatever you throw at it from the network. It will even tell you when and since when your connection went down.</p>
+
+<p>Sadly the latest release is ooooold, and doesn’t support mouse reporting. So no scrolling. Sigh.</p>
+
+<p>So, you have to build from git.</p>
+
+<p>On OS X: <code>brew install --HEAD mobile-shell</code></p>
+
+<p>On the server:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone https://github.com/keithw/mosh.git
+</span><span class="line">cd mosh/
+</span><span class="line">sudo apt-get build-dep mosh
+</span><span class="line">./autogen.sh &amp;&amp; ./configure &amp;&amp; make
+</span><span class="line">sudo make install</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><a href="https://github.com/keithw/mosh/issues/101">Here</a> the issue and <a href="https://github.com/keithw/mosh/pull/461">here</a> the PR about mouse reporting.</p>
+
+<h2 id="result">Result</h2>
+
+<p>The result is that I can type</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">mosh HOST -- tmux a</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>and get my motherfucking shell. Period.</p>
+
+<p>iTerm2 will show me things, <code>mosh</code> will make sure that my connection stays up in all the aforementioned cases and <code>tmux</code> will keep my scrollback and allow me to detach and reattach. <code>mosh</code> and <code>tmux</code> collaborating, finally, will allow me to use my dear touchpad. Done.</p>
+
+<p>NOTE: to select text “on the client side”, in order to copy/paste, you’ll have to hold the Option key.</p>
+
+<h2 id="future-work">Future work</h2>
+
+<ul>
+  <li>Scrolling is way less fluid than native. I have no idea how to fix this.</li>
+  <li>I’d like click+drag not to be relayed so that I don’t have to hold Option to select.</li>
+</ul>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-03-18T04:08:00+00:00" pubdate data-updated="true" class="updated">Mar 18<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

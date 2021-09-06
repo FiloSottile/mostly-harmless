@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A Python GitHub Push WebHook Handler | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="GitHub offers a number of Service Hooks that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/a-python-github-push-webhook-handler/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">A Python GitHub Push WebHook Handler</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-24T19:23:00+00:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>GitHub offers a number of <strong>Service Hooks</strong> that trigger actions when someone pushes to your repository. The generic hook is a simple WebHook that you can easily handle on your server.</p>
+
+<p>There is a official Rack handler somewhere, and maybe a Django one, but nothing in pure Python. So here is it.</p>
+
+<p>It’s pretty simple and self-contained, start it with the IP address and port to listen on as arguments, and it will pass a function - <code>handle_hook()</code> - the payload received on each push as a Python dictionary. It also checks that the originating IP is actually GH.</p>
+
+<p>Then simply enter the address of your server on the GH Service Hooks repo Admin page, and you’re all set.</p>
+
+<p><img src="/images/Service Hooks 2013-11-24 00-54-05.png" alt="The Webhooks admin page" /></p>
+
+<p>For reference on what’s inside the payload, <a href="https://help.github.com/articles/post-receive-hooks">RTFM</a>.</p>
+
+<div><script src="https://gist.github.com/7634541.js?file=HookHandler.py"></script>
+<noscript><pre><code>#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+import BaseHTTPServer
+import sys
+import time
+import urlparse
+import json
+
+
+HOST_NAME = sys.argv[1]
+PORT_NUMBER = int(sys.argv[2])
+
+
+def handle_hook(payload):
+    pass
+
+
+class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    server_version = &quot;HookHandler/0.1&quot;
+    def do_GET(s):
+        s.send_response(200)
+        s.wfile.write(&#39;Hello!&#39;)
+
+    def do_POST(s):
+        # Check that the IP is within the GH ranges
+        if not any(s.client_address[0].startswith(IP)
+                   for IP in (&#39;192.30.252&#39;, &#39;192.30.253&#39;, &#39;192.30.254&#39;, &#39;192.30.255&#39;)):
+            s.send_error(403)
+
+        length = int(s.headers[&#39;Content-Length&#39;])
+        post_data = urlparse.parse_qs(s.rfile.read(length).decode(&#39;utf-8&#39;))
+        payload = json.loads(post_data[&#39;payload&#39;][0])
+
+        handle_hook(payload)
+
+        s.send_response(200)
+
+
+if __name__ == &#39;__main__&#39;:
+    server_class = BaseHTTPServer.HTTPServer
+    httpd = server_class((HOST_NAME, PORT_NUMBER), HookHandler)
+    print time.asctime(), &quot;Server Starts - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
+    print time.asctime(), &quot;Server Stops - %s:%s&quot; % (HOST_NAME, PORT_NUMBER)
+</code></pre></noscript></div>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-24T19:23:00+00:00" pubdate data-updated="true" class="updated">Nov 24<span>th</span>, 2013</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

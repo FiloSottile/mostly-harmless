@@ -18,6 +18,7 @@ func main() {
 	ageEncryption(mux)
 	dlFilippo(mux)
 	mkcert(mux)
+	filippoIO(mux)
 
 	s := &http.Server{
 		Addr: ":" + port,

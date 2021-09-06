@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Automatically compile .less and .coffee files | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="This small python script makes use of watchdog (and sh) to monitor your code directory (recursively) and build less and CoffeeScript files upon edit &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/automatically-compile-less-and-coffee-files/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Automatically compile .less and .coffee files</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-01-12T00:25:00+00:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This small python script makes use of <a href="http://packages.python.org/watchdog/"><code>watchdog</code></a> (and <a href="http://amoffat.github.com/sh/"><code>sh</code></a>) to monitor your code directory (recursively) and build <a href="http://lesscss.org/">less</a> and <a href="http://coffeescript.org">CoffeeScript</a> files upon edit.</p>
+
+<p>Simply launch it from the relevant folder and it will work in the background.</p>
+
+<p>It should be trivial to add minification (and linting, but I suggest linting in the editor) to the process.</p>
+
+<div><script src="https://gist.github.com/4710041.js?file=watch_and_build.py"></script>
+<noscript><pre><code>#!/usr/bin/env python2
+
+import watchdog.events
+import watchdog.observers
+import sh
+import time
+import os
+
+# Detach
+if os.fork(): os._exit(0)
+
+coffee = sh.coffee.bake(&#39;-c&#39;)
+less = sh.lessc
+
+class Handler(watchdog.events.PatternMatchingEventHandler):
+    def __init__(self):
+        watchdog.events.PatternMatchingEventHandler.__init__(self, patterns=[&#39;*.less&#39;, &#39;*.coffee&#39;],
+            ignore_directories=True, case_sensitive=False)
+
+    def on_modified(self, event):
+        if event.src_path.lower().endswith(&#39;.less&#39;):
+            try: less(event.src_path, event.src_path[:-5] + &#39;.css&#39;)
+            except sh.ErrorReturnCode_1 as e: print e.stderr
+        if event.src_path.lower().endswith(&#39;.coffee&#39;):
+            try: coffee(event.src_path)
+            except sh.ErrorReturnCode_1 as e: print e.stderr
+
+    on_created = on_modified
+
+if __name__ == &quot;__main__&quot;:
+    event_handler = Handler()
+    observer = watchdog.observers.Observer()
+    observer.schedule(event_handler, path=&#39;.&#39;, recursive=True)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()</code></pre></noscript></div>
+
+<p>It requires <code>coffee</code> (<code>npm install coffee-script</code>) and <code>lessc</code> (<code>npm install less</code>).</p>
+
+<p>Should be compatible with Mac OS X and Linux at least, BSD and Win… maybe.</p>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-01-12T00:25:00+00:00" pubdate data-updated="true" class="updated">Jan 12<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

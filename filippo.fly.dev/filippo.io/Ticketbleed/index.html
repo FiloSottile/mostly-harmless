@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Ticketbleed (CVE-2016-9244)</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Bitter|Raleway:400,400i,700" rel="stylesheet">
+
+<style>
+.container {
+  width: auto;
+  max-width: 700px;
+  padding: 0 15px;
+}
+body {
+  font-family: "Raleway";
+}
+h1, h2 {
+  font-family: "Bitter";
+}
+tbody td:nth-child(2) {
+    background-color: rgba(255, 0, 0, 0.21);
+}
+thead tr:nth-child(1) {
+    font-weight: 700;
+}
+td {
+    padding: 5px;
+}
+thead {
+    text-align: center;
+}
+table {
+    margin: 16px auto;
+}
+img {
+	max-width: 100px;
+	float: left;
+	margin: -5px 10px 0;
+}
+.bleed {
+  display: none;
+  font-weight: 700;
+}
+.bleed-vuln {
+  color: red; 
+}
+.bleed-safe {
+  color: green;
+}
+input {
+    padding: 8px;
+    font-size: 15px;
+    font-family: "Raleway";
+    min-width: 40%;
+}
+button {
+    font-size: 20px;
+    vertical-align: bottom;
+    background: none;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    font-family: "Bitter";
+    padding: 3px 6px;
+}
+</style>
+  </head>
+  <body>
+
+<!-- Piwik tag removed -->
+
+    <div class="container">
+
+
+<h1 id="ticketbleed-(cve-2016-9244)">Ticketbleed <span style="white-space: nowrap;">(CVE-2016-9244)</span></h1>
+<p><img src="ticketbleed.png" alt="ticketbleed.png"> </p><p>Ticketbleed is a software vulnerability in the TLS/SSL stack of F5 BIG-IP appliances allowing a remote attacker to extract up to 31 bytes of uninitialized memory at a time.</p><p>This memory can potentially contain key material or sensitive data from other connections.</p><p>It is similar in spirit and implications to the well known Heartbleed vulnerability. It is different in that it exposes 31 bytes at a time instead of 64k, requiring more rounds to carry out an attack, and in that it affects the proprietary F5 TLS stack, not OpenSSL.</p><p>F5 published <a href="https://support.f5.com/csp/article/K05121675">article K05121675</a> addressing this vulnerability. You can read <a href="https://blog.filippo.io/finding-ticketbleed/">the story of how Ticketbleed was found and a complete technical walkthrough</a> on the Filippo.io blog.</p>
+<h2 id="test">Test</h2>
+<p>The online test was discontinued in March 2021.</p>
+<p>You can use <a href="https://gist.github.com/FiloSottile/fc7822b1f5b475a25e58d77d1b394860">this Go script</a> or the <a href="https://www.ssllabs.com/ssltest/">SSL Labs online test</a> instead.</p>
+<p>Note: there are other implementations that exhibit a similar bug which might not have security implications.</p>
+<h2 id="technical-details">Technical Details</h2>
+<p>The vulnerability lies in the implementation of Session Tickets, a resumption technique used to speed up repeated connections.</p><p>When a client supplies a Session ID together with a Session Ticket, the server is supposed to echo back the Session ID to signal acceptance of the ticket. Session IDs can be anywhere between 1 and 31 bytes in length.</p><p>The F5 stack always echoes back 32 bytes of memory, even if the Session ID was shorter. An attacker providing a 1-byte Session ID would then receive 31 bytes of uninitialized memory.</p>
+<h2 id="fixes-and-mitigation">Fixes and mitigation</h2>
+<p>The full list of affected versions is available on the <a href="https://support.f5.com/csp/article/K05121675">F5 website</a>. At the time of this public disclosure not all releases have upgrade candidates available.</p><p>Disabling Session Tickets is a complete mitigation, which will only cause a performance degradation in the set-up phase of resumed connections.</p><p>Reproduced here are the instructions provided by F5 and available at the link above.</p><ol><li>Log in to the Configuration utility</li><li>Navigate on the menu to Local Traffic &gt; Profiles &gt; SSL &gt; Client</li><li>Toggle the option for Configuration from Basic to Advanced</li><li>Uncheck the Session Ticket option to disable the feature</li><li>Click Update to save the changes</li></ol>
+<h2 id="internet-scan-results">Internet scan results</h2>
+<p>Internet scans were performed using a modified version of zgrab, by obtaining and immediately using a Session Ticket with a 31-byte Session ID.</p>
+<table><thead>
+<tr><td colspan="100">Alexa top 1m</td></tr>
+<tr><td></td><td>Vulnerable</td><td>Accepted</td><td>Rejected</td></tr>
+</thead><tbody>
+<tr><td>Top 1k</td><td>3</td><td>449</td><td>50</td></tr>
+<tr><td>Top 10k</td><td>15</td><td>4277</td><td>310</td></tr>
+<tr><td>100k</td><td>102</td><td>43925</td><td>1764</td></tr>
+<tr><td>All</td><td>949</td><td>466275</td><td>18702</td></tr>
+</tbody></table>
+
+<table><thead>
+<tr><td colspan="100">Cisco Umbrella top 1m</td></tr>
+<tr><td></td><td>Vulnerable</td><td>Accepted</td><td>Rejected</td></tr>
+</thead><tbody>
+<tr><td>Top 1k</td><td>1</td><td>441</td><td>52</td></tr>
+<tr><td>Top 10k</td><td>20</td><td>4224</td><td>611</td></tr>
+<tr><td>100k</td><td>255</td><td>45498</td><td>4739</td></tr>
+<tr><td>All</td><td>1602</td><td>431652</td><td>32695</td></tr>
+</tbody></table>
+<p>Vulnerable means the host replied with unexpected memory, Accepted means that the host correctly accepted the Session Ticket, Rejected means the host offered a Session Ticket but then rejected it when the client tried to use it. All remaining hosts didn&#39;t offer Session Tickets.</p><p>All wide scans originated from IP address 185.47.61.3. I&#39;d like to thank <a href="https://www.bhost.net/">BHost</a> for offering the stable VPS and the bandwidth necessary to perform the scan, and for taking care of the inbound abuse letters.</p>
+<h2 id="detection-and-ids">Detection and IDS</h2>
+<p>The issue can be identified by passive traffic monitoring, as the Session ID field is unencrypted.</p><p>However, I&#39;d like to strongly discourage IDS vendors from making signatures that simply detect Session IDs shorter than 32 bytes. Any length between 1 and 32 bytes is legal according to the RFC specification.</p><p>The Go standard library legitimately uses 16 bytes Session IDs, and browsers considered using 1 byte Session IDs for this purpose. It&#39;s important for security software not to needlessly constrain future decisions in that direction.</p>
+<h2 id="discovery-and-timeline">Discovery and timeline</h2>
+<p>The issue was identified by <a href="https://twitter.com/FiloSottile">Filippo Valsorda</a> of the Cloudflare Crypto Team in collaboration with other Cloudflare employees, while debugging a customer issue. You can read <a href="https://blog.filippo.io/finding-ticketbleed/">the full story</a> on the Filippo.io blog.</p><p>It was reported on October 26, 2016 and subject to a <a href="https://googleprojectzero.blogspot.co.uk/2015/02/feedback-and-data-driven-updates-to.html">90 + 15 days disclosure policy</a>. I&#39;d like to thank the F5 SIRT for their professionalism, transparency and collaboration.</p><ul id='draft_check_box_list_1' ><li>October 20 — issue identified</li><li>October 20 — first attempt at contacting F5</li><li>October 25 — contact established with F5 Security Engineer</li><li>October 26 — report submitted</li><li>October 28 — report acknowledged by F5</li><li>November 13 — issue confirmed by F5, security impact yet unconfirmed</li><li>November 14 — Alexa top 1000 scan reveals two vulnerable hosts, 90 days deadline issued</li><li>November 16 — version and configuration details provided to F5</li><li>November 16 — security issue reproduced and confirmed by F5</li><li>F5 shares release timeline, a series of back and forth sets disclosure for the day of the first HotFix release in late January</li><li>January 17 — F5 shares CVE and K article draft</li><li>January 26 — release pushed back to February 8 due to issues</li><li>February 7 — Internet scan from 185.47.61.3</li><li>February 8 — last day within disclosure policy</li><li>February 8 — release delayed</li><li>February 9 01:25 UTC — coordinated public disclosure</li></ul><p><em>Logo based on Ticket by Diego Naive from the Noun Project.</em></p>

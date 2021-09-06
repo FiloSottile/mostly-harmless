@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Salt &amp; Pepper, please: a note on password storage | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/salt-and-pepper/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Salt &amp; Pepper, please: a note on password storage</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-28T19:50:00+01:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Everyone will tell you that the best practice for password storage is [sb]crypt with random salt. Ok, we got that and even maybe got everyone to agree. But let me bump that up a notch: do you know what pepper is?</p>
+
+<p>The concept of peppering is simple: <strong>add a extra fixed, hardcoded salt</strong>. (On top of what you are already doing, obviously.)</p>
+
+<p>That is, do something like:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">salt</span> <span class="o">=</span> <span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</span><span class="line"><span class="n">pepper</span> <span class="o">=</span> <span class="s">&quot;oFMLjbFr2Bb3XR)aKKst@kBF}tHD9q&quot;</span>  <span class="c"># or, getenv(&#39;PEPPER&#39;)</span>
+</span><span class="line"><span class="n">hashed_password</span> <span class="o">=</span> <span class="n">scrypt</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">pepper</span><span class="p">)</span>
+</span><span class="line"><span class="n">store</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Does this seem useless? Well if you think about it, most password leaks happen because of database leaks (SQL injection, DB credential compromise, DB auth bypass…) and attackers might not necessarily get access to the webserver. In that case, the hashes would be <em>completely useless</em>.</p>
+
+<p>Yes, this is not sureproof, attackers might also get access to your webserver, but security is all about layers and raising cost, no? Who knows, maybe the eBay leaked hashes would have been useless to the attackers were they peppered.</p>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-05-28T19:50:00+01:00" pubdate data-updated="true" class="updated">May 28<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/salt-and-pepper/" data-via="FiloSottile" data-counturl="https://filippo.io/salt-and-pepper/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/sqlalchemy-plus-mysql-plus-python-3-plus-pip/" title="Previous Post: SQLAlchemy + MySQL + Python 3 + pip">&laquo; SQLAlchemy + MySQL + Python 3 + pip</a>
+      
+      
+        <a class="basic-alignment right" href="/the-heartbleed-test-at-owasp-slash-nyu-poly/" title="Next Post: [2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+">[2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+ &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>The ECB Penguin | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/the-ecb-penguin/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">The ECB Penguin</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-10T19:54:00+00:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Tux_ecb.jpg" alt="Tux ecb.jpg" class="center" /></p>
+
+<p>This is an image that has become kind of a cultural icon in the cryptography and InfoSec community. I’m speaking about “the penguin”, a picture of the <a href="https://commons.wikimedia.org/wiki/File:Tux.jpg">Tux Linux mascot</a> encrypted with a block cipher in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_.28ECB.29">ECB mode</a> that still shows clearly the outline of the original.</p>
+
+<div class="reset-zoom"><blockquote class="twitter-tweet" data-conversation="none" align="center" data-dnt="true"><p>.<a href="https://twitter.com/solardiz">@solardiz</a> <a href="https://twitter.com/ErrataRob">@ErrataRob</a> ECB mode strikes again, I see. It&#39;s hard to believe there&#39;s anyone left who hasn&#39;t seen the penguin.</p>&mdash; Andrea (@puellavulnerata) <a href="https://twitter.com/puellavulnerata/statuses/396863689602519041">November 3, 2013</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script></div>
+
+<!-- more -->
+
+<p><img src="/images/ecb penguin - Google.png" alt="Google suggestions" class="center" /></p>
+
+<h2 id="ecb">ECB</h2>
+
+<p>You have a cipher, that with a key will encrypt 16 bytes of data. And you have some data, that is more than 16 bytes. So you have a problem. Well, ECB is the wrong solution to that problem: you just encrypt each 16-bytes block separately.</p>
+
+<p>Why is it wrong? Because this way blocks that were equal before encryption will <strong>remain equal</strong> also after! And this will lead to all kinds of unwanted consequences.</p>
+
+<p>One good example is the recent <a href="/analyzing-the-adobe-leaked-passwords/">Adobe passwords crossword game</a> but the best visualization of the concept is him, the penguin!</p>
+
+<h2 id="the-original">The original</h2>
+
+<p>The <a href="https://en.wikipedia.org/wiki/File:Tux_ecb.jpg">original image</a> has been created by <a href="https://en.wikipedia.org/wiki/User:Lunkwill">User:Lunkwill</a> of en.wikipedia in 2004 and added to the page “<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block cipher mode of operation</a>” with <a href="https://en.wikipedia.org/w/index.php?title=Block_cipher_mode_of_operation&amp;diff=prev&amp;oldid=2191923">this edit</a>.</p>
+
+<p>It has even been <a href="https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/April-2004#Tux_ecb.jpg">proposed as a Wikipedia featured picture</a>.</p>
+
+<p>Nothing more is known about the original. I wrote an email to the author, and I will update the blog post if he replies.</p>
+
+<h2 id="my-take-at-it">My take at it</h2>
+
+<p>The picture is amazing, but rather low quality even for screen, let alone for printing. So, I decided to generate my own.</p>
+
+<p>First thing needed was an image format where the pixels were represented sequentially as plain bytes, without any compression, and possibly with a simple header. The perfect candidate turned out to be the <a href="https://en.wikipedia.org/wiki/Netpbm_format#PPM_example">PPM binary format</a>, part of the Netpbm spec. (It is just basically a ASCII header and then a sequence of 3-bytes RGB representations of the pixels.)</p>
+
+<p>Here is the process:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c"># First convert the Tux to PPM with Gimp</span>
+</span><span class="line"><span class="c"># Then take the header apart</span>
+</span><span class="line">head -n 4 Tux.ppm &gt; header.txt
+</span><span class="line">tail -n +5 Tux.ppm &gt; body.bin
+</span><span class="line"><span class="c"># Then encrypt with ECB (experiment with some different keys)</span>
+</span><span class="line">openssl enc -aes-128-ecb -nosalt -pass pass:<span class="s2">&quot;ANNA&quot;</span> -in body.bin -out body.ecb.bin
+</span><span class="line"><span class="c"># And finally put the result together and convert to some better format with Gimp</span>
+</span><span class="line">cat header.txt body.ecb.bin &gt; Tux.ecb.ppm
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And the result! (<a href="http://www.cafepress.com/ecbpenguin.1060438520">Prints on sale</a>, it makes for a great nerdy office decoration, much like “Crypto Safety Procedures”)</p>
+
+<p><a href="/images/Tux-ECB.png"><img src="/images/Tux-ECB-small.png" alt="Tux ecb.jpg" class="center" /></a></p>
+
+<h3 id="bonus-pop-art">Bonus: pop art</h3>
+
+<p>Also, the color combinations spawning from the different keys reminded me of the <a href="https://www.google.com/search?q=Marilyn+Monroe+by+Andy+Warhol&amp;tbm=isch">Marilyn Monroe by Andy Warhol</a>, so… (<a href="http://www.cafepress.com/ecbpenguin.1060711059">Poster</a>!)</p>
+
+<p><img src="/images/POP-xsmall.png" alt="POP Tuxes" class="center" /></p>
+
+<p><a href="http://www.cafepress.com/ecbpenguin">Visit the shop</a> for other ECB Tux gear! Or just <a href="https://twitter.com/FiloSottile">follow me</a> on Twitter.</p>
+
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2013-11-10T19:54:00+00:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2013</time>
+      
+
+
+
+
+    </p>
+    
+
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>

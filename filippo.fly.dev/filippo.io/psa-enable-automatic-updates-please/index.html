@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>PSA: enable automatic updates. Please. | PyTux</title>
+  <meta name="author" content="Filippo Valsorda">
+
+  
+  <meta name="description" content="I want you to do a quick inventory of all the boxes, VPS, servers etc. you have root on. Ok, now tell me, when is the last time you updated the one &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://filippo.io/psa-enable-automatic-updates-please/">
+
+  <link href="../stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">PyTux</a></h1>
+  
+    <h2>Trips of a curious penguin.</h2>
+  
+</hgroup>
+
+
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+<header style="background-color: gold;padding: 30px;">
+  Hello, time traveler! You are reading an article that is <em>almost ten years old</em>. The world has changed, and so have I and my opinions. <strong>There is a good chance what's below is not current, correct, or secure anymore, and maybe it never was.</strong> This page is preserved because I am an archivist at heart, but you have been warned.
+</header>
+  
+  <header>
+    
+      
+        <h1 class="entry-title">PSA: enable automatic updates. Please.</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-11-10T15:32:00+00:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I want you to do a quick inventory of all the boxes, VPS, servers etc. you have root on.</p>
+
+<p>Ok, now tell me, when is the last time you updated the one you almost forgot about? Is it vulnerable to ShellShock? Is it vulnerable to Heartbleed?</p>
+
+<p>Go patch it now, I’ll wait.</p>
+
+<p>Now, <strong>turn on automatic security updates on all the boxes you don’t log into at least every few days</strong>. (If I convinced you already, just skip at the bottom of this post to read how.)</p>
+
+<p>It does not matter if you don’t care about those boxes. They WILL get owned and <a href="http://status.ovh.net/?do=details&amp;id=8120">turned into a botnet</a> that will make all of us on the Internet less secure. It’s a <strong>responsibility</strong> you have for managing a server on our Internet, together with making sure your mail server is not an open remailer and your DNS server can’t be used for DDoS reflection.</p>
+
+<p><em>“But Filippo, automatic updates are going to break my box!”</em></p>
+
+<p>No. Distribution security updates are MEANT not to break things. And trust me, not patching security vulnerabilities is going to disrupt your service way sooner than a breaking update (if that ever happens).</p>
+
+<p><em>“But my box can’t reboot cleanly and resume service”</em></p>
+
+<p>This is bad, there are countless things that can reboot your box, host mainteinance being the most likely, followed by kernel panics, out-of-memory… It’s just part of the mindless server setup having things start on boot.</p>
+
+<p>Anyway, you can turn off automatic reboots and still get 70% of the benefits (maybe).</p>
+
+<p><em>“Ok you sold it, how do I do it?”</em></p>
+
+<p>Easy-peasy. Here are the instructions if you use Ubuntu (and I think it works also on Debian). If you know how to do it on other systems please email me!</p>
+
+<p><strong><code>/etc/apt/apt.conf.d/20auto-upgrades</code></strong></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">APT::Periodic::Update-Package-Lists "1";
+</span><span class="line">APT::Periodic::Unattended-Upgrade "1";</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong><code>/etc/apt/apt.conf.d/50unattended-upgrades</code></strong></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">// Automatically upgrade packages from these (origin:archive) pairs
+</span><span class="line">Unattended-Upgrade::Allowed-Origins {
+</span><span class="line">        "${distro_id}:${distro_codename}-security";
+</span><span class="line">};
+</span><span class="line">
+</span><span class="line">// List of packages to not update (regexp are supported)
+</span><span class="line">Unattended-Upgrade::Package-Blacklist {};
+</span><span class="line">
+</span><span class="line">// Send email to this address for problems or packages upgrades
+</span><span class="line">// If empty or unset then no email is sent, make sure that you
+</span><span class="line">// have a working mail setup on your system. A package that provides
+</span><span class="line">// 'mailx' must be installed. E.g. "user@example.com"
+</span><span class="line">Unattended-Upgrade::Mail "TODO_YOUR_EMAIL_HERE_TODO";
+</span><span class="line">
+</span><span class="line">// Set this value to "true" to get emails only on errors. Default
+</span><span class="line">// is to always send a mail if Unattended-Upgrade::Mail is set
+</span><span class="line">Unattended-Upgrade::MailOnlyOnError "true";
+</span><span class="line">
+</span><span class="line">// Automatically reboot *WITHOUT CONFIRMATION*
+</span><span class="line">//  if the file /var/run/reboot-required is found after the upgrade
+</span><span class="line">Unattended-Upgrade::Automatic-Reboot "true";</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line"># apt-get install unattended-upgrades
+</span><span class="line"># service unattended-upgrades restart</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+  
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Filippo Valsorda</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2014-11-10T15:32:00+00:00" pubdate data-updated="true" class="updated">Nov 10<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="https://filippo.io/psa-enable-automatic-updates-please/" data-via="FiloSottile" data-counturl="https://filippo.io/psa-enable-automatic-updates-please/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+  
+  <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/the-heartbleed-test-at-owasp-slash-nyu-poly/" title="Previous Post: [2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+">&laquo; [2014-06-24] "The Heartbleed Test" @ OWASP / NYU Poly
+</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Filippo Valsorda
+</p>
+
+<!-- Piwik tag removed -->
+
+</footer>
+  
+
+</body>
+</html>
