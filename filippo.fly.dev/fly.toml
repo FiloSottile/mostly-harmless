@@ -3,6 +3,10 @@ app = "filippo"
 [env]
   PORT = "8080"
 
+[metrics]
+  port = 9091
+  path = "/metrics"
+
 [[services]]
   internal_port = 8080
   protocol = "tcp"
@@ -20,9 +24,13 @@ app = "filippo"
     handlers = ["tls", "http"]
     port = 443
 
-  [[services.tcp_checks]]
+  [[services.http_checks]]
     grace_period = "1s"
-    interval = "15s"
+    interval = "10s"
     restart_limit = 6
     timeout = "2s"
-
+    method = "get"
+    path = "/"
+    protocol = "http"
+    [services.http_checks.headers]
+      Host = "filippo.io"

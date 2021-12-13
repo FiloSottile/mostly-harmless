@@ -6,6 +6,10 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -13,6 +17,12 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	metricsMux := http.NewServeMux()
+	metricsMux.Handle("/metrics", promhttp.Handler())
+	metricsServer := &http.Server{Addr: ":9091", Handler: metricsMux,
+		ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second}
+	go func() { log.Fatal(metricsServer.ListenAndServe()) }()
 
 	mux := http.NewServeMux()
 	ageEncryption(mux)
@@ -43,4 +53,24 @@ func main() {
 	}
 
 	log.Fatal(s.ListenAndServe())
+}
+
+var httpReqs = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "http_requests_total",
+	Help: "HTTP requests processed, partitioned by handler.",
+}, []string{"handler"})
+
+func handleWithCounter(mux *http.ServeMux, pattern string, handler http.Handler) {
+	mux.HandleFunc(pattern, func(rw http.ResponseWriter, r *http.Request) {
+		httpReqs.WithLabelValues(pattern).Inc()
+		handler.ServeHTTP(rw, r)
+	})
+}
+
+func handleFuncWithCounter(mux *http.ServeMux, pattern string,
+	handle func(http.ResponseWriter, *http.Request)) {
+	mux.HandleFunc(pattern, func(rw http.ResponseWriter, r *http.Request) {
+		httpReqs.WithLabelValues(pattern).Inc()
+		handle(rw, r)
+	})
 }

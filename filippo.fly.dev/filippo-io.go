@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 //go:embed filippo.io
@@ -31,6 +34,8 @@ type goGetHandler struct {
 
 func (h goGetHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	httpReqs.WithLabelValues("[go-get]").Inc()
+	goGetReqs.WithLabelValues(h.Name, r.URL.Query().Get("go-get")).Inc()
 	goGetHtml.Execute(rw, h)
 }
 
@@ -42,7 +47,7 @@ max_age: 86401
 `
 
 func filippoIO(mux *http.ServeMux) {
-	mux.HandleFunc("www.filippo.io/", func(rw http.ResponseWriter, r *http.Request) {
+	handleFuncWithCounter(mux, "www.filippo.io/", func(rw http.ResponseWriter, r *http.Request) {
 		u := &url.URL{
 			Scheme: "https", Host: "filippo.io",
 			Path: r.URL.Path, RawQuery: r.URL.RawQuery,
@@ -54,10 +59,11 @@ func filippoIO(mux *http.ServeMux) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mux.Handle("filippo.io/", http.FileServer(http.FS(content)))
+	// TODO: metrics counter for which files are loaded.
+	handleWithCounter(mux, "filippo.io/", http.FileServer(http.FS(content)))
 
 	// MTA-STS for domains and subdomains
-	mux.HandleFunc("/.well-known/mta-sts.txt",
+	handleFuncWithCounter(mux, "/.well-known/mta-sts.txt",
 		func(rw http.ResponseWriter, r *http.Request) {
 			if !strings.HasPrefix(r.Host, "mta-sts.") {
 				http.Error(rw, "Not an MTA-STS domain", http.StatusNotFound)
@@ -68,12 +74,12 @@ func filippoIO(mux *http.ServeMux) {
 		})
 
 	// git clone redirects
-	mux.HandleFunc("filippo.io/age/info/refs",
+	handleFuncWithCounter(mux, "filippo.io/age/info/refs",
 		func(rw http.ResponseWriter, r *http.Request) {
 			url := "https://github.com/FiloSottile/age.git/info/refs?" + r.URL.RawQuery
 			http.Redirect(rw, r, url, http.StatusFound)
 		})
-	mux.HandleFunc("filippo.io/yubikey-agent/info/refs",
+	handleFuncWithCounter(mux, "filippo.io/yubikey-agent/info/refs",
 		func(rw http.ResponseWriter, r *http.Request) {
 			url := "https://github.com/FiloSottile/yubikey-agent.git/info/refs?" + r.URL.RawQuery
 			http.Redirect(rw, r, url, http.StatusFound)
@@ -137,6 +143,19 @@ func filippoIO(mux *http.ServeMux) {
 		"/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/": "https://blog.filippo.io/how-the-new-gmail-image-proxy-works-and-what-this-means-for-you/",
 		"/the-ecb-penguin/": "https://blog.filippo.io/the-ecb-penguin/",
 	} {
-		mux.Handle("filippo.io"+path, http.RedirectHandler(url, http.StatusFound))
+		mux.HandleFunc("filippo.io"+path, func(rw http.ResponseWriter, r *http.Request) {
+			httpReqs.WithLabelValues("[redirect]").Inc()
+			redirectReqs.WithLabelValues(path).Inc()
+			http.Redirect(rw, r, url, http.StatusFound)
+		})
 	}
 }
+
+var redirectReqs = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "redirect_requests_total",
+	Help: "Redirect requests processed, partitioned by path.",
+}, []string{"name", "go_get"})
+var goGetReqs = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "goget_requests_total",
+	Help: "go get requests processed, partitioned by name and go-get query parameter.",
+}, []string{"name", "go_get"})

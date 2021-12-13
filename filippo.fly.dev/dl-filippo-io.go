@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/google/go-github/v38/github"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"golang.org/x/oauth2"
 )
 
@@ -33,7 +35,7 @@ func dlFilippo(mux *http.ServeMux) {
 		log.Println(err)
 	}
 
-	mux.HandleFunc("dl.filippo.io/age/", func(w http.ResponseWriter, r *http.Request) {
+	handleFuncWithCounter(mux, "dl.filippo.io/age/", func(w http.ResponseWriter, r *http.Request) {
 		version := strings.TrimPrefix(r.URL.Path, "/age/")
 		if version != "latest" && !strings.HasPrefix(version, "v") {
 			http.Error(w, "Invalid download path", http.StatusNotFound)
@@ -51,11 +53,15 @@ func dlFilippo(mux *http.ServeMux) {
 			ext = ".zip"
 		}
 
+		dlReqs.WithLabelValues(GOOS, GOARCH, version).Inc()
+
 		if version == "latest" {
 			v, err := getLatestVersion(r.Context())
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Failed to retrieve latest version", http.StatusInternalServerError)
+				dlErrs.Inc()
+				return
 			}
 			version = v
 		}
@@ -63,3 +69,12 @@ func dlFilippo(mux *http.ServeMux) {
 		http.Redirect(w, r, "https://github.com/FiloSottile/age/releases/download/"+version+"/age-"+version+"-"+GOOS+"-"+GOARCH+ext, http.StatusMovedPermanently)
 	})
 }
+
+var dlReqs = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "dl_requests_total",
+	Help: "dl.filippo.io requests processed, partitioned by GOOS, GOARCH, and version.",
+}, []string{"GOOS", "GOARCH", "version"})
+var dlErrs = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "dl_errors_total",
+	Help: "dl.filippo.io errors while retrieving latest version.",
+})
