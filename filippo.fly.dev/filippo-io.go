@@ -22,6 +22,7 @@ var goGetHtml = template.Must(template.New("go-get.html").Parse(`
 <head>
     <meta name="go-import" content="filippo.io/{{ .Name }} git {{ $repo }}">
     <meta http-equiv="refresh" content="0;URL='{{ or .Redirect $repo }}'">
+	<script defer data-domain="filippo.io" src="https://plausible.io/js/plausible.js"></script>
 <body>
     Redirecting you to the <a href="{{ or .Redirect $repo }}">project page</a>...
 `))
@@ -65,7 +66,8 @@ func filippoIO(mux *http.ServeMux) {
 	// MTA-STS for domains and subdomains
 	handleFuncWithCounter(mux, "/.well-known/mta-sts.txt",
 		func(rw http.ResponseWriter, r *http.Request) {
-			if !strings.HasPrefix(r.Host, "mta-sts.") {
+			if !strings.HasPrefix(r.Host, "mta-sts.") ||
+				!strings.HasSuffix(r.Host, ".filippo.io") {
 				http.Error(rw, "Not an MTA-STS domain", http.StatusNotFound)
 				return
 			}
