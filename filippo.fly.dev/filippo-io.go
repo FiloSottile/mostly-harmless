@@ -156,7 +156,7 @@ func filippoIO(mux *http.ServeMux) {
 var redirectReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "redirect_requests_total",
 	Help: "Redirect requests processed, partitioned by path.",
-}, []string{"name", "go_get"})
+}, []string{"path"})
 var goGetReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "goget_requests_total",
 	Help: "go get requests processed, partitioned by name and go-get query parameter.",
