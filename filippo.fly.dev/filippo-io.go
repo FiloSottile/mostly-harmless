@@ -145,6 +145,7 @@ func filippoIO(mux *http.ServeMux) {
 		"/how-the-new-gmail-image-proxy-works-and-what-does-this-mean-for-you/": "https://blog.filippo.io/how-the-new-gmail-image-proxy-works-and-what-this-means-for-you/",
 		"/the-ecb-penguin/": "https://blog.filippo.io/the-ecb-penguin/",
 	} {
+		path, url := path, url // grrrrrr...
 		mux.HandleFunc("filippo.io"+path, func(rw http.ResponseWriter, r *http.Request) {
 			httpReqs.WithLabelValues("[redirect]").Inc()
 			redirectReqs.WithLabelValues(path).Inc()
