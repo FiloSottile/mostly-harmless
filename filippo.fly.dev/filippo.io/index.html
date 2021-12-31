@@ -14,8 +14,8 @@
             font-style: normal;
             font-weight: 400;
             src: local('Raleway'), local('Raleway-Regular'),
-                url('../fonts/raleway-v14-latin-regular.woff2') format('woff2'),
-                url('../fonts/raleway-v14-latin-regular.woff') format('woff');
+                url('fonts/raleway-v14-latin-regular.woff2') format('woff2'),
+                url('fonts/raleway-v14-latin-regular.woff') format('woff');
         }
 
         @font-face {
@@ -23,8 +23,8 @@
             font-style: normal;
             font-weight: 400;
             src: local('Source Code Pro Regular'), local('SourceCodePro-Regular'),
-                url('../fonts/source-code-pro-v11-latin-regular.woff2') format('woff2'),
-                url('../fonts/source-code-pro-v11-latin-regular.woff') format('woff');
+                url('fonts/source-code-pro-v11-latin-regular.woff2') format('woff2'),
+                url('fonts/source-code-pro-v11-latin-regular.woff') format('woff');
         }
 
         @font-face {
@@ -32,8 +32,8 @@
             font-style: normal;
             font-weight: 400;
             src: local('Bitter Regular'), local('Bitter-Regular'),
-                url('../fonts/bitter-v15-latin-regular.woff2') format('woff2'),
-                url('../fonts/bitter-v15-latin-regular.woff') format('woff');
+                url('fonts/bitter-v15-latin-regular.woff2') format('woff2'),
+                url('fonts/bitter-v15-latin-regular.woff') format('woff');
         }
     </style>
 
@@ -42,14 +42,14 @@
             width: auto;
             max-width: 700px;
             padding: 0 15px;
+            margin: 80px auto;
         }
 
         body {
             font-family: "Raleway", sans-serif;
         }
 
-        h1,
-        h2 {
+        h1, h2, h3 {
             font-family: "Bitter", serif;
         }
 
@@ -70,19 +70,59 @@
             Google. <a href="https://blog.filippo.io/hi">Read more about what I do and how we might know each other</a>.
         </p>
         <p>
-            I am <i>FiloSottile</i> on <a href="https://github.com/FiloSottile" rel="me">GitHub</a> and
-            <a href="https://twitter.com/FiloSottile" rel="me">Twitter</a>.
-        </p>
-        <p>
-            My most popular project is <a href="https://mkcert.dev">mkcert</a>.
-            The one I have the highest hopes for is <a href="https://age-encryption.org">age</a>.
-        </p>
-        <p>
-            I have a newsletter, <a href="https://buttondown.email/cryptography-dispatches?tag=website">Cryptography
-                Dispatches</a>, and a <a href="https://twitch.tv/filosottile">Twitch channel</a>.
+            I am <i>FiloSottile</i> on <a href="https://github.com/FiloSottile" rel="me">GitHub</a>,
+            <a href="https://twitter.com/FiloSottile" rel="me">Twitter</a>, and
+            <a href="https://twitch.tv/filosottile" rel="me">Twitch</a>.
         </p>
         <p>
             I attended the <a href="https://recurse.com">Recurse Center</a> batches Fall 2013 and Fall 2 2017.
+        </p>
+
+        <h2 id="content">Words</h2>
+        <p>
+            My blog is at <a href="https://blog.filippo.io">blog.filippo.io</a>, active since 2013.
+        </p>
+        <p>
+            <a href="https://buttondown.email/cryptography-dispatches?tag=website">
+                Cryptography Dispatches</a> is my lightly edited cryptography newsletter.
+        </p>
+
+        <h2 id="software">Software</h2>
+        <p>
+            <a href="https://mkcert.dev">mkcert</a>
+            <br />A tool to easily generate TLS certificates for development
+        </p>
+        <p>
+            <a href="https://age-encryption.org">age</a>
+            <br />A simple, modern, and secure file encryption tool
+        </p>
+        <p>
+            <a href="https://github.com/FiloSottile/yubikey-agent">yubikey-agent</a>
+            <br />The easiest way to use a PIV token with SSH
+        </p>
+        <p>
+            <a href="https://pkg.go.dev/filippo.io/edwards25519">filippo.io/edwards25519</a>
+            <br />The standard library safe-ish low-level API, repackaged and extended for external use
+        </p>
+        <p>
+            <a href="https://filippo.io/intermediates">filippo.io/intermediates</a>
+            <br />Preloaded WebPKI intermediate CA certificates to connect to misconfigured servers
+        </p>
+        <p>
+            <a href="https://pkg.go.dev/filippo.io/cpace">filippo.io/cpace</a>
+            <br />An experimental implementation of the CPace PAKE instantiated over ristretto255
+        </p>
+        <p>
+            <a href="https://github.com/FiloSottile/passage">passage</a>
+            <br />A password-store fork that uses age instead of GnuPG
+        </p>
+        <p>
+            <a href="https://github.com/FiloSottile/captive-browser">captive-browser</a>
+            <br />Browser launcher with DNS proxy for accessing captive portals despite custom DNS settings
+        </p>
+        <p>
+            <a href="https://github.com/FiloSottile/homebrew-musl-cross">homebrew-musl-cross</a>
+            <br />Homebrew Formula for musl-cross-based Linux cross-compilers
         </p>
 
         <h2 id="addresses">Contacts</h2>
@@ -91,17 +131,13 @@
 Beaverton, Oregon 97008-7105
 </code></pre>
         <p>
-            <code>hi@</code><code>filippo.io</code>
+            <code>hi&commat;</code><code>filippo.io</code>
         </p>
         <p>
-            <code>filippo@</code><code>golang.org</code>
+            <code>filippo&commat;</code><code>golang.org</code>
         </p>
 
-        <h2 id="index">Index</h2>
-        <p>
-            Most of the content is at <a href="https://blog.filippo.io">blog.filippo.io</a> or in my
-            <a href="https://buttondown.email/cryptography-dispatches/archive">newsletter archives</a>.
-        </p>
+        <h2 id="index">Other</h2>
         <p>
             <a href="/behindthesofa"><code>/behindthesofa</code></a><br />
             <a href="/linux-syscall-table"><code>/linux-syscall-table</code></a>
@@ -117,5 +153,3 @@ Beaverton, Oregon 97008-7105
             <a href="/Badfish"><code>/Badfish</code></a>
         </p>
     </div>
-
-    <!-- Piwik tag removed -->
