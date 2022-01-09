@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net"
 
 	"github.com/nmcclain/ldap"
@@ -29,5 +30,6 @@ func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAP
 
 func (h ldapHandler) Search(boundDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
 	log4jHits.WithLabelValues(searchReq.BaseDN).Inc()
+	log.Printf("LDAP search %q from %v", searchReq.BaseDN, conn.RemoteAddr())
 	return ldap.ServerSearchResult{nil, nil, nil, ldap.LDAPResultUnwillingToPerform}, nil
 }
