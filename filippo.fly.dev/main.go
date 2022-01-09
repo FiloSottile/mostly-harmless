@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -13,16 +12,13 @@ import (
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	metricsMux := http.NewServeMux()
 	metricsMux.Handle("/metrics", promhttp.Handler())
 	metricsServer := &http.Server{Addr: ":9091", Handler: metricsMux,
 		ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second}
 	go func() { log.Fatal(metricsServer.ListenAndServe()) }()
+
+	go func() { log.Fatal(startLDAPServer()) }()
 
 	mux := http.NewServeMux()
 	ageEncryption(mux)
@@ -31,7 +27,7 @@ func main() {
 	filippoIO(mux)
 
 	s := &http.Server{
-		Addr: ":" + port,
+		Addr: ":8080",
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Header.Get("X-Forwarded-Proto") == "http" {
 				u := &url.URL{
