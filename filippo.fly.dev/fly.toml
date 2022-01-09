@@ -42,6 +42,7 @@ app = "filippo"
     type = "connections"
 
   [[services.ports]]
+    handlers = ["proxy_proto"]
     port = 389
 
   [[services.tcp_checks]]

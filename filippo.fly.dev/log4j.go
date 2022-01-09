@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/nmcclain/ldap"
+	"github.com/pires/go-proxyproto"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -19,7 +20,11 @@ func startLDAPServer() error {
 	handler := ldapHandler{}
 	s.BindFunc("", handler)
 	s.SearchFunc("", handler)
-	return s.ListenAndServe(":3389")
+	ln, err := net.Listen("tcp", ":3389")
+	if err != nil {
+		return err
+	}
+	return s.Serve(&proxyproto.Listener{Listener: ln})
 }
 
 type ldapHandler struct{}
