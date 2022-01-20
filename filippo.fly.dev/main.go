@@ -23,6 +23,7 @@ func main() {
 	mux := http.NewServeMux()
 	ageEncryption(mux)
 	dlFilippo(mux)
+	blogFilippo(mux)
 	mkcert(mux)
 	filippoIO(mux)
 
