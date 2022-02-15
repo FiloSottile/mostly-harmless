@@ -13,7 +13,7 @@ func ageEncryption(mux *http.ServeMux) {
 	handleFuncWithCounter(mux, "age-encryption.org/stickers",
 		func(rw http.ResponseWriter, _ *http.Request) {
 			rw.Header().Set("Content-Type", "text/plain")
-			rw.Write([]byte("# age stickers! Send your address complete of name and country\n"))
+			rw.Write([]byte("# age stickers! Send your address, including name and country,\n"))
 			rw.Write([]byte("# to age@filippo.io encrypted to this recipient, and I'll mail\n"))
 			rw.Write([]byte("# you some stickers in the next batch. Standing offer, no ETA.\n"))
 			rw.Write([]byte("age1p6z5dwkjr4eu2rz6k6frumhxwc29q960fj7h0tajf0zywwylt5ysrwx8zr\n"))
