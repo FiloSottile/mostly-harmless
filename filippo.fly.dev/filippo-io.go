@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 
@@ -22,7 +23,6 @@ var goGetHtml = template.Must(template.New("go-get.html").Parse(`
 <head>
     <meta name="go-import" content="filippo.io/{{ .Name }} git {{ $repo }}">
     <meta http-equiv="refresh" content="0;URL='{{ or .Redirect $repo }}'">
-	<script defer data-domain="filippo.io" src="https://plausible.io/js/plausible.js"></script>
 <body>
     Redirecting you to the <a href="{{ or .Redirect $repo }}">project page</a>...
 `))
@@ -55,6 +55,22 @@ func filippoIO(mux *http.ServeMux) {
 		}
 		http.Redirect(rw, r, u.String(), http.StatusMovedPermanently)
 	})
+
+	plausible := &httputil.ReverseProxy{
+		Director: func(r *http.Request) {
+			r.Host = "plausible.io"
+			r.URL.Scheme = "https"
+			r.URL.Host = "plausible.io"
+			r.Header.Del("X-Forwarded-For")
+		},
+		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+			proxyErrs.Inc()
+			log.Println("Plausible proxy error:", err)
+			http.Error(w, "proxy error", http.StatusBadGateway)
+		},
+	}
+	handleWithCounter(mux, "filippo.io/js/script.js", plausible)
+	handleWithCounter(mux, "filippo.io/api/event", plausible)
 
 	content, err := fs.Sub(filippoIoContent, "filippo.io")
 	if err != nil {
@@ -162,3 +178,7 @@ var goGetReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "goget_requests_total",
 	Help: "go get requests processed, partitioned by name and go-get query parameter.",
 }, []string{"name", "go_get"})
+var proxyErrs = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "proxy_errors_total",
+	Help: "Plausible proxy errors.",
+})
