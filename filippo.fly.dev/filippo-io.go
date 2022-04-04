@@ -61,7 +61,6 @@ func filippoIO(mux *http.ServeMux) {
 			r.Host = "plausible.io"
 			r.URL.Scheme = "https"
 			r.URL.Host = "plausible.io"
-			r.Header.Del("X-Forwarded-For")
 		},
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
 			proxyErrs.Inc()
