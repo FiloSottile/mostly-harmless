@@ -25,6 +25,7 @@ func main() {
 	dlFilippo(mux)
 	blogFilippo(mux)
 	mkcert(mux)
+	c2sp(mux)
 	filippoIO(mux)
 
 	s := &http.Server{
