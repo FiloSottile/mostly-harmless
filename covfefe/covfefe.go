@@ -47,6 +47,8 @@ func Run(dbPath, mediaPath string, creds *Credentials) error {
 	}
 	defer db.Close()
 
+	_ = os.MkdirAll(mediaPath, 0700)
+
 	c := &Covfefe{
 		withConn: func(f func(conn *sqlite.Conn) error) error {
 			conn := db.Get(context.Background())
