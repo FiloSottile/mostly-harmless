@@ -6,10 +6,10 @@ import (
 
 	"crawshaw.io/sqlite"
 	"crawshaw.io/sqlite/sqlitex"
+	"github.com/modern-go/gls"
 	"github.com/pkg/errors"
 	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
-	"github.com/v2pro/plz/gls"
 )
 
 func Rescan(dbPath string) (err error) {
