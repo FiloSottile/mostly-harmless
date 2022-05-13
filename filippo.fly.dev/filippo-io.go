@@ -41,10 +41,10 @@ func (h goGetHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 const mtaSTS = `version: STSv1
-mode: testing
+mode: enforce
 mx: in1-smtp.messagingengine.com
 mx: in2-smtp.messagingengine.com
-max_age: 86401
+max_age: 1209600
 `
 
 func filippoIO(mux *http.ServeMux) {
