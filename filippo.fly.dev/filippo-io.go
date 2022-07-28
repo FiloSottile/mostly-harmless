@@ -146,7 +146,7 @@ func filippoIO(mux *http.ServeMux) {
 		"/entropy-talk":                         "https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy",
 		"/entropy-talk-ccc":                     "https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy-at-32c3",
 		"/Badfish/installer":                    "https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg",
-		"/newsletter":                           "https://buttondown.email/cryptography-dispatches?tag=redirect",
+		"/newsletter":                           "https://words.filippo.io/dispatches/#/portal/signup",
 		"/age-design":                           "https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview",
 		"/age/report":                           "https://github.com/FiloSottile/age/issues/new/choose",
 		"/age/age.1":                            "https://htmlpreview.github.io/?https://github.com/FiloSottile/age/blob/main/doc/age.1.html",
