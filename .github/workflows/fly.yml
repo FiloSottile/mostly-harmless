@@ -15,6 +15,5 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
-        - uses: superfly/flyctl-actions@1.1
-          with:
-            args: "deploy ./filippo.fly.dev"
+        - uses: superfly/flyctl-actions/setup-flyctl@master
+        - run: flyctl deploy --remote-only ./filippo.fly.dev
