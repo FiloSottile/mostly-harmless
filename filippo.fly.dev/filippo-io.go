@@ -63,6 +63,11 @@ func filippoIO(mux *http.ServeMux) {
 			r.URL.Host = "plausible.io"
 		},
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+			select {
+			case <-r.Context().Done():
+				return
+			default:
+			}
 			proxyErrs.Inc()
 			log.Println("Plausible proxy error:", err)
 			http.Error(w, "proxy error", http.StatusBadGateway)

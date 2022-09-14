@@ -18,8 +18,6 @@ func main() {
 		ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second}
 	go func() { log.Fatal(metricsServer.ListenAndServe()) }()
 
-	go func() { log.Fatal(startLDAPServer()) }()
-
 	mux := http.NewServeMux()
 	ageEncryption(mux)
 	dlFilippo(mux)

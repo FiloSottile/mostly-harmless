@@ -31,22 +31,3 @@ app = "filippo"
     protocol = "http"
     [services.http_checks.headers]
       Host = "filippo.io"
-
-[[services]]
-  internal_port = 3389
-  protocol = "tcp"
-
-  [services.concurrency]
-    hard_limit = 100
-    soft_limit = 75
-    type = "connections"
-
-  [[services.ports]]
-    handlers = ["proxy_proto"]
-    port = 389
-
-  [[services.tcp_checks]]
-    grace_period = "1s"
-    interval = "10s"
-    restart_limit = 6
-    timeout = "2s"
