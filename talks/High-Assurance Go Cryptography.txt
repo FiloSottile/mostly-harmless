@@ -1,0 +1,159 @@
+
+            High-Assurance Go Cryptography
+
+
+Who am I
+    https://filippo.io, https://twitter.com/FiloSottile
+    Go team @ Google 2018–2022
+    https://words.filippo.io/professional-maintainers/
+
+
+Today's talk
+    How we keep crypto/... and golang.org/x/crypto/... safe
+    (Also, bonus filippo.io/age content)
+    Tests, fuzzing, APIs, code generation, complexity, readability
+
+
+
+Test vectors
+    Sometimes, the only thing we need to do is run them
+
+- Wycheproof test vectors
+    https://github.com/google/wycheproof
+    https://github.com/google/wycheproof/blob/2196000605e4/testvectors/ecdh_secp224r1_ecpoint_test.json#L50
+    https://github.com/golang/crypto/blob/eccd6366d1b/internal/wycheproof/ecdh_stdlib_test.go
+    https://github.com/golang/crypto/tree/master/internal/wycheproof/
+    https://github.com/golang/crypto/blob/eccd6366d1b/internal/wycheproof/wycheproof_test.go#L44
+
+- ed25519vectors
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/ed25519/ed25519vectors_test.go#L18
+    https://github.com/C2SP/CCTV/blob/3eed101/ed25519vectors/ed25519vectors.json
+    https://github.com/C2SP/CCTV/blob/3eed101/ed25519vectors/ed25519vectors.go#L232
+    https://github.com/C2SP/CCTV/blob/3eed101/ed25519vectors/ed25519vectors_test.go#L135
+    https://github.com/C2SP/CCTV/tree/main/ed25519vectors
+
+- crypto/tls recordings
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/tls/handshake_client_test.go#L726
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/tls/testdata/Client-TLSv13-Ed25519
+    https://github.com/golang/go/tree/master/src/crypto/tls/testdata/
+
+
+Test frameworks
+    The easier you make writing tests, the more you have
+
+- acmetest
+    https://pkg.go.dev/golang.org/x/crypto/acme/autocert/internal/acmetest#pkg-index
+    https://github.com/golang/crypto/blob/eccd6366d1b/acme/autocert/autocert_test.go#L530
+    https://github.com/golang/crypto/blob/eccd6366d1b/acme/autocert/autocert_test.go#L270
+    https://go-review.googlesource.com/c/crypto/+/381715
+
+- age testkit
+    https://age-encryption.org
+    https://age-encryption.org/v1
+    https://github.com/FiloSottile/age/blob/bbac0a5/tests/x25519.go
+    https://github.com/FiloSottile/age/blob/bbac0a5/testdata/testkit/x25519
+    https://pkg.go.dev/filippo.io/age/internal/testkit
+    https://github.com/FiloSottile/age/blob/bbac0a5/testkit_test.go#L28
+    https://github.com/FiloSottile/age/blob/bbac0a5/tests/scrypt_work_factor_leading_zero_decimal.go
+    https://github.com/FiloSottile/age/blob/bbac0a5/tests/scrypt_work_factor_leading_zero_octal.go
+    https://github.com/FiloSottile/age/blob/bbac0a5/tests/stream_no_final_two_chunks.go
+    https://github.com/FiloSottile/age/blob/bbac0a5/tests/armor_pgp_checksum.go
+    https://github.com/FiloSottile/age/tree/main/tests
+    https://github.com/str4d/rage/pulls?q=testkit
+
+- age testscript
+    https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript
+    https://github.com/FiloSottile/age/blob/bbac0a5/cmd/age/testdata/x25519.txt
+    https://encore.dev/blog/testscript-hidden-testing-gem
+
+
+Fuzzing
+    The easiest test vectors are the ones the computer comes up with
+
+- cryptofuzz by Guido Vranken
+    https://github.com/guidovranken/cryptofuzz
+    https://golang.org/issue/50974
+
+- Weighted fuzzers
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/internal/edwards25519/field/fe.go#L23
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/internal/edwards25519/field/fe_test.go#L100
+    https://go.googlesource.com/go/+/d95ca9138026cbe40e0857d76a81a16d03230871/src/crypto/elliptic/p224_test.go#L57
+    https://go.googlesource.com/go/+/d95ca9138026cbe40e0857d76a81a16d03230871
+
+
+Safe interfaces
+    Even better than finding bugs is being unable to write them
+
+- edwards25519 API
+    https://pkg.go.dev/crypto/ed25519/internal/edwards25519@go1.13
+    https://pkg.go.dev/crypto/internal/edwards25519
+    https://filippo.io/edwards25519
+
+
+Code generation
+    Sometimes it's safest to let the computer write the code
+
+- fiat-cypto
+    https://github.com/mit-plv/fiat-crypto
+    https://github.com/FiloSottile/edwards25519/blob/8c58ed0e35/scalar_fiat.go#L89
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/internal/edwards25519/scalar.go#L234
+    https://github.com/FiloSottile/edwards25519/blob/8c58ed0e35/scalar.go
+    https://go-review.googlesource.com/c/go/+/420454
+    https://words.filippo.io/dispatches/wide-reduction/
+
+- avo assembly
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/internal/edwards25519/field/fe_amd64.s
+    https://github.com/mmcloughlin/avo
+    https://github.com/golang/go/blob/63d05642d4/src/crypto/internal/edwards25519/field/_asm/fe_amd64_asm.go#L40
+    https://vimeo.com/679848853
+
+
+Complexity reduction
+    The safest code is the one you didn't write
+
+- Assembly Policy
+    https://golang.org/wiki/AssemblyPolicy
+
+- Cryptography Principles
+    https://golang.org/design/cryptography-principles
+
+- Deprecations 🪦
+    legacy x/crypto https://go.dev/issue/30141
+    x/crypto/openpgp https://go.dev/issue/44226
+    x/crypto/poly1305 https://go.dev/issue/36646
+    crypto/dsa https://go.dev/issue/40337
+    crypto/elliptic https://go.dev/issue/52182
+
+- Reduce settings
+    https://go.dev/blog/tls-cipher-suites
+
+
+Readability
+    If the code is complex it should be easier to read, not harder
+
+- poly1305
+    https://github.com/golang/go/blob/63d05642d4/src/vendor/golang.org/x/crypto/internal/poly1305/sum_generic.go#L175
+    https://words.filippo.io/a-literate-go-implementation-of-poly1305/
+
+
+Wishlist
+    We're not done! We'll never be done!
+
+- Interface tests
+    https://pkg.go.dev/golang.org/x/net/nettest#TestConn
+
+- Mutation testing
+    https://twitter.com/FiloSottile/status/1568665092191059968
+    https://golang.org/issue/20040
+
+- OpenSSH integration tests
+
+- BoringSSL's BoGo and tlsfuzzer
+    https://github.com/google/boringssl/tree/master/ssl/test
+
+
+
+Thank you!
+    https://filippo.io
+    https://twitter.com/FiloSottile
+    hi at filippo dot io
