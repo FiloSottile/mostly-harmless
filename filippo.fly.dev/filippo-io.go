@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"embed"
+	"encoding/base64"
+	"encoding/json"
 	"html/template"
 	"io"
 	"io/fs"
@@ -10,6 +13,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -48,6 +52,7 @@ max_age: 1209600
 `
 
 func filippoIO(mux *http.ServeMux) {
+	// Redirect to HTTPS.
 	handleFuncWithCounter(mux, "www.filippo.io/", func(rw http.ResponseWriter, r *http.Request) {
 		u := &url.URL{
 			Scheme: "https", Host: "filippo.io",
@@ -56,6 +61,7 @@ func filippoIO(mux *http.ServeMux) {
 		http.Redirect(rw, r, u.String(), http.StatusMovedPermanently)
 	})
 
+	// Proxy privacy-preserving analytics.
 	plausible := &httputil.ReverseProxy{
 		Director: func(r *http.Request) {
 			r.Host = "plausible.io"
@@ -75,6 +81,38 @@ func filippoIO(mux *http.ServeMux) {
 	}
 	handleWithCounter(mux, "filippo.io/js/script.js", plausible)
 	handleWithCounter(mux, "filippo.io/api/event", plausible)
+
+	// Newsletter analytics without read tracking.
+	pixelBase64 := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+	pixel, err := base64.StdEncoding.DecodeString(pixelBase64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	plausibleClient := &http.Client{Timeout: 15 * time.Second}
+	handleFuncWithCounter(mux, "filippo.io/api/dispatches/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/api/dispatches/")
+		params := map[string]string{
+			"domain": "blog.filippo.io",
+			"name":   "pageview",
+			"url":    "https://words.filippo.io/dispatches/" + path + "?source=Dispatches",
+		}
+		body, _ := json.Marshal(params)
+
+		req, _ := http.NewRequest("POST", "https://plausible.io/api/event", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Forwarded-For", r.Header.Get("X-Forwarded-For"))
+		req.Header.Set("User-Agent", r.UserAgent())
+
+		res, err := plausibleClient.Do(req)
+		if err != nil || res.StatusCode != http.StatusAccepted {
+			dispatchesErrs.Inc()
+			log.Printf("Plausible API error: %v (status %d)", err, res.StatusCode)
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "no-store")
+		w.Write(pixel)
+	})
 
 	content, err := fs.Sub(filippoIoContent, "filippo.io")
 	if err != nil {
@@ -190,4 +228,8 @@ var goGetReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 var proxyErrs = promauto.NewCounter(prometheus.CounterOpts{
 	Name: "proxy_errors_total",
 	Help: "Plausible proxy errors.",
+})
+var dispatchesErrs = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "dispatches_errors_total",
+	Help: "Plausible pageview API request errors.",
 })
