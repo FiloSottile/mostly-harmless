@@ -13,6 +13,9 @@ func ageEncryption(mux *http.ServeMux) {
 	handleWithCounter(mux, "age-encryption.org/v1", http.RedirectHandler(
 		"https://github.com/C2SP/C2SP/blob/main/age.md", http.StatusFound))
 
+	handleWithCounter(mux, "age-encryption.org/testkit", http.RedirectHandler(
+		"https://github.com/C2SP/CCTV/tree/main/age", http.StatusFound))
+
 	handleFuncWithCounter(mux, "age-encryption.org/stickers",
 		func(rw http.ResponseWriter, _ *http.Request) {
 			rw.Header().Set("Content-Type", "text/plain")
