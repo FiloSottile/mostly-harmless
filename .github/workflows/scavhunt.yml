@@ -1,0 +1,21 @@
+name: Scavenger Hunt SMS
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+permissions:
+  contents: read
+jobs:
+  scavhunt:
+    runs-on: ubuntu-latest
+    environment: scavhunt
+    container: python:3.8.13-alpine3.16
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install --no-cache-dir -r scavhunt/requirements.txt
+      - run: python scavhunt/scavhunt.py
+        env:
+          SCAVHUNT_FROM: ${{ secrets.SCAVHUNT_FROM }}
+          SCAVHUNT_TO: ${{ secrets.SCAVHUNT_TO }}
+          SCAVHUNT_HC_UUID: ${{ secrets.SCAVHUNT_HC_UUID }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
