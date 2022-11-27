@@ -15,7 +15,7 @@ titles generated with a rudimentary Markov chain for nine years, from 2013 to
 
 The bot runs entirely on GitHub Actions.
 
-You can browse generated Hacker News titles at https://filippo.io/hntitles, too.
+You can browse generated Hacker News titles at [filippo.io/fakenews](https://filippo.io/fakenews), too.
 
 ## Training notes
 
