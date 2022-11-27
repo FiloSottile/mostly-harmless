@@ -1,0 +1,20 @@
+name: Hacker News Titles bot
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "42 * * * *"
+permissions:
+  contents: read
+jobs:
+  hntitles:
+    runs-on: ubuntu-latest
+    environment: hntitles
+    container: python:3.10.8
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install --no-cache-dir -r hntitles/requirements.txt
+      - run: python hntitles/hntitles.py
+        env:
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          HNTITLES_HC_UUID: ${{ secrets.HNTITLES_HC_UUID }}
