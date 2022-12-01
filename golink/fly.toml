@@ -1,0 +1,11 @@
+app = "filippo-golink"
+
+[build]
+image = "ghcr.io/tailscale/golink:main"
+
+[deploy]
+strategy = "immediate"
+
+[mounts]
+source="golink"
+destination="/root"
