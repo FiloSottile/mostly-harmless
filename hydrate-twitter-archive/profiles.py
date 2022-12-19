@@ -35,12 +35,11 @@ def fetch(url):
 for name in sys.argv[1:]:
     with open(name) as f:
         data = f.read()
-        if name.endswith(".jsonl"):
-            for i, l in enumerate(tqdm.tqdm(data.splitlines())):
-                u = json.loads(l)
-                if u["default_profile_image"]:
-                    continue
-                if not u["profile_image_url_https"]:
-                    continue  # Twitter Media Policy violations
-                if not fetch(u["profile_image_url_https"].replace("_normal", "")):
-                    fetch(u["profile_image_url_https"])
+        for i, l in enumerate(tqdm.tqdm(data.splitlines())):
+            u = json.loads(l)
+            if u["default_profile_image"]:
+                continue
+            if not u["profile_image_url_https"]:
+                continue  # Twitter Media Policy violations
+            if not fetch(u["profile_image_url_https"].replace("_normal", "")):
+                fetch(u["profile_image_url_https"])
