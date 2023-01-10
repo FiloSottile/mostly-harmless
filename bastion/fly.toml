@@ -1,0 +1,12 @@
+app = "example-bastion"
+
+[[services]]
+  internal_port = 8443
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 443
+
+[mounts]
+  source = "autocert_cache"
+  destination = "/usr/local/lib/autocert"
