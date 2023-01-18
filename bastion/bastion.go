@@ -81,7 +81,7 @@ func main() {
 		if len(l) != sha256.Size {
 			log.Fatalf("Invalid backend: %q", line)
 		}
-		h := keyHash(l)
+		h := *(*keyHash)(l)
 		allowedBackends[h] = true
 	}
 
@@ -109,12 +109,22 @@ func main() {
 	}
 
 	proxy := &httputil.ReverseProxy{
-		Rewrite: func(pr *httputil.ProxyRequest) {
+		// TODO: migrate to Rewrite once Go 1.19 is unsupported.
+		/* Rewrite: func(pr *httputil.ProxyRequest) {
 			pr.Out.URL.Scheme = "https" // needed for the required :scheme header
 			pr.Out.Host = pr.In.Context().Value("backend").(string)
 			pr.SetXForwarded()
 			// We don't interpret the query, so pass it on unmodified.
 			pr.Out.URL.RawQuery = pr.In.URL.RawQuery
+		}, */
+		Director: func(r *http.Request) {
+			// Don't let the client drop the X-Forwarded headers.
+			r.Header.Del("Connection")
+			// ReverseProxy will apply a fresh X-Forwarded-For.
+			r.Header.Del("X-Forwarded-For")
+			r.URL.Scheme = "https" // needed for the required :scheme header
+			r.Header.Set("X-Forwarded-Host", r.Host)
+			r.Host = r.Context().Value("backend").(string)
 		},
 		Transport: p,
 	}
@@ -174,7 +184,7 @@ func (p *backendConnectionsPool) RoundTrip(r *http.Request) (*http.Response, err
 		return nil, errors.New("invalid backend key hash")
 	}
 	p.RLock()
-	cc, ok := p.conns[keyHash(kh)]
+	cc, ok := p.conns[*(*keyHash)(kh)]
 	p.RUnlock()
 	if !ok {
 		// TODO: return this as a response instead.
