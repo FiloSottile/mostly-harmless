@@ -170,6 +170,10 @@ func filippoIO(mux *http.ServeMux) {
 		Name:     "bigmod",
 		Redirect: "https://pkg.go.dev/filippo.io/bigmod",
 	})
+	mux.Handle("filippo.io/keygen/", goGetHandler{
+		Name:     "keygen",
+		Redirect: "https://pkg.go.dev/filippo.io/keygen",
+	})
 	mux.Handle("filippo.io/intermediates/", goGetHandler{
 		Name:     "intermediates",
 		Redirect: "https://pkg.go.dev/filippo.io/intermediates",
