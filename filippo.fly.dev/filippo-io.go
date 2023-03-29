@@ -186,6 +186,7 @@ func filippoIO(mux *http.ServeMux) {
 
 	// Miscellaneous redirects
 	for path, url := range map[string]string{
+		"/rwc2023/talk":                         "https://iacr.org/submit/files/slides/2023/rwc/rwc2023/131/slides.pdf",
 		"/rwc2023":                              "https://filippo.io/rwc2023/",
 		"/ticketbleed/":                         "https://filippo.io/Ticketbleed/",
 		"/heartbleed/":                          "https://filippo.io/Heartbleed/",
