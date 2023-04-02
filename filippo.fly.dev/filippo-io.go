@@ -198,7 +198,6 @@ func filippoIO(mux *http.ServeMux) {
 		"/fuzz-talk":                            "https://speakerdeck.com/filosottile/automated-testing-with-go-fuzz",
 		"/entropy-talk":                         "https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy",
 		"/entropy-talk-ccc":                     "https://speakerdeck.com/filosottile/the-plain-simple-reality-of-entropy-at-32c3",
-		"/Badfish/installer":                    "https://mega.co.nz/#!CQAW2SzA!oXMiMP1c4fLlNgBT8SzNINBMtxevEVTbIAklNeyd2Zg",
 		"/newsletter":                           "https://words.filippo.io/dispatches/#/portal/signup",
 		"/newsletter/manage":                    "https://words.filippo.io/dispatches/#/portal/signin",
 		"/age-design":                           "https://docs.google.com/document/d/11yHom20CrsuX8KQJXBBw04s80Unjv8zCg_A7sPAX_9Y/preview",
