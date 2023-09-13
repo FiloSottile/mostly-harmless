@@ -178,6 +178,10 @@ func filippoIO(mux *http.ServeMux) {
 		Name:     "intermediates",
 		Redirect: "https://pkg.go.dev/filippo.io/intermediates",
 	})
+	mux.Handle("filippo.io/litetlog/", goGetHandler{
+		Name:     "litetlog",
+		Redirect: "https://pkg.go.dev/filippo.io/litetlog",
+	})
 	mux.Handle("filippo.io/cpace/", goGetHandler{
 		Name:     "cpace",
 		GitRepo:  "https://github.com/FiloSottile/go-cpace-ristretto255",
