@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -39,6 +40,12 @@ func dlFilippo(mux *http.ServeMux) {
 	}
 
 	handleFuncWithCounter(mux, "dl.filippo.io/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/robots.txt" {
+			fmt.Fprintln(w, "User-agent: *")
+			fmt.Fprintln(w, "Disallow: /")
+			return
+		}
+
 		var version, project string
 		switch {
 		case strings.HasPrefix(r.URL.Path, "/age/"):
