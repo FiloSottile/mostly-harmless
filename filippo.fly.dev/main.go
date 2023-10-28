@@ -26,6 +26,7 @@ func main() {
 	c2sp(mux)
 	filippoIO(mux)
 	news(mux)
+	parked(mux)
 
 	s := &http.Server{
 		Addr: ":8080",
