@@ -8,8 +8,8 @@ import (
 )
 
 func c2sp(mux *http.ServeMux) {
-	specRe := regexp.MustCompile(`^/([a-z0-9-]+)$`)
-	cctvRe := regexp.MustCompile(`^/CCTV/([a-z0-9-]+)$`)
+	specRe := regexp.MustCompile(`^/([A-Za-z0-9-]+)$`)
+	cctvRe := regexp.MustCompile(`^/CCTV/([A-Za-z0-9-]+)$`)
 
 	handleFuncWithCounter(mux, "c2sp.org/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Has("go-get") {
