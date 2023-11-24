@@ -158,6 +158,10 @@ func filippoIO(mux *http.ServeMux) {
 	mux.Handle("filippo.io/mostly-harmless/", goGetHandler{
 		Name: "mostly-harmless",
 	})
+	mux.Handle("filippo.io/mlkem768/", goGetHandler{
+		Name:     "mlkem768",
+		Redirect: "https://pkg.go.dev/filippo.io/mlkem768",
+	})
 	mux.Handle("filippo.io/edwards25519/", goGetHandler{
 		Name:     "edwards25519",
 		Redirect: "https://pkg.go.dev/filippo.io/edwards25519",
