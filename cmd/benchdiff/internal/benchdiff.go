@@ -70,6 +70,8 @@ func (c *Benchdiff) cacheKey() string {
 	var b []byte
 	b = append(b, []byte(c.BenchCmd)...)
 	b = append(b, []byte(c.BenchArgs)...)
+	b = append(b, []byte(os.Getenv("GOOS"))...)
+	b = append(b, []byte(os.Getenv("GOARCH"))...)
 	sum := sha3.Sum224(b)
 	return base64.RawURLEncoding.EncodeToString(sum[:])
 }
@@ -174,7 +176,8 @@ func (c *Benchdiff) runBenchmarks() (result *runBenchmarksResults, err error) {
 	baseFilename := fmt.Sprintf("benchdiff-%s-%s.out", baseSHA, c.cacheKey())
 	baseFilename = filepath.Join(c.ResultsDir, baseFilename)
 
-	worktreeFilename := filepath.Join(c.ResultsDir, "benchdiff-worktree.out")
+	worktreeFilename := fmt.Sprintf("benchdiff-worktree-%s.out", c.cacheKey())
+	worktreeFilename = filepath.Join(c.ResultsDir, worktreeFilename)
 
 	result = &runBenchmarksResults{
 		benchmarkCmd:       fmt.Sprintf("%s %s", c.BenchCmd, c.BenchArgs),
