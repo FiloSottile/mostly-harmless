@@ -34,6 +34,7 @@ var benchVars = kong.Vars{
 	"BenchtimeHelp":        `Run enough iterations of each benchmark to take t, specified as a time.Duration (for example, --benchtime 1h30s). The default is 1 second (1s). The special syntax Nx means to run the benchmark N times (for example, -benchtime 100x).`,
 	"PackagesHelp":         `Run benchmarks in these packages.`,
 	"BenchCmdHelp":         `The command to use for benchmarks.`,
+	"BenchstatCmdHelp":     `The command to use for benchstat.`,
 	"CacheDirHelp":         `Override the default directory where benchmark output is kept.`,
 	"BaseRefHelp":          `The git ref to be used as a baseline.`,
 	"HeadRefHelp":          `The git ref to be benchmarked. By default the worktree is used.`,
@@ -60,6 +61,7 @@ var cli struct {
 	BaseRef      string `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
 	HeadRef      string `kong:"help=${BaseRefHelp},group='x'"`
 	GitCmd       string `kong:"default=git,help=${GitCmdHelp},group='x'"`
+	BenchstatCmd string `kong:"default=benchstat,help=${BenchstatCmdHelp},group='x'"`
 
 	Bench            string               `kong:"default='.',help=${BenchHelp},group='gotest'"`
 	BenchmarkArgs    string               `kong:"placeholder='args',help=${BenchmarkArgsHelp},group='gotest'"`
@@ -230,7 +232,7 @@ func main() {
 	result, err := bd.Run()
 	kctx.FatalIfErrorf(err)
 
-	cmd := exec.Command("benchstat", result.BaseRef+"="+result.BaseOutputFile,
+	cmd := exec.Command(cli.BenchstatCmd, result.BaseRef+"="+result.BaseOutputFile,
 		result.HeadRef+"="+result.HeadOutputFile)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
