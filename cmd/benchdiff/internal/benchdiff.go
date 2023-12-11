@@ -10,26 +10,22 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"golang.org/x/crypto/sha3"
 )
 
 // Benchdiff runs benchstats and outputs their deltas
 type Benchdiff struct {
-	BenchCmd    string
-	BenchArgs   string
-	ResultsDir  string
-	BaseRef     string
-	HeadRef     string
-	Path        string
-	GitCmd      string
-	Writer      io.Writer
-	Force       bool
-	Cooldown    time.Duration
-	WarmupCount int
-	WarmupTime  string
-	Debug       *log.Logger
+	BenchCmd   string
+	BenchArgs  string
+	ResultsDir string
+	BaseRef    string
+	HeadRef    string
+	Path       string
+	GitCmd     string
+	Writer     io.Writer
+	Force      bool
+	Debug      *log.Logger
 }
 
 type RunResult struct {
@@ -98,8 +94,8 @@ stderr: %s`, cmd.String(), exitErr.ExitCode(), bufStderr.String())
 	return err
 }
 
-func (c *Benchdiff) runBenchmark(ref, filename, extraArgs string, pause time.Duration, force bool) error {
-	cmd := exec.Command(c.BenchCmd, strings.Fields(c.BenchArgs+" "+extraArgs)...)
+func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
+	cmd := exec.Command(c.BenchCmd, strings.Fields(c.BenchArgs)...)
 
 	stdlib := false
 	if rootPath, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "rev-parse", "--show-toplevel"); err == nil {
@@ -130,9 +126,6 @@ func (c *Benchdiff) runBenchmark(ref, filename, extraArgs string, pause time.Dur
 		runErr = runCmd(cmd, c.debug())
 	} else {
 		err := runAtGitRef(c.debug(), c.gitCmd(), c.Path, c.BaseRef, func(workPath string) {
-			if pause > 0 {
-				time.Sleep(pause)
-			}
 			if stdlib {
 				makeCmd := exec.Command(filepath.Join(workPath, "src", "make.bash"))
 				makeCmd.Dir = filepath.Join(workPath, "src")
@@ -192,30 +185,12 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		HeadOutputFile: worktreeFilename,
 	}
 
-	doWarmup := c.WarmupCount > 0
-
-	warmupArgs := fmt.Sprintf("-count %d", c.WarmupCount)
-	if c.WarmupTime != "" {
-		warmupArgs = fmt.Sprintf("%s -benchtime %s", warmupArgs, c.WarmupTime)
-	}
-
-	var cooldown time.Duration
-
-	if doWarmup {
-		err = c.runBenchmark(c.BaseRef, "", warmupArgs, cooldown, c.Force)
-		if err != nil {
-			return nil, err
-		}
-		cooldown = c.Cooldown
-	}
-
-	err = c.runBenchmark(c.BaseRef, baseFilename, "", cooldown, c.Force)
+	err = c.runBenchmark(c.BaseRef, baseFilename, c.Force)
 	if err != nil {
 		return nil, err
 	}
-	cooldown = c.Cooldown
 
-	err = c.runBenchmark(c.HeadRef, worktreeFilename, "", cooldown, c.Force)
+	err = c.runBenchmark(c.HeadRef, worktreeFilename, c.Force)
 	if err != nil {
 		return nil, err
 	}

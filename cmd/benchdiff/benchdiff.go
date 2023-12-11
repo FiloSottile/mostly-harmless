@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/alecthomas/kong"
 	"github.com/willabides/benchdiff/cmd/benchdiff/internal"
@@ -38,7 +37,6 @@ var benchVars = kong.Vars{
 	"CacheDirHelp":         `Override the default directory where benchmark output is kept.`,
 	"BaseRefHelp":          `The git ref to be used as a baseline.`,
 	"HeadRefHelp":          `The git ref to be benchmarked. By default the worktree is used.`,
-	"CooldownHelp":         `How long to pause for cooldown between head and base runs.`,
 	"NoCacheHelp":          `Rerun benchmarks even if the output already exists.`,
 	"GitCmdHelp":           `The executable to use for git commands.`,
 	"VersionHelp":          `Output the benchdiff version and exit.`,
@@ -47,8 +45,6 @@ var benchVars = kong.Vars{
 	"ShowBenchCmdlineHelp": `Instead of running benchmarks, output the command that would be used and exit.`,
 	"CPUHelp":              `Specify a list of GOMAXPROCS values for which the benchmarks should be executed. The default is the current value of GOMAXPROCS.`,
 	"BenchmemHelp":         `Memory allocation statistics for benchmarks.`,
-	"WarmupCountHelp":      `Run benchmarks with -count=n as a warmup`,
-	"WarmupTimeHelp":       `When warmups are run, set -benchtime=n`,
 	"TagsHelp":             `Set the -tags flag on the go test command`,
 }
 
@@ -61,10 +57,9 @@ var cli struct {
 	Version kong.VersionFlag `kong:"help=${VersionHelp}"`
 	Debug   bool             `kong:"help='write verbose output to stderr'"`
 
-	BaseRef  string        `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
-	HeadRef  string        `kong:"help=${BaseRefHelp},group='x'"`
-	Cooldown time.Duration `kong:"default='100ms',help=${CooldownHelp},group='x'"`
-	GitCmd   string        `kong:"default=git,help=${GitCmdHelp},group='x'"`
+	BaseRef      string `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
+	HeadRef      string `kong:"help=${BaseRefHelp},group='x'"`
+	GitCmd       string `kong:"default=git,help=${GitCmdHelp},group='x'"`
 
 	Bench            string               `kong:"default='.',help=${BenchHelp},group='gotest'"`
 	BenchmarkArgs    string               `kong:"placeholder='args',help=${BenchmarkArgsHelp},group='gotest'"`
@@ -76,8 +71,6 @@ var cli struct {
 	Packages         string               `kong:"default='./...',help=${PackagesHelp},group='gotest'"`
 	ShowBenchCmdline ShowBenchCmdlineFlag `kong:"help=${ShowBenchCmdlineHelp},group='gotest'"`
 	Tags             string               `kong:"help=${TagsHelp},group='gotest'"`
-	WarmupCount      int                  `kong:"help=${WarmupCountHelp},group='gotest'"`
-	WarmupTime       string               `kong:"help=${WarmupTimeHelp},group='gotest'"`
 
 	CacheDir     string           `kong:"type=dir,help=${CacheDirHelp},group='cache'"`
 	ClearCache   ClearCacheFlag   `kong:"help=${ClearCacheHelp},group='cache'"`
@@ -221,18 +214,15 @@ func main() {
 	kctx.FatalIfErrorf(err)
 
 	bd := &internal.Benchdiff{
-		BenchCmd:    cli.BenchmarkCmd,
-		BenchArgs:   benchArgs,
-		ResultsDir:  cacheDir,
-		BaseRef:     cli.BaseRef,
-		HeadRef:     cli.HeadRef,
-		Path:        ".",
-		Writer:      os.Stdout,
-		Force:       cli.NoCache,
-		GitCmd:      cli.GitCmd,
-		Cooldown:    cli.Cooldown,
-		WarmupTime:  cli.WarmupTime,
-		WarmupCount: cli.WarmupCount,
+		BenchCmd:   cli.BenchmarkCmd,
+		BenchArgs:  benchArgs,
+		ResultsDir: cacheDir,
+		BaseRef:    cli.BaseRef,
+		HeadRef:    cli.HeadRef,
+		Path:       ".",
+		Writer:     os.Stdout,
+		Force:      cli.NoCache,
+		GitCmd:     cli.GitCmd,
 	}
 	if cli.Debug {
 		bd.Debug = log.New(os.Stderr, "", 0)
