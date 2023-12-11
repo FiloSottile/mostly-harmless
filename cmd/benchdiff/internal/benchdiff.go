@@ -51,13 +51,6 @@ func (c *Benchdiff) debug() *log.Logger {
 	return c.Debug
 }
 
-func (c *Benchdiff) gitCmd() string {
-	if c.GitCmd == "" {
-		return "git"
-	}
-	return c.GitCmd
-}
-
 func (c *Benchdiff) cacheKey() string {
 	var b []byte
 	b = append(b, []byte(c.BenchCmd)...)
@@ -98,7 +91,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
 	cmd := exec.Command(c.BenchCmd, strings.Fields(c.BenchArgs)...)
 
 	stdlib := false
-	if rootPath, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "rev-parse", "--show-toplevel"); err == nil {
+	if rootPath, err := runGitCmd(c.debug(), c.GitCmd, c.Path, "rev-parse", "--show-toplevel"); err == nil {
 		// lib/time/zoneinfo.zip is a specific enough path, and it's here to
 		// stay because it's one of the few paths hardcoded into Go binaries.
 		zoneinfoPath := filepath.Join(string(rootPath), "lib", "time", "zoneinfo.zip")
@@ -121,11 +114,19 @@ func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
 		cmd.Stdout = fileBuffer
 	}
 
+	if !stdlib {
+		goVersion, err := runGoCmd(c.debug(), c.BenchCmd, "env", "GOVERSION")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(fileBuffer, "go: %s\n", goVersion)
+	}
+
 	var runErr error
 	if ref == "" {
 		runErr = runCmd(cmd, c.debug())
 	} else {
-		err := runAtGitRef(c.debug(), c.gitCmd(), c.Path, c.BaseRef, func(workPath string) {
+		err := runAtGitRef(c.debug(), c.GitCmd, c.Path, c.BaseRef, func(workPath string) {
 			if stdlib {
 				makeCmd := exec.Command(filepath.Join(workPath, "src", "make.bash"))
 				makeCmd.Dir = filepath.Join(workPath, "src")
@@ -161,12 +162,12 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	if c.HeadRef != "" {
 		headFlag = c.HeadRef
 	}
-	headRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", headFlag)
+	headRef, err := runGitCmd(c.debug(), c.GitCmd, c.Path, "describe", "--tags", "--always", headFlag)
 	if err != nil {
 		return nil, err
 	}
 
-	baseRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", c.BaseRef)
+	baseRef, err := runGitCmd(c.debug(), c.GitCmd, c.Path, "describe", "--tags", "--always", c.BaseRef)
 	if err != nil {
 		return nil, err
 	}
@@ -196,4 +197,12 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	}
 
 	return result, nil
+}
+
+func runGoCmd(debug *log.Logger, goCmd string, args ...string) ([]byte, error) {
+	var stdout bytes.Buffer
+	cmd := exec.Command(goCmd, args...)
+	cmd.Stdout = &stdout
+	err := runCmd(cmd, debug)
+	return bytes.TrimSpace(stdout.Bytes()), err
 }

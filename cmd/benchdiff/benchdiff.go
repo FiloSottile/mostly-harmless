@@ -26,27 +26,26 @@ const defaultBenchArgsTmpl = `test {{ .Packages }} -run '^$'
 var version string
 
 var benchVars = kong.Vars{
-	"version":              version,
-	"BenchCmdDefault":      `go`,
-	"CountHelp":            `Run each benchmark n times. If --cpu is set, run n times for each GOMAXPROCS value.'`,
-	"BenchHelp":            `Run only those benchmarks matching a regular expression. To run all benchmarks, use '--bench .'.`,
-	"BenchmarkArgsHelp":    `Override the default args to the go command. This may be a template. See https://github.com/willabides/benchdiff for details."`,
-	"BenchtimeHelp":        `Run enough iterations of each benchmark to take t, specified as a time.Duration (for example, --benchtime 1h30s). The default is 1 second (1s). The special syntax Nx means to run the benchmark N times (for example, -benchtime 100x).`,
-	"PackagesHelp":         `Run benchmarks in these packages.`,
-	"BenchCmdHelp":         `The command to use for benchmarks.`,
-	"BenchstatCmdHelp":     `The command to use for benchstat.`,
-	"CacheDirHelp":         `Override the default directory where benchmark output is kept.`,
-	"BaseRefHelp":          `The git ref to be used as a baseline.`,
-	"HeadRefHelp":          `The git ref to be benchmarked. By default the worktree is used.`,
-	"NoCacheHelp":          `Rerun benchmarks even if the output already exists.`,
-	"GitCmdHelp":           `The executable to use for git commands.`,
-	"VersionHelp":          `Output the benchdiff version and exit.`,
-	"ShowCacheDirHelp":     `Output the cache dir and exit.`,
-	"ClearCacheHelp":       `Remove benchdiff files from the cache dir.`,
-	"ShowBenchCmdlineHelp": `Instead of running benchmarks, output the command that would be used and exit.`,
-	"CPUHelp":              `Specify a list of GOMAXPROCS values for which the benchmarks should be executed. The default is the current value of GOMAXPROCS.`,
-	"BenchmemHelp":         `Memory allocation statistics for benchmarks.`,
-	"TagsHelp":             `Set the -tags flag on the go test command`,
+	"version":           version,
+	"BenchCmdDefault":   `go`,
+	"CountHelp":         `Run each benchmark n times. If --cpu is set, run n times for each GOMAXPROCS value.'`,
+	"BenchHelp":         `Run only those benchmarks matching a regular expression. To run all benchmarks, use '--bench .'.`,
+	"BenchmarkArgsHelp": `Override the default args to the go command. This may be a template. See https://github.com/willabides/benchdiff for details."`,
+	"BenchtimeHelp":     `Run enough iterations of each benchmark to take t, specified as a time.Duration (for example, --benchtime 1h30s). The default is 1 second (1s). The special syntax Nx means to run the benchmark N times (for example, -benchtime 100x).`,
+	"PackagesHelp":      `Run benchmarks in these packages.`,
+	"BenchCmdHelp":      `The command to use for benchmarks.`,
+	"BenchstatCmdHelp":  `The command to use for benchstat.`,
+	"CacheDirHelp":      `Override the default directory where benchmark output is kept.`,
+	"BaseRefHelp":       `The git ref to be used as a baseline.`,
+	"HeadRefHelp":       `The git ref to be benchmarked. By default the worktree is used.`,
+	"NoCacheHelp":       `Rerun benchmarks even if the output already exists.`,
+	"GitCmdHelp":        `The executable to use for git commands.`,
+	"VersionHelp":       `Output the benchdiff version and exit.`,
+	"ShowCacheDirHelp":  `Output the cache dir and exit.`,
+	"ClearCacheHelp":    `Remove benchdiff files from the cache dir.`,
+	"CPUHelp":           `Specify a list of GOMAXPROCS values for which the benchmarks should be executed. The default is the current value of GOMAXPROCS.`,
+	"BenchmemHelp":      `Memory allocation statistics for benchmarks.`,
+	"TagsHelp":          `Set the -tags flag on the go test command`,
 }
 
 var groupHelp = kong.Vars{
@@ -63,16 +62,15 @@ var cli struct {
 	GitCmd       string `kong:"default=git,help=${GitCmdHelp},group='x'"`
 	BenchstatCmd string `kong:"default=benchstat,help=${BenchstatCmdHelp},group='x'"`
 
-	Bench            string               `kong:"default='.',help=${BenchHelp},group='gotest'"`
-	BenchmarkArgs    string               `kong:"placeholder='args',help=${BenchmarkArgsHelp},group='gotest'"`
-	BenchmarkCmd     string               `kong:"default=${BenchCmdDefault},help=${BenchCmdHelp},group='gotest'"`
-	Benchmem         bool                 `kong:"help=${BenchmemHelp},group='gotest'"`
-	Benchtime        string               `kong:"help=${BenchtimeHelp},group='gotest'"`
-	Count            int                  `kong:"default=10,help=${CountHelp},group='gotest'"`
-	CPU              CPUFlag              `kong:"help=${CPUHelp},group='gotest',placeholder='GOMAXPROCS,...'"`
-	Packages         string               `kong:"default='./...',help=${PackagesHelp},group='gotest'"`
-	ShowBenchCmdline ShowBenchCmdlineFlag `kong:"help=${ShowBenchCmdlineHelp},group='gotest'"`
-	Tags             string               `kong:"help=${TagsHelp},group='gotest'"`
+	Bench         string  `kong:"default='.',help=${BenchHelp},group='gotest'"`
+	BenchmarkArgs string  `kong:"placeholder='args',help=${BenchmarkArgsHelp},group='gotest'"`
+	BenchmarkCmd  string  `kong:"default=${BenchCmdDefault},help=${BenchCmdHelp},group='gotest'"`
+	Benchmem      bool    `kong:"help=${BenchmemHelp},group='gotest'"`
+	Benchtime     string  `kong:"help=${BenchtimeHelp},group='gotest'"`
+	Count         int     `kong:"default=10,help=${CountHelp},group='gotest'"`
+	CPU           CPUFlag `kong:"help=${CPUHelp},group='gotest',placeholder='GOMAXPROCS,...'"`
+	Packages      string  `kong:"default='./...',help=${PackagesHelp},group='gotest'"`
+	Tags          string  `kong:"help=${TagsHelp},group='gotest'"`
 
 	CacheDir     string           `kong:"type=dir,help=${CacheDirHelp},group='cache'"`
 	ClearCache   ClearCacheFlag   `kong:"help=${ClearCacheHelp},group='cache'"`
@@ -140,20 +138,6 @@ func defaultCacheDir() (string, error) {
 		return "", fmt.Errorf("error finding user cache dir: %v", err)
 	}
 	return filepath.Join(userCacheDir, "benchdiff"), nil
-}
-
-// ShowBenchCmdlineFlag flag for --show-bench-cmdling
-type ShowBenchCmdlineFlag bool
-
-// AfterApply shows benchmark command line and exits
-func (v ShowBenchCmdlineFlag) AfterApply(app *kong.Kong) error {
-	benchArgs, err := getBenchArgs()
-	if err != nil {
-		return err
-	}
-	fmt.Fprintln(app.Stdout, cli.BenchmarkCmd, benchArgs)
-	app.Exit(0)
-	return nil
 }
 
 // CPUFlag is the flag for --cpu
