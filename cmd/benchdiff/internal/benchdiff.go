@@ -162,17 +162,17 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		return nil, err
 	}
 
-	headSHA, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "rev-parse", "HEAD")
+	headRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", "--dirty")
 	if err != nil {
 		return nil, err
 	}
 
-	baseSHA, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "rev-parse", c.BaseRef)
+	baseRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", c.BaseRef)
 	if err != nil {
 		return nil, err
 	}
 
-	baseFilename := fmt.Sprintf("benchdiff-%s-%s.out", baseSHA, c.cacheKey())
+	baseFilename := fmt.Sprintf("benchdiff-%s-%s.out", baseRef, c.cacheKey())
 	baseFilename = filepath.Join(c.ResultsDir, baseFilename)
 
 	worktreeFilename := fmt.Sprintf("benchdiff-worktree-%s.out", c.cacheKey())
@@ -180,8 +180,8 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 
 	result = &RunResult{
 		BenchmarkCmd:   fmt.Sprintf("%s %s", c.BenchCmd, c.BenchArgs),
-		HeadRef:        strings.TrimSpace(string(headSHA)),
-		BaseRef:        strings.TrimSpace(string(baseSHA)),
+		HeadRef:        strings.TrimSpace(string(headRef)),
+		BaseRef:        strings.TrimSpace(string(baseRef)),
 		BaseOutputFile: baseFilename,
 		HeadOutputFile: worktreeFilename,
 	}
