@@ -1,7 +1,0 @@
-name,old time/op (ns/op),±,new time/op (ns/op),±,delta,±
-GobEncode,1.35991E+07,1%,1.17893E+07,1%,-13.31%,(p=0.016 n=4+5)
-JSONEncode,3.21143E+07,1%,3.17614E+07,1%,~,(p=0.286 n=4+5)
-
-name,old speed (MB/s),±,new speed (MB/s),±,delta,±
-GobEncode,5.64400E+01,1%,6.51080E+01,1%,+15.36%,(p=0.016 n=4+5)
-JSONEncode,6.04275E+01,1%,6.11020E+01,2%,~,(p=0.286 n=4+5)

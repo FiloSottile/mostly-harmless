@@ -3,7 +3,6 @@ package internal
 import (
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -13,9 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/willabides/benchdiff/pkg/benchstatter"
 	"golang.org/x/crypto/sha3"
-	"golang.org/x/perf/benchstat"
 )
 
 // Benchdiff runs benchstats and outputs their deltas
@@ -27,21 +24,19 @@ type Benchdiff struct {
 	Path        string
 	GitCmd      string
 	Writer      io.Writer
-	Benchstat   *benchstatter.Benchstat
 	Force       bool
-	JSONOutput  bool
 	Cooldown    time.Duration
 	WarmupCount int
 	WarmupTime  string
 	Debug       *log.Logger
 }
 
-type runBenchmarksResults struct {
-	worktreeOutputFile string
-	baseOutputFile     string
-	benchmarkCmd       string
-	headSHA            string
-	baseSHA            string
+type RunResult struct {
+	HeadOutputFile string
+	BaseOutputFile string
+	BenchmarkCmd   string
+	HeadRef        string
+	BaseRef        string
 }
 
 func fileExists(path string) bool {
@@ -162,7 +157,11 @@ func (c *Benchdiff) runBenchmark(ref, filename, extraArgs string, pause time.Dur
 	return os.WriteFile(filename, fileBuffer.Bytes(), 0o666)
 }
 
-func (c *Benchdiff) runBenchmarks() (result *runBenchmarksResults, err error) {
+func (c *Benchdiff) Run() (result *RunResult, err error) {
+	if err := os.MkdirAll(c.ResultsDir, 0o700); err != nil {
+		return nil, err
+	}
+
 	headSHA, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "rev-parse", "HEAD")
 	if err != nil {
 		return nil, err
@@ -179,12 +178,12 @@ func (c *Benchdiff) runBenchmarks() (result *runBenchmarksResults, err error) {
 	worktreeFilename := fmt.Sprintf("benchdiff-worktree-%s.out", c.cacheKey())
 	worktreeFilename = filepath.Join(c.ResultsDir, worktreeFilename)
 
-	result = &runBenchmarksResults{
-		benchmarkCmd:       fmt.Sprintf("%s %s", c.BenchCmd, c.BenchArgs),
-		headSHA:            strings.TrimSpace(string(headSHA)),
-		baseSHA:            strings.TrimSpace(string(baseSHA)),
-		baseOutputFile:     baseFilename,
-		worktreeOutputFile: worktreeFilename,
+	result = &RunResult{
+		BenchmarkCmd:   fmt.Sprintf("%s %s", c.BenchCmd, c.BenchArgs),
+		HeadRef:        strings.TrimSpace(string(headSHA)),
+		BaseRef:        strings.TrimSpace(string(baseSHA)),
+		BaseOutputFile: baseFilename,
+		HeadOutputFile: worktreeFilename,
 	}
 
 	doWarmup := c.WarmupCount > 0
@@ -217,146 +216,3 @@ func (c *Benchdiff) runBenchmarks() (result *runBenchmarksResults, err error) {
 
 	return result, nil
 }
-
-// Run runs the Benchdiff
-func (c *Benchdiff) Run() (*RunResult, error) {
-	err := os.MkdirAll(c.ResultsDir, 0o700)
-	if err != nil {
-		return nil, err
-	}
-	res, err := c.runBenchmarks()
-	if err != nil {
-		return nil, err
-	}
-	collection, err := c.Benchstat.Run(res.baseOutputFile, res.worktreeOutputFile)
-	if err != nil {
-		return nil, err
-	}
-	result := &RunResult{
-		headSHA:  res.headSHA,
-		baseSHA:  res.baseSHA,
-		benchCmd: res.benchmarkCmd,
-		tables:   collection.Tables(),
-	}
-	return result, nil
-}
-
-// RunResult is the result of a Run
-type RunResult struct {
-	headSHA  string
-	baseSHA  string
-	benchCmd string
-	tables   []*benchstat.Table
-}
-
-// RunResultOutputOptions options for RunResult.WriteOutput
-type RunResultOutputOptions struct {
-	BenchstatFormatter benchstatter.OutputFormatter // default benchstatter.TextFormatter(nil)
-	OutputFormat       string                       // one of json or human. default: human
-	Tolerance          float64
-}
-
-// WriteOutput outputs the result
-func (r *RunResult) WriteOutput(w io.Writer, opts *RunResultOutputOptions) error {
-	if opts == nil {
-		opts = new(RunResultOutputOptions)
-	}
-	finalOpts := &RunResultOutputOptions{
-		BenchstatFormatter: benchstatter.TextFormatter(nil),
-		OutputFormat:       "human",
-		Tolerance:          opts.Tolerance,
-	}
-	if opts.BenchstatFormatter != nil {
-		finalOpts.BenchstatFormatter = opts.BenchstatFormatter
-	}
-
-	if opts.OutputFormat != "" {
-		finalOpts.OutputFormat = opts.OutputFormat
-	}
-
-	var benchstatBuf bytes.Buffer
-	err := finalOpts.BenchstatFormatter(&benchstatBuf, r.tables)
-	if err != nil {
-		return err
-	}
-
-	switch finalOpts.OutputFormat {
-	case "human":
-		return r.writeHumanResult(w, benchstatBuf.String())
-	case "json":
-		return r.writeJSONResult(w, benchstatBuf.String(), finalOpts.Tolerance)
-	default:
-		return fmt.Errorf("unknown OutputFormat")
-	}
-}
-
-func (r *RunResult) writeJSONResult(w io.Writer, benchstatResult string, tolerance float64) error {
-	type runResultJSON struct {
-		BenchCommand    string `json:"bench_command,omitempty"`
-		HeadSHA         string `json:"head_sha,omitempty"`
-		BaseSHA         string `json:"base_sha,omitempty"`
-		DegradedResult  bool   `json:"degraded_result"`
-		BenchstatOutput string `json:"benchstat_output,omitempty"`
-	}
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(&runResultJSON{
-		BenchCommand:    r.benchCmd,
-		BenchstatOutput: benchstatResult,
-		HeadSHA:         r.headSHA,
-		BaseSHA:         r.baseSHA,
-		DegradedResult:  r.HasDegradedResult(tolerance),
-	})
-}
-
-func (r *RunResult) writeHumanResult(w io.Writer, benchstatResult string) error {
-	var err error
-	_, err = fmt.Fprintf(w, "bench command:\n  %s\n", r.benchCmd)
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintf(w, "HEAD sha:\n  %s\n", r.headSHA)
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintf(w, "base sha:\n  %s\n", r.baseSHA)
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintf(w, "benchstat output:\n\n%s\n", benchstatResult)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// HasDegradedResult returns true if there are any rows with DegradingChange and PctDelta over tolerance
-func (r *RunResult) HasDegradedResult(tolerance float64) bool {
-	return r.maxDegradedPct() > tolerance
-}
-
-func (r *RunResult) maxDegradedPct() float64 {
-	max := 0.0
-	for _, table := range r.tables {
-		for _, row := range table.Rows {
-			if row.Change != DegradingChange {
-				continue
-			}
-			if row.PctDelta > max {
-				max = row.PctDelta
-			}
-		}
-	}
-	return max
-}
-
-// BenchmarkChangeType is whether a change is an improvement or degradation
-type BenchmarkChangeType int
-
-// BenchmarkChangeType values
-const (
-	DegradingChange     = -1 // represents a statistically significant degradation
-	InsignificantChange = 0  // represents no statistically significant change
-	ImprovingChange     = 1  // represents a statistically significant improvement
-)

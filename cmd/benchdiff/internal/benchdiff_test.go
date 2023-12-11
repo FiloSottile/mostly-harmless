@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/willabides/benchdiff/pkg/benchstatter"
 )
 
 func setupTestRepo(t *testing.T, path string) {
@@ -51,7 +50,6 @@ func TestBenchdiff_Run(t *testing.T) {
 		ResultsDir: "./tmp",
 		BaseRef:    "HEAD",
 		Path:       ".",
-		Benchstat:  &benchstatter.Benchstat{},
 	}
 	_, err := differ.Run()
 	require.NoError(t, err)
