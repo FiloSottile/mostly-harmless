@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha512"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -14,7 +15,6 @@ import (
 	"text/template"
 
 	"github.com/alecthomas/kong"
-	"golang.org/x/crypto/sha3"
 )
 
 const defaultBenchArgsTmpl = `test {{ .Packages }} -run '^$'
@@ -25,10 +25,7 @@ const defaultBenchArgsTmpl = `test {{ .Packages }} -run '^$'
 {{- if .Tags }} -tags "{{ .Tags }}"{{ end }}
 {{- if .Benchmem }} -benchmem{{ end }}`
 
-var version string
-
 var benchVars = kong.Vars{
-	"version":           version,
 	"BenchCmdDefault":   `go`,
 	"CountHelp":         `Run each benchmark n times. If --cpu is set, run n times for each GOMAXPROCS value.'`,
 	"BenchHelp":         `Run only those benchmarks matching a regular expression. To run all benchmarks, use '--bench .'.`,
@@ -43,7 +40,6 @@ var benchVars = kong.Vars{
 	"NoCacheHelp":       `Rerun benchmarks even if the output already exists.`,
 	"GitCmdHelp":        `The executable to use for git commands.`,
 	"VersionHelp":       `Output the benchdiff version and exit.`,
-	"ShowCacheDirHelp":  `Output the cache dir and exit.`,
 	"ClearCacheHelp":    `Remove benchdiff files from the cache dir.`,
 	"CPUHelp":           `Specify a list of GOMAXPROCS values for which the benchmarks should be executed. The default is the current value of GOMAXPROCS.`,
 	"BenchmemHelp":      `Memory allocation statistics for benchmarks.`,
@@ -56,8 +52,7 @@ var groupHelp = kong.Vars{
 }
 
 var cli struct {
-	Version kong.VersionFlag `kong:"help=${VersionHelp}"`
-	Debug   bool             `kong:"help='write verbose output to stderr'"`
+	Debug bool `kong:"help='write verbose output to stderr'"`
 
 	BaseRef      string `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
 	HeadRef      string `kong:"help=${BaseRefHelp},group='x'"`
@@ -74,34 +69,8 @@ var cli struct {
 	Packages      string  `kong:"default='./...',help=${PackagesHelp},group='gotest'"`
 	Tags          string  `kong:"help=${TagsHelp},group='gotest'"`
 
-	CacheDir     string           `kong:"type=dir,help=${CacheDirHelp},group='cache'"`
-	ClearCache   ClearCacheFlag   `kong:"help=${ClearCacheHelp},group='cache'"`
-	ShowCacheDir ShowCacheDirFlag `kong:"help=${ShowCacheDirHelp},group='cache'"`
-	NoCache      bool             `kong:"help=${NoCacheHelp},group='cache'"`
-
-	ShowDefaultTemplate showDefaultTemplate `kong:"hidden"`
-}
-
-// ShowCacheDirFlag flag for showing the cache directory
-type ShowCacheDirFlag bool
-
-// AfterApply outputs cli.CacheDir
-func (v ShowCacheDirFlag) AfterApply(app *kong.Kong) error {
-	cacheDir, err := getCacheDir()
-	if err != nil {
-		return err
-	}
-	fmt.Fprintln(app.Stdout, cacheDir)
-	app.Exit(0)
-	return nil
-}
-
-type showDefaultTemplate bool
-
-func (v showDefaultTemplate) BeforeApply(app *kong.Kong) error {
-	fmt.Println(defaultBenchArgsTmpl)
-	app.Exit(0)
-	return nil
+	ClearCache ClearCacheFlag `kong:"help=${ClearCacheHelp},group='cache'"`
+	NoCache    bool           `kong:"help=${NoCacheHelp},group='cache'"`
 }
 
 // ClearCacheFlag flag for clearing cache
@@ -128,13 +97,6 @@ func (v ClearCacheFlag) AfterApply(app *kong.Kong) error {
 }
 
 func getCacheDir() (string, error) {
-	if cli.CacheDir != "" {
-		return cli.CacheDir, nil
-	}
-	return defaultCacheDir()
-}
-
-func defaultCacheDir() (string, error) {
 	userCacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return "", fmt.Errorf("error finding user cache dir: %v", err)
@@ -263,16 +225,6 @@ func (c *Benchdiff) debug() *log.Logger {
 	return c.Debug
 }
 
-func (c *Benchdiff) cacheKey() string {
-	var b []byte
-	b = append(b, []byte(c.GoCmd)...)
-	b = append(b, []byte(c.BenchArgs)...)
-	b = append(b, []byte(os.Getenv("GOOS"))...)
-	b = append(b, []byte(os.Getenv("GOARCH"))...)
-	sum := sha3.Sum224(b)
-	return base64.RawURLEncoding.EncodeToString(sum[:])
-}
-
 // runCmd runs cmd sending its stdout and stderr to debug.Write()
 func runCmd(cmd *exec.Cmd, debug *log.Logger) error {
 	if debug == nil {
@@ -378,24 +330,26 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	if err != nil {
 		return nil, err
 	}
+	headFilename, err := c.cacheFilename(string(headRef))
+	if err != nil {
+		return nil, err
+	}
 
 	baseRef, err := c.runGitCmd("describe", "--tags", "--always", c.BaseRef)
 	if err != nil {
 		return nil, err
 	}
-
-	baseFilename := fmt.Sprintf("benchdiff-%s-%s.out", baseRef, c.cacheKey())
-	baseFilename = filepath.Join(c.ResultsDir, baseFilename)
-
-	worktreeFilename := fmt.Sprintf("benchdiff-%s-%s.out", headRef, c.cacheKey())
-	worktreeFilename = filepath.Join(c.ResultsDir, worktreeFilename)
+	baseFilename, err := c.cacheFilename(string(baseRef))
+	if err != nil {
+		return nil, err
+	}
 
 	result = &RunResult{
 		BenchmarkCmd:   fmt.Sprintf("%s %s", c.GoCmd, c.BenchArgs),
 		HeadRef:        strings.TrimSpace(string(headRef)),
 		BaseRef:        strings.TrimSpace(string(baseRef)),
 		BaseOutputFile: baseFilename,
-		HeadOutputFile: worktreeFilename,
+		HeadOutputFile: headFilename,
 	}
 
 	err = c.runBenchmark(c.BaseRef, baseFilename, c.Force)
@@ -403,12 +357,33 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		return nil, err
 	}
 
-	err = c.runBenchmark(c.HeadRef, worktreeFilename, c.Force)
+	err = c.runBenchmark(c.HeadRef, headFilename, c.Force)
 	if err != nil {
 		return nil, err
 	}
 
 	return result, nil
+}
+
+func (c *Benchdiff) cacheFilename(ref string) (string, error) {
+	env, err := c.runGoCmd("env", "GOARCH", "GOEXPERIMENT", "GOOS", "GOVERSION", "CC", "CXX", "CGO_ENABLED", "CGO_CFLAGS", "CGO_CPPFLAGS", "CGO_CXXFLAGS", "CGO_LDFLAGS")
+	if err != nil {
+		return "", err
+	}
+	rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel")
+	if err != nil {
+		return "", err
+	}
+
+	h := sha512.New()
+	fmt.Fprintf(h, "%s\n", c.GoCmd)
+	fmt.Fprintf(h, "%s\n", c.BenchArgs)
+	fmt.Fprintf(h, "%s\n", env)
+	fmt.Fprintf(h, "%s\n", ref)
+	fmt.Fprintf(h, "%s\n", rootPath)
+	cacheKey := base64.RawURLEncoding.EncodeToString(h.Sum(nil)[:16])
+
+	return filepath.Join(c.ResultsDir, fmt.Sprintf("benchdiff-%s.out", cacheKey)), nil
 }
 
 func (c *Benchdiff) runGoCmd(args ...string) ([]byte, error) {
