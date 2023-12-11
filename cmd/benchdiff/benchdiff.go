@@ -37,8 +37,9 @@ var benchVars = kong.Vars{
 	"BenchCmdHelp":         `The command to use for benchmarks.`,
 	"CacheDirHelp":         `Override the default directory where benchmark output is kept.`,
 	"BaseRefHelp":          `The git ref to be used as a baseline.`,
+	"HeadRefHelp":          `The git ref to be benchmarked. By default the worktree is used.`,
 	"CooldownHelp":         `How long to pause for cooldown between head and base runs.`,
-	"ForceBaseHelp":        `Rerun benchmarks on the base reference even if the output already exists.`,
+	"NoCacheHelp":          `Rerun benchmarks even if the output already exists.`,
 	"GitCmdHelp":           `The executable to use for git commands.`,
 	"VersionHelp":          `Output the benchdiff version and exit.`,
 	"ShowCacheDirHelp":     `Output the cache dir and exit.`,
@@ -60,10 +61,10 @@ var cli struct {
 	Version kong.VersionFlag `kong:"help=${VersionHelp}"`
 	Debug   bool             `kong:"help='write verbose output to stderr'"`
 
-	BaseRef   string        `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
-	Cooldown  time.Duration `kong:"default='100ms',help=${CooldownHelp},group='x'"`
-	ForceBase bool          `kong:"help=${ForceBaseHelp},group='x'"`
-	GitCmd    string        `kong:"default=git,help=${GitCmdHelp},group='x'"`
+	BaseRef  string        `kong:"default=HEAD,help=${BaseRefHelp},group='x'"`
+	HeadRef  string        `kong:"help=${BaseRefHelp},group='x'"`
+	Cooldown time.Duration `kong:"default='100ms',help=${CooldownHelp},group='x'"`
+	GitCmd   string        `kong:"default=git,help=${GitCmdHelp},group='x'"`
 
 	Bench            string               `kong:"default='.',help=${BenchHelp},group='gotest'"`
 	BenchmarkArgs    string               `kong:"placeholder='args',help=${BenchmarkArgsHelp},group='gotest'"`
@@ -81,6 +82,7 @@ var cli struct {
 	CacheDir     string           `kong:"type=dir,help=${CacheDirHelp},group='cache'"`
 	ClearCache   ClearCacheFlag   `kong:"help=${ClearCacheHelp},group='cache'"`
 	ShowCacheDir ShowCacheDirFlag `kong:"help=${ShowCacheDirHelp},group='cache'"`
+	NoCache      bool             `kong:"help=${NoCacheHelp},group='cache'"`
 
 	ShowDefaultTemplate showDefaultTemplate `kong:"hidden"`
 }
@@ -223,9 +225,10 @@ func main() {
 		BenchArgs:   benchArgs,
 		ResultsDir:  cacheDir,
 		BaseRef:     cli.BaseRef,
+		HeadRef:     cli.HeadRef,
 		Path:        ".",
 		Writer:      os.Stdout,
-		Force:       cli.ForceBase,
+		Force:       cli.NoCache,
 		GitCmd:      cli.GitCmd,
 		Cooldown:    cli.Cooldown,
 		WarmupTime:  cli.WarmupTime,

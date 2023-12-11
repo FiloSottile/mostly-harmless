@@ -21,6 +21,7 @@ type Benchdiff struct {
 	BenchArgs   string
 	ResultsDir  string
 	BaseRef     string
+	HeadRef     string
 	Path        string
 	GitCmd      string
 	Writer      io.Writer
@@ -107,6 +108,7 @@ func (c *Benchdiff) runBenchmark(ref, filename, extraArgs string, pause time.Dur
 		zoneinfoPath := filepath.Join(string(rootPath), "lib", "time", "zoneinfo.zip")
 		if _, err := os.Stat(zoneinfoPath); err == nil {
 			stdlib = true
+			c.debug().Println("standard library detected")
 			cmd.Path = filepath.Join(string(rootPath), "bin", "go")
 		}
 	}
@@ -162,7 +164,11 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		return nil, err
 	}
 
-	headRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", "--dirty")
+	headFlag := "--dirty"
+	if c.HeadRef != "" {
+		headFlag = c.HeadRef
+	}
+	headRef, err := runGitCmd(c.debug(), c.gitCmd(), c.Path, "describe", "--tags", "--always", headFlag)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +181,7 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	baseFilename := fmt.Sprintf("benchdiff-%s-%s.out", baseRef, c.cacheKey())
 	baseFilename = filepath.Join(c.ResultsDir, baseFilename)
 
-	worktreeFilename := fmt.Sprintf("benchdiff-worktree-%s.out", c.cacheKey())
+	worktreeFilename := fmt.Sprintf("benchdiff-%s-%s.out", headRef, c.cacheKey())
 	worktreeFilename = filepath.Join(c.ResultsDir, worktreeFilename)
 
 	result = &RunResult{
@@ -209,7 +215,7 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	}
 	cooldown = c.Cooldown
 
-	err = c.runBenchmark("", worktreeFilename, "", cooldown, false)
+	err = c.runBenchmark(c.HeadRef, worktreeFilename, "", cooldown, c.Force)
 	if err != nil {
 		return nil, err
 	}
