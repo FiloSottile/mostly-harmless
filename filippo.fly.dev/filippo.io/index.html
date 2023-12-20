@@ -58,6 +58,10 @@
             font-family: "Source Code Pro", monospace;
             -webkit-font-smoothing: antialiased;
         }
+
+        code.email b {
+            display: none;
+        }
     </style>
 
     <script defer data-domain="filippo.io" src="/js/script.js"></script>
@@ -67,18 +71,20 @@
     <div class="container">
         <h1 id="filippo-valsorda">Filippo Valsorda</h1>
         <p>
-            I'm a cryptography engineer and open source maintainer. I've been in
+            I'm a cryptography engineer and <a href="https://words.filippo.io/full-time-maintainer/">
+            professional open source maintainer</a>. I've been in
             charge of cryptography and security on the Go team at Google until
             2022, and was on the Cryptography team at Cloudflare until 2017. <a
             href="https://blog.filippo.io/hi">Read more about what I do and how
             we might know each other</a>.
         </p>
         <p>
-            I am <i>FiloSottile</i> on <a href="https://github.com/FiloSottile" rel="me">GitHub</a>,
-            <a href="https://twitter.com/FiloSottile" rel="me">Twitter</a>, and
-            <a href="https://twitch.tv/filosottile" rel="me">Twitch</a>, and
+            I am <i>FiloSottile</i> on <a href="https://github.com/FiloSottile" rel="me">GitHub</a>
+            and <a href="https://twitch.tv/filosottile" rel="me">Twitch</a>,
             <a rel="me" href="https://abyssdomain.expert/@filippo">
-                @filippo@abyssdomain.expert on Mastodon</a>.
+                @filippo@abyssdomain.expert on Mastodon</a>, and
+            <a rel="me" href="https://bsky.app/profile/filippo.abyssdomain.expert">
+                @filippo.abyssdomain.expert on Bluesky</a>.
         </p>
         <p>
             I attended the <a href="https://recurse.com">Recurse Center</a> batches Fall 2013 and Fall 2 2017.
@@ -105,12 +111,18 @@
             <br />A simple, modern, and secure file encryption tool
         </p>
         <p>
+            <a href="https://github.com/FiloSottile/typage">typage</a>
+            <br />A TypeScript implementation of age for the JavaScript ecosystem
+        </p>
+        <p>
             <a href="https://github.com/FiloSottile/yubikey-agent">yubikey-agent</a>
             <br />The easiest way to use a PIV token with SSH
         </p>
         <p>
-            <a href="https://pkg.go.dev/filippo.io/edwards25519">filippo.io/edwards25519</a>
-            and <a href="https://pkg.go.dev/filippo.io/nistec">filippo.io/nistec</a>
+            filippo.io/<a href="https://pkg.go.dev/filippo.io/edwards25519">edwards25519</a>,
+            <a href="https://pkg.go.dev/filippo.io/nistec">nistec</a>,
+            <a href="https://pkg.go.dev/filippo.io/nistec">bigmod</a>,
+            <a href="https://pkg.go.dev/filippo.io/nistec">mlkem768</a>
             <br />The standard library safe(-ish) low-level APIs, repackaged and extended for external use
         </p>
         <p>
@@ -140,10 +152,14 @@
 Beaverton, Oregon 97008-7105
 </code></pre>
         <p>
-            <code>hi&commat;</code><code>filippo.io</code>
+            This is a mailing address.<br />I don't live in the vicinity, but I will
+            get any correspondence sent here.<br />Packages are a bit complicated, though.
         </p>
         <p>
-            <code>filippo&commat;</code><code>golang.org</code>
+            <code>hi&commat;</code><code class="email"><b>nospam.</b>filippo.io</code>
+        </p>
+        <p>
+            <code>filippo&commat;</code><code class="email"><b>nospam.</b>golang.org</code>
         </p>
 
         <h2 id="index">Other</h2>
