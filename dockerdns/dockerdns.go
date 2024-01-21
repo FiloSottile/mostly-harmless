@@ -44,7 +44,10 @@ func (d Docker) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	if state.QClass() != dns.ClassINET || !strings.HasSuffix(state.Name(), d.Domain) {
 		return plugin.NextOrFailure(d.Name(), d.Next, ctx, w, r)
 	}
-	name := "/" + strings.TrimSuffix(state.Name(), d.Domain)
+	name := strings.TrimSuffix(state.Name(), d.Domain)
+	if i := strings.LastIndex(name, "."); i >= 0 {
+		name = name[i+1:]
+	}
 
 	m := new(dns.Msg)
 	defer w.WriteMsg(m)
@@ -63,7 +66,7 @@ func (d Docker) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 		return 0, err
 	}
 	for _, container := range containers {
-		if slices.Contains(container.Names, name) {
+		if slices.Contains(container.Names, "/"+name) {
 			m.Rcode = dns.RcodeSuccess
 			for _, network := range container.NetworkSettings.Networks {
 				ip := net.ParseIP(network.IPAddress)
