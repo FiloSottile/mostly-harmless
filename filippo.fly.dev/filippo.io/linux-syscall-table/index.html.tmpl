@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Searchable Linux Syscall Table for x86_64</title>
+    <meta name="author" content="Filippo Valsorda">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A searchable Linux system call table for the x86-64 architecture, with arguments and links to manual and implementation.">
+
+    <link rel="canonical" href="https://filippo.io/linux-syscall-table/">
+    <link href="screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+    <script defer data-domain="filippo.io" src="/js/script.js"></script>
+
+    <style>
+        #content {
+            width: 900px;
+            margin: 0 auto;
+        }
+        body>header {
+            text-align: center;
+        }
+        header {
+            margin: 0 auto;
+            padding: 0;
+        }
+        header div {
+            max-width: 350px;
+            padding: 0 10px;
+            margin: 0 auto;
+        }
+        header img {
+            max-width: 100%;
+        }
+        .tbls-bit-boxes {
+            width: 100%;
+            font-size: 35px;
+            border-collapse: separate;
+            border-spacing: 15px 0px;
+            font-family: PT Sans, Helvetica Neue, Arial, sans-serif;
+        }
+        .tbls-bit-boxes span {
+            font-size: 20px;
+        }
+        .tbls-bit-boxes td {
+            background-color: #ccc;
+            text-align: center;
+            vertical-align: middle;
+            width: 50%;
+            padding: 30px;
+            cursor: pointer;
+        }
+        .tbls-bit-boxes .disabled {
+            background-color: #e8e8e8;
+        }
+        .tbls-filter {
+            text-align: right;
+        }
+        .tbls-filter input {
+            height: 26px;
+            width: 200px;
+            font-size: 0.9em;
+            vertical-align: bottom;
+        }
+        .tbls-table {
+            font-family: PT Sans, Helvetica Neue, Arial, sans-serif;
+            width: 100%;
+        }
+        .tbls-table thead tr {
+            border: 1px solid #aaa;
+        }
+        .tbls-table td {
+            padding: 3px 10px;
+        }
+        .tbls-entry-collapsed {
+            border-bottom: 1px solid #aaa;
+        }
+        .tbls-entry-expanded {}
+        .tbls-arguments-collapsed {
+            display: none;
+        }
+        .tbls-arguments-expanded {
+            border-bottom: 1px solid #aaa;
+        }
+        .tbls-arguments-expanded>td {
+            padding: 10px;
+        }
+        .tbls-arguments-expanded table {
+            width: 100%;
+            border: 1px solid #aaa;
+            margin: 0;
+        }
+        .tbls-arguments-expanded table td {
+            border-right: 1px solid #aaa;
+            border-left: 1px solid #aaa;
+        }
+        .tbls-match {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="fuzzy.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $('.tbls-entry-collapsed').each(function () {
+                $(this).dblclick(function () {
+                    $(this).toggleClass('tbls-entry-collapsed');
+                    $(this).toggleClass('tbls-entry-expanded');
+                    $(this).next().toggleClass('tbls-arguments-collapsed');
+                    $(this).next().toggleClass('tbls-arguments-expanded');
+                });
+                $(this).next().dblclick(function () {
+                    $(this).toggleClass('tbls-arguments-collapsed');
+                    $(this).toggleClass('tbls-arguments-expanded');
+                    $(this).prev().toggleClass('tbls-entry-collapsed');
+                    $(this).prev().toggleClass('tbls-entry-expanded');
+                });
+            });
+
+            $('.tbls-filter input').on('input', function () {
+                $('.tbls-entry-expanded').each(function () {
+                    $(this).toggleClass('tbls-entry-collapsed');
+                    $(this).toggleClass('tbls-entry-expanded');
+                    $(this).next().toggleClass('tbls-arguments-collapsed');
+                    $(this).next().toggleClass('tbls-arguments-expanded');
+                });
+
+                var N = (x) => $(x).find('td').eq(1);
+                var rows = $('.tbls-entry-collapsed').toArray();
+                if (!$(this).val()) {
+                    for (var i = 0; i < rows.length; i++) {
+                        $(rows[i]).css('display', '');
+                        N(rows[i]).html(N(rows[i]).text());
+                    }
+                    return;
+                }
+                var results = fuzzy.filter($(this).val(), rows, {
+                    pre: '<span class="tbls-match">', post: '</span>', extract: function (x) {
+                        return N(x).text();
+                    }
+                });
+                for (var i = 0; i < rows.length; i++) {
+                    $(rows[i]).css('display', 'none');
+                }
+                for (var i = 0; i < results.length; i++) {
+                    $(results[i].original).css('display', '');
+                    N(results[i].original).html(results[i].string);
+                }
+            })
+        });
+    </script>
+
+    <header>
+        <div><a href="https://filippo.io">
+        <img src="https://words.filippo.io/content/images/2023/02/Logo-Bianco-Filippo-Valsorda-def-web.png" alt="Filippo Valsorda">
+        </a></div>
+    </header>
+
+    <div id="main">
+        <div id="content">
+            <div>
+                <article role="article">
+                    <p style="text-align: right;"><a style="text-decoration: none;" href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky 🦋</a> / <a style="text-decoration: none;" href="https://abyssdomain.expert/@filippo" rel="me">Mastodon 🐘</a> / <a style="text-decoration: none;" href="https://filippo.io/newsletter">Newsletter 📮</a></p>
+
+                    <h1 class="entry-title">Searchable Linux Syscall Table</h1>
+
+                    <p>Since 2013, this table lists the Linux system call numbers for the x86-64 architecture, with their name, arguments, and links to the manual and the implementation. Also, fuzzy search!</p>
+
+                    <p>The table is derived from the <a href="https://github.com/torvalds/linux/blob/v{{ .Version }}/arch/x86/entry/syscalls/syscall_64.tbl"><code>syscall_64.tbl</code> file</a> in the <strong>Linux {{ .Version }} kernel</strong> source, and the <a href="https://github.com/torvalds/linux/blob/v{{ .Version }}/include/linux/syscalls.h"><code>syscalls.h</code> header file</a>. The generator is available <a href="https://github.com/FiloSottile/mostly-harmless/tree/main/filippo.fly.dev/filippo.io/linux-syscall-table">on GitHub</a>.</p>
+
+                    <p>Syscalls are implemented in functions named as in the <em>Entry point</em> column, generated with <code>DEFINE_SYSCALLx</code> macros. For more information, see <a href="https://www.kernel.org/doc/html/latest/process/adding-syscalls.html">Documentation/process/adding-syscalls.rst</a>.</p>
+                    
+                    <p>To learn more, read the <a href="https://manpages.debian.org/unstable/manpages-dev/syscall.2.en.html"><code>syscall(2)</code></a> and <a href="https://manpages.debian.org/unstable/manpages-dev/syscalls.2.en.html"><code>syscalls(2)</code></a> man pages.</p>
+
+                    <p><strong>Double click on a row</strong> to reveal the arguments list. Search using the fuzzy filter box.</p>
+
+                    <p class="tbls-filter">Filter: <input type="text"></p>
+
+                    <p>The <strong>return value</strong> is placed in <code>%rax</code>.</p>
+
+                    <table class="tbls-table">
+                        <thead>
+                            <tr>
+                                <td width="18%">%rax</td>
+                                <td width="22%">Name</td>
+                                <td width="26%">Manual</td>
+                                <td width="34%">Entry point</td>
+                            </tr>
+                        </thead>
+
+                        {{ $r := .Registers }}
+                        {{ range .Syscalls }}
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>{{ .Number }}</td>
+                            <td>{{ .Name }}</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/{{ .Name }}.2.en.html">{{ .Name }}(2)</a></td>
+                            <td>{{ if .Implemented }}<a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cb{{ .Entrypoint }}%5Cb%2F&type=code">sys_{{ .Entrypoint }}</a>{{ end }}</td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        {{ if .Implemented }}
+                        {{ if .Args }}
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            {{ range $i, $_ := .Args }}
+                                            <td>%{{ index $r $i }}</td>
+                                            {{ end }}
+                                        </tr>
+                                        <tr>
+                                            {{ range .Args }}
+                                            <td>{{ . }}</td>
+                                            {{ end }}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        {{ else }}
+                            <td colspan="3">No arguments</td>
+                        {{ end }}
+                        {{ else }}
+                            <td colspan="3">Not implemented</td>
+                        {{ end }}
+                        </tr>
+
+                        {{ end }}
+                    </table>
+                </article>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
