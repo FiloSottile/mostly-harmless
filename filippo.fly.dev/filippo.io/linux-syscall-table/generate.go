@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+//go:generate go run generate.go > index.html
+
 func main() {
 	const Version = "6.7"
 
@@ -96,16 +98,22 @@ func main() {
 			Entrypoint: strings.TrimPrefix(entry, "sys_"), Args: args})
 	}
 
-	// Load the HTML template from file index.html.tmpl
 	tmpl, err := template.ParseFiles("index.html.tmpl")
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := tmpl.Execute(os.Stdout, map[string]interface{}{
+	f, err := os.Create("index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := tmpl.Execute(f, map[string]interface{}{
 		"Version":   Version,
 		"Syscalls":  syscalls,
 		"Registers": []string{"rdi", "rsi", "rdx", "r10", "r8", "r9"},
 	}); err != nil {
+		log.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
