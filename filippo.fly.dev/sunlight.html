@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer data-domain="sunlight.dev" src="/js/script.js"></script>
+    <link rel="canonical" href="https://sunlight.dev/">
+
+    <title>The Sunlight CT Log</title>
+
+    <style>
+        @font-face {
+            font-family: 'Source Code Pro';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Source Code Pro Regular'), local('SourceCodePro-Regular'),
+                url('fonts/source-code-pro-v11-latin-regular.woff2') format('woff2'),
+                url('fonts/source-code-pro-v11-latin-regular.woff') format('woff');
+        }
+
+        @font-face {
+            font-family: 'Bitter';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Bitter Regular'), local('Bitter-Regular'),
+                url('fonts/bitter-v15-latin-regular.woff2') format('woff2'),
+                url('fonts/bitter-v15-latin-regular.woff') format('woff');
+        }
+    </style>
+
+    <style>
+        .container {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 80px auto;
+        }
+
+        body {
+            font-family: "Bitter", serif;
+        }
+
+        code {
+            font-family: "Source Code Pro", monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+
+<body>
+  <div class="container">
+    <p align="center">
+      <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://github.com/C2SP/C2SP/assets/1225294/0cd04af2-e84d-4f48-b42e-ed430354e563">
+          <source media="(prefers-color-scheme: light)" srcset="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
+          <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" src="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
+      </picture>
+    </p>
+
+    <h1>Sunlight</h1>
+    <p>
+      Sunlight is a <a href="https://certificate.transparency.dev/">Certificate
+      Transparency</a> log implementation and monitoring API designed for
+      scalability, ease of operation, and reduced cost.
+    
+    <p>
+      Sunlight was designed by <a href="https://filippo.io">Filippo Valsorda</a>
+      for the needs of the WebPKI community, through the
+      feedback of many of its members, and in particular of the
+      <a href="https://www.sigsum.org/">Sigsum</a>,
+      <a href="https://transparency.dev/">Google TrustFabric</a>, and
+      <a href="https://www.isrg.org/">ISRG</a> teams. It is partially based on
+      the <a href="https://golang.org/design/25530-sumdb">Go Checksum Database</a>.
+      Sunlight's development was sponsored by
+      <a href="https://letsencrypt.org/">Let's Encrypt</a>.
+    
+    <p>
+      We have a set of resources for various WebPKI stakeholders. Are you...
+
+    <p>
+      <strong>... a log operator?</strong> You can find the open source Sunlight
+      implementation at <a href="https://github.com/FiloSottile/sunlight">
+      github.com/FiloSottile/sunlight</a>.
+    
+    <p>
+      <strong>... a CT monitor?</strong> The Sunlight monitoring API is fully
+      specified at <a href="https://c2sp.org/sunlight">c2sp.org/sunlight</a>,
+      and you can test against the prototype logs below. A Go client library is
+      coming soon.
+    
+    <p>
+      You might be happy to know that the object storage backends powering the
+      Sunlight monitoring APIs are nearly rate-limit free! We're especially
+      interested in feedback from CT monitors, and we'd be happy to help you get
+      started with Sunlight.
+
+    <p>
+      <strong>... a certificate authority?</strong> You can submit to Sunlight
+      logs like to any other CT log!
+
+    <p>
+      You can use the <em>Rome</em> prototype logs for testing. These logs are
+      automatically deployed from the latest development tree. Here are their
+      submission and monitoring prefixes:
+    
+    <p>
+      <a href="https://rome.ct.filippo.io/2024h1/">https://rome.ct.filippo.io/2024h1/</a><br>
+      <a href="https://rome2024h1.fly.storage.tigris.dev/">https://rome2024h1.fly.storage.tigris.dev/</a>
+  
+    <p>
+      <a href="https://rome.ct.filippo.io/2024h2/">https://rome.ct.filippo.io/2024h2/</a><br>
+      <a href="https://rome2024h2.fly.storage.tigris.dev/">https://rome2024h2.fly.storage.tigris.dev/</a>
+
+    <p>
+      <a href="https://rome.ct.filippo.io/2025h1/">https://rome.ct.filippo.io/2025h1/</a><br>
+      <a href="https://rome2025h1.fly.storage.tigris.dev/">https://rome2025h1.fly.storage.tigris.dev/</a>
+    
+    <details>
+      <summary>Public keys</summary>
+      <p>rome2024h1</p>
+      <pre><code>
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAXM8Ld9qn64g1zVFDh5FtgxS3zj5
+sqQDwYMs3wrBV3MCBiFhK/iRLxdKF4YsAcJaEglMlu4Lewvzxs0xO2uwEw==
+-----END PUBLIC KEY-----
+      </code></pre>
+      <p>rome2024h2</p>
+      <pre><code>
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1MYng3cgeXHN7zp/0ojI84whzyx5
+2SrZwcT//CQpAtJgi5f0ygRyzkKJQn7Bi5zH0S/97U/Ty3l9Iz6YsaBsXQ==
+-----END PUBLIC KEY-----
+      </code></pre>
+      <p>rome2025h1</p>
+      <pre><code>
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhRM/8nIUSHy/fSlrn+939y43zBvA
+9cCZZj58A7JmPA7s4stWNUdB3juei6HQ7E4t+zDiPRiTfSYTrl2bkFulgw==
+-----END PUBLIC KEY-----
+      </code></pre>
+    </details>
+
+    <details>
+      <summary>Example URLs</summary>
+      <pre><code>
+https://rome.ct.filippo.io/2024h1/ct/v1/add-chain
+https://rome.ct.filippo.io/2024h1/ct/v1/add-pre-chain
+https://rome.ct.filippo.io/2024h1/ct/v1/get-roots
+https://rome2024h1.fly.storage.tigris.dev/checkpoint 
+https://rome2024h1.fly.storage.tigris.dev/tile/8/0/000 
+https://rome2024h1.fly.storage.tigris.dev/tile/8/data/000 
+https://rome2024h1.fly.storage.tigris.dev/issuers.pem 
+      </code></pre>
+    </details>
+
+    <p>
+      Chains are verified against the Chrome Root Store, Let's Encrypt staging
+      roots, and DigiCert test roots. We'd be happy to add more staging or
+      testing roots, email <a href="https://filippo.io/">Filippo</a> or <a
+      href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
+      a PR</a>. Certificates without the <code>serverAuth</code> EKU are
+      rejected. There is a rate-limit of 750 chains/s per log. All logs are
+      served by a <a href="https://fly.io">Fly.io</a> app running on a single
+      shared-4x-cpu@1024MB machine. The logs are backed and sponsored by <a
+      href="https://www.tigrisdata.com/">Tigris</a>.
+
+    <p>
+      Let's Encrypt also operates <a href="https://letsencrypt.org/docs/ct-logs/">
+      a set of Sunlight logs</a> you can start submitting to today.
+      Note that these logs are not yet trusted by browsers.

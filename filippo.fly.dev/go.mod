@@ -1,6 +1,6 @@
 module filippo.io/mostly-harmless/filippo.fly.dev
 
-go 1.17
+go 1.22.1
 
 require (
 	github.com/cloudflare/dns v0.0.0-20150411011339-71d0b8b38181
