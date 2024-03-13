@@ -11,6 +11,15 @@
 
     <style>
         @font-face {
+            font-family: 'Raleway';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Raleway'), local('Raleway-Regular'),
+                url('fonts/raleway-v14-latin-regular.woff2') format('woff2'),
+                url('fonts/raleway-v14-latin-regular.woff') format('woff');
+        }
+
+        @font-face {
             font-family: 'Source Code Pro';
             font-style: normal;
             font-weight: 400;
@@ -38,6 +47,10 @@
         }
 
         body {
+            font-family: "Raleway", sans-serif;
+        }
+
+        h1, h2, h3 {
             font-family: "Bitter", serif;
         }
 
@@ -51,11 +64,7 @@
 <body>
   <div class="container">
     <p align="center">
-      <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="https://github.com/C2SP/C2SP/assets/1225294/0cd04af2-e84d-4f48-b42e-ed430354e563">
-          <source media="(prefers-color-scheme: light)" srcset="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
-          <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" src="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
-      </picture>
+      <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" src="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
     </p>
 
     <h1>Sunlight</h1>
@@ -118,40 +127,32 @@
     
     <details>
       <summary>Public keys</summary>
-      <p>rome2024h1</p>
-      <pre><code>
------BEGIN PUBLIC KEY-----
+      <p>rome2024h1
+      <pre><code>-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAXM8Ld9qn64g1zVFDh5FtgxS3zj5
 sqQDwYMs3wrBV3MCBiFhK/iRLxdKF4YsAcJaEglMlu4Lewvzxs0xO2uwEw==
------END PUBLIC KEY-----
-      </code></pre>
-      <p>rome2024h2</p>
-      <pre><code>
------BEGIN PUBLIC KEY-----
+-----END PUBLIC KEY-----</code></pre></p>
+      <p>rome2024h2
+      <pre><code>-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1MYng3cgeXHN7zp/0ojI84whzyx5
 2SrZwcT//CQpAtJgi5f0ygRyzkKJQn7Bi5zH0S/97U/Ty3l9Iz6YsaBsXQ==
------END PUBLIC KEY-----
-      </code></pre>
-      <p>rome2025h1</p>
-      <pre><code>
------BEGIN PUBLIC KEY-----
+-----END PUBLIC KEY-----</code></pre></p>
+      <p>rome2025h1
+      <pre><code>-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhRM/8nIUSHy/fSlrn+939y43zBvA
 9cCZZj58A7JmPA7s4stWNUdB3juei6HQ7E4t+zDiPRiTfSYTrl2bkFulgw==
------END PUBLIC KEY-----
-      </code></pre>
+-----END PUBLIC KEY-----</code></pre></p>
     </details>
 
     <details>
       <summary>Example URLs</summary>
-      <pre><code>
-https://rome.ct.filippo.io/2024h1/ct/v1/add-chain
+      <pre><code>https://rome.ct.filippo.io/2024h1/ct/v1/add-chain
 https://rome.ct.filippo.io/2024h1/ct/v1/add-pre-chain
 https://rome.ct.filippo.io/2024h1/ct/v1/get-roots
 https://rome2024h1.fly.storage.tigris.dev/checkpoint 
 https://rome2024h1.fly.storage.tigris.dev/tile/8/0/000 
 https://rome2024h1.fly.storage.tigris.dev/tile/8/data/000 
-https://rome2024h1.fly.storage.tigris.dev/issuers.pem 
-      </code></pre>
+https://rome2024h1.fly.storage.tigris.dev/issuers.pem</code></pre>
     </details>
 
     <p>
