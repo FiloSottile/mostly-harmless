@@ -48,6 +48,7 @@
 
         body {
             font-family: "Raleway", sans-serif;
+            line-height: 1.4;
         }
 
         h1, h2, h3 {
@@ -67,7 +68,7 @@
       <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" src="https://github.com/C2SP/C2SP/assets/1225294/0f239db0-7100-4bba-8608-bd4dc4134409">
     </p>
 
-    <h1>Sunlight</h1>
+    <h1>The Sunlight CT Log</h1>
     <p>
       Sunlight is a <a href="https://certificate.transparency.dev/">Certificate
       Transparency</a> log implementation and monitoring API designed for
@@ -90,7 +91,9 @@
     <p>
       <strong>... a log operator?</strong> You can find the open source Sunlight
       implementation at <a href="https://github.com/FiloSottile/sunlight">
-      github.com/FiloSottile/sunlight</a>.
+      github.com/FiloSottile/sunlight</a> and a the original design document,
+      including a description of the Sunlight architecture and tradeoffs, at
+      <a href="https://filippo.io/a-different-CT-log">filippo.io/a-different-CT-log</a>.
     
     <p>
       <strong>... a CT monitor?</strong> The Sunlight monitoring API is fully
@@ -158,7 +161,7 @@ https://rome2024h1.fly.storage.tigris.dev/issuers.pem</code></pre>
     <p>
       Chains are verified against the Chrome Root Store, Let's Encrypt staging
       roots, and DigiCert test roots. We'd be happy to add more staging or
-      testing roots, email <a href="https://filippo.io/">Filippo</a> or <a
+      testing roots, email Filippo or <a
       href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
       a PR</a>. Certificates without the <code>serverAuth</code> EKU are
       rejected. There is a rate-limit of 750 chains/s per log. All logs are
