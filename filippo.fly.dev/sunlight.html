@@ -136,6 +136,21 @@
     <p>
       <a href="https://rome.ct.filippo.io/2025h1/">https://rome.ct.filippo.io/2025h1/</a><br>
       <a href="https://rome2025h1.fly.storage.tigris.dev/">https://rome2025h1.fly.storage.tigris.dev/</a>
+
+    <details>
+      <summary>Details</summary>
+      <p>
+        Chains are verified against the Chrome Root Store, Let's Encrypt staging
+        roots, and DigiCert test roots. We'd be happy to add more staging or
+        testing roots, email Filippo or <a
+        href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
+        a PR</a>. Certificates without the <code>serverAuth</code> EKU are
+        rejected. There is a rate-limit of 750 chains/s per log. All logs are
+        served by a <a href="https://fly.io">Fly.io</a> app running on a single
+        shared-4x-cpu@1024MB machine. The logs are backed and sponsored by <a
+        href="https://www.tigrisdata.com/">Tigris</a>. Due to their experimental
+        nature, these logs may occasionally encounter downtime or data loss.
+    </p></details>
     
     <details>
       <summary>Public keys</summary>
@@ -168,20 +183,9 @@ https://rome2024h1.fly.storage.tigris.dev/issuers.pem</code></pre>
     </details>
 
     <p>
-      Chains are verified against the Chrome Root Store, Let's Encrypt staging
-      roots, and DigiCert test roots. We'd be happy to add more staging or
-      testing roots, email Filippo or <a
-      href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
-      a PR</a>. Certificates without the <code>serverAuth</code> EKU are
-      rejected. There is a rate-limit of 750 chains/s per log. All logs are
-      served by a <a href="https://fly.io">Fly.io</a> app running on a single
-      shared-4x-cpu@1024MB machine. The logs are backed and sponsored by <a
-      href="https://www.tigrisdata.com/">Tigris</a>.
-
-    <p>
       Let's Encrypt also operates <a href="https://letsencrypt.org/docs/ct-logs/#Sunlight">
       a set of Sunlight logs</a> you can start submitting to today.
-      Note that these logs are not yet trusted by browsers.
+      Note that none of these logs are yet trusted by browsers.
 
     <p>
       <strong>... looking for the logo?</strong> You can find it <a
