@@ -196,6 +196,7 @@ func filippoIO(mux *http.ServeMux) {
 		"/age/age-keygen.1":   "https://htmlpreview.github.io/?https://github.com/FiloSottile/age/blob/main/doc/age-keygen.1.html",
 		"/CV/":                "https://blog.filippo.io/hi/",
 		"/atom.xml":           "https://blog.filippo.io/rss/",
+		"/maintenance":        "https://github.com/FiloSottile/FiloSottile/blob/main/maintenance.md",
 
 		"/psa-enable-automatic-updates-please/":                 "https://blog.filippo.io/psa-enable-automatic-updates-please/",
 		"/salt-and-pepper/":                                     "https://blog.filippo.io/salt-and-pepper/",
