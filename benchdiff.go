@@ -15,6 +15,8 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/cheggaaa/pb/v3"
 )
 
 func getCacheDir() string {
@@ -48,7 +50,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	benchArgs := []string{"test", "-json", "-run", "^$", "-bench", ".", "-count", "10"}
+	benchArgs := []string{"test", "-json", "-run", "^$", "-bench", ".", "-count", "6"}
 	benchArgs = append(benchArgs, flag.Args()...)
 
 	bd := &Benchdiff{
@@ -122,12 +124,16 @@ func runCmd(cmd *exec.Cmd, debug *log.Logger) error {
 	return err
 }
 
-func (c *Benchdiff) runBenchmark(ref, filename string) error {
+func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	c.Debug.Printf("output file: %s", filename)
 	if ref != "" && fileExists(filename) {
 		c.Debug.Printf("+ skipping benchmark for ref %q because output file exists", ref)
 		return nil
 	}
+
+	// TODO: customize. Add ETA.
+	progress := pb.StartNew(count)
+	defer progress.Finish()
 
 	cmd := exec.Command("go", c.BenchArgs...)
 
@@ -147,6 +153,11 @@ func (c *Benchdiff) runBenchmark(ref, filename string) error {
 	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
 		if e.Action == "output" {
 			io.WriteString(fileBuffer, e.Output)
+		}
+		if e.Action == "output" && strings.Contains(e.Output, "\t") &&
+			strings.HasPrefix(e.Output, "Benchmark") {
+			// TODO: print more information about the benchmark.
+			progress.Increment()
 		}
 	}}
 
@@ -232,6 +243,7 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		return nil, err
 	}
 
+	// TODO: use base-ref cache if available.
 	count, err := c.countBenchmarks()
 	if err != nil {
 		return nil, err
@@ -245,11 +257,13 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		HeadOutputFile: headFilename,
 	}
 
-	if err := c.runBenchmark(c.BaseRef, baseFilename); err != nil {
+	// TODO: interleave runs?
+
+	if err := c.runBenchmark(c.BaseRef, baseFilename, count); err != nil {
 		return nil, err
 	}
 
-	if err := c.runBenchmark(c.HeadRef, headFilename); err != nil {
+	if err := c.runBenchmark(c.HeadRef, headFilename, count); err != nil {
 		return nil, err
 	}
 
