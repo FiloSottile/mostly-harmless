@@ -285,13 +285,13 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	// TODO: interleave runs?
 
 	if err := c.runBenchmark(c.BaseRef, baseFilename, count); err == errCached {
-		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.HeadRef)
+		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.BaseRef)
 	} else if err != nil {
 		return nil, err
 	}
 
 	if err := c.runBenchmark(c.HeadRef, headFilename, count); err == errCached {
-		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.BaseRef)
+		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.HeadRef)
 	} else if err != nil {
 		return nil, err
 	}
