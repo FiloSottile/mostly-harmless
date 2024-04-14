@@ -1,4 +1,4 @@
-module github.com/willabides/benchdiff
+module filippo.io/benchdiff
 
 go 1.22.2
 
