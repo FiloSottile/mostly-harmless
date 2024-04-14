@@ -35,6 +35,9 @@ func main() {
 
 	flag.Parse()
 
+	// Invoke caffeinate to prevent the system from sleeping. Best effort.
+	exec.Command("caffeinate", "-d").Start()
+
 	if *clearCacheFlag {
 		cacheDir := getCacheDir()
 		files, err := filepath.Glob(filepath.Join(cacheDir, "benchdiff-*.out"))
@@ -124,11 +127,21 @@ func runCmd(cmd *exec.Cmd, debug *log.Logger) error {
 	return err
 }
 
+var errCached = fmt.Errorf("cached")
+
 func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	c.Debug.Printf("output file: %s", filename)
 	if ref != "" && fileExists(filename) {
-		c.Debug.Printf("+ skipping benchmark for ref %q because output file exists", ref)
-		return nil
+		return errCached
+	}
+
+	if ref == "" {
+		if rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel"); err == nil {
+			goModPath := filepath.Join(string(rootPath), "go.mod")
+			if diff, err := c.runGitCmd("diff", goModPath); err == nil && len(diff) > 0 {
+				fmt.Fprintf(os.Stderr, "Warning: go.mod is dirty.\n")
+			}
+		}
 	}
 
 	// TODO: customize. Add ETA.
@@ -150,6 +163,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	}
 
 	fileBuffer := &bytes.Buffer{}
+	// TODO: remove JSON
 	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
 		if e.Action == "output" {
 			io.WriteString(fileBuffer, e.Output)
@@ -259,11 +273,15 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 
 	// TODO: interleave runs?
 
-	if err := c.runBenchmark(c.BaseRef, baseFilename, count); err != nil {
+	if err := c.runBenchmark(c.BaseRef, baseFilename, count); err == errCached {
+		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.HeadRef)
+	} else if err != nil {
 		return nil, err
 	}
 
-	if err := c.runBenchmark(c.HeadRef, headFilename, count); err != nil {
+	if err := c.runBenchmark(c.HeadRef, headFilename, count); err == errCached {
+		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.BaseRef)
+	} else if err != nil {
 		return nil, err
 	}
 
