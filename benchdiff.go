@@ -1,3 +1,21 @@
+// Command benchdiff runs Go benchmarks on two git refs and uses benchstat to
+// show the delta.
+//
+// By default, the base ref is HEAD and the head ref is the current worktree.
+// Use the -base-ref and -head-ref flags to specify different refs.
+//
+// To pass flags to "go test", pass them after a double dash. For example:
+//
+//	benchdiff -- -benchmem
+//
+// Non-worktree runs are cached. To clear the cache, use the -clear-cache flag.
+//
+// Benchmarking the standard library is supported.
+//
+// On macOS, benchdiff will attempt to prevent the system from sleeping.
+//
+// This is inspired by and based on github.com/willabides/benchdiff, although
+// the interface has significantly diverged.
 package main
 
 import (
