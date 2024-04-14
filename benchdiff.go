@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha512"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -13,11 +14,12 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/alecthomas/kong"
 )
 
-const defaultBenchArgsTmpl = `test {{ .Packages }} -run '^$'
+const defaultBenchArgsTmpl = `test -json {{ .Packages }} -run '^$'
 {{- if .Bench }} -bench {{ .Bench }}{{end}}
 {{- if .Count }} -count {{ .Count }}{{end}}
 {{- if .Benchtime }} -benchtime {{ .Benchtime }}{{end}}
@@ -169,7 +171,6 @@ func main() {
 		ResultsDir: cacheDir,
 		BaseRef:    cli.BaseRef,
 		HeadRef:    cli.HeadRef,
-		Writer:     os.Stdout,
 		Force:      cli.NoCache,
 		GitCmd:     cli.GitCmd,
 	}
@@ -197,7 +198,6 @@ type Benchdiff struct {
 	BaseRef    string
 	HeadRef    string
 	GitCmd     string
-	Writer     io.Writer
 	Force      bool
 	Debug      *log.Logger
 }
@@ -267,6 +267,12 @@ func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
 	}
 
 	fileBuffer := &bytes.Buffer{}
+	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
+		if e.Action == "output" {
+			io.WriteString(fileBuffer, e.Output)
+		}
+	}}
+
 	if filename != "" {
 		c.debug().Printf("output file: %s", filename)
 		if ref != "" && !force {
@@ -275,7 +281,6 @@ func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
 				return nil
 			}
 		}
-		cmd.Stdout = fileBuffer
 	}
 
 	if !stdlib {
@@ -317,6 +322,24 @@ func (c *Benchdiff) runBenchmark(ref, filename string, force bool) error {
 	return os.WriteFile(filename, fileBuffer.Bytes(), 0o666)
 }
 
+func (c *Benchdiff) countBenchmarks() (int, error) {
+	var count int
+
+	benchArgs := c.BenchArgs + " -benchtime 1ns"
+	cmd := exec.Command(c.GoCmd, strings.Fields(benchArgs)...)
+	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
+		// Unfortunately, the go test -json output makes it hard to track timing
+		// output lines without heuristics. See https://go.dev/issue/66825.
+		if e.Action == "output" && strings.Contains(e.Output, "\t") &&
+			strings.HasPrefix(e.Output, "Benchmark") {
+			count++
+		}
+	}}
+
+	err := runCmd(cmd, c.debug())
+	return count, err
+}
+
 func (c *Benchdiff) Run() (result *RunResult, err error) {
 	if err := os.MkdirAll(c.ResultsDir, 0o700); err != nil {
 		return nil, err
@@ -343,6 +366,12 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	if err != nil {
 		return nil, err
 	}
+
+	count, err := c.countBenchmarks()
+	if err != nil {
+		return nil, err
+	}
+	c.debug().Printf("counted %d benchmarks", count)
 
 	result = &RunResult{
 		BenchmarkCmd:   fmt.Sprintf("%s %s", c.GoCmd, c.BenchArgs),
@@ -430,4 +459,38 @@ func (c *Benchdiff) runAtGitRef(ref string, fn func(path string)) error {
 	}()
 	fn(worktree)
 	return nil
+}
+
+type TestEvent struct {
+	Time    time.Time // encodes as an RFC3339-format string
+	Action  string
+	Package string
+	Test    string
+	Elapsed float64 // seconds
+	Output  string
+}
+
+type TestJSONWriter struct {
+	f   func(e *TestEvent)
+	buf []byte
+}
+
+func (w *TestJSONWriter) Write(p []byte) (n int, err error) {
+	w.buf = append(w.buf, p...)
+
+	var offset int64
+	defer func() { w.buf = w.buf[offset:] }()
+	d := json.NewDecoder(bytes.NewReader(w.buf))
+	for {
+		e := &TestEvent{}
+		err := d.Decode(e)
+		if err == io.EOF {
+			return len(p), nil
+		}
+		if err != nil {
+			return 0, err
+		}
+		offset = d.InputOffset()
+		w.f(e)
+	}
 }
