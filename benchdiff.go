@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha512"
 	"encoding/base64"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -14,7 +13,6 @@ import (
 	"path/filepath"
 	"runtime/debug"
 	"strings"
-	"time"
 
 	"github.com/cheggaaa/pb/v3"
 )
@@ -53,7 +51,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	benchArgs := []string{"test", "-json", "-run", "^$", "-bench", ".", "-count", "6"}
+	benchArgs := []string{"test", "-run", "^$", "-bench", ".", "-count", "6"}
 	benchArgs = append(benchArgs, flag.Args()...)
 
 	bd := &Benchdiff{
@@ -144,8 +142,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 		}
 	}
 
-	// TODO: customize. Add ETA.
-	progress := pb.StartNew(count)
+	progress := pb.Simple.Start(count)
 	defer progress.Finish()
 
 	cmd := exec.Command("go", c.BenchArgs...)
@@ -163,17 +160,16 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	}
 
 	fileBuffer := &bytes.Buffer{}
-	// TODO: remove JSON
-	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
-		if e.Action == "output" {
-			io.WriteString(fileBuffer, e.Output)
-		}
-		if e.Action == "output" && strings.Contains(e.Output, "\t") &&
-			strings.HasPrefix(e.Output, "Benchmark") {
-			// TODO: print more information about the benchmark.
+	cmd.Stdout = io.MultiWriter(fileBuffer, &TestOutputWriter{f: func(line string) {
+		if strings.HasPrefix(line, "Benchmark") && strings.Contains(line, "\t") {
 			progress.Increment()
+			parts := strings.Split(line, "\t")
+			name := strings.TrimSpace(parts[0])
+			name, _, _ = strings.Cut(name, "-")
+			time := strings.TrimSpace(parts[2])
+			progress.Set("prefix", name+" "+time+" |")
 		}
-	}}
+	}})
 
 	if !stdlib {
 		goVersion, err := c.runGoCmd("env", "GOVERSION")
@@ -217,11 +213,8 @@ func (c *Benchdiff) countBenchmarks() (int, error) {
 	benchArgs := append([]string(nil), c.BenchArgs...)
 	benchArgs = append(benchArgs, "-benchtime", "1ns", "-run", "^$")
 	cmd := exec.Command("go", benchArgs...)
-	cmd.Stdout = &TestJSONWriter{f: func(e *TestEvent) {
-		// Unfortunately, the go test -json output makes it hard to track timing
-		// output lines without heuristics. See https://go.dev/issue/66825.
-		if e.Action == "output" && strings.Contains(e.Output, "\t") &&
-			strings.HasPrefix(e.Output, "Benchmark") {
+	cmd.Stdout = &TestOutputWriter{f: func(line string) {
+		if strings.HasPrefix(line, "Benchmark") && strings.Contains(line, "\t") {
 			count++
 		}
 	}}
@@ -357,36 +350,19 @@ func (c *Benchdiff) runAtGitRef(ref string, fn func(path string)) error {
 	return nil
 }
 
-type TestEvent struct {
-	Time    time.Time // encodes as an RFC3339-format string
-	Action  string
-	Package string
-	Test    string
-	Elapsed float64 // seconds
-	Output  string
+type TestOutputWriter struct {
+	f   func(line string)
+	buf string
 }
 
-type TestJSONWriter struct {
-	f   func(e *TestEvent)
-	buf []byte
-}
-
-func (w *TestJSONWriter) Write(p []byte) (n int, err error) {
-	w.buf = append(w.buf, p...)
-
-	var offset int64
-	defer func() { w.buf = w.buf[offset:] }()
-	d := json.NewDecoder(bytes.NewReader(w.buf))
+func (w *TestOutputWriter) Write(p []byte) (n int, err error) {
+	w.buf += string(p)
 	for {
-		e := &TestEvent{}
-		err := d.Decode(e)
-		if err == io.EOF {
+		line, rest, ok := strings.Cut(w.buf, "\n")
+		if !ok {
 			return len(p), nil
 		}
-		if err != nil {
-			return 0, err
-		}
-		offset = d.InputOffset()
-		w.f(e)
+		w.f(line)
+		w.buf = rest
 	}
 }
