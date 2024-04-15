@@ -103,6 +103,8 @@ type Benchdiff struct {
 	ResultsDir string
 	BaseRef    string
 	HeadRef    string
+	Stdlib     bool
+	RootPath   string
 	Debug      *log.Logger
 }
 
@@ -151,34 +153,16 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 		return errCached
 	}
 
-	if ref == "" {
-		if rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel"); err == nil {
-			goModPath := filepath.Join(string(rootPath), "go.mod")
-			if diff, err := c.runGitCmd("diff", goModPath); err == nil && len(diff) > 0 {
-				fmt.Fprintf(os.Stderr, "Warning: go.mod is dirty.\n")
-			}
-		}
-	}
-
 	progress := pb.Simple.Start(count)
 	defer progress.Finish()
 
 	cmd := exec.Command("go", c.BenchArgs...)
-
-	stdlib := false
-	if rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel"); err == nil {
-		// lib/time/zoneinfo.zip is a specific enough path, and it's here to
-		// stay because it's one of the few paths hardcoded into Go binaries.
-		zoneinfoPath := filepath.Join(string(rootPath), "lib", "time", "zoneinfo.zip")
-		if _, err := os.Stat(zoneinfoPath); err == nil {
-			stdlib = true
-			c.Debug.Println("standard library detected")
-			cmd.Path = filepath.Join(string(rootPath), "bin", "go")
-		}
+	if c.Stdlib {
+		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
 	}
 
 	fileBuffer := &bytes.Buffer{}
-	cmd.Stdout = io.MultiWriter(fileBuffer, &TestOutputWriter{f: func(line string) {
+	cmd.Stdout = io.MultiWriter(fileBuffer, &LineWriter{f: func(line string) {
 		if strings.HasPrefix(line, "Benchmark") && strings.Contains(line, "\t") {
 			progress.Increment()
 			parts := strings.Split(line, "\t")
@@ -189,7 +173,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 		}
 	}})
 
-	if !stdlib {
+	if !c.Stdlib {
 		goVersion, err := c.runGoCmd("env", "GOVERSION")
 		if err != nil {
 			return err
@@ -202,17 +186,32 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 		runErr = runCmd(cmd, c.Debug)
 	} else {
 		err := c.runAtGitRef(c.BaseRef, func(workPath string) {
-			if stdlib {
+			if c.Stdlib {
+				// TODO: cache toolchains.
 				makeCmd := exec.Command(filepath.Join(workPath, "src", "make.bash"))
 				makeCmd.Dir = filepath.Join(workPath, "src")
 				makeCmd.Env = append(os.Environ(), "GOOS=", "GOARCH=")
+				makeCmd.Stdout = &LineWriter{f: func(line string) {
+					words := strings.Fields(line)
+					if strings.HasPrefix(line, "Building Go") {
+						words = words[:3]
+					}
+					if strings.HasPrefix(line, "Building packages") {
+						words = words[:4]
+					}
+					if strings.HasPrefix(line, "***") {
+						words = []string{"Toolchain", "built"}
+					}
+					line = strings.Join(words, " ")
+					progress.Set("prefix", line+" |")
+				}}
 				runErr = runCmd(makeCmd, c.Debug)
 				if runErr != nil {
 					return
 				}
 				cmd.Path = filepath.Join(workPath, "bin", "go")
 			}
-			cmd.Dir = workPath // TODO: add relative path of working directory
+			cmd.Dir = workPath // TODO: add relative path of working directory.
 			runErr = runCmd(cmd, c.Debug)
 		})
 		if err != nil {
@@ -231,7 +230,10 @@ func (c *Benchdiff) countBenchmarks() (int, error) {
 	benchArgs := append([]string(nil), c.BenchArgs...)
 	benchArgs = append(benchArgs, "-benchtime", "1ns", "-run", "^$")
 	cmd := exec.Command("go", benchArgs...)
-	cmd.Stdout = &TestOutputWriter{f: func(line string) {
+	if c.Stdlib {
+		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
+	}
+	cmd.Stdout = &LineWriter{f: func(line string) {
 		if strings.HasPrefix(line, "Benchmark") && strings.Contains(line, "\t") {
 			count++
 		}
@@ -242,15 +244,41 @@ func (c *Benchdiff) countBenchmarks() (int, error) {
 }
 
 func (c *Benchdiff) Run() (result *RunResult, err error) {
+	rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel")
+	if err != nil {
+		return nil, err
+	}
+	c.RootPath = string(rootPath)
+
+	if c.HeadRef == "" {
+		goModPath := filepath.Join(c.RootPath, "go.mod")
+		if diff, err := c.runGitCmd("diff", goModPath); err == nil && len(diff) > 0 {
+			fmt.Fprintf(os.Stderr, "Warning: go.mod is dirty.\n")
+		}
+	}
+
+	// lib/time/zoneinfo.zip is a specific enough path, and it's here to
+	// stay because it's one of the few paths hardcoded into Go binaries.
+	zoneinfoPath := filepath.Join(c.RootPath, "lib", "time", "zoneinfo.zip")
+	if _, err := os.Stat(zoneinfoPath); err == nil {
+		c.Stdlib = true
+		c.Debug.Println("standard library detected")
+	}
+
 	if err := os.MkdirAll(c.ResultsDir, 0o700); err != nil {
 		return nil, err
 	}
 
+	tagsFlag := "--tags"
+	if c.Stdlib {
+		// TODO: use env GOVERSION (with -dirty).
+		tagsFlag = "--long"
+	}
 	headFlag := "--dirty"
 	if c.HeadRef != "" {
 		headFlag = c.HeadRef
 	}
-	headRef, err := c.runGitCmd("describe", "--tags", "--always", headFlag)
+	headRef, err := c.runGitCmd("describe", tagsFlag, "--always", headFlag)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +287,7 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 		return nil, err
 	}
 
-	baseRef, err := c.runGitCmd("describe", "--tags", "--always", c.BaseRef)
+	baseRef, err := c.runGitCmd("describe", tagsFlag, "--always", c.BaseRef)
 	if err != nil {
 		return nil, err
 	}
@@ -304,10 +332,6 @@ func (c *Benchdiff) cacheFilename(ref string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel")
-	if err != nil {
-		return "", err
-	}
 
 	h := sha512.New()
 	if buildInfo, ok := debug.ReadBuildInfo(); ok {
@@ -316,7 +340,7 @@ func (c *Benchdiff) cacheFilename(ref string) (string, error) {
 	fmt.Fprintf(h, "%q\n", c.BenchArgs)
 	fmt.Fprintf(h, "%s\n", env)
 	fmt.Fprintf(h, "%s\n", ref)
-	fmt.Fprintf(h, "%s\n", rootPath)
+	fmt.Fprintf(h, "%s\n", c.RootPath)
 	cacheKey := base64.RawURLEncoding.EncodeToString(h.Sum(nil)[:16])
 
 	return filepath.Join(c.ResultsDir, fmt.Sprintf("benchdiff-%s.out", cacheKey)), nil
@@ -368,12 +392,12 @@ func (c *Benchdiff) runAtGitRef(ref string, fn func(path string)) error {
 	return nil
 }
 
-type TestOutputWriter struct {
+type LineWriter struct {
 	f   func(line string)
 	buf string
 }
 
-func (w *TestOutputWriter) Write(p []byte) (n int, err error) {
+func (w *LineWriter) Write(p []byte) (n int, err error) {
 	w.buf += string(p)
 	for {
 		line, rest, ok := strings.Cut(w.buf, "\n")
