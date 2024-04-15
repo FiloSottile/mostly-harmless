@@ -1,0 +1,45 @@
+# configure golangci-lint
+# see https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - gosec
+        - goconst
+  exclude:
+    - "G302: Expect file permissions to be 0600 or less"
+    - "G304: Potential file inclusion via variable"
+    - "G204: Subprocess launched with a potential tainted input or cmd arguments"
+    - "G306: Expect WriteFile permissions to be 0600 or less"
+linters:
+  enable:
+    - gosec
+    - unconvert
+    - gocyclo
+    - goconst
+    - goimports
+    - gocritic
+    - gofumpt
+    - revive
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - style
+      - diagnostic
+      - performance
+  errcheck:
+    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
+    # default is false: such cases aren't reported by default.
+    check-blank: true
+  govet:
+    # report about shadowed variables
+    check-shadowing: true
+  maligned:
+    # print struct with more effective memory layout or not, false by default
+    suggest-new: true
+  revive:
+    rules:
+      - name: package-comments
+        disabled: true

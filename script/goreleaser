@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+CDPATH="" cd -- "$(dirname -- "$0")/.."
+
+script/bindown -q install goreleaser
+bin/goreleaser "$@"

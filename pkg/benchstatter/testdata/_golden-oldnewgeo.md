@@ -1,0 +1,79 @@
+|                   name                    | old time/op (ns/op) |  ±  | new time/op (ns/op) |  ±  |  delta  |         ±         |
+|-------------------------------------------|--------------------:|-----|--------------------:|-----|---------|-------------------|
+| CRC32/poly=IEEE/size=15/align=0-8         |               46.87 | 8%  |               44.52 | 3%  | -5.01%  | (p=0.008 n=10+10) |
+| CRC32/poly=IEEE/size=15/align=1-8         |               44.71 | 5%  |                44.5 | 4%  | ~       | (p=0.539 n=10+10) |
+| CRC32/poly=IEEE/size=40/align=0-8         |             41.0375 | 1%  |                42.5 | 6%  | +3.56%  | (p=0.000 n=8+10)  |
+| CRC32/poly=IEEE/size=40/align=1-8         |             41.0778 | 1%  |               42.04 | 3%  | +2.34%  | (p=0.000 n=9+10)  |
+| CRC32/poly=IEEE/size=512/align=0-8        |                 238 | 5%  |               57.12 | 3%  | -76.00% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=512/align=1-8        |               235.5 | 3%  |               57.17 | 3%  | -75.72% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=1kB/align=0-8        |               452.5 | 4%  |             94.1125 | 2%  | -79.20% | (p=0.000 n=10+8)  |
+| CRC32/poly=IEEE/size=1kB/align=1-8        |               443.6 | 2%  |             93.2875 | 2%  | -78.97% | (p=0.000 n=10+8)  |
+| CRC32/poly=IEEE/size=4kB/align=0-8        |                1740 | 8%  |             298.111 | 1%  | -82.87% | (p=0.000 n=10+9)  |
+| CRC32/poly=IEEE/size=4kB/align=1-8        |              1764.3 | 6%  |               299.1 | 3%  | -83.05% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=32kB/align=0-8       |             14952.9 | 7%  |                2158 | 3%  | -85.57% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=32kB/align=1-8       |             14188.8 | 7%  |              2178.3 | 3%  | -84.65% | (p=0.000 n=10+10) |
+| CRC32/poly=Castagnoli/size=15/align=0-8   |             16.3778 | 3%  |                16.3 | 2%  | ~       | (p=0.615 n=9+9)   |
+| CRC32/poly=Castagnoli/size=15/align=1-8   |             17.2222 | 2%  |               17.29 | 2%  | ~       | (p=0.650 n=9+10)  |
+| CRC32/poly=Castagnoli/size=40/align=0-8   |               17.43 | 2%  |               17.53 | 4%  | ~       | (p=0.694 n=10+10) |
+| CRC32/poly=Castagnoli/size=40/align=1-8   |               19.71 | 3%  |               19.39 | 2%  | -1.62%  | (p=0.036 n=10+10) |
+| CRC32/poly=Castagnoli/size=512/align=0-8  |               40.17 | 2%  |               40.13 | 4%  | ~       | (p=0.614 n=10+10) |
+| CRC32/poly=Castagnoli/size=512/align=1-8  |               42.14 | 3%  |             41.9444 | 2%  | ~       | (p=0.952 n=10+9)  |
+| CRC32/poly=Castagnoli/size=1kB/align=0-8  |                65.5 | 1%  |             66.1625 | 1%  | +1.01%  | (p=0.003 n=9+8)   |
+| CRC32/poly=Castagnoli/size=1kB/align=1-8  |               70.09 | 6%  |             68.4667 | 2%  | ~       | (p=0.190 n=10+9)  |
+| CRC32/poly=Castagnoli/size=4kB/align=0-8  |               162.8 | 5%  |               158.8 | 3%  | -2.46%  | (p=0.032 n=10+10) |
+| CRC32/poly=Castagnoli/size=4kB/align=1-8  |               169.4 | 6%  |               161.6 | 3%  | -4.60%  | (p=0.005 n=10+10) |
+| CRC32/poly=Castagnoli/size=32kB/align=0-8 |             1218.22 | 4%  |             1214.33 | 3%  | ~       | (p=0.882 n=9+9)   |
+| CRC32/poly=Castagnoli/size=32kB/align=1-8 |             1264.78 | 3%  |              1220.8 | 4%  | -3.48%  | (p=0.002 n=9+10)  |
+| CRC32/poly=Koopman/size=15/align=0-8      |               36.51 | 11% |                35.6 | 3%  | ~       | (p=0.216 n=10+10) |
+| CRC32/poly=Koopman/size=15/align=1-8      |               35.15 | 5%  |             35.5111 | 1%  | ~       | (p=0.508 n=10+9)  |
+| CRC32/poly=Koopman/size=40/align=0-8      |               91.64 | 9%  |               87.65 | 2%  | -4.35%  | (p=0.002 n=10+10) |
+| CRC32/poly=Koopman/size=40/align=1-8      |               91.08 | 6%  |               88.03 | 3%  | ~       | (p=0.055 n=10+10) |
+| CRC32/poly=Koopman/size=512/align=0-8     |              1131.7 | 5%  |              1075.9 | 3%  | -4.93%  | (p=0.000 n=10+10) |
+| CRC32/poly=Koopman/size=512/align=1-8     |              1126.8 | 6%  |              1166.6 | 8%  | ~       | (p=0.143 n=10+10) |
+| CRC32/poly=Koopman/size=1kB/align=0-8     |             2243.33 | 6%  |              2340.7 | 4%  | +4.34%  | (p=0.010 n=9+10)  |
+| CRC32/poly=Koopman/size=1kB/align=1-8     |             2148.67 | 2%  |              2360.1 | 5%  | +9.84%  | (p=0.000 n=9+10)  |
+| CRC32/poly=Koopman/size=4kB/align=0-8     |              9031.5 | 6%  |              9003.2 | 6%  | ~       | (p=0.971 n=10+10) |
+| CRC32/poly=Koopman/size=4kB/align=1-8     |              8940.2 | 10% |              9046.3 | 12% | ~       | (p=0.754 n=10+10) |
+| CRC32/poly=Koopman/size=32kB/align=0-8    |               72428 | 9%  |             72900.5 | 4%  | ~       | (p=0.684 n=10+10) |
+| CRC32/poly=Koopman/size=32kB/align=1-8    |             69619.4 | 3%  |             74280.9 | 3%  | +6.70%  | (p=0.000 n=8+10)  |
+| [Geo mean]                                |             344.668 |     |             237.855 |     | -30.99% |                   |
+
+|                   name                    | old speed (MB/s) |  ±  | new speed (MB/s) |  ±  |  delta   |         ±         |
+|-------------------------------------------|-----------------:|-----|-----------------:|-----|----------|-------------------|
+| CRC32/poly=IEEE/size=15/align=0-8         |          320.711 | 8%  |           336.95 | 3%  | +5.06%   | (p=0.009 n=10+10) |
+| CRC32/poly=IEEE/size=15/align=1-8         |          335.516 | 4%  |          337.066 | 4%  | ~        | (p=0.579 n=10+10) |
+| CRC32/poly=IEEE/size=40/align=0-8         |          974.718 | 1%  |          941.823 | 5%  | -3.37%   | (p=0.001 n=8+10)  |
+| CRC32/poly=IEEE/size=40/align=1-8         |          973.636 | 1%  |          951.759 | 3%  | -2.25%   | (p=0.000 n=9+10)  |
+| CRC32/poly=IEEE/size=512/align=0-8        |          2147.03 | 4%  |          8967.15 | 3%  | +317.65% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=512/align=1-8        |          2169.13 | 3%  |          8956.06 | 3%  | +312.89% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=1kB/align=0-8        |          2261.52 | 4%  |          10880.7 | 2%  | +381.12% | (p=0.000 n=10+8)  |
+| CRC32/poly=IEEE/size=1kB/align=1-8        |          2306.19 | 2%  |          10976.8 | 2%  | +375.97% | (p=0.000 n=10+8)  |
+| CRC32/poly=IEEE/size=4kB/align=0-8        |          2357.32 | 7%  |          13725.8 | 1%  | +482.26% | (p=0.000 n=10+9)  |
+| CRC32/poly=IEEE/size=4kB/align=1-8        |          2325.11 | 6%  |            13677 | 3%  | +488.23% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=32kB/align=0-8       |          2194.43 | 7%  |          15185.2 | 3%  | +591.99% | (p=0.000 n=10+10) |
+| CRC32/poly=IEEE/size=32kB/align=1-8       |          2314.15 | 8%  |          15043.7 | 3%  | +550.07% | (p=0.000 n=10+10) |
+| CRC32/poly=Castagnoli/size=15/align=0-8   |          915.799 | 2%  |          920.433 | 2%  | ~        | (p=0.489 n=9+9)   |
+| CRC32/poly=Castagnoli/size=15/align=1-8   |          870.312 | 2%  |          867.298 | 2%  | ~        | (p=0.661 n=9+10)  |
+| CRC32/poly=Castagnoli/size=40/align=0-8   |           2295.6 | 2%  |          2282.65 | 4%  | ~        | (p=0.684 n=10+10) |
+| CRC32/poly=Castagnoli/size=40/align=1-8   |          2030.23 | 3%  |          2063.46 | 2%  | ~        | (p=0.063 n=10+10) |
+| CRC32/poly=Castagnoli/size=512/align=0-8  |          12743.7 | 2%  |          12757.8 | 4%  | ~        | (p=0.529 n=10+10) |
+| CRC32/poly=Castagnoli/size=512/align=1-8  |          12144.5 | 3%  |          12204.9 | 1%  | ~        | (p=0.780 n=10+9)  |
+| CRC32/poly=Castagnoli/size=1kB/align=0-8  |          15635.5 | 1%  |          15476.6 | 1%  | -1.02%   | (p=0.002 n=9+8)   |
+| CRC32/poly=Castagnoli/size=1kB/align=1-8  |          14627.3 | 6%  |          14959.7 | 2%  | ~        | (p=0.211 n=10+9)  |
+| CRC32/poly=Castagnoli/size=4kB/align=0-8  |          25086.2 | 5%  |          25689.7 | 3%  | ~        | (p=0.052 n=10+10) |
+| CRC32/poly=Castagnoli/size=4kB/align=1-8  |          24137.8 | 6%  |          25273.6 | 3%  | +4.71%   | (p=0.005 n=10+10) |
+| CRC32/poly=Castagnoli/size=32kB/align=0-8 |          26897.5 | 4%  |          26823.2 | 5%  | ~        | (p=0.842 n=9+10)  |
+| CRC32/poly=Castagnoli/size=32kB/align=1-8 |          25903.8 | 3%  |          26842.2 | 4%  | +3.62%   | (p=0.002 n=9+10)  |
+| CRC32/poly=Koopman/size=15/align=0-8      |          411.932 | 10% |          421.452 | 3%  | ~        | (p=0.218 n=10+10) |
+| CRC32/poly=Koopman/size=15/align=1-8      |          427.408 | 5%  |          422.362 | 1%  | ~        | (p=0.497 n=10+9)  |
+| CRC32/poly=Koopman/size=40/align=0-8      |          436.831 | 9%  |          456.472 | 2%  | +4.50%   | (p=0.002 n=10+10) |
+| CRC32/poly=Koopman/size=40/align=1-8      |          439.731 | 6%  |          454.515 | 3%  | ~        | (p=0.052 n=10+10) |
+| CRC32/poly=Koopman/size=512/align=0-8     |          452.693 | 5%  |          475.749 | 3%  | +5.09%   | (p=0.000 n=10+10) |
+| CRC32/poly=Koopman/size=512/align=1-8     |          454.579 | 6%  |          439.685 | 8%  | ~        | (p=0.143 n=10+10) |
+| CRC32/poly=Koopman/size=1kB/align=0-8     |          452.443 | 9%  |          437.629 | 4%  | ~        | (p=0.052 n=10+10) |
+| CRC32/poly=Koopman/size=1kB/align=1-8     |          476.558 | 2%  |          434.042 | 5%  | -8.92%   | (p=0.000 n=9+10)  |
+| CRC32/poly=Koopman/size=4kB/align=0-8     |          454.022 | 5%  |          455.492 | 6%  | ~        | (p=0.971 n=10+10) |
+| CRC32/poly=Koopman/size=4kB/align=1-8     |          459.394 | 9%  |          454.627 | 11% | ~        | (p=0.739 n=10+10) |
+| CRC32/poly=Koopman/size=32kB/align=0-8    |          453.471 | 8%  |          449.828 | 4%  | ~        | (p=0.684 n=10+10) |
+| CRC32/poly=Koopman/size=32kB/align=1-8    |          470.784 | 3%  |          441.379 | 3%  | -6.25%   | (p=0.000 n=8+10)  |
+| [Geo mean]                                |          1712.21 |     |          2480.66 |     | +44.88%  |                   |

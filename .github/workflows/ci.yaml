@@ -1,0 +1,22 @@
+name: ci
+on: [push]
+jobs:
+  cibuild:
+    name: cibuild
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: WillAbides/setup-go-faster@v1
+        id: setup-go
+        with:
+          go-version: '1.20.x'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.setup-go.outputs.GOCACHE }}
+            ${{ steps.setup-go.outputs.GOMODCACHE }}
+          key: ${{ runner.os }}-go-test-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-test
+      - run: script/test
+      - run: script/lint
+      - run: script/generate --check
