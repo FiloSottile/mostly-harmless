@@ -20,6 +20,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha512"
 	"encoding/base64"
 	"flag"
@@ -28,6 +29,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
@@ -51,8 +53,12 @@ func main() {
 
 	flag.Parse()
 
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
 	// Invoke caffeinate to prevent the system from sleeping. Best effort.
-	exec.Command("caffeinate", "-d").Start()
+	pid := fmt.Sprintf("%d", os.Getpid())
+	exec.CommandContext(ctx, "caffeinate", "-d", "-w", pid).Start()
 
 	if *clearCacheFlag {
 		cacheDir := getCacheDir()
@@ -82,12 +88,12 @@ func main() {
 	if *debugFlag {
 		bd.Debug = log.New(os.Stderr, "", 0)
 	}
-	result, err := bd.Run()
+	result, err := bd.Run(ctx)
 	if err != nil {
 		log.Fatalf("error running benchmarks: %v", err)
 	}
 
-	cmd := exec.Command("benchstat",
+	cmd := exec.CommandContext(ctx, "benchstat",
 		result.BaseRef+"="+result.BaseOutputFile,
 		result.HeadRef+"="+result.HeadOutputFile)
 	cmd.Stdout = os.Stdout
@@ -147,7 +153,7 @@ func runCmd(cmd *exec.Cmd, debug *log.Logger) error {
 
 var errCached = fmt.Errorf("cached")
 
-func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
+func (c *Benchdiff) runBenchmark(ctx context.Context, ref, filename string, count int) error {
 	c.Debug.Printf("output file: %s", filename)
 	if ref != "" && fileExists(filename) {
 		return errCached
@@ -156,7 +162,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	progress := pb.Simple.Start(count)
 	defer progress.Finish()
 
-	cmd := exec.Command("go", c.BenchArgs...)
+	cmd := exec.CommandContext(ctx, "go", c.BenchArgs...)
 	if c.Stdlib {
 		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
 	}
@@ -188,7 +194,7 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 		err := c.runAtGitRef(c.BaseRef, func(workPath string) {
 			if c.Stdlib {
 				// TODO: cache toolchains.
-				makeCmd := exec.Command(filepath.Join(workPath, "src", "make.bash"))
+				makeCmd := exec.CommandContext(ctx, filepath.Join(workPath, "src", "make.bash"))
 				makeCmd.Dir = filepath.Join(workPath, "src")
 				makeCmd.Env = append(os.Environ(), "GOOS=", "GOARCH=")
 				makeCmd.Stdout = &LineWriter{f: func(line string) {
@@ -224,12 +230,12 @@ func (c *Benchdiff) runBenchmark(ref, filename string, count int) error {
 	return os.WriteFile(filename, fileBuffer.Bytes(), 0o666)
 }
 
-func (c *Benchdiff) countBenchmarks() (int, error) {
+func (c *Benchdiff) countBenchmarks(ctx context.Context) (int, error) {
 	var count int
 
 	benchArgs := append([]string(nil), c.BenchArgs...)
 	benchArgs = append(benchArgs, "-benchtime", "1ns", "-run", "^$")
-	cmd := exec.Command("go", benchArgs...)
+	cmd := exec.CommandContext(ctx, "go", benchArgs...)
 	if c.Stdlib {
 		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
 	}
@@ -243,7 +249,7 @@ func (c *Benchdiff) countBenchmarks() (int, error) {
 	return count, err
 }
 
-func (c *Benchdiff) Run() (result *RunResult, err error) {
+func (c *Benchdiff) Run(ctx context.Context) (result *RunResult, err error) {
 	rootPath, err := c.runGitCmd("rev-parse", "--show-toplevel")
 	if err != nil {
 		return nil, err
@@ -297,7 +303,7 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 	}
 
 	// TODO: use base-ref cache if available.
-	count, err := c.countBenchmarks()
+	count, err := c.countBenchmarks(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -312,13 +318,13 @@ func (c *Benchdiff) Run() (result *RunResult, err error) {
 
 	// TODO: interleave runs?
 
-	if err := c.runBenchmark(c.BaseRef, baseFilename, count); err == errCached {
+	if err := c.runBenchmark(ctx, c.BaseRef, baseFilename, count); err == errCached {
 		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.BaseRef)
 	} else if err != nil {
 		return nil, err
 	}
 
-	if err := c.runBenchmark(c.HeadRef, headFilename, count); err == errCached {
+	if err := c.runBenchmark(ctx, c.HeadRef, headFilename, count); err == errCached {
 		fmt.Fprintf(os.Stderr, "Using cached benchmark for %s.\n", result.HeadRef)
 	} else if err != nil {
 		return nil, err
