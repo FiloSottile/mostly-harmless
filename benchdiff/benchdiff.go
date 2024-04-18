@@ -49,6 +49,7 @@ func main() {
 	clearCacheFlag := flag.Bool("clear-cache", false, "clear the cache")
 	baseRef := flag.String("base-ref", "HEAD", "base git ref")
 	headRef := flag.String("head-ref", "", "head git ref (defaults to worktree)")
+	reduildStdlibFlag := flag.Bool("rebuild-stdlib", true, "rebuild the standard library")
 	debugFlag := flag.Bool("debug", false, "enable debug output")
 
 	flag.Parse()
@@ -79,11 +80,12 @@ func main() {
 	benchArgs = append(benchArgs, flag.Args()...)
 
 	bd := &Benchdiff{
-		BenchArgs:  benchArgs,
-		ResultsDir: getCacheDir(),
-		BaseRef:    *baseRef,
-		HeadRef:    *headRef,
-		Debug:      log.New(io.Discard, "", 0),
+		BenchArgs:     benchArgs,
+		ResultsDir:    getCacheDir(),
+		BaseRef:       *baseRef,
+		HeadRef:       *headRef,
+		Debug:         log.New(io.Discard, "", 0),
+		RebuildStdlib: *reduildStdlibFlag,
 	}
 	if *debugFlag {
 		bd.Debug = log.New(os.Stderr, "", 0)
@@ -105,13 +107,14 @@ func main() {
 }
 
 type Benchdiff struct {
-	BenchArgs  []string
-	ResultsDir string
-	BaseRef    string
-	HeadRef    string
-	Stdlib     bool
-	RootPath   string
-	Debug      *log.Logger
+	BenchArgs     []string
+	ResultsDir    string
+	BaseRef       string
+	HeadRef       string
+	RebuildStdlib bool
+	Stdlib        bool
+	RootPath      string
+	Debug         *log.Logger
 }
 
 type RunResult struct {
@@ -192,7 +195,7 @@ func (c *Benchdiff) runBenchmark(ctx context.Context, ref, filename string, coun
 		runErr = runCmd(cmd, c.Debug)
 	} else {
 		err := c.runAtGitRef(c.BaseRef, func(workPath string) {
-			if c.Stdlib {
+			if c.Stdlib && c.RebuildStdlib {
 				// TODO: cache toolchains.
 				makeCmd := exec.CommandContext(ctx, filepath.Join(workPath, "src", "make.bash"))
 				makeCmd.Dir = filepath.Join(workPath, "src")
@@ -216,6 +219,16 @@ func (c *Benchdiff) runBenchmark(ctx context.Context, ref, filename string, coun
 					return
 				}
 				cmd.Path = filepath.Join(workPath, "bin", "go")
+			} else if c.Stdlib {
+				runErr = os.Symlink(filepath.Join(c.RootPath, "pkg"), filepath.Join(workPath, "pkg"))
+				if runErr != nil {
+					return
+				}
+				runErr = os.Symlink(filepath.Join(c.RootPath, "bin"), filepath.Join(workPath, "bin"))
+				if runErr != nil {
+					return
+				}
+				cmd.Env = append(os.Environ(), "GOROOT="+workPath)
 			}
 			cmd.Dir = workPath // TODO: add relative path of working directory.
 			runErr = runCmd(cmd, c.Debug)
@@ -352,12 +365,15 @@ func (c *Benchdiff) cacheFilename(ref string) (string, error) {
 	return filepath.Join(c.ResultsDir, fmt.Sprintf("benchdiff-%s.out", cacheKey)), nil
 }
 
-func (c *Benchdiff) runGoCmd(args ...string) ([]byte, error) {
+func (c *Benchdiff) runGoCmd(args ...string) (string, error) {
 	var stdout bytes.Buffer
 	cmd := exec.Command("go", args...)
+	if c.Stdlib {
+		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
+	}
 	cmd.Stdout = &stdout
 	err := runCmd(cmd, c.Debug)
-	return bytes.TrimSpace(stdout.Bytes()), err
+	return string(bytes.TrimSpace(stdout.Bytes())), err
 }
 
 func (c *Benchdiff) runGitCmd(args ...string) ([]byte, error) {
@@ -386,7 +402,7 @@ func (c *Benchdiff) runAtGitRef(ref string, fn func(path string)) error {
 	}
 
 	defer func() {
-		_, cerr := c.runGitCmd("worktree", "remove", worktree)
+		_, cerr := c.runGitCmd("worktree", "remove", "--force", worktree)
 		if cerr != nil {
 			if exitErr, ok := cerr.(*exec.ExitError); ok {
 				fmt.Println(string(exitErr.Stderr))
