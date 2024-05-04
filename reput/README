@@ -1,6 +1,6 @@
 reput connects to a reMarkable via SSH and uploads a file.
 
-    $ reput 172.27.5.215:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY example.pdf
+    $ reput remarkable:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY example.pdf
 
 The reMarkable needs to be awake for the SSH server to be available.
 
@@ -10,22 +10,19 @@ Authentication is handled through ssh-agent. Install your SSH keys on the root
 account of the reMarkable. The password is in the About tab.
 
 While reput uses SSH for convenience, it just tunnels to the Web UI (instead of
-having to deal with the internal file structure and restart the UI).
+having to deal with the internal file structure and restart the UI). To avoid
+re-enabilng the Web UI at every boot, install Toltec and webinterface-onboot.
 
-You need to enable the USB web interface through the UI at least once per
-reboot, but there is no need to leave the USB cable attached.
-
-If you want to backup your files, since you're probably not using the cloud if
-you're reading this, they are at this path.
-
-    /home/root/.local/share/remarkable/xochitl
-
-As a personal note, I also installed rsync and disabled crashuploader.
-
-    ./configure CFLAGS="-static" --host="arm-linux-musleabi" && make
-    scp rsync root@remarkable.home.arpa:/usr/bin/
+As a personal note, I also installed rsync, tailscale-systemd, syncthing, and
+disabled crashuploader.
 
     systemctl disable crashuploader && systemctl stop crashuploader
+
+Syncthing is configured with the following folder in "Send only" to a node that
+has staggered versioning enabled. Note that outbound Tailscale connections don't
+work, so the remote node needs to be configured to connect to the reMarkable.
+
+    /home/root/.local/share/remarkable/xochitl
 
 Finally, here's a script that works as an Automator Print Plugin or Folder
 Action with a YubiKey-provided ssh-agent via yubikey-agent.
@@ -33,13 +30,12 @@ Action with a YubiKey-provided ssh-agent via yubikey-agent.
     export SSH_AUTH_SOCK=/usr/local/var/run/yubikey-agent.sock
     for f in "$@"
     do
-        ~/bin/reput 172.27.5.215:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY "$f"
+        ~/bin/reput remarkable:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY "$f"
     done
 
 Other interesting links
 
   - https://toltec-dev.org/
-  - https://github.com/Evidlo/remarkable_syncthing
+  - https://remarkable.guide
   - https://github.com/reHackable/awesome-reMarkable
-  - https://github.com/rM-self-serve/webinterface-onboot
-  - https://github.com/rM-self-serve/tailscale-rm-webint
+  - https://github.com/Evidlo/remarkable_syncthing

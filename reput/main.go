@@ -36,11 +36,6 @@ func main() {
 	}
 	defer sshc.Close()
 
-	log.Println("Binding USB address...")
-	if err := bindUSB0(sshc); err != nil {
-		log.Fatalln("Failed to bind USB address:", err)
-	}
-
 	log.Println("Uploading file to Web UI...")
 	if err := uploadFile(sshc.Dial, f); err != nil {
 		log.Fatalln("Failed to upload file:", err)
@@ -106,21 +101,6 @@ func uploadFile(dial func(network, addr string) (net.Conn, error), f *os.File) e
 	}
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		return fmt.Errorf("got HTTP status %d: %s", res.StatusCode, res.Status)
-	}
-	return nil
-}
-
-func bindUSB0(c *ssh.Client) error {
-	s, err := c.NewSession()
-	if err != nil {
-		return err
-	}
-	defer s.Close()
-	if err := s.Run("ip addr add 10.11.99.1/32 dev usb0"); err != nil {
-		if err.(*ssh.ExitError).ExitStatus() == 127 {
-			// ip: RTNETLINK answers: File exists
-			return nil
-		}
 	}
 	return nil
 }
