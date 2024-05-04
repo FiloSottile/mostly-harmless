@@ -1,6 +1,6 @@
 reput connects to a reMarkable via SSH and uploads a file.
 
-    $ reput 172.27.5.215:22 SHA256:HXpOPttnW8Atwy9mnW0tXaMWk8WfFPEN0hgOfFxPnss example.pdf
+    $ reput 172.27.5.215:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY example.pdf
 
 The reMarkable needs to be awake for the SSH server to be available.
 
@@ -12,9 +12,8 @@ account of the reMarkable. The password is in the About tab.
 While reput uses SSH for convenience, it just tunnels to the Web UI (instead of
 having to deal with the internal file structure and restart the UI).
 
-On supported firware versions (currently only 2.2.0.48), reput will automatically
-patch xochitl to keep the Web UI from turning off at each reboot, and to bind it
-to the loopback interface, as usb0 isn't configured with an IP at boot.
+You need to enable the USB web interface through the UI at least once per
+reboot, but there is no need to leave the USB cable attached.
 
 If you want to backup your files, since you're probably not using the cloud if
 you're reading this, they are at this path.
@@ -34,5 +33,13 @@ Action with a YubiKey-provided ssh-agent via yubikey-agent.
     export SSH_AUTH_SOCK=/usr/local/var/run/yubikey-agent.sock
     for f in "$@"
     do
-        ~/bin/reput 172.27.5.215:22 SHA256:HXpOPttnW8Atwy9mnW0tXaMWk8WfFPEN0hgOfFxPnss "$f"
+        ~/bin/reput 172.27.5.215:22 SHA256:CrDRbn2mlTDAalarGb994ZbQuI+i/yn6spxzVOFkRyY "$f"
     done
+
+Other interesting links
+
+  - https://toltec-dev.org/
+  - https://github.com/Evidlo/remarkable_syncthing
+  - https://github.com/reHackable/awesome-reMarkable
+  - https://github.com/rM-self-serve/webinterface-onboot
+  - https://github.com/rM-self-serve/tailscale-rm-webint

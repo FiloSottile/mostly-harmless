@@ -1,8 +1,7 @@
 module filippo.io/mostly-harmless/reput
 
-go 1.13
+go 1.22.2
 
-require (
-	github.com/kr/binarydist v0.1.0
-	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
-)
+require golang.org/x/crypto v0.22.0
+
+require golang.org/x/sys v0.19.0 // indirect
