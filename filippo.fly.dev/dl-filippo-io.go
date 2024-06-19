@@ -71,7 +71,12 @@ func dlFilippo(mux *http.ServeMux) {
 		}
 		GOOS, GOARCH := parts[0], parts[1]
 
-		dlReqs.WithLabelValues(GOOS, GOARCH, version, project).Inc()
+		proof := ""
+		if r.URL.Query().Has("proof") {
+			proof = ".proof"
+		}
+
+		dlReqs.WithLabelValues(GOOS, GOARCH, version, project, proof).Inc()
 
 		if version == "latest" {
 			v, err := getLatestVersion(r.Context(), project)
@@ -91,14 +96,14 @@ func dlFilippo(mux *http.ServeMux) {
 				ext = ".zip"
 			}
 
-			http.Redirect(w, r, "https://github.com/FiloSottile/age/releases/download/"+version+"/age-"+version+"-"+GOOS+"-"+GOARCH+ext, http.StatusMovedPermanently)
+			http.Redirect(w, r, "https://github.com/FiloSottile/age/releases/download/"+version+"/age-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusMovedPermanently)
 		case "mkcert":
 			ext := ""
 			if GOOS == "windows" {
 				ext = ".exe"
 			}
 
-			http.Redirect(w, r, "https://github.com/FiloSottile/mkcert/releases/download/"+version+"/mkcert-"+version+"-"+GOOS+"-"+GOARCH+ext, http.StatusMovedPermanently)
+			http.Redirect(w, r, "https://github.com/FiloSottile/mkcert/releases/download/"+version+"/mkcert-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusMovedPermanently)
 		}
 	})
 }
@@ -106,7 +111,7 @@ func dlFilippo(mux *http.ServeMux) {
 var dlReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "dl_requests_total",
 	Help: "dl.filippo.io requests processed, partitioned by GOOS, GOARCH, and version.",
-}, []string{"GOOS", "GOARCH", "version", "project"})
+}, []string{"GOOS", "GOARCH", "version", "project", "proof"})
 var dlErrs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "dl_errors_total",
 	Help: "dl.filippo.io errors while retrieving latest version.",
