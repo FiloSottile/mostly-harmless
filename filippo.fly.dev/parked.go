@@ -9,4 +9,7 @@ func parked(mux *http.ServeMux) {
 
 	handleWithCounter(mux, "ticketbleed.com/",
 		http.RedirectHandler("https://filippo.io/ticketbleed/", http.StatusFound))
+
+	handleWithCounter(mux, "geomys.dev/", http.RedirectHandler("https://geomys.org", http.StatusFound))
+	handleWithCounter(mux, "geomys.it/", http.RedirectHandler("https://geomys.org", http.StatusFound))
 }

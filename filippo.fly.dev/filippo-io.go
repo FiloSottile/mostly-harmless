@@ -102,7 +102,7 @@ func filippoIO(mux *http.ServeMux) {
 	handleFuncWithCounter(mux, "/.well-known/mta-sts.txt",
 		func(rw http.ResponseWriter, r *http.Request) {
 			if !strings.HasPrefix(r.Host, "mta-sts.") ||
-				!strings.HasSuffix(r.Host, ".filippo.io") {
+				!strings.HasSuffix(r.Host, ".filippo.io") && !strings.HasSuffix(r.Host, ".geomys.org") {
 				http.Error(rw, "Not an MTA-STS domain", http.StatusNotFound)
 				return
 			}
