@@ -21,6 +21,9 @@ var filippoIoContent embed.FS
 //go:embed sunlight.html
 var sunlightHTML []byte
 
+//go:embed geomys.html
+var geomysHTML []byte
+
 var goGetHtml = template.Must(template.New("go-get.html").Parse(`
 {{ $repo := or .GitRepo (printf "https://github.com/FiloSottile/%s" .Name) }}
 <head>
@@ -96,6 +99,16 @@ func filippoIO(mux *http.ServeMux) {
 	handleFuncWithCounter(mux, "sunlight.dev/{$}", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(sunlightHTML)
+	})
+
+	// geomys.org, same.
+	handleWithCounter(mux, "geomys.org/js/script.js", plausible)
+	handleWithCounter(mux, "geomys.org/api/event", plausible)
+	handleWithCounter(mux, "geomys.org/fonts/", http.FileServer(http.FS(content)))
+	handleWithCounter(mux, "geomys.org/images/", http.FileServer(http.FS(content)))
+	handleFuncWithCounter(mux, "geomys.org/{$}", func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		rw.Write(geomysHTML)
 	})
 
 	// MTA-STS for domains and subdomains
