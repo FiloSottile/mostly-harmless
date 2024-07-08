@@ -175,6 +175,9 @@ func (c *Benchdiff) runBenchmark(ctx context.Context, ref, filename string, coun
 		if strings.HasPrefix(line, "Benchmark") && strings.Contains(line, "\t") {
 			progress.Increment()
 			parts := strings.Split(line, "\t")
+			if len(parts) < 3 {
+				return
+			}
 			name := strings.TrimSpace(parts[0])
 			name, _, _ = strings.Cut(name, "-")
 			time := strings.TrimSpace(parts[2])
@@ -247,7 +250,7 @@ func (c *Benchdiff) countBenchmarks(ctx context.Context) (int, error) {
 	var count int
 
 	benchArgs := append([]string(nil), c.BenchArgs...)
-	benchArgs = append(benchArgs, "-benchtime", "1ns", "-run", "^$")
+	benchArgs = append(benchArgs, "-benchtime", "1x", "-run", "^$")
 	cmd := exec.CommandContext(ctx, "go", benchArgs...)
 	if c.Stdlib {
 		cmd.Path = filepath.Join(c.RootPath, "bin", "go")
