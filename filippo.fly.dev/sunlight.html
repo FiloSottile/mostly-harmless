@@ -121,66 +121,34 @@
       logs like to any other CT log!
 
     <p>
-      You can use the <em>Rome</em> prototype logs for testing. These logs are
-      automatically deployed from the latest development tree. Here are their
+      You can use the <em>Rome</em> prototype logs for testing. Here are their
       submission and monitoring prefixes:
-    
-    <p>
-      <a href="https://rome.ct.filippo.io/2024h1/">https://rome.ct.filippo.io/2024h1/</a><br>
-      <a href="https://rome2024h1.fly.storage.tigris.dev/">https://rome2024h1.fly.storage.tigris.dev/</a>
   
     <p>
-      <a href="https://rome.ct.filippo.io/2024h2/">https://rome.ct.filippo.io/2024h2/</a><br>
-      <a href="https://rome2024h2.fly.storage.tigris.dev/">https://rome2024h2.fly.storage.tigris.dev/</a>
+      <code>https://rome.ct.filippo.io/2024h2/</code><br>
+      <code>https://rome2024h2.fly.storage.tigris.dev/</code>
+  
+    <p>
+      <code>https://rome.ct.filippo.io/2025h1/</code><br>
+      <code>https://rome2025h1.fly.storage.tigris.dev/</code>
+  
+    <p>
+      <code>https://rome.ct.filippo.io/2025h2/</code><br>
+      <code>https://rome2025h2.fly.storage.tigris.dev/</code>
 
     <p>
-      <a href="https://rome.ct.filippo.io/2025h1/">https://rome.ct.filippo.io/2025h1/</a><br>
-      <a href="https://rome2025h1.fly.storage.tigris.dev/">https://rome2025h1.fly.storage.tigris.dev/</a>
-
-    <details>
-      <summary>Details</summary>
-      <p>
-        Chains are verified against the Chrome Root Store, Let's Encrypt staging
-        roots, and DigiCert test roots. We'd be happy to add more staging or
-        testing roots, email Filippo or <a
-        href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
-        a PR</a>. Certificates without the <code>serverAuth</code> EKU are
-        rejected. There is a rate-limit of 750 chains/s per log. All logs are
-        served by a <a href="https://fly.io">Fly.io</a> app running on a single
-        shared-4x-cpu@1024MB machine. The logs are backed and sponsored by <a
-        href="https://www.tigrisdata.com/">Tigris</a>. Due to their experimental
-        nature, these logs may occasionally encounter downtime or data loss.
-    </p></details>
-    
-    <details>
-      <summary>Public keys</summary>
-      <p>rome2024h1
-      <pre><code>-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAXM8Ld9qn64g1zVFDh5FtgxS3zj5
-sqQDwYMs3wrBV3MCBiFhK/iRLxdKF4YsAcJaEglMlu4Lewvzxs0xO2uwEw==
------END PUBLIC KEY-----</code></pre></p>
-      <p>rome2024h2
-      <pre><code>-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1MYng3cgeXHN7zp/0ojI84whzyx5
-2SrZwcT//CQpAtJgi5f0ygRyzkKJQn7Bi5zH0S/97U/Ty3l9Iz6YsaBsXQ==
------END PUBLIC KEY-----</code></pre></p>
-      <p>rome2025h1
-      <pre><code>-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhRM/8nIUSHy/fSlrn+939y43zBvA
-9cCZZj58A7JmPA7s4stWNUdB3juei6HQ7E4t+zDiPRiTfSYTrl2bkFulgw==
------END PUBLIC KEY-----</code></pre></p>
-    </details>
-
-    <details>
-      <summary>Example URLs</summary>
-      <pre><code>https://rome.ct.filippo.io/2024h1/ct/v1/add-chain
-https://rome.ct.filippo.io/2024h1/ct/v1/add-pre-chain
-https://rome.ct.filippo.io/2024h1/ct/v1/get-roots
-https://rome2024h1.fly.storage.tigris.dev/checkpoint 
-https://rome2024h1.fly.storage.tigris.dev/tile/8/0/000 
-https://rome2024h1.fly.storage.tigris.dev/tile/8/data/000 
-https://rome2024h1.fly.storage.tigris.dev/issuers.pem</code></pre>
-    </details>
+      Keys and more details are available on <a
+      href="https://rome.ct.filippo.io/">the Sunlight instance homepage</a>.
+      Chains are verified against the Chrome Root Store, Let's Encrypt staging
+      roots, and DigiCert test roots. We'd be happy to add more staging or
+      testing roots, email Filippo or <a
+      href="https://github.com/FiloSottile/sunlight/blob/main/rome/roots.pem">open
+      a PR</a>. Certificates without the <code>serverAuth</code> EKU are
+      rejected. There is a rate-limit of 750 chains/s per log. All logs are
+      served by a vastly overkill Hetzner AX42 machine. The storage is backed
+      and sponsored by <a href="https://www.tigrisdata.com/">Tigris</a>. Due to
+      their experimental nature, these logs may occasionally encounter downtime
+      or data loss.
 
     <p>
       Let's Encrypt also operates <a href="https://letsencrypt.org/docs/ct-logs/#Sunlight">
