@@ -1,0 +1,15 @@
+This is a browserpass-native replacement that supports passage.
+
+It is intentionally limited in that it doesn't let the extension select store or
+binary paths, and doesn't support writing.
+
+It is not maintained or in use, because the browserpass Firefox extension
+requires too many permissions for my use case.
+
+## Manifest paths
+
+${HOME}/.mozilla/native-messaging-hosts/com.github.browserpass.native.json
+${HOME}/Library/Application Support/Mozilla/NativeMessagingHosts/com.github.browserpass.native.json
+
+${XDG_CONFIG_HOME:-${HOME}/.config}/google-chrome/NativeMessagingHosts/com.github.browserpass.native.json
+${HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.github.browserpass.native.json
