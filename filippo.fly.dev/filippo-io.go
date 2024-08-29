@@ -24,6 +24,9 @@ var sunlightHTML []byte
 //go:embed geomys.html
 var geomysHTML []byte
 
+//go:embed lycalopex.html
+var lycalopexHTML []byte
+
 var goGetHtml = template.Must(template.New("go-get.html").Parse(`
 {{ $repo := or .GitRepo (printf "https://github.com/FiloSottile/%s" .Name) }}
 <head>
@@ -109,6 +112,16 @@ func filippoIO(mux *http.ServeMux) {
 	handleFuncWithCounter(mux, "geomys.org/{$}", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(geomysHTML)
+	})
+
+	// lycalopex.org, same.
+	handleWithCounter(mux, "lycalopex.org/js/script.js", plausible)
+	handleWithCounter(mux, "lycalopex.org/api/event", plausible)
+	handleWithCounter(mux, "lycalopex.org/fonts/", http.FileServer(http.FS(content)))
+	handleWithCounter(mux, "lycalopex.org/images/", http.FileServer(http.FS(content)))
+	handleFuncWithCounter(mux, "lycalopex.org/{$}", func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		rw.Write(lycalopexHTML)
 	})
 
 	// MTA-STS for domains and subdomains
