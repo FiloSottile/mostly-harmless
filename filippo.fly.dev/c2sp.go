@@ -35,6 +35,11 @@ func c2sp(mux *http.ServeMux) {
 			return
 		}
 
+		if r.URL.Path == "/sunlight" { // renamed spec
+			http.Redirect(w, r, "https://c2sp.org/static-ct-api", http.StatusFound)
+			return
+		}
+
 		if match := cctvRe.FindStringSubmatch(r.URL.Path); match != nil {
 			http.Redirect(w, r, "https://github.com/C2SP/CCTV/tree/main/"+match[1], http.StatusFound)
 			return
