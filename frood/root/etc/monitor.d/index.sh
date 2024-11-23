@@ -1,11 +1,10 @@
 #!/bin/sh
 
+cat /etc/frood-release
 cat /etc/motd
 
-echo "Image: $(cat /etc/frood-release)"
-echo "Kernel: $(uname -a)"
-echo "Uptime: $(uptime)"
-echo "Load average: $(cat /proc/loadavg)"
+uptime
+uname -a
 
 print_and_run() {
     echo
