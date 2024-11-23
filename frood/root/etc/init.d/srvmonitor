@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh
+
+description="Serve scripts from /etc/monitor.d"
+command=/usr/local/bin/srvmonitor
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need net localmount
+    after firewall
+}

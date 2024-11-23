@@ -42,6 +42,7 @@ rc-update add smartd default
 rc-update add zfs-zed default
 rc-update add sshd default
 rc-update add tailscale default
+rc-update add srvmonitor default
 
 chpasswd -e <<'EOF'
 root:$6$twsDxnP.TG2M8J4l$7lte7E/ImK4UwoursD7qQCC7XMUothIDb9FTH1MncxYbGQDUQPkC/9pxleTwPxEs3nbatApszxuwc4yj6ucdX1

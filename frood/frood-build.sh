@@ -9,6 +9,10 @@ ROOTFS_DEST=$(mktemp -d)
 IMAGE_DEST="/mnt/images/$1"
 rm -rf "$IMAGE_DEST"
 
+apk add --no-cache go
+go env -w GOTOOLCHAIN=auto
+go build -C /mnt/bins -o "$ROOTFS_DEST/usr/local/bin/" ./...
+
 mkdir -p "$ROOTFS_DEST/etc"
 echo "$1" > "$ROOTFS_DEST/etc/frood-release"
 
