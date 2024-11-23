@@ -40,7 +40,11 @@ case "$1" in
         image=$(latest_image)
         echo "Running image $image in QEMU"
         qemu-system-x86_64 -m 4G -kernel "images/$image/vmlinuz-lts" -initrd "images/$image/initramfs-lts" -append "console=ttyS0" \
-            -nographic -device qemu-xhci -device usb-storage,drive=usbstick -drive if=none,id=usbstick,file=usb_disk.qcow2,format=qcow2
+            -nographic -device qemu-xhci -device usb-storage,drive=usbstick -drive if=none,id=usbstick,file=usb_disk.img,format=raw
+        ;;
+    format)
+        docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
+            'apk add --no-cache dosfstools && mkfs.vfat -C -i B61B19E7 /mnt/usb_disk.img $(( 128 * 1024 ))'
         ;;
     chroot)
         image=$(latest_image)
@@ -70,6 +74,7 @@ case "$1" in
         echo "Subcommands:"
         echo "  build [ --fixup ] - Build the image"
         echo "  qemu              - Run the image in QEMU"
+        echo "  format            - Create a QEMU image for persistence"
         echo "  chroot            - Enter the image in a chroot"
         echo "  stage             - Stage the image for next boot"
         echo "  promote           - Promote the staged image to default"
