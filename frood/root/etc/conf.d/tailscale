@@ -1,0 +1,1 @@
+TAILSCALED_OPTS="-state /media/usb/persist/tailscaled.state"

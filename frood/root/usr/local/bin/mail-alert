@@ -1,0 +1,6 @@
+#!/bin/sh
+
+( echo "\
+Subject: $*
+To: frood@bip.filippo.io
+"; cat ) | /usr/sbin/sendmail frood@bip.filippo.io

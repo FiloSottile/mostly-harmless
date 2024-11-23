@@ -1,0 +1,7 @@
+# Scan disks instead of using the cache to tolerate disk renames (which can
+# happen even with /dev/disk/by-id if e.g. moving a USB disk to SATA).
+# See https://abyssdomain.expert/@filippo/113382158651811946.
+# Note that we pruned /dev/disk/by-id of unreadable duplicate symlinks.
+ZPOOL_IMPORT_ALL_VISIBLE=yes
+ZPOOL_IMPORT_PATH=/dev/disk/by-id
+ZPOOL_CACHE=""

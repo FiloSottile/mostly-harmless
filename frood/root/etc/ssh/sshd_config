@@ -1,0 +1,3 @@
+KbdInteractiveAuthentication no
+PasswordAuthentication no
+Subsystem	sftp	/usr/lib/ssh/sftp-server

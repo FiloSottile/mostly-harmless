@@ -1,0 +1,84 @@
+#!/bin/sh
+set -e
+
+# Images are stored in the images/ folder, named like 2024123101 where the last
+# two digits are an increasing counter.
+
+latest_image() {
+    ls -1 images | sort | tail -n 1
+}
+
+next_image() {
+    current_date=$(date +%Y%m%d)
+    counter=1
+    while [ -e "images/${current_date}$(printf %02d $counter)" ]; do
+        counter=$((counter + 1))
+    done
+    echo "${current_date}$(printf %02d $counter)"
+}
+
+fixup_image() {
+    current_date=$(date +%Y%m%d)
+    counter=1
+    while [ -e "images/${current_date}$(printf %02d $((counter + 1)))" ]; do
+        counter=$((counter + 1))
+    done
+    echo "${current_date}$(printf %02d $counter)"
+}
+
+case "$1" in
+    build)
+        if [ "$2" = "--fixup" ]; then
+            image=$(fixup_image)
+        else
+            image=$(next_image)
+        fi
+        echo "Building image $image"
+        docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /root alpine:3.20.3 /mnt/frood-build.sh "$image"
+        ;;
+    qemu)
+        image=$(latest_image)
+        echo "Running image $image in QEMU"
+        qemu-system-x86_64 -m 4G -kernel "images/$image/vmlinuz-lts" -initrd "images/$image/initramfs-lts" -append "console=ttyS0" \
+            -nographic -device qemu-xhci -device usb-storage,drive=usbstick -drive if=none,id=usbstick,file=usb_disk.qcow2,format=qcow2
+        ;;
+    chroot)
+        image=$(latest_image)
+        echo "Entering image $image in a chroot"
+        docker run -it --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /mnt/images/"$image" alpine:3.20.3 /mnt/frood-chroot.sh
+        ;;
+    stage)
+        image=$(latest_image)
+        echo "Staging image $image"
+        rsync -Pv "images/$image/vmlinuz-lts" root@frood:/media/usb/boot/vmlinuz-lts-new
+        rsync -Pv "images/$image/initramfs-lts" root@frood:/media/usb/boot/initramfs-lts-new
+        rsync -Pv "images/$image/intel-ucode.img" root@frood:/media/usb/boot/intel-ucode.img-new
+        # No idea why, but extlinux takes forever if not run under a shell.
+        echo "extlinux --once=new /media/usb/boot/syslinux" | ssh root@frood sh
+        echo "Image staged for next boot (once)!"
+        echo "Remember to reboot with 'openrc-shutdown -r now' and then run promote"
+        ;;
+    promote)
+        ssh root@frood sh < frood-promote.sh
+        ;;
+    syslinux)
+        ssh root@frood sh < frood-syslinux.sh
+        ;;
+    "")
+        echo "Usage: $0 <subcommand>"
+        echo
+        echo "Subcommands:"
+        echo "  build [ --fixup ] - Build the image"
+        echo "  qemu              - Run the image in QEMU"
+        echo "  chroot            - Enter the image in a chroot"
+        echo "  stage             - Stage the image for next boot"
+        echo "  promote           - Promote the staged image to default"
+        echo "  syslinux          - Update syslinux and its configuration"
+        echo
+        echo "Latest image: $(latest_image)"
+        ;;
+    *)
+        echo "Error: Unknown subcommand '$1'"
+        exit 1
+        ;;
+esac

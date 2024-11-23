@@ -1,0 +1,13 @@
+#!/bin/sh
+
+(
+    echo "Hello, world!"
+    echo
+    echo "Image: $(cat /etc/frood-release)"
+    echo
+    uname -a
+    echo
+    zpool status
+    echo
+    ip addr
+) | mail-alert "frood boot"

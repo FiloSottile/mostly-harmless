@@ -1,0 +1,35 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh
+
+description="Enable TLER on SATA disks"
+
+depend() {
+    after udev
+    before zfs-import
+}
+
+start() {
+    ebegin "Enabling TLER on SATA disks"
+    eindent
+    for disk in /dev/disk/by-id/ata-*; do
+        [ "${disk#*-part}" != "$disk" ] && continue
+        vebegin "Enabling TLER on $disk"
+        smartctl -l scterc,70,70 "$disk" > /dev/null
+        veend $?
+    done
+    eoutdent
+    eend $?
+}
+
+stop() {
+    ebegin "Disabling TLER on SATA disks"
+    eindent
+    for disk in /dev/disk/by-id/ata-*; do
+        [ "${disk#*-part}" != "$disk" ] && continue
+        vebegin "Disabling TLER on $disk"
+        smartctl -l scterc,0,0 "$disk" > /dev/null
+        veend $?
+    done
+    eoutdent
+    eend $?
+}
