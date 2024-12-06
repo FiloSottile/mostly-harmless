@@ -28,6 +28,7 @@ fixup_image() {
 
 case "$1" in
     build)
+        go test ./...
         if [ "$2" = "--fixup" ]; then
             image=$(fixup_image)
         else

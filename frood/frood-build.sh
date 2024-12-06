@@ -11,7 +11,7 @@ rm -rf "$IMAGE_DEST"
 
 apk add --no-cache go
 go env -w GOTOOLCHAIN=auto
-go build -C /mnt/bins -o "$ROOTFS_DEST/usr/local/bin/" ./...
+go build -C /mnt -o "$ROOTFS_DEST/usr/local/bin/" ./bins/...
 
 mkdir -p "$ROOTFS_DEST/etc"
 echo "$1" > "$ROOTFS_DEST/etc/frood-release"
