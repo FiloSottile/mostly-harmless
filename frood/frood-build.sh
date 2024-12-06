@@ -20,8 +20,8 @@ echo "$1" > "$ROOTFS_DEST/etc/frood-release"
 mkdir -p "$ROOTFS_DEST/etc/mkinitfs"
 echo "disable_trigger=yes" > "$ROOTFS_DEST/etc/mkinitfs/mkinitfs.conf"
 
-# syslinux apk trigger WARNING is expected.
-# https://gitlab.alpinelinux.org/alpine/aports/-/issues/16560
+# Stop update-extlinux from running during apk install.
+echo "disable_trigger=1" > "$ROOTFS_DEST/etc/update-extlinux.conf"
 
 export ALPINE_BRANCH=edge
 export SCRIPT_CHROOT=yes
