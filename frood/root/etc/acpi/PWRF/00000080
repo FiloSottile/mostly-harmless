@@ -1,2 +1,0 @@
-#!/bin/sh
-openrc-shutdown -p now

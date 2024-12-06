@@ -5,9 +5,6 @@ zfs-lts
 linux-firmware-i915
 intel-ucode
 alpine-base
-# Remember to use openrc-shutdown instread of poweroff/reboot.
-# https://gitlab.alpinelinux.org/alpine/aports/-/issues/16562
-openrc-init
 agetty
 util-linux
 apk-cron
