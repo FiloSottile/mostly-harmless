@@ -1,31 +1,51 @@
+# Base system
 linux-lts
 zfs-lts
+# A package that provides linux-firmware-any is required.
 linux-firmware-i915
 intel-ucode
 alpine-base
+# Remember to use openrc-shutdown instread of poweroff/reboot.
+# https://gitlab.alpinelinux.org/alpine/aports/-/issues/16562
 openrc-init
 agetty
-apk-cron
-busybox
-dhcpcd
-kbd-bkeymaps
-openntpd
-openssl
-openssh
-tzdata
 syslinux
 util-linux
+apk-cron
+kbd-bkeymaps
+ca-certificates
+tzdata
+
+# Daemons and services
+dhcpcd
+openntpd
+openssh
+mosh-server
+smartmontools
+tailscale
+ssmtp
+
+# Filesystems and devices
+eudev
+nvme-cli
+dosfstools
+e2fsprogs
+gptfdisk
+zfs
+zfs-utils-py
+zfs-udev
+ntfs-3g
+usbutils
+
+# Tools
 tar
 wget
-ssmtp
 joe
-mosh-server
 python3
 strace
 tmux
 htop
 iotop
-wget
 rsync
 tcpdump
 tree
@@ -33,22 +53,10 @@ pv
 ncdu
 file
 curl
-nvme-cli
-usbutils
 moreutils
 git
 findutils
 findutils-locate
 less
 sqlite
-dosfstools
-e2fsprogs
-gptfdisk
-zfs
-zfs-utils-py
-zfs-udev
-eudev
-ntfs-3g
-smartmontools
-tailscale
 restic

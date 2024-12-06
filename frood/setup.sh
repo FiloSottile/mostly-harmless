@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-# Remember to use openrc-shutdown instread of poweroff/reboot.
-# https://gitlab.alpinelinux.org/alpine/aports/-/issues/16562
 ln -s /sbin/openrc-init /init
 
 rc-update add devfs sysinit

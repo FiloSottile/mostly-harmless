@@ -28,13 +28,13 @@ fixup_image() {
 
 case "$1" in
     build)
-        go test ./...
         if [ "$2" = "--fixup" ]; then
             image=$(fixup_image)
         else
             image=$(next_image)
         fi
         echo "Building image $image"
+        go test ./...
         docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /root \
             -v "$(go env GOCACHE)":/root/.cache/go-build \
             -v "$(go env GOMODCACHE)":/root/go/pkg/mod alpine:3.20.3 /mnt/frood-build.sh "$image"
@@ -42,8 +42,9 @@ case "$1" in
     qemu)
         image=$(latest_image)
         echo "Running image $image in QEMU"
-        qemu-system-x86_64 -m 4G -kernel "images/$image/vmlinuz-lts" -initrd "images/$image/initramfs-lts" -append "console=ttyS0" \
-            -nographic -device qemu-xhci -device usb-storage,drive=usbstick -drive if=none,id=usbstick,file=usb_disk.img,format=raw
+        qemu-system-x86_64 -m 4G -kernel "images/$image/vmlinuz-lts" -initrd "images/$image/initramfs-lts" \
+            -append "console=ttyS0" -nographic -device qemu-xhci -device usb-storage,drive=usbstick \
+            -drive if=none,id=usbstick,file=usb_disk.img,format=raw
         ;;
     format)
         docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
@@ -52,7 +53,8 @@ case "$1" in
     chroot)
         image=$(latest_image)
         echo "Entering image $image in a chroot"
-        docker run -it --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /mnt/images/"$image" alpine:3.20.3 /mnt/frood-chroot.sh
+        docker run -it --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /mnt/images/"$image" \
+            alpine:3.20.3 /mnt/frood-chroot.sh
         ;;
     stage)
         image=$(latest_image)
@@ -61,8 +63,9 @@ case "$1" in
         rsync -Pv "images/$image/initramfs-lts" root@frood:/media/usb/boot/initramfs-lts-new
         rsync -Pv "images/$image/intel-ucode.img" root@frood:/media/usb/boot/intel-ucode.img-new
         # No idea why, but extlinux takes forever if not run under a shell.
+        # Ok, still takes forever, apparently. (2024-11-24)
         echo "extlinux --once=new /media/usb/boot/syslinux" | ssh root@frood sh
-        echo "Image staged for next boot (once)!"
+        echo "Image staged for next boot (once)\!"
         echo "Remember to reboot with 'openrc-shutdown -r now' and then run promote"
         ;;
     promote)
