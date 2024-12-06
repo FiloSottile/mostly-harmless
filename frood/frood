@@ -35,7 +35,9 @@ case "$1" in
             image=$(next_image)
         fi
         echo "Building image $image"
-        docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /root alpine:3.20.3 /mnt/frood-build.sh "$image"
+        docker run --privileged --platform linux/amd64 --rm -v "$PWD":/mnt -w /root \
+            -v "$(go env GOCACHE)":/root/.cache/go-build \
+            -v "$(go env GOMODCACHE)":/root/go/pkg/mod alpine:3.20.3 /mnt/frood-build.sh "$image"
         ;;
     qemu)
         image=$(latest_image)
