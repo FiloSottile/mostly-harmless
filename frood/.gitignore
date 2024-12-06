@@ -1,2 +1,5 @@
 /images
 /usb_disk.img
+/root/etc/ssh/ssh_host_ed25519_key
+/root/etc/ssmtp/ssmtp.conf
+/TODO
