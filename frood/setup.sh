@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-ln -s /sbin/openrc-init /init
-
 rc-update add devfs sysinit
 rc-update add dmesg sysinit
 rc-update add udev sysinit

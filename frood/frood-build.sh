@@ -3,15 +3,14 @@ set -e
 
 __() { printf "\n\033[1;32m* %s [%s]\033[0m\n" "$1" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"; }
 
+ROOTFS_DEST=$(mktemp -d)
+trap 'rm -rf "$ROOTFS_DEST"' EXIT
+
 __ "Fetching alpine-make-rootfs"
 
 wget https://raw.githubusercontent.com/alpinelinux/alpine-make-rootfs/v0.7.0/alpine-make-rootfs \
     && echo '91ceb95b020260832417b01e45ce02c3a250c4527835d1bdf486bf44f80287dc  alpine-make-rootfs' \
     | sha256sum -c || exit 1 && chmod +x alpine-make-rootfs
-
-ROOTFS_DEST=$(mktemp -d)
-IMAGE_DEST="/mnt/images/$1"
-rm -rf "$IMAGE_DEST"
 
 __ "Building Go binaries"
 
@@ -22,14 +21,11 @@ go build -C /mnt -o "$ROOTFS_DEST/usr/local/bin/" ./bins/...
 __ "Building rootfs"
 
 mkdir -p "$ROOTFS_DEST/etc"
-echo "$1" > "$ROOTFS_DEST/etc/frood-release"
+basename "$1" > "$ROOTFS_DEST/etc/frood-release"
 
 # Stop mkinitfs from running during apk install.
 mkdir -p "$ROOTFS_DEST/etc/mkinitfs"
 echo "disable_trigger=yes" > "$ROOTFS_DEST/etc/mkinitfs/mkinitfs.conf"
-
-# Stop update-extlinux from running during apk install.
-echo "disable_trigger=1" > "$ROOTFS_DEST/etc/update-extlinux.conf"
 
 export ALPINE_BRANCH=edge
 export SCRIPT_CHROOT=yes
@@ -42,9 +38,14 @@ export PACKAGES
 __ "Building initramfs"
 
 cd "$ROOTFS_DEST"
-mv boot "$IMAGE_DEST"
-find . | cpio -o -H newc | gzip > "$IMAGE_DEST/initramfs-lts"
+find . -path "./boot" -prune -o -print | cpio -o -H newc | gzip > "$ROOTFS_DEST/boot/initramfs-lts"
 
-__ "Created image $1!"
+__ "Building UKI image"
 
-du -hs .
+apk add --no-cache efi-mkuki
+efi-mkuki -c "rdinit=/sbin/openrc-init console=tty1 console=ttyS0" -o "$1" \
+    "$ROOTFS_DEST/boot/vmlinuz-lts" "$ROOTFS_DEST/boot/intel-ucode.img" "$ROOTFS_DEST/boot/initramfs-lts"
+
+__ "Created image!"
+
+ls -lh "$1"

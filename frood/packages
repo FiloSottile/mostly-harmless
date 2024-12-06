@@ -9,7 +9,6 @@ alpine-base
 # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16562
 openrc-init
 agetty
-syslinux
 util-linux
 apk-cron
 kbd-bkeymaps
@@ -31,6 +30,7 @@ nvme-cli
 dosfstools
 e2fsprogs
 gptfdisk
+sgdisk
 zfs
 zfs-utils-py
 zfs-udev
