@@ -6,8 +6,8 @@ __() { printf "\n\033[1;32m* %s [%s]\033[0m\n" "$1" "$(date -u +"%Y-%m-%dT%H:%M:
 __ "Fetching alpine-make-rootfs"
 
 wget https://raw.githubusercontent.com/alpinelinux/alpine-make-rootfs/v0.7.0/alpine-make-rootfs \
-    && echo 'e09b623054d06ea389f3a901fd85e64aa154ab3a  alpine-make-rootfs' | sha1sum -c && \
-    chmod +x alpine-make-rootfs
+    && echo '91ceb95b020260832417b01e45ce02c3a250c4527835d1bdf486bf44f80287dc  alpine-make-rootfs' \
+    | sha256sum -c || exit 1 && chmod +x alpine-make-rootfs
 
 ROOTFS_DEST=$(mktemp -d)
 IMAGE_DEST="/mnt/images/$1"
