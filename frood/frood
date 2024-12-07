@@ -44,19 +44,12 @@ case "$1" in
         image=$(latest_image)
         echo "Running image $image in QEMU (terminate with Ctrl-A X," \
             "shutdown with Ctrl-A C system_powerdown)"
-        # It would be better to boot the actual UKI with OVMF, but it's
-        # surprisingly hard to get it to work. Can reconsider for arm64.
-        # https://ubuntu.com/server/docs/boot-arm64-virtual-machines-on-qemu
-        # https://cdn.kernel.org/pub/linux/kernel/people/will/docs/qemu/qemu-arm64-howto.html
-        TEMPDIR=$(mktemp -d)
-        trap 'rm -rf "$TEMPDIR"' EXIT
-        CMDLINE=$("$(brew --prefix binutils)"/bin/objcopy \
-            --dump-section .initrd="$TEMPDIR/initrd" \
-            --dump-section .linux="$TEMPDIR/kernel" \
-            --dump-section .cmdline=/dev/stdout images/"$image")
-        ls -l "$TEMPDIR/initrd"
-        qemu-system-x86_64 -m 4G -nographic -append "$CMDLINE" \
-            -kernel "$TEMPDIR/kernel" -initrd "$TEMPDIR/initrd" \
+        if [ ! -f bios.bin ]; then
+            docker run --platform linux/amd64 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
+                'apk add --no-cache ovmf && cp /usr/share/ovmf/bios.bin /mnt/'
+        fi
+        qemu-system-x86_64 -m 4G -nographic -kernel "images/$image" \
+            -drive if=pflash,format=raw,file=bios.bin \
             -device qemu-xhci -device usb-storage,drive=usbstick \
             -drive if=none,id=usbstick,file=usb_disk.img,format=raw
         ;;
