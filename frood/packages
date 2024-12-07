@@ -33,6 +33,8 @@ zfs-utils-py
 zfs-udev
 ntfs-3g
 usbutils
+efivar
+efibootmgr
 
 # Tools
 tar
