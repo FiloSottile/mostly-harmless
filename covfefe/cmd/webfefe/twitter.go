@@ -9,8 +9,8 @@ import (
 
 	"filippo.io/mostly-harmless/covfefe"
 	"github.com/dghubble/go-twitter/twitter"
-	oauth1Login "github.com/dghubble/gologin/oauth1"
-	twitterLogin "github.com/dghubble/gologin/twitter"
+	oauth1Login "github.com/dghubble/gologin/v2/oauth1"
+	twitterLogin "github.com/dghubble/gologin/v2/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/sirupsen/logrus"
 )
