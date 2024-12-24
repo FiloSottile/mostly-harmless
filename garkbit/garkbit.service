@@ -1,0 +1,15 @@
+[Unit]
+Description=Garkbit
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+User=filippo
+Group=filippo
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+ExecStart=/home/filippo/garkbit
+
+[Install]
+WantedBy=multi-user.target
