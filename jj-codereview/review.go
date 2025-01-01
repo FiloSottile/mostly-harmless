@@ -62,7 +62,6 @@ func main() {
 	}
 	command, args := os.Args[1], os.Args[2:]
 
-	// NOTE: Keep this switch in sync with the list of commands above.
 	var cmd func([]string)
 	switch command {
 	default:

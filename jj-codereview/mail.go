@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -27,29 +26,30 @@ paginate = "never"
 `
 
 func cmdMail(args []string) {
-	// NOTE: New flags should be added to the usage message below as well as doc.go.
 	var (
-		rList  = new(stringList) // installed below
-		ccList = new(stringList) // installed below
+		all = flags.Bool("a", false, "mail multiple heads")
 
-		all         = flags.Bool("a", false, "mail multiple heads")
+		rList       = new(stringList) // installed below
+		ccList      = new(stringList) // installed below
 		hashtagList = new(stringList) // installed below
-		trybot      = flags.Bool("trybot", false, "run trybots on the uploaded CLs")
-		wip         = flags.Bool("wip", false, "set the status of a change to Work-in-Progress")
-		autoSubmit  = flags.Bool("autosubmit", false, "set autosubmit on the uploaded CLs")
+
+		trybot     = flags.Bool("trybot", false, "run trybots on the uploaded CLs")
+		wip        = flags.Bool("wip", false, "set the status of a change to Work-in-Progress")
+		autoSubmit = flags.Bool("autosubmit", false, "set autosubmit on the uploaded CLs")
 	)
 	flags.Var(rList, "r", "comma-separated list of reviewers")
 	flags.Var(ccList, "cc", "comma-separated list of people to CC:")
 	flags.Var(hashtagList, "hashtag", "comma-separated list of tags to set")
 
 	flags.Usage = func() {
-		fmt.Fprintf(stderr(),
-			"Usage: %s mail %s [-r reviewer,...] [-cc mail,...]\n"+
-				"\t[-autosubmit] [-trybot] [-wip] [-hashtag tag,...]\n"+
-				"\t[revisions]\n", progName, globalFlags)
-		fmt.Fprintf(stderr(), "\n")
-		fmt.Fprintf(stderr(), "Mails all changes in remote_bookmarks(remote=origin)..revisions.\n")
-		fmt.Fprintf(stderr(), "If revisions is not specified, it's @-.\n")
+		fmt.Fprintf(stderr(), trim(`
+Usage: %s mail %s [-r reviewer,...] [-cc mail,...]
+	[-autosubmit] [-trybot] [-wip] [-hashtag tag,...]
+	[revisions]
+
+Mails all changes in remote_bookmarks(remote=origin)..revisions.
+If revisions is not specified, it's @-.
+`), progName, globalFlags)
 		exit(2)
 	}
 	flags.Parse(args)
@@ -58,62 +58,38 @@ func cmdMail(args []string) {
 		exit(2)
 	}
 
-	var trybotVotes []string
-	switch os.Getenv("GIT_CODEREVIEW_TRYBOT") {
-	case "", "luci":
-		trybotVotes = []string{"Commit-Queue+1"}
-	case "farmer":
-		trybotVotes = []string{"Run-TryBot"}
-	case "both":
-		trybotVotes = []string{"Commit-Queue+1", "Run-TryBot"}
-	default:
-		fmt.Fprintf(stderr(), "GIT_CODEREVIEW_TRYBOT must be unset, blank, or one of 'luci', 'farmer', or 'both'\n")
-		exit(2)
-	}
-
-	jjc := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "@-")
+	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "@-")
 	if len(flags.Args()) == 1 {
-		jjc = strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", flags.Arg(0))
+		jjConfig = strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", flags.Arg(0))
+	}
+	jjLog := func(args ...string) []string {
+		args = append([]string{"--config-toml", jjConfig, "log", "--no-graph"}, args...)
+		return lines(cmdOutput("jj", args...))
 	}
 
-	if log := trim(cmdOutput("jj", "--config-toml", jjc, "log", "--no-graph",
-		"-r", "jjcrmailpending() & conflicts()")); log != "" {
-		dief("the following pending changes have conflicts:\n%s", log)
-	}
-	if log := trim(cmdOutput("jj", "--config-toml", jjc, "log", "--no-graph",
-		"-r", "jjcrmailpending() & (empty() ~ merges())")); log != "" {
-		dief("the following pending changes are empty:\n%s", log)
-	}
-	if log := trim(cmdOutput("jj", "--config-toml", jjc, "log", "--no-graph",
-		"-r", `jjcrmailpending() & description('substring-i:"DO NOT MAIL"')`)); log != "" {
-		dief("the following pending changes say DO NOT MAIL:\n%s", log)
-	}
-	private, _ := cmdOutputErr("jj", "--config-toml", jjc, "config", "get", "git.private-commits")
-	if private != "" {
-		if log := trim(cmdOutput("jj", "--config-toml", jjc, "log", "--no-graph",
-			"-r", "jjcrmailpending() & ("+private+")")); log != "" {
-			dief("the following pending changes are private:\n%s", log)
-		}
+	// A good definition for private() is:
+	//
+	//     conflicts() | (empty() ~ merges()) | description('substring-i:"DO NOT MAIL"')
+	//
+	if private := jjLog("-r", "jjcrmailpending() & private()"); len(private) > 0 {
+		dief("the following changes are private:\n\n%s", strings.Join(private, "\n"))
 	}
 
-	commits := lines(cmdOutput("jj", "--config-toml", jjc, "log",
-		"--no-graph", "-T", "commit_id ++ '\n'", "-r", "jjcrmailpending()"))
+	commits := jjLog("-T", "commit_id ++ '\n'", "-r", "jjcrmailpending()")
 	if len(commits) > 10 && !*all {
 		dief("more than 10 commits; use -a to mail all of them")
 	}
 
-	heads := lines(cmdOutput("jj", "--config-toml", jjc, "log",
-		"--no-graph", "-T", "commit_id ++ '\n'", "-r", "heads(jjcrmailpending())"))
+	heads := jjLog("-T", "commit_id ++ '\n'", "-r", "heads(jjcrmailpending())")
 	if len(heads) > 1 && !*all {
 		dief("multiple heads; use -a to mail all of them")
 	}
 
 	printf("mailing the following changes:\n\n%s",
-		cmdOutput("jj", "--config-toml", jjc, "log", "-r", "jjcrmailpending()"))
+		cmdOutput("jj", "--config-toml", jjConfig, "log", "-r", "jjcrmailpending()"))
 
 	for _, commit := range heads {
-		branches := lines(cmdOutput("jj", "--config-toml", jjc, "log",
-			"--no-graph", "-T", "bookmarks", "-r", "jjcrbranch("+commit+")"))
+		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranch("+commit+")")
 		if len(branches) != 1 {
 			dief("cannot determine branch for commit %s, got %v", commit, branches)
 		}
@@ -138,10 +114,8 @@ func cmdMail(args []string) {
 			}
 		}
 		if *trybot {
-			for _, v := range trybotVotes {
-				refSpec += start + "l=" + v
-				start = ","
-			}
+			refSpec += start + "l=Commit-Queue+1"
+			start = ","
 		}
 		if *wip {
 			refSpec += start + "wip"
