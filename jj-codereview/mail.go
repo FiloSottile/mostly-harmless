@@ -136,18 +136,22 @@ If revisions is not specified, it's set to "@-".
 	time.Sleep(1 * time.Second) // give Gerrit a chance to catch up
 
 	for _, commit := range commits {
-		change, err := GetChange(commit)
-		if err != nil {
-			printf("failed to fetch change for commit %s: %v", commit, err)
-			continue
-		}
-		patchSet := "?"
-		if !*noRun {
-			patchSet = fmt.Sprintf("%d", change.Revisions[commit].Number)
-		}
-		ref := fmt.Sprintf("refs/remotes/gerrit/cl/%d/%s", change.Number, patchSet)
-		run("git", "update-ref", ref, commit)
+		labelCommit(commit)
 	}
+}
+
+func labelCommit(commit string) {
+	change, err := GetChange(commit)
+	if err != nil {
+		printf("failed to fetch change for commit %s: %v", commit, err)
+		return
+	}
+	patchSet := "?"
+	if !*noRun {
+		patchSet = fmt.Sprintf("%d", change.Revisions[commit].Number)
+	}
+	ref := fmt.Sprintf("refs/remotes/gerrit/cl/%d/%s", change.Number, patchSet)
+	run("git", "update-ref", ref, commit)
 }
 
 // mailAddressRE matches the mail addresses we admit. It's restrictive but admits

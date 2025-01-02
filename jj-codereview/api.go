@@ -26,6 +26,7 @@ type GerritChange struct {
 			} `json:"http"`
 		} `json:"fetch"`
 	} `json:"revisions"`
+	CurrentRevision string `json:"current_revision"`
 }
 
 func GetChange(q string) (*GerritChange, error) {

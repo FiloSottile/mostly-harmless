@@ -50,6 +50,7 @@ The -v flag prints those commands as they run.
 Available commands:
 
 	mail [-r reviewer,...] [-cc mail,...] [options] [revisions]
+	fetch <query>
 	cleanup
 
 `
@@ -75,6 +76,8 @@ func main() {
 		cmd = cmdMail
 	case "cleanup":
 		cmd = cmdCleanup
+	case "fetch":
+		cmd = cmdFetch
 	}
 
 	cmd(args)
