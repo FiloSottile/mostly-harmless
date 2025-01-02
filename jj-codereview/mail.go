@@ -9,13 +9,15 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 var jjConfigTemplate = `
 [revset-aliases]
 "jjcrmail()" = '''$REVISIONS$'''
-"jjcrmailpending()" = "remote_bookmarks(remote=origin)..jjcrmail()"
-"jjcrbranch(x)" = "remote_bookmarks(remote=origin) & roots(remote_bookmarks(remote=origin)..x)-::"
+"jjcrmailpending()" = "remote_bookmarks(remote=origin)..jjcrmail() ~ remote_bookmarks(remote=gerrit)"
+"jjcrbranchpoint(x)" = "heads(::x & ::remote_bookmarks(remote=origin))"
+"jjcrbranchhead(x)" = "jjcrbranchpoint(x):: & remote_bookmarks(remote=origin)"
 
 [templates]
 bookmarks = "separate('\n', remote_bookmarks.map(|b| if(b.remote() == 'origin', b.name()))) ++ '\n'"
@@ -27,7 +29,8 @@ paginate = "never"
 
 func cmdMail(args []string) {
 	var (
-		all = flags.Bool("a", false, "mail multiple heads")
+		multi = flags.Bool("m", false, "mail multiple heads")
+		force = flags.Bool("f", false, "force mailing more than 10 commits")
 
 		rList       = new(stringList) // installed below
 		ccList      = new(stringList) // installed below
@@ -47,8 +50,9 @@ Usage: %s mail %s [-r reviewer,...] [-cc mail,...]
 	[-autosubmit] [-trybot] [-wip] [-hashtag tag,...]
 	[revisions]
 
-Mails all changes in remote_bookmarks(remote=origin)..revisions.
-If revisions is not specified, it's @-.
+Mails all changes in "remote_bookmarks(remote=origin)..revisions".
+
+If revisions is not specified, it's set to "@-".
 `), progName, globalFlags)
 		exit(2)
 	}
@@ -76,20 +80,20 @@ If revisions is not specified, it's @-.
 	}
 
 	commits := jjLog("-T", "commit_id ++ '\n'", "-r", "jjcrmailpending()")
-	if len(commits) > 10 && !*all {
-		dief("more than 10 commits; use -a to mail all of them")
+	if len(commits) > 10 && !*force {
+		dief("more than 10 commits; use -f to force")
 	}
 
 	heads := jjLog("-T", "commit_id ++ '\n'", "-r", "heads(jjcrmailpending())")
-	if len(heads) > 1 && !*all {
-		dief("multiple heads; use -a to mail all of them")
+	if len(heads) > 1 && !*multi {
+		dief("multiple heads; use -m to mail all of them")
 	}
 
 	printf("mailing the following changes:\n\n%s",
 		cmdOutput("jj", "--config-toml", jjConfig, "log", "-r", "jjcrmailpending()"))
 
 	for _, commit := range heads {
-		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranch("+commit+")")
+		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranchhead("+commit+")")
 		if len(branches) != 1 {
 			dief("cannot determine branch for commit %s, got %v", commit, branches)
 		}
@@ -129,7 +133,21 @@ If revisions is not specified, it's @-.
 		run("git", args...)
 	}
 
-	// TODO(filippo): create refs/remote/gerrit/cl/NNNNNN/M refs.
+	time.Sleep(1 * time.Second) // give Gerrit a chance to catch up
+
+	for _, commit := range commits {
+		change, err := GetChange(commit)
+		if err != nil {
+			printf("failed to fetch change for commit %s: %v", commit, err)
+			continue
+		}
+		patchSet := "?"
+		if !*noRun {
+			patchSet = fmt.Sprintf("%d", change.Revisions[commit].Number)
+		}
+		ref := fmt.Sprintf("refs/remotes/gerrit/cl/%d/%s", change.Number, patchSet)
+		run("git", "update-ref", ref, commit)
+	}
 }
 
 // mailAddressRE matches the mail addresses we admit. It's restrictive but admits
