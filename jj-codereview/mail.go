@@ -67,7 +67,7 @@ If revisions is not specified, it's set to "@-".
 		jjConfig = strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", flags.Arg(0))
 	}
 	jjLog := func(args ...string) []string {
-		args = append([]string{"--config-toml", jjConfig, "log", "--no-graph"}, args...)
+		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
 		return lines(cmdOutput("jj", args...))
 	}
 
@@ -90,7 +90,7 @@ If revisions is not specified, it's set to "@-".
 	}
 
 	printf("mailing the following changes:\n\n%s",
-		cmdOutput("jj", "--config-toml", jjConfig, "log", "-r", "jjcrmailpending()"))
+		cmdOutput("jj", "--quiet", "--config-toml", jjConfig, "log", "-r", "jjcrmailpending()"))
 
 	for _, commit := range heads {
 		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranchhead("+commit+")")
@@ -133,16 +133,21 @@ If revisions is not specified, it's set to "@-".
 		run("git", args...)
 	}
 
-	time.Sleep(1 * time.Second) // give Gerrit a chance to catch up
-
 	for _, commit := range commits {
-		labelCommit(commit)
+		labelCommit(commit, 0)
 	}
 }
 
-func labelCommit(commit string) {
+func labelCommit(commit string, tries int) {
 	change, err := GetChange(commit)
 	if err != nil {
+		if tries < 5 {
+			// Retry a few times in case the change is not yet visible.
+			time.Sleep(1 * time.Second)
+			fmt.Printf("%s\r", strings.Repeat(".", tries))
+			labelCommit(commit, tries+1)
+			return
+		}
 		printf("failed to fetch change for commit %s: %v", commit, err)
 		return
 	}

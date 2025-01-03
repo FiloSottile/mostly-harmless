@@ -14,8 +14,7 @@ func cmdCleanup(args []string) {
 		fmt.Fprintf(stderr(), trim(`
 Usage: %s cleanup %s
 
-Abandons all visible mailed revisions (in "remote_bookmarks(remote=gerrit)")
-that were merged (in "remote_bookmarks(remote=origin)").
+Abandons mutable changes that were merged in a origin branch.
 `), progName, globalFlags)
 		exit(2)
 	}
@@ -23,17 +22,20 @@ that were merged (in "remote_bookmarks(remote=origin)").
 
 	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "")
 	jjLog := func(args ...string) []string {
-		args = append([]string{"--config-toml", jjConfig, "log", "--no-graph"}, args...)
+		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
 		return lines(cmdOutput("jj", args...))
 	}
 
-	for _, rev := range jjLog("-T", "commit_id ++ '\n'", "-r", "all() & remote_bookmarks(remote=gerrit)") {
+	for _, rev := range jjLog("-T", "commit_id ++ '\n'", "-r", "mutable()") {
 		changeID := trim(cmdOutput("git", "show", "-s", `--format=%(trailers:key=Change-Id,valueonly)`, rev))
+		if changeID == "" {
+			continue
+		}
 		merged := jjLog("-r", `::remote_bookmarks(remote=origin) & description("Change-Id: `+changeID+`")`)
 		if len(merged) == 0 {
 			continue
 		}
-		printf("%s\nwas merged as\n%s", jjLog("-r", rev)[0], merged[0])
 		run("jj", "abandon", "-r", rev)
+		printf("merged as %s", merged[0])
 	}
 }

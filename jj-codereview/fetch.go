@@ -25,7 +25,7 @@ Fetches a single CL by number, Change-Id, or other Gerrit query.
 
 	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "")
 	jjLog := func(args ...string) []string {
-		args = append([]string{"--config-toml", jjConfig, "log", "--no-graph"}, args...)
+		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
 		return lines(cmdOutput("jj", args...))
 	}
 
@@ -37,7 +37,7 @@ Fetches a single CL by number, Change-Id, or other Gerrit query.
 	run("git", "fetch", c.Revisions[c.CurrentRevision].Fetch.HTTP.URL, c.Revisions[c.CurrentRevision].Fetch.HTTP.Ref)
 	if !*noRun {
 		for _, c := range jjLog("-T", "commit_id ++ '\n'", "-r", "::"+c.CurrentRevision+" ~ ::remote_bookmarks(remote=origin)") {
-			labelCommit(c)
+			labelCommit(c, 5)
 		}
 		printf("%s", jjLog("-r", c.CurrentRevision)[0])
 	}
