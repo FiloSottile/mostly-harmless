@@ -35,8 +35,10 @@ Fetches a single CL by number, Change-Id, or other Gerrit query.
 	}
 
 	run("git", "fetch", c.Revisions[c.CurrentRevision].Fetch.HTTP.URL, c.Revisions[c.CurrentRevision].Fetch.HTTP.Ref)
+	ref := fmt.Sprintf("refs/remotes/gerrit/cl/%d/%d", c.Number, c.Revisions[c.CurrentRevision].Number)
 	if !*noRun {
-		for _, c := range jjLog("-T", "commit_id ++ '\n'", "-r", "::"+c.CurrentRevision+" ~ ::remote_bookmarks(remote=origin)") {
+		run("git", "update-ref", ref, "FETCH_HEAD")
+		for _, c := range jjLog("-T", "commit_id ++ '\n'", "-r", "::"+c.CurrentRevision+" ~ ::remote_bookmarks(remote=origin) ~ "+c.CurrentRevision) {
 			labelCommit(c, 5)
 		}
 		printf("%s", jjLog("-r", c.CurrentRevision)[0])
