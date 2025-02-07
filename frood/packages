@@ -1,9 +1,7 @@
 # Base system
 linux-lts
 zfs-lts
-# A package that provides linux-firmware-any is required.
-linux-firmware-i915
-intel-ucode
+linux-firmware-none
 alpine-base
 agetty
 util-linux
@@ -20,6 +18,7 @@ mosh-server
 smartmontools
 tailscale
 ssmtp
+cronie
 
 # Filesystems and devices
 eudev

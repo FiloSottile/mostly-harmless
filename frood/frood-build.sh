@@ -41,10 +41,10 @@ find . -path "./boot" -prune -o -print | cpio -o -H newc | gzip > "$ROOTFS_DEST/
 
 __ "Building UKI image"
 
-apk add --no-cache efi-mkuki
+apk add --no-cache efi-mkuki efistub # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16722
 # The default rdinit is /init, while the default init is /sbin/init.
-efi-mkuki -c "rdinit=/sbin/init console=tty1 console=ttyS0" -o "$1" \
-    "$ROOTFS_DEST/boot/vmlinuz-lts" "$ROOTFS_DEST/boot/intel-ucode.img" "$ROOTFS_DEST/boot/initramfs-lts"
+efi-mkuki -c "rdinit=/sbin/init console=tty1 console=ttyAMA0" -o "$1" \
+    "$ROOTFS_DEST/boot/vmlinuz-lts" "$ROOTFS_DEST/boot/initramfs-lts"
 
 __ "Created image!"
 
