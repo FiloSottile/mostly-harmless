@@ -109,6 +109,7 @@ func filippoIO(mux *http.ServeMux) {
 	handleWithCounter(mux, "geomys.org/api/event", plausible)
 	handleWithCounter(mux, "geomys.org/fonts/", http.FileServer(http.FS(content)))
 	handleWithCounter(mux, "geomys.org/images/", http.FileServer(http.FS(content)))
+	handleWithCounter(mux, "geomys.org/fips140", http.RedirectHandler("https://go.dev/doc/security/fips140", http.StatusFound))
 	handleFuncWithCounter(mux, "geomys.org/{$}", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(geomysHTML)
