@@ -4,7 +4,6 @@ set -e
 __() { printf "\n\033[1;32m* %s [%s]\033[0m\n" "$1" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"; }
 
 ROOTFS_DEST=$(mktemp -d)
-trap 'rm -rf "$ROOTFS_DEST"' EXIT
 
 __ "Fetching alpine-make-rootfs"
 
@@ -41,11 +40,29 @@ find . -path "./boot" -prune -o -print | cpio -o -H newc | gzip > "$ROOTFS_DEST/
 
 __ "Building UKI image"
 
-apk add --no-cache efi-mkuki efistub # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16722
+apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+    systemd-efistub ukify # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16691
+
 # The default rdinit is /init, while the default init is /sbin/init.
-efi-mkuki -c "rdinit=/sbin/init console=tty1 console=ttyAMA0" -o "$1" \
-    "$ROOTFS_DEST/boot/vmlinuz-lts" "$ROOTFS_DEST/boot/initramfs-lts"
+CMDLINE="rdinit=/sbin/init console=tty1 console=ttyAMA0"
+
+ukify build --output "$1.efi" --cmdline "$CMDLINE" \
+    --linux "$ROOTFS_DEST/boot/vmlinuz-lts" \
+    --initrd "$ROOTFS_DEST/boot/initramfs-lts" \
+    --os-release "@$ROOTFS_DEST/etc/frood-release"
+
+__ "Building ESP image"
+
+apk add --no-cache sfdisk mtools
+# https://unix.stackexchange.com/a/527217/323803
+truncate -s $((256*1024*1024)) "$1.img"
+printf "label: gpt\ntype=uefi" | sfdisk "$1.img"
+FS="$1.img"@@$((1024*1024))
+mformat -i "$FS" -t 254 -h 64 -s 32 -v frood
+mmd -i "$FS" ::EFI
+mmd -i "$FS" ::EFI/BOOT
+mcopy -i "$FS" "$1.efi" ::EFI/BOOT/BOOTAA64.EFI
 
 __ "Created image!"
 
-ls -lh "$1"
+ls -lh "$1.efi" "$1.img"
