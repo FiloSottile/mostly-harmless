@@ -53,12 +53,13 @@ ukify build --output "$1.efi" --cmdline "$CMDLINE" \
 
 __ "Building ESP image"
 
+rm -f "$1.img"
 apk add --no-cache sfdisk mtools
 # https://unix.stackexchange.com/a/527217/323803
-truncate -s $((256*1024*1024)) "$1.img"
+truncate -s $((1024*1024*1024)) "$1.img"
 printf "label: gpt\ntype=uefi" | sfdisk "$1.img"
 FS="$1.img"@@$((1024*1024))
-mformat -i "$FS" -t 254 -h 64 -s 32 -v frood
+mformat -i "$FS" -F -t 254 -h 64 -s 32 -v frood
 mmd -i "$FS" ::EFI
 mmd -i "$FS" ::EFI/BOOT
 mcopy -i "$FS" "$1.efi" ::EFI/BOOT/BOOTAA64.EFI

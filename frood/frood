@@ -57,6 +57,15 @@ case "$1" in
         docker run --platform linux/arm64/v8 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
             'apk add --no-cache dosfstools && mkfs.vfat -C -i B61B19E7 /mnt/usb_disk.img $(( 128 * 1024 ))'
         ;;
+    flash)
+        image=$(latest_image)
+        diskutil list "$2" | grep "external, physical" > /dev/null
+        echo "Flashing image $image to $2"
+        diskutil unmountDisk "$2"
+        sudo dd of="/dev/r$2" if=images/"$image.img" bs=1m status=progress
+        printf '\xE7\x19\x1B\xB6' | sudo dd of="/dev/$2" bs=1 count=4 seek=$(( (1024*1024) + 67 )) conv=notrunc
+        diskutil eject "$2"
+        ;;
     deploy)
         image=$(latest_image)
         echo "Deploying image $image"
@@ -74,6 +83,7 @@ case "$1" in
         echo "  build [ --fixup ] - Build the image"
         echo "  qemu              - Run the image in QEMU"
         echo "  format            - Create a QEMU image for persistence"
+        echo "  flash diskN       - Flash the image to a USB stick"
         echo "  deploy            - Deploy the image to the USB stick"
         echo
         echo "Latest image: $(latest_image)"
