@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-# Images are stored in the images/ folder, named like frood.2024123101.{efi,img}
-# where the last two digits are an increasing counter.
+# Images are stored in the images/ folder, named like frood.2024123101.efi where
+# the last two digits are an increasing counter.
 
 latest_image() {
-    ls -1 images | sort | tail -n 1 | sed 's/\.[^.]*$//'
+    ls -1 images | sort | tail -n 1
 }
 
 next_image() {
@@ -14,7 +14,7 @@ next_image() {
     while [ -e "images/frood.${current_date}$(printf %02d $counter).efi" ]; do
         counter=$((counter + 1))
     done
-    echo "frood.${current_date}$(printf %02d $counter)"
+    echo "frood.${current_date}$(printf %02d $counter).efi"
 }
 
 fixup_image() {
@@ -23,7 +23,7 @@ fixup_image() {
     while [ -e "images/frood.${current_date}$(printf %02d $((counter + 1))).efi" ]; do
         counter=$((counter + 1))
     done
-    echo "frood.${current_date}$(printf %02d $counter)"
+    echo "frood.${current_date}$(printf %02d $counter).efi"
 }
 
 case "$1" in
@@ -35,7 +35,7 @@ case "$1" in
         fi
         echo "Building image $image"
         go test ./...
-        docker run --privileged --platform linux/arm64/v8 --rm -it -v "$PWD":/mnt -w /root \
+        docker run --privileged --rm -it -v "$PWD":/mnt -w /root \
             -v "$(go env GOCACHE)":/root/.cache/go-build \
             -v "$(go env GOMODCACHE)":/root/go/pkg/mod \
             golang:1.24.2-alpine3.21 /mnt/frood-build.sh /mnt/images/"$image"
@@ -45,26 +45,27 @@ case "$1" in
         echo "Running image $image in QEMU (terminate with Ctrl-A X," \
             "shutdown with Ctrl-A C system_powerdown)"
         if [ ! -f QEMU_EFI.fd ]; then
-            docker run --platform linux/arm64/v8 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
+            docker run --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
                 'apk add --no-cache aavmf && cp /usr/share/AAVMF/QEMU_EFI.fd /mnt/'
         fi
         qemu-system-aarch64 -M virt -cpu cortex-a72 -m 4G -nographic \
-            -bios QEMU_EFI.fd \
-            -drive file=images/"$image.img",if=virtio,format=raw \
+            -bios QEMU_EFI.fd -kernel images/"$image" \
             -drive file=usb_disk.img,if=virtio,format=raw
         ;;
     format)
-        docker run --platform linux/arm64/v8 --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
+        docker run --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \
             'apk add --no-cache dosfstools && mkfs.vfat -C -i B61B19E7 /mnt/usb_disk.img $(( 128 * 1024 ))'
         ;;
     flash)
         image=$(latest_image)
-        diskutil list "$2" | grep "external, physical" > /dev/null
         echo "Flashing image $image to $2"
+        docker run --rm -it -v "$PWD":/mnt alpine:3.21 \
+            /mnt/frood-mkimg.sh /mnt/images/"$image" flash.img
+        diskutil list "$2" | grep "external, physical" > /dev/null
         diskutil unmountDisk "$2"
-        sudo dd of="/dev/r$2" if=images/"$image.img" bs=1m status=progress
-        printf '\xE7\x19\x1B\xB6' | sudo dd of="/dev/$2" bs=1 count=4 seek=$(( (1024*1024) + 67 )) conv=notrunc
+        sudo dd of="/dev/r$2" if=flash.img bs=1m status=progress
         diskutil eject "$2"
+        rm flash.img
         ;;
     deploy)
         image=$(latest_image)
@@ -74,7 +75,7 @@ case "$1" in
         # https://wiki.archlinux.org/title/Unified_kernel_image#Directly_from_UEFI
         # https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#efibootmgr
         # https://superuser.com/questions/1572963/
-        rsync -Pv "images/$image.efi" root@frood:/media/usb/EFI/BOOT/BOOTAA64.EFI
+        rsync -Pv "images/$image" root@frood:/media/usb/EFI/BOOT/BOOTAA64.EFI
         ;;
     "")
         echo "Usage: $0 <subcommand>"

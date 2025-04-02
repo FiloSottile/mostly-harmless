@@ -46,24 +46,11 @@ apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testin
 # The default rdinit is /init, while the default init is /sbin/init.
 CMDLINE="rdinit=/sbin/init console=tty1 console=ttyAMA0"
 
-ukify build --output "$1.efi" --cmdline "$CMDLINE" \
+ukify build --output "$1" --cmdline "$CMDLINE" \
     --linux "$ROOTFS_DEST/boot/vmlinuz-lts" \
     --initrd "$ROOTFS_DEST/boot/initramfs-lts" \
     --os-release "@$ROOTFS_DEST/etc/frood-release"
 
-__ "Building ESP image"
-
-rm -f "$1.img"
-apk add --no-cache sfdisk mtools
-# https://unix.stackexchange.com/a/527217/323803
-truncate -s $((1024*1024*1024)) "$1.img"
-printf "label: gpt\ntype=uefi" | sfdisk "$1.img"
-FS="$1.img"@@$((1024*1024))
-mformat -i "$FS" -F -t 254 -h 64 -s 32 -v frood
-mmd -i "$FS" ::EFI
-mmd -i "$FS" ::EFI/BOOT
-mcopy -i "$FS" "$1.efi" ::EFI/BOOT/BOOTAA64.EFI
-
 __ "Created image!"
 
-ls -lh "$1.efi" "$1.img"
+ls -lh "$1"
