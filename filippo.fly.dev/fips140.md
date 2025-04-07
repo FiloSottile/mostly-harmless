@@ -19,7 +19,7 @@ domain: geomys.org
 
 <p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="323" src="/images/geomys_base_positivo.png">
 
-<p style="text-align: center"><img alt="The FIPS 140-3 logo." width="300" height="168" src="/images/FIPS 140-3 Logo- BW.png">
+<p style="text-align: center"><img alt="The FIPS 140-3 logo." width="300" height="168" style="padding-bottom: 1em;" src="/images/FIPS 140-3 Logo- BW.png">
 
 Geomys handles the CMVP validation of the **FIPS 140-3 Go Cryptographic Module**, and contributes the module to the upstream Go project, for the benefit of the Go community.
 
