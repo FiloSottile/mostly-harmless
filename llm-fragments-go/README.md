@@ -1,4 +1,4 @@
-# llm-hacker-news
+# llm-fragments-go
 
 LLM plugin for pulling Go package docs with `go doc -all`.
 
