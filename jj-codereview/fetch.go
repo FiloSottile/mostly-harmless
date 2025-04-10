@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"os"
 )
 
 func cmdFetch(args []string) {
@@ -23,11 +23,9 @@ Fetches a single CL by number, Change-Id, or other Gerrit query.
 		flags.Usage()
 	}
 
-	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "")
-	jjLog := func(args ...string) []string {
-		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
-		return lines(cmdOutput("jj", args...))
-	}
+	config := jjConfig()
+	defer os.Remove(config)
+	jjLog := jjLog(config)
 
 	c, err := GetChange(flags.Arg(0))
 	if err != nil {

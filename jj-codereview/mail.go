@@ -6,26 +6,12 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
 )
-
-var jjConfigTemplate = `
-[revset-aliases]
-"jjcrmail()" = '''$REVISIONS$'''
-"jjcrmailpending()" = "remote_bookmarks(remote=origin)..jjcrmail() ~ remote_bookmarks(remote=gerrit)"
-"jjcrbranchpoint(x)" = "heads(::x & ::remote_bookmarks(remote=origin))"
-"jjcrbranchhead(x)" = "jjcrbranchpoint(x):: & remote_bookmarks(remote=origin)"
-
-[templates]
-bookmarks = "separate('\n', remote_bookmarks.map(|b| if(b.remote() == 'origin', b.name()))) ++ '\n'"
-
-[ui]
-color = "never"
-paginate = "never"
-`
 
 func cmdMail(args []string) {
 	var (
@@ -62,14 +48,14 @@ If revisions is not specified, it's set to "@-".
 		exit(2)
 	}
 
-	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "@-")
+	revConfig := `--config=revset-aliases."jjcrmail()"=@-`
 	if len(flags.Args()) == 1 {
-		jjConfig = strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", flags.Arg(0))
+		revConfig = `--config=revset-aliases."jjcrmail()"=` + flags.Arg(0)
 	}
-	jjLog := func(args ...string) []string {
-		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
-		return lines(cmdOutput("jj", args...))
-	}
+
+	config := jjConfig()
+	defer os.Remove(config)
+	jjLog := jjLog(config, revConfig)
 
 	// A good definition for private() is:
 	//
@@ -90,7 +76,7 @@ If revisions is not specified, it's set to "@-".
 	}
 
 	printf("mailing the following changes:\n\n%s",
-		cmdOutput("jj", "--quiet", "--config-toml", jjConfig, "log", "-r", "jjcrmailpending()"))
+		cmdOutput("jj", "--quiet", revConfig, "--config-file", config, "log", "-r", "jjcrmailpending()"))
 
 	for _, commit := range heads {
 		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranchhead("+commit+")")

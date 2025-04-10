@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"os"
 )
 
 func cmdCleanup(args []string) {
@@ -20,11 +20,9 @@ Abandons mutable changes that were merged in a origin branch.
 	}
 	flags.Parse(args)
 
-	jjConfig := strings.ReplaceAll(jjConfigTemplate, "$REVISIONS$", "")
-	jjLog := func(args ...string) []string {
-		args = append([]string{"--quiet", "--config-toml", jjConfig, "log", "--no-graph"}, args...)
-		return lines(cmdOutput("jj", args...))
-	}
+	config := jjConfig()
+	defer os.Remove(config)
+	jjLog := jjLog(config)
 
 	for _, rev := range jjLog("-T", "commit_id ++ '\n'", "-r", "mutable()") {
 		changeID := trim(cmdOutput("git", "show", "-s", `--format=%(trailers:key=Change-Id,valueonly)`, rev))
