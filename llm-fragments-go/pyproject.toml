@@ -1,0 +1,21 @@
+[project]
+name = "llm-fragments-go"
+version = "0.1"
+description = "LLM plugin for pulling Go package docs"
+authors = [{name = "Filippo Valsorda"}]
+license = "ISC"
+requires-python = ">=3.9"
+dependencies = [
+    "llm>=0.24"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/FiloSottile/mostly-harmless/tree/main/llm-fragments-go"
+Issues = "https://github.com/FiloSottile/mostly-harmless/issues"
+
+[project.entry-points.llm]
+fragments_go = "llm_fragments_go"
