@@ -1,0 +1,17 @@
+git update-ref refs/remotes/gerrit/.. FETCH_HEAD
+
+    - doesn't make it a visible commit
+    - doesn't move
+    - in jj log, unmodified mailed CLs are tagged
+    - in jj evolog, you can still see the CL number and how the patchsets evolved
+    - ::remote_bookmarks() is stuff that's only local, fits well in the semantic of remote_bookmarks
+    - ::remote_bookmarks(remote=gerrit) is stuff that was mailed
+    - must exclude it from immutable_heads
+
+[revset-aliases]
+"immutable_heads()" = "tags() | remote_bookmarks(remote=origin)"
+"pending()" = ".. ~ ::tags() ~ ::remote_bookmarks() ~ @ ~ private()"
+"private()" = '''
+    description(glob:'wip:*') | description(glob:'private:*') |
+    conflicts() | (empty() ~ merges()) | description('substring-i:"DO NOT MAIL"')
+'''
