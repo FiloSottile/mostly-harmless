@@ -193,6 +193,14 @@ func (c *Benchdiff) runBenchmark(ctx context.Context, ref, filename string, coun
 		fmt.Fprintf(fileBuffer, "go: %s\n", goVersion)
 	}
 
+	goFIPS, err := c.runGoCmd("env", "GOFIPS140")
+	if err != nil {
+		return err
+	}
+	if goFIPS != "" {
+		fmt.Fprintf(fileBuffer, "fips140: %s\n", goFIPS)
+	}
+
 	var runErr error
 	if ref == "" {
 		runErr = runCmd(cmd, c.Debug)
@@ -350,7 +358,7 @@ func (c *Benchdiff) Run(ctx context.Context) (result *RunResult, err error) {
 }
 
 func (c *Benchdiff) cacheFilename(ref string) (string, error) {
-	env, err := c.runGoCmd("env", "GOARCH", "GOEXPERIMENT", "GOOS", "GOVERSION", "CC", "CXX", "CGO_ENABLED", "CGO_CFLAGS", "CGO_CPPFLAGS", "CGO_CXXFLAGS", "CGO_LDFLAGS")
+	env, err := c.runGoCmd("env", "GOARCH", "GOEXPERIMENT", "GOOS", "GOVERSION", "CC", "CXX", "CGO_ENABLED", "CGO_CFLAGS", "CGO_CPPFLAGS", "CGO_CXXFLAGS", "CGO_LDFLAGS", "GOFIPS140")
 	if err != nil {
 		return "", err
 	}
