@@ -5,3 +5,8 @@
 ZPOOL_IMPORT_ALL_VISIBLE=yes
 ZPOOL_IMPORT_PATH=/dev/disk/by-id
 ZPOOL_CACHE=""
+
+# https://gitlab.alpinelinux.org/alpine/aports/-/issues/12382
+# Once this is fixed, we can also "zfs inherit relatime" which had to be off
+# to avoid the string "atime" appearing anywhere in the mount options.
+MOUNT_EXTRA_OPTIONS="-o atime=off"
