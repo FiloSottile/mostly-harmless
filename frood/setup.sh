@@ -25,12 +25,6 @@ rc-update add tler boot
 rc-update add mount-ro shutdown
 rc-update add killprocs shutdown
 
-ln -s /etc/init.d/agetty /etc/init.d/agetty.ttyAMA0
-ln -s /etc/init.d/agetty /etc/init.d/agetty.tty1
-
-rc-update add agetty.ttyAMA0 default
-rc-update add agetty.tty1 default
-
 rc-update add acpid default
 rc-update add cronie default
 rc-update add local default

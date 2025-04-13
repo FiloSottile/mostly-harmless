@@ -1,0 +1,7 @@
+::sysinit:/sbin/openrc sysinit
+::sysinit:/sbin/openrc boot
+::wait:/sbin/openrc default
+::shutdown:/sbin/openrc shutdown
+
+tty1::respawn:/sbin/getty 38400 tty1
+ttyAMA0::respawn:/sbin/getty -L 115200 ttyAMA0 vt100

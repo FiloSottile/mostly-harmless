@@ -3,7 +3,6 @@ linux-lts
 zfs-lts
 linux-firmware-none
 alpine-base
-agetty
 util-linux
 apk-cron
 kbd-bkeymaps
