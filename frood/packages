@@ -12,6 +12,7 @@ tzdata
 
 # Daemons and services
 dhcpcd
+openresolv
 openntpd
 openssh
 mosh-server
