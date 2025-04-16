@@ -42,6 +42,12 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
 			max-width: 100%;
 			height: auto;
 		}
+		@media print {
+			.container {
+				margin: 0;
+				padding: 0;
+			}
+		}
     </style>
 </head>
 <body>
