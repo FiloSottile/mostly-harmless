@@ -19,7 +19,7 @@ domain: geomys.org
 
 <p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="160" src="images/geomys_orizz_B_positivo.png">
 
-Geomys handles the CMVP validation of the **FIPS 140-3 Go Cryptographic Module**, and contributes the module to the upstream Go project, for the benefit of the Go community.
+Geomys handles the [CMVP validation](https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/details?product=19371) of the **FIPS 140-3 Go Cryptographic Module**, and contributes the module to the upstream Go project, for the benefit of the Go community.
 
 The [FIPS 140-3 Go Cryptographic Module](https://go.dev/doc/security/fips140) is distributed as part of the upstream Go toolchain, where it is seamlessly integrated with the cryptography packages of the Go standard library, and it is replacing the legacy Go+BoringCrypto mode. All FIPS 140-3 approved algorithms in the standard library are implemented by the module, including *post-quantum key exchange algorithm ML-KEM*, and the module is tested on a wide range of platforms.
 
