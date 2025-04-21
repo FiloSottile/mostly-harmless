@@ -21,6 +21,7 @@ func buttondown(mux *http.ServeMux) {
 			redirect(slug, "https://words.filippo.io/dispatches/"+new+"/")
 		}
 	}
+	handleWithCounter(mux, "buttondown.filippo.io/{$}", http.RedirectHandler("https://words.filippo.io/"))
 
 	email("openpgp-is-broken",
 		"626bb4fe-7d48-4cb7-a88d-206f9c38a921", "cryptography-dispatches-hello-world-and-openpgp")
