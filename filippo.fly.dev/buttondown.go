@@ -21,7 +21,16 @@ func buttondown(mux *http.ServeMux) {
 			redirect(slug, "https://words.filippo.io/dispatches/"+new+"/")
 		}
 	}
-	handleWithCounter(mux, "buttondown.filippo.io/{$}", http.RedirectHandler("https://words.filippo.io/"))
+	handleWithCounter(mux, "buttondown.filippo.io/{$}",
+		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
+	handleFuncWithCounter(mux, "buttondown.filippo.io/unsubscribe/",
+		func(rw http.ResponseWriter, r *http.Request) {
+			url := *r.URL
+			url.Scheme = "https"
+			url.Host = "buttondown.com"
+			// 307 to preserve POST from List-Unsubscribe-Post.
+			http.Redirect(rw, r, url.String(), http.StatusTemporaryRedirect)
+		})
 
 	email("openpgp-is-broken",
 		"626bb4fe-7d48-4cb7-a88d-206f9c38a921", "cryptography-dispatches-hello-world-and-openpgp")
