@@ -4,7 +4,6 @@ zfs-lts
 linux-firmware-none
 alpine-base
 util-linux
-apk-cron
 kbd-bkeymaps
 ca-certificates
 tzdata
