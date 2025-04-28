@@ -196,9 +196,9 @@ func filippoIO(mux *http.ServeMux) {
 		Name:     "intermediates",
 		Redirect: "https://pkg.go.dev/filippo.io/intermediates",
 	})
-	mux.Handle("filippo.io/litetlog/", goGetHandler{
-		Name:     "litetlog",
-		Redirect: "https://pkg.go.dev/filippo.io/litetlog",
+	mux.Handle("filippo.io/torchwood/", goGetHandler{
+		Name:     "torchwood",
+		Redirect: "https://pkg.go.dev/filippo.io/torchwood",
 	})
 	mux.Handle("filippo.io/sunlight/", goGetHandler{
 		Name:     "sunlight",
