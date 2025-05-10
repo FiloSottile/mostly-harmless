@@ -14,7 +14,7 @@ wget https://raw.githubusercontent.com/alpinelinux/alpine-make-rootfs/v0.7.0/alp
 __ "Building Go binaries"
 
 export GOTOOLCHAIN=auto
-go build -C /mnt -o "$ROOTFS_DEST/usr/local/bin/" ./bins/...
+go build -C /mnt -o "$ROOTFS_DEST/usr/local/bin/" ./cmd/...
 
 __ "Building rootfs"
 
