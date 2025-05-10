@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zfs passkey unlock</title>
+    <style>
+        :root {
+            font-family: system-ui, sans-serif;
+            color-scheme: light dark;
+        }
+        body {
+            padding: 1rem;
+            text-align: center;
+            padding-left: max(1rem, calc((100vw - 65ch) / 2));
+            padding-right: max(1rem, calc((100vw - 65ch) / 2));
+        }
+        p {
+            margin: 2rem 0;
+        }
+        button {
+            font-family: inherit;
+            background: transparent;
+            cursor: pointer;
+            color: inherit;
+            border: 2px solid currentColor;
+        }
+        pre {
+            text-align: left;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: fit-content;
+        }
+    </style>
+    <script src="age-0.2.3-1-g59d2c94.js"></script>
+    <script src="scure-base-1.2.5.js"></script>
+</head>
+<body>
+    <p>unlock datasets
+    {{ range $name, $header := . }}
+        <p><button data-header="{{ $header }}">{{ $name }}</button>
+    {{ end }}
+    <hr>
+    <p><button>new passkey</button>
+    <p>note that the passkey will be tied to the current origin
+        <br>to create the passkey on a security key, cancel the OS dialog
+    <p><button>encrypt password</button>
+    <p>make sure to keep a copy of the password, it can't be recovered without the passkey
+    <pre></pre>
+    <script>
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', async () => {
+                if (button.innerText === 'new passkey') {
+                    await age.webauthn.createCredential({ keyName: 'zfs password key 🔑' })
+
+                } else if (button.innerText === 'encrypt password') {
+                    const password = prompt('Enter password to encrypt')
+                    if (!password) {
+                        return
+                    }
+                    const e = new age.Encrypter()
+                    e.addRecipient(new age.webauthn.WebAuthnRecipient())
+                    const ciphertext = await e.encrypt(password)
+                    const armored = age.armor.encode(ciphertext)
+                    document.querySelector('pre').innerText = armored
+
+                } else {
+                    const header = scureBase.base64.decode(button.dataset.header)
+
+                    const d = new age.Decrypter()
+                    d.addIdentity(new age.webauthn.WebAuthnIdentity())
+                    const fileKey = await d.decryptHeader(header)
+
+                    document.querySelector('pre').innerText = "..."
+                    const response = await fetch('', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            fileKey: scureBase.base64.encode(fileKey),
+                            name: button.innerText,
+                        }),
+                    })
+                    document.querySelector('pre').innerText = await response.text()
+                }
+            });
+        });
+    </script>
