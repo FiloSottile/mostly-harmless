@@ -24,6 +24,9 @@ var sunlightHTML []byte
 //go:embed fips140.html
 var fips140HTML []byte
 
+//go:embed tos.html
+var tosHTML []byte
+
 //go:embed geomys.html
 var geomysHTML []byte
 
@@ -116,6 +119,14 @@ func filippoIO(mux *http.ServeMux) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(fips140HTML)
 	})
+	handleFuncWithCounter(mux, "geomys.org/fips140/essential/terms", func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		rw.Write(tosHTML)
+	})
+	handleWithCounter(mux, "geomys.org/fips140/essential/subscribe", http.RedirectHandler(
+		"https://buy.stripe.com/8wM4iufSY6q62as9AA", http.StatusFound))
+	handleWithCounter(mux, "geomys.org/fips140/essential/manage", http.RedirectHandler(
+		"https://billing.stripe.com/p/login/8x29AU94R96B96dgeR2cg00", http.StatusFound))
 	handleFuncWithCounter(mux, "geomys.org/{$}", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(geomysHTML)

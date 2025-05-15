@@ -70,6 +70,14 @@ This lightweight and cost-effective offering provides all the information necess
 (self-service credit card, direct debit, or bank transfer)
 </p>
 
+<script async src="https://js.stripe.com/v3/buy-button.js"></script>
+<p style="text-align: center">
+<stripe-buy-button
+  buy-button-id="buy_btn_1ROou5Le4yKccjIdmhFT7OCp"
+  publishable-key="pk_live_51Qzj5KLe4yKccjIdbTa2o3AV4DzteqaQYBNMP39GDuPuVM1wJctkQiU6Pb8i1nm5bE3wBIHsdIMjRd8Nm0dksTpe00GzPbJPkD">
+</stripe-buy-button>
+</p>
+
 <p style="text-align: center">
 $10,000/year<br>
 (quote / PO / invoice via fips140@geomys.org)
