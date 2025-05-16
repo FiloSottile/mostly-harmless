@@ -215,6 +215,10 @@ func filippoIO(mux *http.ServeMux) {
 		Name:     "sunlight",
 		Redirect: "https://pkg.go.dev/filippo.io/sunlight",
 	})
+	mux.Handle("filippo.io/csrf/", goGetHandler{
+		Name:     "csrf",
+		Redirect: "https://pkg.go.dev/filippo.io/csrf",
+	})
 	mux.Handle("filippo.io/cpace/", goGetHandler{
 		Name:     "cpace",
 		GitRepo:  "https://github.com/FiloSottile/go-cpace-ristretto255",
