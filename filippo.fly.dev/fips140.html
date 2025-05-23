@@ -51,6 +51,11 @@
             filter: invert(1);
         }
     }
+    @media print {
+        stripe-buy-button {
+            display: none !important;
+        }
+    }
 </style>
 <p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="160" src="images/geomys_orizz_B_positivo.png">
 <p>Geomys handles the <a href="https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/details?product=19371">CMVP validation</a> of the <strong>FIPS 140-3 Go Cryptographic Module</strong>, and contributes the module to the upstream Go project, for the benefit of the Go community.</p>

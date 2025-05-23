@@ -15,6 +15,11 @@ domain: geomys.org
             filter: invert(1);
         }
     }
+    @media print {
+        stripe-buy-button {
+            display: none !important;
+        }
+    }
 </style>
 
 <p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="160" src="images/geomys_orizz_B_positivo.png">
