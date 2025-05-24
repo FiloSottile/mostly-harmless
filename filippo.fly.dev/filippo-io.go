@@ -227,6 +227,7 @@ func filippoIO(mux *http.ServeMux) {
 
 	// Miscellaneous redirects
 	for path, url := range map[string]string{
+		"/fakenews/":          "https://web.archive.org/web/20221128012457/https://filippo.io/fakenews/",
 		"/a-different-CT-log": "https://docs.google.com/document/d/1YsxLGZxYE1KTCTjDK2Ol-bcTzbrI313SZ1QWgqmnRDc/edit",
 		"/rwc2023/talk":       "https://iacr.org/submit/files/slides/2023/rwc/rwc2023/131/slides.pdf",
 		"/rwc2023":            "https://filippo.io/rwc2023/",
@@ -271,7 +272,6 @@ func filippoIO(mux *http.ServeMux) {
 		"/gg5": "https://filippo.io/newsletter",
 		"/gg6": "https://go-review.googlesource.com/c/go/+/276272",
 	} {
-		path, url := path, url // grrrrrr...
 		mux.HandleFunc("filippo.io"+path, func(rw http.ResponseWriter, r *http.Request) {
 			httpReqs.WithLabelValues("[redirect]").Inc()
 			redirectReqs.WithLabelValues(path).Inc()

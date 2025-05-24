@@ -25,7 +25,6 @@ func main() {
 	mkcert(mux)
 	c2sp(mux)
 	filippoIO(mux)
-	news(mux)
 	parked(mux)
 	buttondown(mux)
 
