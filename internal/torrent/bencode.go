@@ -1,12 +1,14 @@
 package torrent
 
 import (
+	"errors"
 	"fmt"
 	"io"
 )
 
 type Writer struct {
 	w      io.Writer
+	err    error
 	isDict bool
 	isKey  bool
 }
@@ -15,8 +17,21 @@ func NewWriter(w io.Writer) *Writer {
 	return &Writer{w: w}
 }
 
+func (w *Writer) SetError(err error) {
+	if w.err == nil {
+		w.err = err
+	}
+}
+
+func (w *Writer) Err() error {
+	return w.err
+}
+
 func (w *Writer) WriteString(s string) {
-	fmt.Fprintf(w.w, "%d:%s", len(s), s)
+	if w.err != nil {
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "%d:%s", len(s), s)
 	if w.isKey {
 		w.isKey = false
 	} else if w.isDict {
@@ -25,7 +40,10 @@ func (w *Writer) WriteString(s string) {
 }
 
 func (w *Writer) WriteBytes(b []byte) {
-	fmt.Fprintf(w.w, "%d:", len(b))
+	if w.err != nil {
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "%d:", len(b))
 	w.w.Write(b)
 	if w.isKey {
 		w.isKey = false
@@ -35,51 +53,77 @@ func (w *Writer) WriteBytes(b []byte) {
 }
 
 func (w *Writer) WriteInt(i int) {
-	if w.isKey {
-		panic("int can't be a key")
+	if w.err != nil {
+		return
 	}
-	fmt.Fprintf(w.w, "i%de", i)
+	if w.isKey {
+		w.err = errors.New("int can't be a key")
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "i%de", i)
 	if w.isDict {
 		w.isKey = true
 	}
 }
 
 func (w *Writer) WriteInt64(i int64) {
-	if w.isKey {
-		panic("int can't be a key")
+	if w.err != nil {
+		return
 	}
-	fmt.Fprintf(w.w, "i%de", i)
+	if w.isKey {
+		w.err = errors.New("int can't be a key")
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "i%de", i)
 	if w.isDict {
 		w.isKey = true
 	}
 }
 
 func (w *Writer) WriteList(f func(*Writer)) {
-	if w.isKey {
-		panic("list can't be a key")
+	if w.err != nil {
+		return
 	}
-	fmt.Fprintf(w.w, "l")
+	if w.isKey {
+		w.err = errors.New("list can't be a key")
+		return
+	}
+	if _, w.err = fmt.Fprintf(w.w, "l"); w.err != nil {
+		return
+	}
 	f(&Writer{w: w.w})
-	fmt.Fprintf(w.w, "e")
+	if w.err != nil {
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "e")
 	if w.isDict {
 		w.isKey = true
 	}
 }
 
 func (w *Writer) WriteDict(f func(*Writer)) {
-	if w.isKey {
-		panic("dict can't be a key")
+	if w.err != nil {
+		return
 	}
-	fmt.Fprintf(w.w, "d")
+	if w.isKey {
+		w.err = errors.New("dict can't be a key")
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "d")
 	ww := &Writer{}
 	ww.isDict = true
 	ww.isKey = true
 	ww.w = w.w
 	f(ww)
-	if !ww.isKey {
-		panic("missing value for key")
+	if ww.err != nil {
+		w.err = ww.err
+		return
 	}
-	fmt.Fprintf(w.w, "e")
+	if !ww.isKey {
+		w.err = errors.New("missing value for key")
+		return
+	}
+	_, w.err = fmt.Fprintf(w.w, "e")
 	if w.isDict {
 		w.isKey = true
 	}
