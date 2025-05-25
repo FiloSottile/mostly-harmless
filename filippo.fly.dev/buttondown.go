@@ -6,7 +6,7 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("buttondown.filippo.io/{$}",
 		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
 
-	mux.Handle("buttondown.filippo.io/unsubscribe/{$}", HostRedirectHandler("buttondown.com",
+	mux.Handle("buttondown.filippo.io/unsubscribe/", HostRedirectHandler("buttondown.com",
 		http.StatusTemporaryRedirect)) // 307 to preserve POST from List-Unsubscribe-Post.
 
 	email := func(new string, old ...string) {

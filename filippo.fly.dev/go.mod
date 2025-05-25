@@ -3,6 +3,7 @@ module filippo.io/mostly-harmless/filippo.fly.dev
 go 1.22.1
 
 require (
+	github.com/cespare/webtest v0.3.0
 	github.com/cloudflare/dns v0.0.0-20150411011339-71d0b8b38181
 	github.com/google/go-github/v38 v38.1.0
 	github.com/gopherjs/gopherjs v0.0.0-20150919203317-52a9b31eabc4

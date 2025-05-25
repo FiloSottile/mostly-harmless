@@ -25,6 +25,18 @@ func main() {
 		ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second}
 	go func() { log.Fatal(metricsServer.ListenAndServe()) }()
 
+	s := &http.Server{
+		Addr:         ":8080",
+		Handler:      handler(),
+		ReadTimeout:  1 * time.Minute,
+		WriteTimeout: 1 * time.Minute,
+		IdleTimeout:  10 * time.Minute,
+	}
+
+	log.Fatal(s.ListenAndServe())
+}
+
+func handler() http.Handler {
 	mux := http.NewServeMux()
 
 	dl(mux)
@@ -156,27 +168,19 @@ func main() {
 		fmt.Fprint(w, `<head><meta name="go-import" content="c2sp.org/CCTV git https://github.com/C2SP/CCTV">`)
 	})
 
-	s := &http.Server{
-		Addr: ":8080",
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-			if r.URL.Query().Get("go-get") == "1" {
-				goGetMux.ServeHTTP(w, r)
-				return
-			}
-			_, pattern := mux.Handler(r)
-			// Ignore requests tracked by dl_requests_total or static_requests_total.
-			if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" {
-				httpReqs.WithLabelValues(pattern).Inc()
-			}
-			mux.ServeHTTP(w, r)
-		}),
-		ReadTimeout:  1 * time.Minute,
-		WriteTimeout: 1 * time.Minute,
-		IdleTimeout:  10 * time.Minute,
-	}
-
-	log.Fatal(s.ListenAndServe())
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		if r.URL.Query().Get("go-get") == "1" {
+			goGetMux.ServeHTTP(w, r)
+			return
+		}
+		_, pattern := mux.Handler(r)
+		// Ignore requests tracked by dl_requests_total or static_requests_total.
+		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" {
+			httpReqs.WithLabelValues(pattern).Inc()
+		}
+		mux.ServeHTTP(w, r)
+	})
 }
 
 //go:embed filippo.io

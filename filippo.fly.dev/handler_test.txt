@@ -1,0 +1,81 @@
+GET https://filippo.io/
+body contains cryptography engineer
+header strict-transport-security == max-age=63072000; includeSubDomains; preload
+
+GET https://filippo.io/age/armor?go-get=1
+body contains filippo.io/age git https://github.com/FiloSottile/age
+
+GET https://filippo.io/age/armor
+redirect == https://pkg.go.dev/filippo.io/age/armor
+
+GET https://filippo.io/%22%3Exxx/?go-get=1
+code == 404
+
+GET https://filippo.io/notathing/
+code == 404
+
+GET https://c2sp.org/CCTV/age?go-get=1
+body contains c2sp.org/CCTV git https://github.com/C2SP/CCTV
+
+GET https://c2sp.org/foo?go-get=1
+body contains c2sp.org git https://github.com/C2SP/C2SP
+
+GET https://geomys.org/fips140
+body contains FIPS 140-3
+
+GET https://geomys.org/images/geomys_orizz_B_positivo.png
+
+GET https://geomys.org/images/does_not_exist
+code == 404
+
+GET https://blog.filippo.io/123?abc
+redirect == https://words.filippo.io/123?abc
+
+GET https://www.filippo.io/123?abc
+redirect == https://filippo.io/123?abc
+
+GET https://c2sp.org/age
+redirect == https://github.com/C2SP/C2SP/blob/main/age.md
+
+GET https://c2sp.org/tlog-witness@v0.1.0
+redirect == https://github.com/C2SP/C2SP/blob/tlog-witness/v0.1.0/tlog-witness.md
+
+GET https://c2sp.org/static-ct-api@v1.0.0-rc.1
+redirect == https://github.com/C2SP/C2SP/blob/static-ct-api/v1.0.0-rc.1/static-ct-api.md
+
+GET https://c2sp.org/CCTV
+redirect == https://github.com/C2SP/CCTV/
+
+GET https://c2sp.org/CCTV/age
+redirect == https://github.com/C2SP/CCTV/tree/main/age
+
+GET https://mta-sts.filippo.io/.well-known/mta-sts.txt
+body contains version: STSv1
+
+GET https://filippo.io/fakenews/
+redirect contains web.archive.org
+
+GET https://dl.filippo.io/age/v1.1.1?for=darwin/arm64
+redirect == https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-darwin-arm64.tar.gz
+
+GET https://dl.filippo.io/age/v1.1.1?for=windows/amd64
+redirect == https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-windows-amd64.zip
+
+GET https://dl.filippo.io/age/v1.2.0?for=darwin/arm64&proof
+redirect == https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-darwin-arm64.tar.gz.proof
+
+GET https://dl.filippo.io/mkcert/v1.4.4?for=linux/amd64
+redirect == https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+
+GET https://dl.filippo.io/mkcert/v1.4.4?for=windows/amd64
+redirect == https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-windows-amd64.exe
+
+GET https://buttondown.filippo.io/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
+redirect == https://buttondown.com/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
+code == 307
+
+GET https://buttondown.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
+redirect == https://words.filippo.io/dispatches/openpgp-is-broken/
+
+GET https://buttondown.filippo.io/archive/626bb4fe-7d48-4cb7-a88d-206f9c38a921/
+redirect == https://words.filippo.io/dispatches/openpgp-is-broken/
