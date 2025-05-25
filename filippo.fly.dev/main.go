@@ -171,9 +171,11 @@ func handler() http.Handler {
 
 	userAgents := NewTable(100)
 	mux.Handle("filippo.io/heavy/{secret}/useragents", HeavyHitterHandler(userAgents))
+	mux.Handle("filippo.io/heavy/{secret}/user-agents", HeavyHitterHandler(userAgents))
 
 	notFound := NewTable(100)
 	mux.Handle("filippo.io/heavy/{secret}/notfound", HeavyHitterHandler(notFound))
+	mux.Handle("filippo.io/heavy/{secret}/404", HeavyHitterHandler(notFound))
 
 	referrers := NewTable(500)
 	mux.Handle("filippo.io/heavy/{secret}/referrers", HeavyHitterHandler(referrers))
@@ -181,16 +183,16 @@ func handler() http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Count popular User-Agents, and sample the pages they visit.
-		userAgents.Count(r.UserAgent(), r.URL.String())
+		userAgents.Count(r.UserAgent(), r.Host+r.URL.String())
 		// Count popular external referers, and sample the pages they link to.
-		if ref, err := url.Parse(r.Referer()); err == nil && ref.Host != r.Host {
-			referrers.Count(ref.Host, r.URL.String())
+		if ref, err := url.Parse(r.Referer()); err == nil && r.Referer() != "" && ref.Host != r.Host {
+			referrers.Count(r.Referer(), r.Host+r.URL.String())
 		}
 		w = &trackingResponseWriter{ResponseWriter: w}
 		// Track popular 404s, and sample their referrers.
 		defer func() {
 			if w.(*trackingResponseWriter).statusCode == http.StatusNotFound {
-				notFound.Count(r.URL.Path, r.Referer())
+				notFound.Count(r.Host+r.URL.String(), r.Referer())
 			}
 		}()
 

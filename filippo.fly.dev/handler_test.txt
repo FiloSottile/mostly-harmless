@@ -5,6 +5,9 @@ header strict-transport-security == max-age=63072000; includeSubDomains; preload
 GET https://filippo.io/age/armor?go-get=1
 body contains filippo.io/age git https://github.com/FiloSottile/age
 
+GET https://filippo.io/edwards25519/?go-get=1
+body contains filippo.io/edwards25519 git https://github.com/FiloSottile/edwards25519
+
 GET https://filippo.io/age/armor
 redirect == https://pkg.go.dev/filippo.io/age/armor
 
