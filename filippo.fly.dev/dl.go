@@ -25,13 +25,14 @@ func getLatestVersion(ctx context.Context, project string) (string, error) {
 	return *rel.TagName, nil
 }
 
-func dlFilippo(mux *http.ServeMux) {
+func dl(mux *http.ServeMux) {
 	tc := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
 	))
 	tc.Timeout = 10 * time.Second
 	gitHubClient = github.NewClient(tc)
 
+	// Print an error at startup if we can't fetch the latest versions.
 	if _, err := getLatestVersion(context.Background(), "age"); err != nil {
 		log.Println(err)
 	}
@@ -39,21 +40,17 @@ func dlFilippo(mux *http.ServeMux) {
 		log.Println(err)
 	}
 
-	handleFuncWithCounter(mux, "dl.filippo.io/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/robots.txt" {
-			fmt.Fprintln(w, "User-agent: *")
-			fmt.Fprintln(w, "Disallow: /")
-			return
-		}
+	mux.HandleFunc("dl.filippo.io/robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		fmt.Fprintln(w, "User-agent: *")
+		fmt.Fprintln(w, "Disallow: /")
+	})
 
-		var version, project string
-		switch {
-		case strings.HasPrefix(r.URL.Path, "/age/"):
-			project = "age"
-			version = strings.TrimPrefix(r.URL.Path, "/age/")
-		case strings.HasPrefix(r.URL.Path, "/mkcert/"):
-			project = "mkcert"
-			version = strings.TrimPrefix(r.URL.Path, "/mkcert/")
+	mux.HandleFunc("dl.filippo.io/{project}/{version}", func(w http.ResponseWriter, r *http.Request) {
+		project, version := r.PathValue("project"), r.PathValue("version")
+
+		switch project {
+		case "age", "mkcert":
 		default:
 			http.Error(w, "Unknown project", http.StatusNotFound)
 			return
@@ -81,9 +78,8 @@ func dlFilippo(mux *http.ServeMux) {
 		if version == "latest" {
 			v, err := getLatestVersion(r.Context(), project)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Failed to retrieve latest version for %s: %v", project, err)
 				http.Error(w, "Failed to retrieve latest version", http.StatusInternalServerError)
-				dlErrs.WithLabelValues(project).Inc()
 				return
 			}
 			version = v
@@ -96,14 +92,14 @@ func dlFilippo(mux *http.ServeMux) {
 				ext = ".zip"
 			}
 
-			http.Redirect(w, r, "https://github.com/FiloSottile/age/releases/download/"+version+"/age-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusMovedPermanently)
+			http.Redirect(w, r, "https://github.com/FiloSottile/age/releases/download/"+version+"/age-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusFound)
 		case "mkcert":
 			ext := ""
 			if GOOS == "windows" {
 				ext = ".exe"
 			}
 
-			http.Redirect(w, r, "https://github.com/FiloSottile/mkcert/releases/download/"+version+"/mkcert-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusMovedPermanently)
+			http.Redirect(w, r, "https://github.com/FiloSottile/mkcert/releases/download/"+version+"/mkcert-"+version+"-"+GOOS+"-"+GOARCH+ext+proof, http.StatusFound)
 		}
 	})
 }
@@ -112,7 +108,3 @@ var dlReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "dl_requests_total",
 	Help: "dl.filippo.io requests processed, partitioned by GOOS, GOARCH, and version.",
 }, []string{"GOOS", "GOARCH", "version", "project", "proof"})
-var dlErrs = promauto.NewCounterVec(prometheus.CounterOpts{
-	Name: "dl_errors_total",
-	Help: "dl.filippo.io errors while retrieving latest version.",
-}, []string{"project"})

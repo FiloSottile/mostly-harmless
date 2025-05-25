@@ -1,36 +1,21 @@
 package main
 
-import (
-	"net/http"
-
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-)
+import "net/http"
 
 func buttondown(mux *http.ServeMux) {
-	redirect := func(fragment, target string) {
-		mux.HandleFunc("buttondown.filippo.io/archive/"+fragment+"/",
-			func(rw http.ResponseWriter, r *http.Request) {
-				httpReqs.WithLabelValues("[buttondown]").Inc()
-				redirectReqs.WithLabelValues(fragment).Inc()
-				http.Redirect(rw, r, target, http.StatusFound)
-			})
-	}
+	mux.Handle("buttondown.filippo.io/{$}",
+		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
+
+	mux.Handle("buttondown.filippo.io/unsubscribe/{$}", HostRedirectHandler("buttondown.com",
+		http.StatusTemporaryRedirect)) // 307 to preserve POST from List-Unsubscribe-Post.
+
 	email := func(new string, old ...string) {
 		for _, slug := range old {
-			redirect(slug, "https://words.filippo.io/dispatches/"+new+"/")
+			target := "https://words.filippo.io/dispatches/" + new + "/"
+			mux.Handle("buttondown.filippo.io/archive/"+slug+"/{$}",
+				http.RedirectHandler(target, http.StatusFound))
 		}
 	}
-	handleWithCounter(mux, "buttondown.filippo.io/{$}",
-		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
-	handleFuncWithCounter(mux, "buttondown.filippo.io/unsubscribe/",
-		func(rw http.ResponseWriter, r *http.Request) {
-			url := *r.URL
-			url.Scheme = "https"
-			url.Host = "buttondown.com"
-			// 307 to preserve POST from List-Unsubscribe-Post.
-			http.Redirect(rw, r, url.String(), http.StatusTemporaryRedirect)
-		})
 
 	email("openpgp-is-broken",
 		"626bb4fe-7d48-4cb7-a88d-206f9c38a921", "cryptography-dispatches-hello-world-and-openpgp")
@@ -59,8 +44,3 @@ func buttondown(mux *http.ServeMux) {
 	email("cipher-suite-ordering",
 		"de1e8d9e-186d-4ae3-bea6-09a9a90f0ffa", "from-the-go-blog-automatic-cipher-suite-ordering")
 }
-
-var buttondownReqs = promauto.NewCounterVec(prometheus.CounterOpts{
-	Name: "buttondown_requests_total",
-	Help: "Buttondown redirects, partitioned by path.",
-}, []string{"path"})
