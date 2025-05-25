@@ -1,6 +1,6 @@
 module filippo.io/mostly-harmless/filippo.fly.dev
 
-go 1.22.1
+go 1.24.3
 
 require (
 	github.com/cespare/webtest v0.3.0
