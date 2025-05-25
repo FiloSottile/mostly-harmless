@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"strings"
@@ -168,7 +169,31 @@ func handler() http.Handler {
 		fmt.Fprint(w, `<head><meta name="go-import" content="c2sp.org/CCTV git https://github.com/C2SP/CCTV">`)
 	})
 
+	userAgents := NewTable(100)
+	mux.Handle("filippo.io/heavy/{secret}/useragents", HeavyHitterHandler(userAgents))
+
+	notFound := NewTable(100)
+	mux.Handle("filippo.io/heavy/{secret}/notfound", HeavyHitterHandler(notFound))
+
+	referrers := NewTable(500)
+	mux.Handle("filippo.io/heavy/{secret}/referrers", HeavyHitterHandler(referrers))
+	mux.Handle("filippo.io/heavy/{secret}/referers", HeavyHitterHandler(referrers))
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Count popular User-Agents, and sample the pages they visit.
+		userAgents.Count(r.UserAgent(), r.URL.String())
+		// Count popular external referers, and sample the pages they link to.
+		if ref, err := url.Parse(r.Referer()); err == nil && ref.Host != r.Host {
+			referrers.Count(ref.Host, r.URL.String())
+		}
+		w = &trackingResponseWriter{ResponseWriter: w}
+		// Track popular 404s, and sample their referrers.
+		defer func() {
+			if w.(*trackingResponseWriter).statusCode == http.StatusNotFound {
+				notFound.Count(r.URL.Path, r.Referer())
+			}
+		}()
+
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 		if r.URL.Query().Get("go-get") == "1" {
 			goGetMux.ServeHTTP(w, r)
@@ -212,6 +237,21 @@ func HTMLHandler(name string) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		rw.Write(content)
+	})
+}
+
+func HeavyHitterHandler(table *Table) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if r.PathValue("secret") != os.Getenv("HEAVY_HITTER_SECRET") {
+			http.Error(rw, "Forbidden", http.StatusForbidden)
+			return
+		}
+		rw.Header().Set("Content-Type", "text/plain; charset=UTF-8")
+		rw.Header().Set("X-Content-Type-Options", "nosniff")
+		for _, item := range table.Top(1000) {
+			halfError := item.MaxError / 2
+			fmt.Fprintf(rw, "%d (± %d)\t%q [%s]\n", item.Count-halfError, halfError, item.Value, item.Latest)
+		}
 	})
 }
 
