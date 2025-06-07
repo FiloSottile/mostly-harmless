@@ -203,7 +203,7 @@ func handler() http.Handler {
 		}
 		_, pattern := mux.Handler(r)
 		// Ignore requests tracked by dl_requests_total or static_requests_total.
-		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" {
+		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" && pattern != "" {
 			httpReqs.WithLabelValues(pattern).Inc()
 		}
 		mux.ServeHTTP(w, r)
