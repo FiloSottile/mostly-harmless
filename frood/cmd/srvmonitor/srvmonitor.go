@@ -10,10 +10,14 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"filippo.io/mostly-harmless/zfspasskey"
+	"gopkg.in/yaml.v3"
 )
 
 const header = `
@@ -36,11 +40,25 @@ pre {
 `
 
 func main() {
+	configYAML, err := os.ReadFile("/etc/zfs/passwords.yaml")
+	if err != nil {
+		log.Fatalf("Failed to read config file: %v", err)
+	}
+	var passwords map[string]string
+	if err := yaml.Unmarshal(configYAML, &passwords); err != nil {
+		log.Fatalf("Failed to unmarshal config file: %v", err)
+	}
+	unlockHandler, err := zfspasskey.NewHandler(passwords)
+	if err != nil {
+		log.Fatalf("Failed to —create unlock handler: %v", err)
+	}
+
 	h := http.NewServeMux()
 	h.HandleFunc("GET /{$}", index)
 	h.HandleFunc("GET /{script}", script)
+	h.Handle("/unlock/", http.StripPrefix("/unlock", unlockHandler))
 	srv := &http.Server{Handler: h}
-	if err := srv.ListenAndServe(); err != nil {
+	if err := srv.ListenAndServeTLS("/etc/ssl/frood.pem", "/etc/ssl/frood-key.pem"); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 }

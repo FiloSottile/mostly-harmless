@@ -3,4 +3,6 @@
 /QEMU_EFI.fd
 /root/etc/ssh/ssh_host_ed25519_key
 /root/etc/ssmtp/ssmtp.conf
+/root/etc/ssl/frood-key.pem
+/root/etc/zfs/passwords.yaml
 /TODO
