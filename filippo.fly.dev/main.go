@@ -295,7 +295,9 @@ func HostRedirectHandler(target string, code int) http.Handler {
 func HostReverseProxyHandler(target string) http.Handler {
 	return &httputil.ReverseProxy{
 		Rewrite: func(pr *httputil.ProxyRequest) {
-			pr.SetXForwarded()
+			pr.Out.Header.Set("X-Forwarded-Host", pr.In.Host)
+			pr.Out.Header.Set("X-Forwarded-Proto", pr.In.Header.Get("X-Forwarded-Proto"))
+			pr.Out.Header.Set("X-Forwarded-For", pr.In.Header.Get("Fly-Client-IP"))
 			pr.SetURL(&url.URL{Scheme: "https", Host: target})
 		},
 	}
