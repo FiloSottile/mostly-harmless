@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -13,6 +15,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -207,9 +210,13 @@ func handler() http.Handler {
 			return
 		}
 		_, pattern := mux.Handler(r)
-		// Ignore requests tracked by dl_requests_total or static_requests_total.
+		// Ignore requests tracked by dl_requests_total or static_requests_total or 404/405s.
 		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" && pattern != "" {
 			httpReqs.WithLabelValues(pattern).Inc()
+		}
+		// Send browser navigation requests to Plausible Analytics.
+		if r.Header.Get("Sec-Fetch-Mode") == "navigate" {
+			go plausiblePageview(r)
 		}
 		mux.ServeHTTP(w, r)
 	})
@@ -325,6 +332,61 @@ func (w *trackingResponseWriter) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 }
 
+var plausibleClient = &http.Client{
+	Timeout: 15 * time.Second,
+	Transport: &http.Transport{
+		MaxIdleConnsPerHost: 100,
+	},
+}
+
+func plausiblePageview(r *http.Request) {
+	// https://plausible.io/docs/events-api
+	type Event struct {
+		Domain   string `json:"domain"`
+		Name     string `json:"name"`
+		URL      string `json:"url"`
+		Referrer string `json:"referrer"`
+	}
+	event := Event{
+		Domain:   "filippo.io", // https://plausible.io/docs/subdomain-hostname-filter
+		Name:     "pageview",
+		URL:      r.Header.Get("X-Forwarded-Proto") + "://" + r.Host + r.URL.String(),
+		Referrer: r.Referer(),
+	}
+	data, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Failed to marshal Plausible event: %v", err)
+		plausibleEvents.WithLabelValues("false").Inc()
+		return
+	}
+	req, err := http.NewRequest("POST", "https://plausible.io/api/event", bytes.NewReader(data))
+	if err != nil {
+		log.Printf("Failed to create Plausible event request: %v", err)
+		plausibleEvents.WithLabelValues("false").Inc()
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", r.UserAgent())
+	req.Header.Set("X-Forwarded-For", r.Header.Get("Fly-Client-IP"))
+	if testing.Testing() {
+		return
+	}
+	resp, err := plausibleClient.Do(req)
+	if err != nil {
+		log.Printf("Failed to send Plausible event: %v", err)
+		plausibleEvents.WithLabelValues("false").Inc()
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusAccepted {
+		body, _ := io.ReadAll(resp.Body)
+		log.Printf("Plausible event failed with status %d: %s", resp.StatusCode, body)
+		plausibleEvents.WithLabelValues("false").Inc()
+		return
+	}
+	plausibleEvents.WithLabelValues("true").Inc()
+}
+
 var goGetReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "goget_requests_total",
 	Help: "go get requests processed, partitioned by repository name.",
@@ -337,3 +399,7 @@ var httpReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "http_requests_total",
 	Help: "HTTP requests processed, partitioned by handler, excluding {dl,static,goget}_requests_total.",
 }, []string{"handler"})
+var plausibleEvents = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "plausible_events_total",
+	Help: "Plausible Analytics events sent.",
+}, []string{"success"})
