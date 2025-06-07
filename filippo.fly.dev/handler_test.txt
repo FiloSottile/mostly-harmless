@@ -23,6 +23,9 @@ body contains c2sp.org/CCTV git https://github.com/C2SP/CCTV
 GET https://c2sp.org/foo?go-get=1
 body contains c2sp.org git https://github.com/C2SP/C2SP
 
+GET https://sunlight.dev/
+body contains Certificate Transparency
+
 GET https://geomys.org/fips140
 body contains FIPS 140-3
 
