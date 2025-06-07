@@ -38,7 +38,7 @@ case "$1" in
         docker run --privileged --rm -it -v "$PWD":/mnt -w /root \
             -v "$(go env GOCACHE)":/root/.cache/go-build \
             -v "$(go env GOMODCACHE)":/root/go/pkg/mod \
-            golang:1.24.2-alpine3.21 /mnt/frood-build.sh /mnt/images/"$image"
+            golang:1.24.4-alpine3.22 /mnt/frood-build.sh /mnt/images/"$image"
         ;;
     qemu)
         image=$(latest_image)
@@ -60,7 +60,7 @@ case "$1" in
         image=$(latest_image)
         echo "Flashing image $image to $2"
         docker run --rm -it -v "$PWD":/mnt alpine:3.21 \
-            /mnt/frood-mkimg.sh /mnt/images/"$image" flash.img
+            /mnt/frood-mkimg.sh /mnt/images/"$image" /mnt/flash.img
         diskutil list "$2" | grep "external, physical" > /dev/null
         diskutil unmountDisk "$2"
         sudo dd of="/dev/r$2" if=flash.img bs=1m status=progress

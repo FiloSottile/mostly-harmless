@@ -40,8 +40,7 @@ find . -path "./boot" -prune -o -print | cpio -o -H newc | gzip > "$ROOTFS_DEST/
 
 __ "Building UKI image"
 
-apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-    systemd-efistub ukify # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16691
+apk add --no-cache systemd-efistub ukify
 
 # The default rdinit is /init, while the default init is /sbin/init.
 CMDLINE="rdinit=/sbin/init console=tty1 console=ttyAMA0"

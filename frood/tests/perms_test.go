@@ -15,6 +15,13 @@ func TestExecutable(t *testing.T) {
 		"/etc/profile.d",
 	}
 
+	ff, _ := os.ReadDir(filepath.Join("..", "root", "/etc/periodic"))
+	for _, f := range ff {
+		if f.IsDir() {
+			dirs = append(dirs, filepath.Join("/etc/periodic", f.Name()))
+		}
+	}
+
 	var gotFiles bool
 	// Check that all files in those directories are executable.
 	for _, dir := range dirs {
