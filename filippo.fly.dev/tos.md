@@ -1,7 +1,6 @@
 ---
 title: Geomys FIPS 140-3 Essential Plan Terms of Service
 canonical: https://geomys.org/fips140/essential/terms
-domain: geomys.org
 ---
 
 **TERMS OF USE**

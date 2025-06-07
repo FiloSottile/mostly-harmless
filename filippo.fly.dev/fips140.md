@@ -1,7 +1,6 @@
 ---
 title: Geomys FIPS 140-3 Services
 canonical: https://geomys.org/fips140
-domain: geomys.org
 ---
 
 <style>

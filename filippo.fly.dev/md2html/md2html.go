@@ -15,7 +15,6 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer data-domain="$DOMAIN" src="/js/script.js"></script>
     <link rel="canonical" href="$CANONICAL">
     <title>$TITLE</title>
     <style>
@@ -68,7 +67,6 @@ func toHTML(md []byte) string {
 type FrontMatter struct {
 	Title     string
 	Canonical string
-	Domain    string
 }
 
 func main() {
@@ -97,14 +95,13 @@ func main() {
 		log.Fatalf("Error parsing YAML front matter in %s: %v", inputFile, err)
 	}
 
-	if fm.Title == "" || fm.Canonical == "" || fm.Domain == "" {
-		log.Fatalf("Error: front matter must contain title, canonical, and domain fields")
+	if fm.Title == "" || fm.Canonical == "" {
+		log.Fatalf("Error: front matter must contain title and canonical fields")
 	}
 
 	replacer := strings.NewReplacer(
 		"$TITLE", fm.Title,
 		"$CANONICAL", fm.Canonical,
-		"$DOMAIN", fm.Domain,
 	)
 	htmlPrefix := replacer.Replace(htmlPrefixTemplate)
 
