@@ -61,6 +61,14 @@ body contains version: STSv1
 GET https://filippo.io/fakenews/
 redirect contains web.archive.org
 
+GET https://filippo.io/js/script.js
+body contains window.plausible=
+
+POST https://filippo.io/api/event
+posttype application/json
+postbody {"domain": "filippo.io", "name": "pageview", "url": "http://test.invalid/TestHandler"}
+code == 202
+
 GET https://dl.filippo.io/age/v1.1.1?for=darwin/arm64
 redirect == https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-darwin-arm64.tar.gz
 

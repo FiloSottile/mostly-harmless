@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"path"
@@ -124,6 +125,10 @@ func handler() http.Handler {
 	mux.Handle("mta-sts.bip.filippo.io/.well-known/mta-sts.txt", MTASTSHandler())
 	mux.Handle("mta-sts.ml.filippo.io/.well-known/mta-sts.txt", MTASTSHandler())
 	mux.Handle("mta-sts.geomys.org/.well-known/mta-sts.txt", MTASTSHandler())
+
+	plausible := HostReverseProxyHandler("plausible.io")
+	mux.Handle("filippo.io/js/script.js", plausible)
+	mux.Handle("filippo.io/api/event", plausible)
 
 	mux.Handle("filippo.io/age/info/refs", QueryPreservingRedirectHandler(
 		"https://github.com/FiloSottile/age.git/info/refs", http.StatusFound))
@@ -285,6 +290,15 @@ func HostRedirectHandler(target string, code int) http.Handler {
 		}
 		http.Redirect(rw, r, u.String(), code)
 	})
+}
+
+func HostReverseProxyHandler(target string) http.Handler {
+	return &httputil.ReverseProxy{
+		Rewrite: func(pr *httputil.ProxyRequest) {
+			pr.SetXForwarded()
+			pr.SetURL(&url.URL{Scheme: "https", Host: target})
+		},
+	}
 }
 
 type trackingResponseWriter struct {
