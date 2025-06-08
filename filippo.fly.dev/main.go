@@ -189,35 +189,42 @@ func handler() http.Handler {
 	mux.Handle("filippo.io/heavy/{secret}/referrers", HeavyHitterHandler(referrers))
 	mux.Handle("filippo.io/heavy/{secret}/referers", HeavyHitterHandler(referrers))
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		w := &trackingResponseWriter{ResponseWriter: rw}
+		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
 		// Count popular User-Agents, and sample the pages they visit.
 		userAgents.Count(r.UserAgent(), r.Host+r.URL.String())
 		// Count popular external referers, and sample the pages they link to.
 		if ref, err := url.Parse(r.Referer()); err == nil && r.Referer() != "" && ref.Host != r.Host {
 			referrers.Count(r.Referer(), r.Host+r.URL.String())
 		}
-		w = &trackingResponseWriter{ResponseWriter: w}
 		// Track popular 404s, and sample their referrers.
 		defer func() {
-			if w.(*trackingResponseWriter).statusCode == http.StatusNotFound {
+			if w.statusCode == http.StatusNotFound {
 				notFound.Count(r.Host+r.URL.String(), r.Referer())
 			}
 		}()
 
-		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		// Divert Go module downloads to the go-get handler.
 		if r.URL.Query().Get("go-get") == "1" {
 			goGetMux.ServeHTTP(w, r)
 			return
 		}
-		_, pattern := mux.Handler(r)
+
 		// Ignore requests tracked by dl_requests_total or static_requests_total or 404/405s.
+		_, pattern := mux.Handler(r)
 		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" && pattern != "" {
 			httpReqs.WithLabelValues(pattern).Inc()
 		}
+
 		// Send browser navigation requests to Plausible Analytics.
 		if r.Header.Get("Sec-Fetch-Mode") == "navigate" {
-			go plausiblePageview(r)
+			defer func() {
+				go plausiblePageview(r, w.statusCode, pattern)
+			}()
 		}
+
 		mux.ServeHTTP(w, r)
 	})
 }
@@ -339,19 +346,29 @@ var plausibleClient = &http.Client{
 	},
 }
 
-func plausiblePageview(r *http.Request) {
+func plausiblePageview(r *http.Request, statusCode int, pattern string) {
+	if r.PathValue("secret") != "" {
+		return // Don't send Plausible events for secret paths.
+	}
 	// https://plausible.io/docs/events-api
 	type Event struct {
-		Domain   string `json:"domain"`
-		Name     string `json:"name"`
-		URL      string `json:"url"`
-		Referrer string `json:"referrer"`
+		Domain   string         `json:"domain"`
+		Name     string         `json:"name"`
+		URL      string         `json:"url"`
+		Referrer string         `json:"referrer"`
+		Props    map[string]any `json:"props,omitempty"`
 	}
 	event := Event{
 		Domain:   "filippo.io", // https://plausible.io/docs/subdomain-hostname-filter
 		Name:     "pageview",
 		URL:      r.Header.Get("X-Forwarded-Proto") + "://" + r.Host + r.URL.String(),
 		Referrer: r.Referer(),
+		Props: map[string]any{
+			"HTTP Status Code": statusCode,
+			"HTTP Method":      r.Method,
+			"HTTP Version":     r.Proto,
+			"Mux Pattern":      pattern,
+		},
 	}
 	data, err := json.Marshal(event)
 	if err != nil {
