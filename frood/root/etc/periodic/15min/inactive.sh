@@ -11,6 +11,6 @@ if zpool status | grep -q "in progress"; then
     exit 0
 fi
 
-pstree | mail-alert "frood inactivity power-off"
+pstree | /usr/local/bin/mail-alert "frood inactivity power-off"
 
 poweroff -d 120

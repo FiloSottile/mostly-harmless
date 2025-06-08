@@ -1,3 +1,4 @@
 KbdInteractiveAuthentication no
 PasswordAuthentication no
+ClientAliveInterval 15
 Subsystem	sftp	/usr/lib/ssh/sftp-server
