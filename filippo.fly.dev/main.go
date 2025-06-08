@@ -366,7 +366,6 @@ func plausiblePageview(r *http.Request, statusCode int, pattern string) {
 		Props: map[string]any{
 			"HTTP Status Code": statusCode,
 			"HTTP Method":      r.Method,
-			"HTTP Version":     r.Proto,
 			"Mux Pattern":      pattern,
 		},
 	}
