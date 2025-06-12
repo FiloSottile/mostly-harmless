@@ -12,13 +12,13 @@ go run main.go
 go run main.go -summary
 
 # Use local file instead of downloading
-go run main.go -local [filename]
+go run main.go -file testdata/modules-in-process-list
 
 # Use local file and show only summary
-go run main.go -local -summary [filename]
+go run main.go -file testdata/modules-in-process-list -summary
 ```
 
-By default, the program downloads the latest data from the NIST website. Use the `-local` flag to work with a local file (defaults to "testdata/modules-in-process-list" if no filename provided).
+By default, the program downloads the latest data from the NIST website. Use the `-file` flag to specify a local file instead.
 
 ## Features
 

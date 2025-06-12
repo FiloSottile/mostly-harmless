@@ -26,19 +26,15 @@ const nistURL = "https://csrc.nist.gov/Projects/cryptographic-module-validation-
 
 func main() {
 	summaryOnly := flag.Bool("summary", false, "Show only the summary")
-	useLocal := flag.Bool("local", false, "Use local file instead of downloading from NIST")
+	filename := flag.String("file", "", "Use local file instead of downloading from NIST")
 	flag.Parse()
 
 	var reader io.Reader
 	var err error
 
-	if *useLocal {
+	if *filename != "" {
 		// Use local file
-		filename := "testdata/modules-in-process-list"
-		if flag.NArg() > 0 {
-			filename = flag.Arg(0)
-		}
-		file, err := os.Open(filename)
+		file, err := os.Open(*filename)
 		if err != nil {
 			log.Fatalf("Error opening file: %v", err)
 		}
