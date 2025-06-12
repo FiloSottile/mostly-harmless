@@ -12,7 +12,7 @@ go run main.go [filename]
 go run main.go -summary [filename]
 ```
 
-If no filename is provided, it defaults to "modules-in-process-list" in the current directory.
+If no filename is provided, it defaults to "testdata/modules-in-process-list".
 
 ## Features
 
@@ -32,6 +32,13 @@ Entries before 5/8/2025: 151
 ## Dependencies
 
 - golang.org/x/net/html for HTML parsing
+
+## Testing
+
+```bash
+# Run all tests
+go test -v
+```
 
 ## Installation
 

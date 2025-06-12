@@ -24,7 +24,7 @@ func main() {
 	summaryOnly := flag.Bool("summary", false, "Show only the summary")
 	flag.Parse()
 
-	filename := "modules-in-process-list"
+	filename := "testdata/modules-in-process-list"
 	if flag.NArg() > 0 {
 		filename = flag.Arg(0)
 	}
