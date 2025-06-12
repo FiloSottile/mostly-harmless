@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -20,22 +22,44 @@ type ModuleEntry struct {
 	Date       time.Time
 }
 
+const nistURL = "https://csrc.nist.gov/Projects/cryptographic-module-validation-program/modules-in-process/modules-in-process-list"
+
 func main() {
 	summaryOnly := flag.Bool("summary", false, "Show only the summary")
+	useLocal := flag.Bool("local", false, "Use local file instead of downloading from NIST")
 	flag.Parse()
 
-	filename := "testdata/modules-in-process-list"
-	if flag.NArg() > 0 {
-		filename = flag.Arg(0)
+	var reader io.Reader
+	var err error
+
+	if *useLocal {
+		// Use local file
+		filename := "testdata/modules-in-process-list"
+		if flag.NArg() > 0 {
+			filename = flag.Arg(0)
+		}
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Fatalf("Error opening file: %v", err)
+		}
+		defer file.Close()
+		reader = file
+	} else {
+		// Download from NIST website
+		fmt.Println("Downloading modules list from NIST...")
+		resp, err := http.Get(nistURL)
+		if err != nil {
+			log.Fatalf("Error downloading from NIST: %v", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			log.Fatalf("HTTP error: %s", resp.Status)
+		}
+		reader = resp.Body
 	}
 
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatalf("Error opening file: %v", err)
-	}
-	defer file.Close()
-
-	doc, err := html.Parse(file)
+	doc, err := html.Parse(reader)
 	if err != nil {
 		log.Fatalf("Error parsing HTML: %v", err)
 	}

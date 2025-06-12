@@ -1,21 +1,29 @@
 # Review Pending Parser
 
-This Go program parses the NIST Cryptographic Module Validation Program (CMVP) "Modules In Process" HTML file to extract all entries that are in "Review Pending" status and counts how many entered the queue before a specified cutoff date (5/8/2025).
+This Go program parses the NIST Cryptographic Module Validation Program (CMVP) "Modules In Process" HTML page to extract all entries that are in "Review Pending" status and counts how many entered the queue before a specified cutoff date (5/8/2025).
 
 ## Usage
 
 ```bash
-# Show all Review Pending entries with details
-go run main.go [filename]
+# Download from NIST and show all Review Pending entries with details
+go run main.go
 
-# Show only the summary
-go run main.go -summary [filename]
+# Download from NIST and show only the summary
+go run main.go -summary
+
+# Use local file instead of downloading
+go run main.go -local [filename]
+
+# Use local file and show only summary
+go run main.go -local -summary [filename]
 ```
 
-If no filename is provided, it defaults to "testdata/modules-in-process-list".
+By default, the program downloads the latest data from the NIST website. Use the `-local` flag to work with a local file (defaults to "testdata/modules-in-process-list" if no filename provided).
 
 ## Features
 
+- **Live data**: Downloads the latest modules list from NIST website by default
+- **Local file support**: Can work with saved HTML files using `-local` flag
 - Parses HTML table structure to extract module information
 - Filters for entries with "Review Pending" status
 - Extracts dates from status field (format: "Review Pending (MM/DD/YYYY)")
