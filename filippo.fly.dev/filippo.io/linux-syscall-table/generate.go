@@ -10,22 +10,12 @@ import (
 	"strings"
 )
 
-//go:generate go run generate.go > index.html
+//go:generate go run generate.go
 
 func main() {
 	const Version = "6.7"
 
-	resp, err := http.Get("https://raw.githubusercontent.com/torvalds/linux/v" + Version + "/arch/x86/entry/syscalls/syscall_64.tbl")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	table, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	resp, err = http.Get("https://raw.githubusercontent.com/torvalds/linux/v" + Version + "/include/linux/syscalls.h")
+	resp, err := http.Get("https://raw.githubusercontent.com/torvalds/linux/v" + Version + "/include/linux/syscalls.h")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,13 +25,53 @@ func main() {
 		log.Fatal(err)
 	}
 
-	type syscall struct {
-		Number      string
-		Name        string
-		Implemented bool
-		Entrypoint  string
-		Args        []string
+	syscalls := fetchSyscalls("x86_64", "https://raw.githubusercontent.com/torvalds/linux/v"+Version+"/arch/x86/entry/syscalls/syscall_64.tbl", headers)
+
+	tmpl, err := template.ParseFiles("index.html.tmpl")
+	if err != nil {
+		log.Fatal(err)
 	}
+	f, err := os.Create("index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := tmpl.Execute(f, map[string]interface{}{
+		"Version":   Version,
+		"Syscalls":  syscalls,
+		"Registers": []string{"rdi", "rsi", "rdx", "r10", "r8", "r9"},
+	}); err != nil {
+		log.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+type syscall struct {
+	Number      string
+	Name        string
+	Implemented bool
+	Entrypoint  string
+	Args        []string
+}
+
+type arch struct {
+	Name      string
+	Registers []string
+	Syscalls  []syscall
+}
+
+func fetchSyscalls(arch, url string, headers []byte) []syscall {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	table, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var syscalls []syscall
 
 	lines := strings.Split(string(table), "\n")
@@ -98,22 +128,5 @@ func main() {
 			Entrypoint: strings.TrimPrefix(entry, "sys_"), Args: args})
 	}
 
-	tmpl, err := template.ParseFiles("index.html.tmpl")
-	if err != nil {
-		log.Fatal(err)
-	}
-	f, err := os.Create("index.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := tmpl.Execute(f, map[string]interface{}{
-		"Version":   Version,
-		"Syscalls":  syscalls,
-		"Registers": []string{"rdi", "rsi", "rdx", "r10", "r8", "r9"},
-	}); err != nil {
-		log.Fatal(err)
-	}
-	if err := f.Close(); err != nil {
-		log.Fatal(err)
-	}
+	return syscalls
 }
