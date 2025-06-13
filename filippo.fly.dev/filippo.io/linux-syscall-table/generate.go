@@ -13,7 +13,7 @@ import (
 //go:generate go run generate.go
 
 func main() {
-	const Version = "6.7"
+	const Version = "6.16-rc1"
 
 	resp, err := http.Get("https://raw.githubusercontent.com/torvalds/linux/v" + Version + "/include/linux/syscalls.h")
 	if err != nil {

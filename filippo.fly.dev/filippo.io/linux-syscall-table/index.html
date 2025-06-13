@@ -170,7 +170,7 @@
 
                     <p>Since 2013, this table lists the Linux system call numbers for the x86-64 architecture, with their name, arguments, and links to the manual and the implementation. Also, fuzzy search!</p>
 
-                    <p>The table is derived from the <a href="https://github.com/torvalds/linux/blob/v6.7/arch/x86/entry/syscalls/syscall_64.tbl"><code>syscall_64.tbl</code> file</a> in the <strong>Linux 6.7 kernel</strong> source, and the <a href="https://github.com/torvalds/linux/blob/v6.7/include/linux/syscalls.h"><code>syscalls.h</code> header file</a>. The generator is available <a href="https://github.com/FiloSottile/mostly-harmless/tree/main/filippo.fly.dev/filippo.io/linux-syscall-table">on GitHub</a>.</p>
+                    <p>The table is derived from the <a href="https://github.com/torvalds/linux/blob/v6.16-rc1/arch/x86/entry/syscalls/syscall_64.tbl"><code>syscall_64.tbl</code> file</a> in the <strong>Linux 6.16-rc1 kernel</strong> source, and the <a href="https://github.com/torvalds/linux/blob/v6.16-rc1/include/linux/syscalls.h"><code>syscalls.h</code> header file</a>. The generator is available <a href="https://github.com/FiloSottile/mostly-harmless/tree/main/filippo.fly.dev/filippo.io/linux-syscall-table">on GitHub</a>.</p>
 
                     <p>Syscalls are implemented in functions named as in the <em>Entry point</em> column, generated with <code>DEFINE_SYSCALLx</code> macros. For more information, see <a href="https://www.kernel.org/doc/html/latest/process/adding-syscalls.html">Documentation/process/adding-syscalls.rst</a>.</p>
                     
@@ -3145,7 +3145,7 @@
                                             
                                             <td>unsigned int fd</td>
                                             
-                                            <td>unsigned long length</td>
+                                            <td>off_t length</td>
                                             
                                         </tr>
                                     </tbody>
@@ -11220,6 +11220,8 @@
                                             
                                             <td>%r8</td>
                                             
+                                            <td>%r9</td>
+                                            
                                         </tr>
                                         <tr>
                                             
@@ -11227,11 +11229,13 @@
                                             
                                             <td>unsigned int flags</td>
                                             
-                                            <td>u64 mask</td>
+                                            <td>unsigned int mask_1</td>
                                             
-                                            <td>int fd</td>
+                                            <td>unsigned int mask_2</td>
                                             
-                                            <td>const char  *pathname</td>
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char  * pathname</td>
                                             
                                         </tr>
                                     </tbody>
@@ -11321,7 +11325,7 @@
                                             
                                             <td>struct file_handle *handle</td>
                                             
-                                            <td>int *mnt_id</td>
+                                            <td>void *mnt_id</td>
                                             
                                             <td>int flag</td>
                                             
@@ -12657,6 +12661,23 @@
                                     </tbody>
                                 </table>
                             </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>335</td>
+                            <td>uretprobe</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/uretprobe.2.en.html">uretprobe(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cburetprobe%5Cb%2F&type=code">sys_uretprobe</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="3">No arguments</td>
                         
                         
                         </tr>
@@ -14060,6 +14081,506 @@
                                             <td>int nr_wake</td>
                                             
                                             <td>int nr_requeue</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>457</td>
+                            <td>statmount</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/statmount.2.en.html">statmount(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbstatmount%5Cb%2F&type=code">sys_statmount</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>const struct mnt_id_req *req</td>
+                                            
+                                            <td>struct statmount *buf</td>
+                                            
+                                            <td>size_t bufsize</td>
+                                            
+                                            <td>unsigned int flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>458</td>
+                            <td>listmount</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/listmount.2.en.html">listmount(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cblistmount%5Cb%2F&type=code">sys_listmount</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>const struct mnt_id_req *req</td>
+                                            
+                                            <td>u64 *mnt_ids</td>
+                                            
+                                            <td>size_t nr_mnt_ids</td>
+                                            
+                                            <td>unsigned int flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>459</td>
+                            <td>lsm_get_self_attr</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/lsm_get_self_attr.2.en.html">lsm_get_self_attr(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cblsm_get_self_attr%5Cb%2F&type=code">sys_lsm_get_self_attr</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>unsigned int attr</td>
+                                            
+                                            <td>struct lsm_ctx *ctx</td>
+                                            
+                                            <td>u32 *size</td>
+                                            
+                                            <td>u32 flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>460</td>
+                            <td>lsm_set_self_attr</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/lsm_set_self_attr.2.en.html">lsm_set_self_attr(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cblsm_set_self_attr%5Cb%2F&type=code">sys_lsm_set_self_attr</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>unsigned int attr</td>
+                                            
+                                            <td>struct lsm_ctx *ctx</td>
+                                            
+                                            <td>u32 size</td>
+                                            
+                                            <td>u32 flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>461</td>
+                            <td>lsm_list_modules</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/lsm_list_modules.2.en.html">lsm_list_modules(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cblsm_list_modules%5Cb%2F&type=code">sys_lsm_list_modules</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>u64 *ids</td>
+                                            
+                                            <td>u32 *size</td>
+                                            
+                                            <td>u32 flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>462</td>
+                            <td>mseal</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/mseal.2.en.html">mseal(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbmseal%5Cb%2F&type=code">sys_mseal</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>unsigned long start</td>
+                                            
+                                            <td>size_t len</td>
+                                            
+                                            <td>unsigned long flags</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>463</td>
+                            <td>setxattrat</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/setxattrat.2.en.html">setxattrat(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbsetxattrat%5Cb%2F&type=code">sys_setxattrat</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                            <td>%r8</td>
+                                            
+                                            <td>%r9</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char *path</td>
+                                            
+                                            <td>unsigned int at_flags</td>
+                                            
+                                            <td>const char *name</td>
+                                            
+                                            <td>const struct xattr_args *args</td>
+                                            
+                                            <td>size_t size</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>464</td>
+                            <td>getxattrat</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/getxattrat.2.en.html">getxattrat(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbgetxattrat%5Cb%2F&type=code">sys_getxattrat</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                            <td>%r8</td>
+                                            
+                                            <td>%r9</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char *path</td>
+                                            
+                                            <td>unsigned int at_flags</td>
+                                            
+                                            <td>const char *name</td>
+                                            
+                                            <td>struct xattr_args *args</td>
+                                            
+                                            <td>size_t size</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>465</td>
+                            <td>listxattrat</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/listxattrat.2.en.html">listxattrat(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cblistxattrat%5Cb%2F&type=code">sys_listxattrat</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                            <td>%r8</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char *path</td>
+                                            
+                                            <td>unsigned int at_flags</td>
+                                            
+                                            <td>char *list</td>
+                                            
+                                            <td>size_t size</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>466</td>
+                            <td>removexattrat</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/removexattrat.2.en.html">removexattrat(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbremovexattrat%5Cb%2F&type=code">sys_removexattrat</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char *path</td>
+                                            
+                                            <td>unsigned int at_flags</td>
+                                            
+                                            <td>const char *name</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        
+                        
+                        </tr>
+
+                        
+
+                        <tr class="tbls-entry-collapsed">
+                            <td>467</td>
+                            <td>open_tree_attr</td>
+                            <td><a href="https://manpages.debian.org/unstable/manpages-dev/open_tree_attr.2.en.html">open_tree_attr(2)</a></td>
+                            <td><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+%2FSYSCALL_DEFINE%5B%5E%2C%5D*%5Cbopen_tree_attr%5Cb%2F&type=code">sys_open_tree_attr</a></td>
+                        </tr>
+
+                        <tr class="tbls-arguments-collapsed">
+                        
+                        
+                            <td colspan="4">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            <td>%rdi</td>
+                                            
+                                            <td>%rsi</td>
+                                            
+                                            <td>%rdx</td>
+                                            
+                                            <td>%r10</td>
+                                            
+                                            <td>%r8</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td>int dfd</td>
+                                            
+                                            <td>const char *path</td>
+                                            
+                                            <td>unsigned flags</td>
+                                            
+                                            <td>struct mount_attr *uattr</td>
+                                            
+                                            <td>size_t usize</td>
                                             
                                         </tr>
                                     </tbody>
