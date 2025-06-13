@@ -3,13 +3,14 @@
 #  - like.js
 #  - direct-messages.js
 #  - direct-messages-group.js
+#  - tweets.jsonl (for already fetched tweets)
 
 import tweepy
 import json
 import sys
 import os
 
-want, done = set(), set()
+want, have = set(), set()
 
 
 def want_tweet_id(id):
@@ -32,19 +33,29 @@ def want_tweet(tweet):
 for name in sys.argv[1:]:
     with open(name) as f:
         data = f.read()
-        data = data.split(" = ", maxsplit=1)[1]
-        data = json.loads(data)
-        for entry in data:
-            if "like" in entry:
-                want_tweet_id(entry["like"]["tweetId"])
-            if "tweet" in entry:
-                want_tweet(entry["tweet"])
-            if "dmConversation" in entry:
-                for m in entry["dmConversation"]["messages"]:
-                    if "messageCreate" in m:
-                        for u in m["messageCreate"].get("urls", []):
-                            if "/status/" in u["expanded"]:
-                                want_tweet_id(u["expanded"].split("/status/")[1])
+        if name.endswith(".jsonl"):
+            for i, l in enumerate(data.splitlines()):
+                t = json.loads(l)
+                if "id_str" in t:
+                    have.add(t["id_str"])
+                    want_tweet(t)
+                else:
+                    have.add(str(t["id"]))
+                    want.add(str(t["id"]))
+        if name.endswith(".js"):
+            data = data.split(" = ", maxsplit=1)[1]
+            data = json.loads(data)
+            for entry in data:
+                if "like" in entry:
+                    want_tweet_id(entry["like"]["tweetId"])
+                if "tweet" in entry:
+                    want_tweet(entry["tweet"])
+                if "dmConversation" in entry:
+                    for m in entry["dmConversation"]["messages"]:
+                        if "messageCreate" in m:
+                            for u in m["messageCreate"].get("urls", []):
+                                if "/status/" in u["expanded"]:
+                                    want_tweet_id(u["expanded"].split("/status/")[1])
 
 CONSUMER_KEY = os.getenv("TWITTER_CONSUMER_KEY")
 CONSUMER_SECRET = os.getenv("TWITTER_CONSUMER_SECRET")
@@ -57,9 +68,9 @@ oauth.get_access_token(input())
 
 api = tweepy.API(oauth, wait_on_rate_limit=True)
 
-while len(want) > len(done):
-    print(len(done), "/", len(want), file=sys.stderr)
-    ids = list(want - done)
+while len(want) > len(have):
+    print(len(have), "/", len(want), file=sys.stderr)
+    ids = list(want - have)
     if len(ids) > 100:
         ids = ids[:100]
     try:
@@ -69,7 +80,7 @@ while len(want) > len(done):
     except tweepy.errors.TwitterServerError as e:
         print(e, file=sys.stderr)
         continue
-    done.update(ids)
+    have.update(ids)
     for t in tweets:
         want_tweet(t._json)
         json.dump(t._json, sys.stdout)
