@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -25,24 +24,19 @@ type ModuleEntry struct {
 const nistURL = "https://csrc.nist.gov/Projects/cryptographic-module-validation-program/modules-in-process/modules-in-process-list"
 
 func main() {
-	summaryOnly := flag.Bool("summary", false, "Show only the summary")
-	filename := flag.String("file", "", "Use local file instead of downloading from NIST")
-	flag.Parse()
-
 	var reader io.Reader
 	var err error
 
-	if *filename != "" {
-		// Use local file
-		file, err := os.Open(*filename)
+	if len(os.Args) > 1 && os.Args[1] == "-" {
+		reader = os.Stdin
+	} else if len(os.Args) > 1 {
+		file, err := os.Open(os.Args[1])
 		if err != nil {
 			log.Fatalf("Error opening file: %v", err)
 		}
 		defer file.Close()
 		reader = file
 	} else {
-		// Download from NIST website
-		fmt.Println("Downloading modules list from NIST...")
 		resp, err := http.Get(nistURL)
 		if err != nil {
 			log.Fatalf("Error downloading from NIST: %v", err)
@@ -70,24 +64,9 @@ func main() {
 	cutoffDate := time.Date(2025, 5, 8, 0, 0, 0, 0, time.UTC)
 	countBefore := 0
 
-	if !*summaryOnly {
-		fmt.Printf("Found %d Review Pending entries:\n\n", len(reviewPendingEntries))
-	}
-
 	for _, entry := range reviewPendingEntries {
 		if entry.Date.Before(cutoffDate) {
 			countBefore++
-		}
-		if !*summaryOnly {
-			fmt.Printf("Module: %s\n", entry.ModuleName)
-			fmt.Printf("Vendor: %s\n", entry.VendorName)
-			fmt.Printf("Standard: %s\n", entry.Standard)
-			fmt.Printf("Status: %s\n", entry.Status)
-			fmt.Printf("Date: %s\n", entry.Date.Format("1/2/2006"))
-			if entry.Date.Before(cutoffDate) {
-				fmt.Printf("*** BEFORE CUTOFF ***")
-			}
-			fmt.Println("---")
 		}
 	}
 
