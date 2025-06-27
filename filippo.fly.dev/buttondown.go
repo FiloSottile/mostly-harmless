@@ -1,8 +1,57 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	"errors"
+	"log"
+	"net/http"
+	"os"
+	"sync"
+	"time"
+)
+
+type buttondownEmail struct {
+	Body        string `json:"body"`
+	ID          string `json:"id"`
+	PublishDate string `json:"publish_date"`
+	Slug        string `json:"slug"`
+	Subject     string `json:"subject"`
+	Metadata    struct {
+		OverrideSlug string `json:"override_slug"`
+	} `json:"metadata"`
+}
+
+func canonicalSlug(e *buttondownEmail) string {
+	if e.Metadata.OverrideSlug != "" {
+		return e.Metadata.OverrideSlug
+	}
+	if e.Slug != "" {
+		return e.Slug
+	}
+	return e.ID
+}
+
+var emailsMu sync.RWMutex
+var emails map[string]*buttondownEmail
+
+func emailBySlug(slug string) *buttondownEmail {
+	emailsMu.RLock()
+	defer emailsMu.RUnlock()
+	return emails[slug]
+}
 
 func buttondown(mux *http.ServeMux) {
+	if err := fetchMails(); err != nil {
+		log.Fatalf("failed to fetch emails at startup: %v", err.Error())
+	}
+	go func() {
+		for range time.NewTicker(1 * time.Minute).C {
+			if err := fetchMails(); err != nil {
+				log.Printf("failed to fetch emails: %v", err)
+			}
+		}
+	}()
+
 	mux.Handle("buttondown.filippo.io/{$}",
 		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
 
@@ -11,38 +60,124 @@ func buttondown(mux *http.ServeMux) {
 
 	mux.Handle("buttondown.filippo.io/static/", HostRedirectHandler("buttondown.com", http.StatusFound))
 
-	email := func(new string, old ...string) {
-		for _, slug := range old {
-			target := "https://words.filippo.io/dispatches/" + new + "/"
-			mux.Handle("buttondown.filippo.io/archive/"+slug+"/{$}",
-				http.RedirectHandler(target, http.StatusFound))
+	mux.Handle("buttondown.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
+	mux.Handle("buttondown.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
+	mux.Handle("buttondown.filippo.io/{slug}/{rest...}", EmailHandler())
+}
+
+func SlugRedirectHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		slug := r.PathValue("slug")
+		email := emailBySlug(slug)
+		if email == nil {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		target := "https://buttondown.filippo.io/" + canonicalSlug(email) + "/"
+		http.Redirect(w, r, target, http.StatusFound)
+	})
+}
+
+func EmailHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		slug := r.PathValue("slug")
+		email := emailBySlug(slug)
+		if email == nil {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		rest := r.PathValue("rest")
+		if rest == "+" {
+			target := "https://buttondown.com/emails/" + email.ID
+			http.Redirect(w, r, target, http.StatusFound)
+			return
+		}
+		if canonical := canonicalSlug(email); canonical != slug && rest == "" {
+			target := "https://buttondown.filippo.io/" + canonical + "/"
+			http.Redirect(w, r, target, http.StatusFound)
+			return
+		}
+
+		// For now, hide the new version behind a !, and redirect to Ghost.
+		if rest == "!" {
+			w.Write([]byte(email.Subject)) // TODO
+			return
+		}
+		if rest == "" {
+			target := "https://words.filippo.io/dispatches/" + slug + "/"
+			http.Redirect(w, r, target, http.StatusFound)
+			return
+		}
+
+		http.Error(w, "not found", http.StatusNotFound)
+	})
+}
+
+var buttondownClient = &http.Client{
+	Timeout: 30 * time.Second,
+}
+
+func fetchMails() error {
+	url := "https://api.buttondown.com/v1/emails?-email_type=private&-status=draft&-status=scheduled&-status=deleted"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Token "+os.Getenv("BUTTONDOWN_API_KEY"))
+	req.Header.Set("X-API-Version", "2025-06-01")
+	resp, err := buttondownClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("unexpected status code: " + resp.Status)
+	}
+	var response struct {
+		Next    *string           `json:"next"`
+		Results []buttondownEmail `json:"results"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return err
+	}
+	var allEmails []buttondownEmail
+	allEmails = append(allEmails, response.Results...)
+	for response.Next != nil {
+		req, err = http.NewRequest("GET", *response.Next, nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Token "+os.Getenv("BUTTONDOWN_API_KEY"))
+		req.Header.Set("X-API-Version", "2025-06-01")
+		resp, err = buttondownClient.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return errors.New("unexpected status code: " + resp.Status)
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+			return err
+		}
+		allEmails = append(allEmails, response.Results...)
+	}
+	if len(allEmails) < 90 {
+		return errors.New("fetched less than 90 emails, something went wrong")
+	}
+	emailsMu.Lock()
+	defer emailsMu.Unlock()
+	emails = make(map[string]*buttondownEmail, len(allEmails)*2)
+	for _, email := range allEmails {
+		for _, slug := range []string{email.Slug, email.ID, email.Metadata.OverrideSlug} {
+			if slug == "" {
+				continue
+			}
+			if old, exists := emails[slug]; exists {
+				log.Printf("warning: slug %q of email %q already exists as %q", slug, email.ID, old.ID)
+			}
+			emails[slug] = &email
 		}
 	}
-
-	email("openpgp-is-broken",
-		"626bb4fe-7d48-4cb7-a88d-206f9c38a921", "cryptography-dispatches-hello-world-and-openpgp")
-	email("linux-csprng",
-		"0b662832-a9a7-4e07-82fa-b97804618b98", "cryptography-dispatches-the-linux-csprng-is-now")
-	email("go-1-14-crypto",
-		"7909a70e-45b9-417d-b094-f0ec6b94b605", "cryptography-dispatches-new-crypto-in-go-114")
-	email("openssh-fido2",
-		"9cd031bc-4b83-4ba6-9134-98678f9abf74", "cryptography-dispatches-openssh-82-just-works")
-	email("x25519-associative",
-		"1ad8d5d9-7531-4ed4-bf21-f3c13d8be128", "cryptography-dispatches-is-x25519-associative")
-	email("dsa",
-		"557475c5-9781-47e0-a640-5734bc849bc7", "cryptography-dispatches-dsa-is-past-its-prime")
-	email("replace-pgp-with-https",
-		"505a859e-964d-4d15-9ad8-7ad0f45e1345", "cryptography-dispatches-replace-pgp-with-an-https")
-	email("registries-considered-harmful",
-		"8ea4e389-f8ca-4643-8416-4311436b090b", "cryptography-dispatches-registries-considered")
-	email("nacl-api",
-		"59c99d2e-9fd7-4859-934b-f52cf254e6b2", "cryptography-dispatches-nacl-is-not-a-high-level")
-	email("reconstruct-vs-validate",
-		"9efd8ad0-2b31-4319-b71b-34bf356836a9", "cryptography-dispatches-reconstruct-instead-of")
-	email("edwards25519-formulas",
-		"e625193c-7981-4295-9df5-f94fa694064a", "cryptography-dispatches-re-deriving-the")
-	email("telegram-ecdh",
-		"45cace9a-4f74-4591-8fd1-8ae54d14e156", "cryptography-dispatches-the-most-backdoor-looking")
-	email("cipher-suite-ordering",
-		"de1e8d9e-186d-4ae3-bea6-09a9a90f0ffa", "from-the-go-blog-automatic-cipher-suite-ordering")
+	return nil
 }

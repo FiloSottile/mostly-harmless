@@ -89,7 +89,34 @@ redirect == https://buttondown.com/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?e
 code == 307
 
 GET https://buttondown.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
-redirect == https://words.filippo.io/dispatches/openpgp-is-broken/
+redirect == https://buttondown.filippo.io/openpgp-is-broken/
 
 GET https://buttondown.filippo.io/archive/626bb4fe-7d48-4cb7-a88d-206f9c38a921/
+redirect == https://buttondown.filippo.io/openpgp-is-broken/
+
+GET https://buttondown.filippo.io/dispatches/openpgp-is-broken/
+redirect == https://buttondown.filippo.io/openpgp-is-broken/
+
+GET https://buttondown.filippo.io/openpgp-is-broken/
 redirect == https://words.filippo.io/dispatches/openpgp-is-broken/
+
+GET https://buttondown.filippo.io/openpgp-is-broken/!
+body contains OpenPGP
+
+GET https://buttondown.filippo.io/openpgp-is-broken/+
+redirect == https://buttondown.com/emails/626bb4fe-7d48-4cb7-a88d-206f9c38a921
+
+GET https://buttondown.filippo.io/openpgp-is-broken/foo
+code == 404
+
+GET https://buttondown.filippo.io/dispatches/frood/
+redirect == https://buttondown.filippo.io/frood/
+
+GET https://buttondown.filippo.io/frood/
+redirect == https://words.filippo.io/dispatches/frood/
+
+GET https://buttondown.filippo.io/frood/!
+body contains Alpine
+
+GET https://buttondown.filippo.io/frood/+
+redirect == https://buttondown.com/emails/3bce93bb-8174-4649-a625-aa424a8a8ed4
