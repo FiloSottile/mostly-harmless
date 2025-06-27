@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://abyssdomain.expert/@filippo" rel="me">
+    <link href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">
+    <link rel="alternate" type="application/rss+xml" href="https://words.filippo.io/rss/">
+    
+    <title>{{ .Subject }}</title>
+    {{ if .Description }}
+    <meta name="description" content="{{ .Description }}">
+    {{ end }}
+    <meta property="article:published_time" content="{{ .PublishDate }}">
+    <link rel="canonical" href="https://words.filippo.io/{{ .Slug }}/">
+
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        code, pre {
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+        }
+        p {
+            line-height: 1.5em;
+        }
+        a {
+            color: inherit;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 80px auto;
+        }
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+		@media print {
+			main {
+				margin: 0;
+				padding: 0;
+			}
+		}
+    </style>
+
+    <script defer data-domain="blog.filippo.io" src="https://filippo.io/js/script.js"></script>
+    <script>
+        window.plausible = window.plausible || function () {
+            (window.plausible.q = window.plausible.q || []).push(arguments)
+        }
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            let trigger = document.createElement("div");
+            let footnotes = document.querySelector(".footnotes");
+            if (footnotes) {
+                footnotes.before(trigger);
+            } else {
+                document.querySelector("article").after(trigger);
+            }
+
+            new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    observer.disconnect();
+                    plausible("Finished");
+                })
+            }).observe(trigger);
+
+            new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) return;
+                    observer.disconnect();
+                    plausible("Scrolled");
+                })
+            }).observe(document.querySelector("h1"));
+        });
+    </script>
+</head>
+
+<body>
+<header>
+    <div><a href="https://filippo.io"><picture>
+        <source srcset="https://words.filippo.io/content/images/2023/02/Logo-Bianco-Filippo-Valsorda-def-web.png" media="(prefers-color-scheme: dark)">
+        <img src="https://words.filippo.io/content/images/2023/02/Logo-Nero-Filippo-Valsorda-def-web.png" alt="Filippo Valsorda">
+    </picture></a></div>
+</header>
+
+<main>
+    <time datetime="{{ .PublishDate | dateFormat "2006-01-02" }}">{{ .PublishDate | dateFormat "2 Jan 2006" }}</time>
+    <article>
+        <h1>{{ .Subject }}</h1>
+        <section>
+            {{ .Body }}
+        </section>
+    </article>
+    <aside class="subscribe" style="margin-bottom: 1.65em;">
+        <iframe scrolling="no" style="width:100%!important;height:220px;border:1px #ccc solid !important"
+            src="https://buttondown.com/cryptography-dispatches/?as_embed=true"></iframe>
+    </aside>
+    <script>
+        const h2first = document.querySelector("article > h2:first-of-type")
+        h2first.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2first)
+        const h2last = document.querySelector("h2#the-picture")
+        if (h2last && h2last != h2first) h2last.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2last)
+    </script>
+

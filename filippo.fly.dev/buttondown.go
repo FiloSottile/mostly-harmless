@@ -1,8 +1,10 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +14,7 @@ import (
 
 type buttondownEmail struct {
 	Body        string `json:"body"`
+	Description string `json:"description"`
 	ID          string `json:"id"`
 	PublishDate string `json:"publish_date"`
 	Slug        string `json:"slug"`
@@ -78,6 +81,19 @@ func SlugRedirectHandler() http.Handler {
 	})
 }
 
+//go:embed buttondown_email.html.tmpl
+var buttondownEmailTemplate string
+
+var buttondownEmailTmpl = template.Must(template.New("buttondown_email").Funcs(template.FuncMap{
+	"dateFormat": func(t string, layout string) string {
+		tm, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return t
+		}
+		return tm.Format(layout)
+	},
+}).Parse(buttondownEmailTemplate))
+
 func EmailHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
@@ -100,7 +116,10 @@ func EmailHandler() http.Handler {
 
 		// For now, hide the new version behind a !, and redirect to Ghost.
 		if rest == "!" {
-			w.Write([]byte(email.Subject)) // TODO
+			if err := buttondownEmailTmpl.Execute(w, email); err != nil {
+				log.Printf("failed to execute buttondown email template: %v", err)
+				http.Error(w, "internal server error", http.StatusInternalServerError)
+			}
 			return
 		}
 		if rest == "" {
