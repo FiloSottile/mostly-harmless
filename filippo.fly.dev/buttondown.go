@@ -13,12 +13,12 @@ import (
 )
 
 type buttondownEmail struct {
-	Body        string `json:"body"`
-	Description string `json:"description"`
-	ID          string `json:"id"`
-	PublishDate string `json:"publish_date"`
-	Slug        string `json:"slug"`
-	Subject     string `json:"subject"`
+	Body        template.HTML `json:"body"`
+	Description string        `json:"description"`
+	ID          string        `json:"id"`
+	PublishDate string        `json:"publish_date"`
+	Slug        string        `json:"slug"`
+	Subject     string        `json:"subject"`
 	Metadata    struct {
 		OverrideSlug string `json:"override_slug"`
 	} `json:"metadata"`
@@ -85,12 +85,12 @@ func SlugRedirectHandler() http.Handler {
 var buttondownEmailTemplate string
 
 var buttondownEmailTmpl = template.Must(template.New("buttondown_email").Funcs(template.FuncMap{
-	"dateFormat": func(t string, layout string) string {
+	"dateFormat": func(t string, layout string) (string, error) {
 		tm, err := time.Parse(time.RFC3339, t)
 		if err != nil {
-			return t
+			return "", err
 		}
-		return tm.Format(layout)
+		return tm.Format(layout), nil
 	},
 }).Parse(buttondownEmailTemplate))
 
