@@ -21,6 +21,7 @@
         }
         code, pre {
             font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
         }
         p {
             line-height: 1.5em;
@@ -41,17 +42,25 @@
         }
         h1 {
             text-transform: uppercase;
+            margin-top: 0.25em;
+            font-size: 2em;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            color: Canvas;
+            background-color: CanvasText;
+            font-size: 0.9em;
+            line-height: 1.5em;
         }
 		img {
 			max-width: 100%;
 			height: auto;
 		}
-		@media print {
-			main {
-				margin: 0;
-				padding: 0;
-			}
-		}
+        li {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
     </style>
 
     <script defer data-domain="blog.filippo.io" src="https://filippo.io/js/script.js"></script>
@@ -109,7 +118,7 @@
             src="https://buttondown.com/cryptography-dispatches/?as_embed=true"></iframe>
     </aside>
     <script>
-        const h2first = document.querySelector("article > h2:first-of-type")
+        const h2first = document.querySelector("article h2:first-of-type")
         h2first.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2first)
         const h2last = document.querySelector("h2#the-picture")
         if (h2last && h2last != h2first) h2last.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2last)
