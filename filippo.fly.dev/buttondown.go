@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"errors"
@@ -8,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 	"sync"
 	"time"
 )
@@ -57,6 +60,10 @@ func buttondown(mux *http.ServeMux) {
 
 	mux.Handle("buttondown.filippo.io/{$}",
 		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/dispatches/{$}",
+		http.RedirectHandler("https://words.filippo.io/", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/archive/{$}",
+		http.RedirectHandler("https://words.filippo.io/", http.StatusFound))
 
 	mux.Handle("buttondown.filippo.io/unsubscribe/", HostRedirectHandler("buttondown.com",
 		http.StatusTemporaryRedirect)) // 307 to preserve POST from List-Unsubscribe-Post.
@@ -136,54 +143,69 @@ var buttondownClient = &http.Client{
 	Timeout: 30 * time.Second,
 }
 
-func fetchMails() error {
-	url := "https://api.buttondown.com/v1/emails?-email_type=private&-status=draft&-status=scheduled&-status=deleted"
+type buttondownResponse struct {
+	Next    *string            `json:"next"`
+	Results []*buttondownEmail `json:"results"`
+}
+
+func buttondownGET(url string) (*buttondownResponse, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Authorization", "Token "+os.Getenv("BUTTONDOWN_API_KEY"))
 	req.Header.Set("X-API-Version", "2025-06-01")
 	resp, err := buttondownClient.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("unexpected status code: " + resp.Status)
+		return nil, errors.New("unexpected status code: " + resp.Status)
 	}
-	var response struct {
-		Next    *string           `json:"next"`
-		Results []buttondownEmail `json:"results"`
-	}
+	var response buttondownResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func fetchMails() error {
+	var allEmails []*buttondownEmail
+	r, err := buttondownGET("https://api.buttondown.com/v1/emails?-email_type=private&-status=draft&-status=scheduled&-status=deleted")
+	if err != nil {
 		return err
 	}
-	var allEmails []buttondownEmail
-	allEmails = append(allEmails, response.Results...)
-	for response.Next != nil {
-		req, err = http.NewRequest("GET", *response.Next, nil)
+	allEmails = append(allEmails, r.Results...)
+	for range 20 {
+		if r.Next == nil {
+			break
+		}
+		r, err = buttondownGET(*r.Next)
 		if err != nil {
 			return err
 		}
-		req.Header.Set("Authorization", "Token "+os.Getenv("BUTTONDOWN_API_KEY"))
-		req.Header.Set("X-API-Version", "2025-06-01")
-		resp, err = buttondownClient.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			return errors.New("unexpected status code: " + resp.Status)
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-			return err
-		}
-		allEmails = append(allEmails, response.Results...)
+		allEmails = append(allEmails, r.Results...)
 	}
 	if len(allEmails) < 90 {
 		return errors.New("fetched less than 90 emails, something went wrong")
 	}
+
+	for _, email := range allEmails {
+		email.Subject = strings.TrimPrefix(email.Subject, "Cryptography Dispatches: ")
+		email.Subject = strings.TrimPrefix(email.Subject, "Maintainer Dispatches: ")
+		// https://docs.buttondown.com/using-markdown-rendering
+		// markdown_py -x smarty -x tables -x footnotes -x fenced_code -x pymdownx.tilde -x toc
+		cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
+			"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc")
+		cmd.Stdin = bytes.NewReader([]byte(email.Body))
+		out, err := cmd.Output()
+		if err != nil {
+			return errors.New("failed to render markdown: " + err.Error())
+		}
+		email.Body = template.HTML(out)
+	}
+
 	emailsMu.Lock()
 	defer emailsMu.Unlock()
 	emails = make(map[string]*buttondownEmail, len(allEmails)*2)
@@ -195,7 +217,7 @@ func fetchMails() error {
 			if old, exists := emails[slug]; exists {
 				log.Printf("warning: slug %q of email %q already exists as %q", slug, email.ID, old.ID)
 			}
-			emails[slug] = &email
+			emails[slug] = email
 		}
 	}
 	return nil

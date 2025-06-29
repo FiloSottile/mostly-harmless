@@ -119,4 +119,8 @@ GET https://buttondown.filippo.io/frood/!
 body contains Alpine
 
 GET https://buttondown.filippo.io/frood/+
-redirect == https://buttondown.com/emails/3bce93bb-8174-4649-a625-aa424a8a8ed4
+redirect == https://buttondown.com/emails/abe1d314-3190-4176-b0ae-13d7ff1df820
+
+GET https://buttondown.filippo.io/edwards25519-formulas/!
+body !contains Cryptography Dispatches:
+body contains <h2 id="division-and-inverses">Division and inverses</h2>
