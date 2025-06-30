@@ -225,8 +225,7 @@ func feedItems() []*feeds.Item {
 				Href: "https://words.filippo.io/" + canonicalSlug(email) + "/",
 			},
 			Author: &feeds.Author{
-				Name:  "Filippo Valsorda",
-				Email: "feed@filippo.io",
+				Name: "Filippo Valsorda <feed@filippo.io>",
 			},
 			Content: string(email.Body),
 		}
