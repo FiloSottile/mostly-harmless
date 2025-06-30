@@ -135,3 +135,6 @@ GET https://buttondown.filippo.io/dispatches/rss/
 body contains <title>Filippo Valsorda</title>
 body contains <link>https://words.filippo.io/
 body contains <item>
+
+GET https://buttondown.filippo.io/!
+body contains <a href="/fips-hkdf/">The FIPS Compliance of HKDF</a></h1>

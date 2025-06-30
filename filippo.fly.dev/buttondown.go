@@ -44,13 +44,13 @@ func canonicalSlug(e *buttondownEmail) string {
 }
 
 var emailsMu sync.RWMutex
-var emails map[string]*buttondownEmail
-var feed []*buttondownEmail
+var emailsBySlug map[string]*buttondownEmail
+var emails []*buttondownEmail
 
 func emailBySlug(slug string) *buttondownEmail {
 	emailsMu.RLock()
 	defer emailsMu.RUnlock()
-	return emails[slug]
+	return emailsBySlug[slug]
 }
 
 func buttondown(mux *http.ServeMux) {
@@ -67,7 +67,7 @@ func buttondown(mux *http.ServeMux) {
 
 	redirectToNewsletter := http.RedirectHandler(
 		"https://buttondown.com/cryptography-dispatches/", http.StatusFound)
-	redirectToWords := http.RedirectHandler("https://words.filippo.io/", http.StatusFound)
+	redirectToIndex := http.RedirectHandler("/", http.StatusFound)
 	redirectToButtondown := HostRedirectHandler("buttondown.com", http.StatusFound)
 	// 307 to preserve POST from List-Unsubscribe-Post.
 	redirectToButtondown307 := HostRedirectHandler("buttondown.com", http.StatusTemporaryRedirect)
@@ -75,8 +75,9 @@ func buttondown(mux *http.ServeMux) {
 		"buttondown.com", "/cryptography-dispatches", http.StatusFound)
 
 	mux.Handle("buttondown.filippo.io/{$}", redirectToNewsletter)
-	mux.Handle("buttondown.filippo.io/dispatches/{$}", redirectToWords)
-	mux.Handle("buttondown.filippo.io/archive/{$}", redirectToWords)
+	mux.Handle("buttondown.filippo.io/!", IndexHandler())
+	mux.Handle("buttondown.filippo.io/dispatches/{$}", redirectToIndex)
+	mux.Handle("buttondown.filippo.io/archive/{$}", redirectToIndex)
 
 	mux.Handle("buttondown.filippo.io/unsubscribe/", redirectToButtondown307)
 	mux.Handle("buttondown.filippo.io/subscribers/", redirectToButtondownWithPrefix)
@@ -117,9 +118,12 @@ func SlugRedirectHandler() http.Handler {
 }
 
 //go:embed buttondown_email.html.tmpl
-var buttondownEmailTemplate string
+var emailTemplate string
 
-var buttondownEmailTmpl = template.Must(template.New("buttondown_email").Funcs(template.FuncMap{
+//go:embed buttondown_index.html.tmpl
+var indexTemplate string
+
+var funcs = template.FuncMap{
 	"dateFormat": func(t string, layout string) (string, error) {
 		tm, err := time.Parse(time.RFC3339, t)
 		if err != nil {
@@ -130,7 +134,10 @@ var buttondownEmailTmpl = template.Must(template.New("buttondown_email").Funcs(t
 	"canonicalSlug": func(e *buttondownEmail) string {
 		return canonicalSlug(e)
 	},
-}).Parse(buttondownEmailTemplate))
+}
+
+var emailTmpl = template.Must(template.New("email").Funcs(funcs).Parse(emailTemplate))
+var indexTmpl = template.Must(template.New("index").Funcs(funcs).Parse(indexTemplate))
 
 func EmailHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +161,8 @@ func EmailHandler() http.Handler {
 
 		// For now, hide the new version behind a !, and redirect to Ghost.
 		if rest == "!" {
-			if err := buttondownEmailTmpl.Execute(w, email); err != nil {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			if err := emailTmpl.Execute(w, email); err != nil {
 				log.Printf("failed to execute buttondown email template: %v", err)
 				http.Error(w, "internal server error", http.StatusInternalServerError)
 			}
@@ -167,6 +175,16 @@ func EmailHandler() http.Handler {
 		}
 
 		http.Error(w, "not found", http.StatusNotFound)
+	})
+}
+
+func IndexHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		if err := indexTmpl.Execute(w, emails); err != nil {
+			log.Printf("failed to execute buttondown email template: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 	})
 }
 
@@ -192,7 +210,7 @@ func feedItems() []*feeds.Item {
 	emailsMu.RLock()
 	defer emailsMu.RUnlock()
 	var items []*feeds.Item
-	for _, email := range feed {
+	for _, email := range emails[:10] {
 		created, _ := time.Parse(time.RFC3339, email.PublishDate)
 		if created.Year() < 2024 {
 			// We set the override GUID only for 2024+ emails.
@@ -207,7 +225,8 @@ func feedItems() []*feeds.Item {
 				Href: "https://words.filippo.io/" + canonicalSlug(email) + "/",
 			},
 			Author: &feeds.Author{
-				Name: "Filippo Valsorda",
+				Name:  "Filippo Valsorda",
+				Email: "feed@filippo.io",
 			},
 			Content: string(email.Body),
 		}
@@ -300,17 +319,17 @@ func fetchMails() error {
 
 	emailsMu.Lock()
 	defer emailsMu.Unlock()
-	feed = allEmails[:10]
-	emails = make(map[string]*buttondownEmail, len(allEmails)*2)
+	emails = allEmails
+	emailsBySlug = make(map[string]*buttondownEmail, len(allEmails)*2)
 	for _, email := range allEmails {
 		for _, slug := range []string{email.Slug, email.ID, email.Metadata.OverrideSlug} {
 			if slug == "" {
 				continue
 			}
-			if old, exists := emails[slug]; exists {
+			if old, exists := emailsBySlug[slug]; exists {
 				log.Printf("warning: slug %q of email %q already exists as %q", slug, email.ID, old.ID)
 			}
-			emails[slug] = email
+			emailsBySlug[slug] = email
 		}
 	}
 	return nil

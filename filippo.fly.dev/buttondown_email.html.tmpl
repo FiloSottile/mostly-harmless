@@ -103,14 +103,15 @@
 <body>
 <header>
     <a href="https://filippo.io"><picture>
-        <source srcset="https://words.filippo.io/content/images/2023/02/Logo-Bianco-Filippo-Valsorda-def-web.png" media="(prefers-color-scheme: dark)">
-        <img src="https://words.filippo.io/content/images/2023/02/Logo-Nero-Filippo-Valsorda-def-web.png" alt="Filippo Valsorda">
+        <source srcset="https://assets.buttondown.email/images/72e03d2e-fcb2-4893-ab9c-8f561c0b07c7.png" media="(prefers-color-scheme: dark)">
+        <img src="https://assets.buttondown.email/images/1e8b4251-b3e2-4de1-9b95-9f5d0447644d.png" alt="Filippo Valsorda">
     </picture></a>
 </header>
 
 <main>
-    <time datetime="{{ dateFormat .PublishDate "2006-01-02" }}">{{ dateFormat .PublishDate "2 Jan 2006" }}</time>
     <article>
+        <time datetime="{{ dateFormat .PublishDate "2006-01-02" }}">
+            {{ dateFormat .PublishDate "2 Jan 2006" }}</time>
         <h1>{{ .Subject }}</h1>
         <section>
             {{ .Body }}

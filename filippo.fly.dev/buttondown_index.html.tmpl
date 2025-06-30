@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://abyssdomain.expert/@filippo" rel="me">
+    <link href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">
+    <link rel="alternate" type="application/rss+xml" href="https://words.filippo.io/rss/">
+    
+    <title>Filippo Valsorda</title>
+    <link rel="canonical" href="https://words.filippo.io/">
+
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        header {
+            margin: 4rem auto 0;
+            max-width: 350px;
+            padding: 0 10px;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 80px auto;
+        }
+        h1 {
+            text-transform: uppercase;
+            margin-top: 0.25em;
+            font-size: 2em;
+        }
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+    </style>
+
+    <script defer data-domain="blog.filippo.io" src="https://filippo.io/js/script.js"></script>
+</head>
+
+<body>
+<header>
+    <a href="https://filippo.io"><picture>
+        <source srcset="https://assets.buttondown.email/images/72e03d2e-fcb2-4893-ab9c-8f561c0b07c7.png" media="(prefers-color-scheme: dark)">
+        <img src="https://assets.buttondown.email/images/1e8b4251-b3e2-4de1-9b95-9f5d0447644d.png" alt="Filippo Valsorda">
+    </picture></a>
+</header>
+
+<main>
+    <aside class="subscribe" style="margin-bottom: 1.65em;">
+        <iframe scrolling="no" style="width:100%!important;height:220px;border:1px #ccc solid !important"
+            src="https://buttondown.com/cryptography-dispatches/?as_embed=true"></iframe>
+    </aside>
+    {{ range . }}
+    <article>
+        <time datetime="{{ dateFormat .PublishDate "2006-01-02" }}">
+            {{ dateFormat .PublishDate "2 Jan 2006" }}</time>
+        <h1><a href="/{{ canonicalSlug . }}/">{{ .Subject }}</a></h1>
+    </article>
+    {{ end }}
