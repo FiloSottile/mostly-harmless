@@ -89,6 +89,7 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("words.filippo.io/rss/{$}", FeedHandler())
 	mux.Handle("words.filippo.io/feed/{$}", redirectToFeed)
 	mux.Handle("words.filippo.io/dispatches/rss/{$}", redirectToFeed)
+	mux.Handle("words.filippo.io/dispatches/feed/{$}", redirectToFeed)
 
 	mux.Handle("words.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("words.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
