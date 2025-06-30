@@ -166,20 +166,18 @@ func EmailHandler() http.Handler {
 			return
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := emailTmpl.Execute(w, email); err != nil {
-			log.Printf("failed to execute buttondown email template: %v", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-		}
+		emailTmpl.Execute(w, email)
 	})
 }
 
 func IndexHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := indexTmpl.Execute(w, emails); err != nil {
-			log.Printf("failed to execute buttondown email template: %v", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-		}
+		indexTmpl.Execute(w, func() []*buttondownEmail {
+			emailsMu.RLock()
+			defer emailsMu.RUnlock()
+			return emails
+		}())
 	})
 }
 
