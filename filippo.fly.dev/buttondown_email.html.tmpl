@@ -6,10 +6,11 @@
     <link href="https://abyssdomain.expert/@filippo" rel="me">
     <link href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">
     <link rel="alternate" type="application/rss+xml" href="https://words.filippo.io/rss/">
+    <meta property="og:type" content="article">
+    <meta name="fediverse:creator" content="@filippo@abyssdomain.expert">
     
     <title>{{ .Subject }}</title>
     {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
-    <meta property="og:type" content="article">
     {{ if .Image }}<meta property="og:image" content="{{ .Image }}">{{ end }}
     <meta property="article:published_time" content="{{ .PublishDate }}">
     <link rel="canonical" href="https://words.filippo.io/{{ canonicalSlug . }}/">
