@@ -12,7 +12,7 @@
     <meta name="description" content="{{ .Description }}">
     {{ end }}
     <meta property="article:published_time" content="{{ .PublishDate }}">
-    <link rel="canonical" href="https://words.filippo.io/{{ .Slug }}/">
+    <link rel="canonical" href="https://words.filippo.io/{{ canonicalSlug . }}/">
 
     <style>
         :root {
@@ -23,7 +23,7 @@
             font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
             -webkit-font-smoothing: antialiased;
         }
-        p {
+        p, li {
             line-height: 1.8em;
         }
         sub, sup {

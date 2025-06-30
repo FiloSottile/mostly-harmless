@@ -7,6 +7,7 @@ require (
 	github.com/cloudflare/dns v0.0.0-20150411011339-71d0b8b38181
 	github.com/google/go-github/v38 v38.1.0
 	github.com/gopherjs/gopherjs v0.0.0-20150919203317-52a9b31eabc4
+	github.com/gorilla/feeds v1.2.0
 	github.com/prometheus/client_golang v1.11.0
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 	gopkg.in/yaml.v3 v3.0.1

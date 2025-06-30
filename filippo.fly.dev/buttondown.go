@@ -5,15 +5,19 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gorilla/feeds"
 )
 
 type buttondownEmail struct {
@@ -25,6 +29,7 @@ type buttondownEmail struct {
 	Subject     string        `json:"subject"`
 	Metadata    struct {
 		OverrideSlug string `json:"override_slug"`
+		OverrideGUID string `json:"override_guid"`
 	} `json:"metadata"`
 }
 
@@ -40,6 +45,7 @@ func canonicalSlug(e *buttondownEmail) string {
 
 var emailsMu sync.RWMutex
 var emails map[string]*buttondownEmail
+var feed []*buttondownEmail
 
 func emailBySlug(slug string) *buttondownEmail {
 	emailsMu.RLock()
@@ -59,21 +65,26 @@ func buttondown(mux *http.ServeMux) {
 		}
 	}()
 
-	mux.Handle("buttondown.filippo.io/{$}",
-		http.RedirectHandler("https://buttondown.com/cryptography-dispatches/", http.StatusFound))
-	mux.Handle("buttondown.filippo.io/dispatches/{$}",
-		http.RedirectHandler("https://words.filippo.io/", http.StatusFound))
-	mux.Handle("buttondown.filippo.io/archive/{$}",
-		http.RedirectHandler("https://words.filippo.io/", http.StatusFound))
+	redirectToNewsletter := http.RedirectHandler(
+		"https://buttondown.com/cryptography-dispatches/", http.StatusFound)
+	redirectToWords := http.RedirectHandler("https://words.filippo.io/", http.StatusFound)
+	redirectToButtondown := HostRedirectHandler("buttondown.com", http.StatusFound)
+	// 307 to preserve POST from List-Unsubscribe-Post.
+	redirectToButtondown307 := HostRedirectHandler("buttondown.com", http.StatusTemporaryRedirect)
+	redirectToButtondownWithPrefix := HostPrefixRedirectHandler(
+		"buttondown.com", "/cryptography-dispatches", http.StatusFound)
 
-	mux.Handle("buttondown.filippo.io/unsubscribe/", // 307 to preserve POST from List-Unsubscribe-Post.
-		HostRedirectHandler("buttondown.com", http.StatusTemporaryRedirect))
-	mux.Handle("buttondown.filippo.io/subscribers/",
-		HostPrefixRedirectHandler("buttondown.com", "/cryptography-dispatches", http.StatusFound))
-	mux.Handle("buttondown.filippo.io/management/",
-		HostPrefixRedirectHandler("buttondown.com", "/cryptography-dispatches", http.StatusFound))
-	mux.Handle("buttondown.filippo.io/static/",
-		HostRedirectHandler("buttondown.com", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/{$}", redirectToNewsletter)
+	mux.Handle("buttondown.filippo.io/dispatches/{$}", redirectToWords)
+	mux.Handle("buttondown.filippo.io/archive/{$}", redirectToWords)
+
+	mux.Handle("buttondown.filippo.io/unsubscribe/", redirectToButtondown307)
+	mux.Handle("buttondown.filippo.io/subscribers/", redirectToButtondownWithPrefix)
+	mux.Handle("buttondown.filippo.io/management/", redirectToButtondownWithPrefix)
+	mux.Handle("buttondown.filippo.io/static/", redirectToButtondown)
+
+	mux.Handle("buttondown.filippo.io/rss/{$}", FeedHandler())
+	mux.Handle("buttondown.filippo.io/dispatches/rss/{$}", FeedHandler())
 
 	mux.Handle("buttondown.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("buttondown.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
@@ -116,6 +127,9 @@ var buttondownEmailTmpl = template.Must(template.New("buttondown_email").Funcs(t
 		}
 		return tm.Format(layout), nil
 	},
+	"canonicalSlug": func(e *buttondownEmail) string {
+		return canonicalSlug(e)
+	},
 }).Parse(buttondownEmailTemplate))
 
 func EmailHandler() http.Handler {
@@ -154,6 +168,58 @@ func EmailHandler() http.Handler {
 
 		http.Error(w, "not found", http.StatusNotFound)
 	})
+}
+
+func FeedHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		f := &feeds.Feed{
+			Title: "Filippo Valsorda",
+			Link:  &feeds.Link{Href: "https://words.filippo.io/"},
+			Items: feedItems(),
+		}
+		rss, err := f.ToRss()
+		if err != nil {
+			log.Printf("failed to generate RSS feed: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
+		w.Write([]byte(rss))
+	})
+}
+
+func feedItems() []*feeds.Item {
+	emailsMu.RLock()
+	defer emailsMu.RUnlock()
+	var items []*feeds.Item
+	for _, email := range feed {
+		created, _ := time.Parse(time.RFC3339, email.PublishDate)
+		if created.Year() < 2024 {
+			// We set the override GUID only for 2024+ emails.
+			continue
+		}
+		item := &feeds.Item{
+			Id:          email.ID,
+			IsPermaLink: "false",
+			Title:       email.Subject,
+			Created:     created,
+			Link: &feeds.Link{
+				Href: "https://words.filippo.io/" + canonicalSlug(email) + "/",
+			},
+			Author: &feeds.Author{
+				Name: "Filippo Valsorda",
+			},
+			Content: string(email.Body),
+		}
+		if email.Metadata.OverrideGUID != "" {
+			item.Id = email.Metadata.OverrideGUID
+		}
+		if email.Description != "" {
+			item.Description = email.Description
+		}
+		items = append(items, item)
+	}
+	return items
 }
 
 var buttondownClient = &http.Client{
@@ -211,6 +277,7 @@ func fetchMails() error {
 	for _, email := range allEmails {
 		email.Subject = strings.TrimPrefix(email.Subject, "Cryptography Dispatches: ")
 		email.Subject = strings.TrimPrefix(email.Subject, "Maintainer Dispatches: ")
+
 		// https://docs.buttondown.com/using-markdown-rendering
 		// markdown_py -x smarty -x tables -x footnotes -x fenced_code -x pymdownx.tilde -x toc
 		cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
@@ -221,10 +288,19 @@ func fetchMails() error {
 			return errors.New("failed to render markdown: " + err.Error())
 		}
 		email.Body = template.HTML(out)
+
+		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
+			return fmt.Errorf("failed to parse publish date %q of email %q: %w", email.PublishDate, email.ID, err)
+		}
 	}
+
+	sort.Slice(allEmails, func(i, j int) bool {
+		return allEmails[i].PublishDate > allEmails[j].PublishDate
+	})
 
 	emailsMu.Lock()
 	defer emailsMu.Unlock()
+	feed = allEmails[:10]
 	emails = make(map[string]*buttondownEmail, len(allEmails)*2)
 	for _, email := range allEmails {
 		for _, slug := range []string{email.Slug, email.ID, email.Metadata.OverrideSlug} {
