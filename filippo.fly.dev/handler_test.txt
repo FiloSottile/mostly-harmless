@@ -127,9 +127,10 @@ body contains <link>https://words.filippo.io/
 body contains <item>
 
 GET https://words.filippo.io/dispatches/rss/
-body contains <title>Filippo Valsorda</title>
-body contains <link>https://words.filippo.io/
-body contains <item>
+redirect == /rss/
+
+GET https://words.filippo.io/feed/
+redirect == /rss/
 
 GET https://words.filippo.io/
 body contains <a href="/fips-hkdf/">The FIPS Compliance of HKDF</a></h1>

@@ -68,6 +68,8 @@ func buttondown(mux *http.ServeMux) {
 	}()
 
 	redirectToIndex := http.RedirectHandler("/", http.StatusFound)
+	redirectToFeed := http.RedirectHandler("/rss/", http.StatusFound)
+	redirectToHome := http.RedirectHandler("https://filippo.io/", http.StatusFound)
 	redirectToButtondown := HostRedirectHandler("buttondown.com", http.StatusFound)
 	// 307 to preserve POST from List-Unsubscribe-Post.
 	redirectToButtondown307 := HostRedirectHandler("buttondown.com", http.StatusTemporaryRedirect)
@@ -77,6 +79,7 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("words.filippo.io/{$}", IndexHandler())
 	mux.Handle("words.filippo.io/dispatches/{$}", redirectToIndex)
 	mux.Handle("words.filippo.io/archive/{$}", redirectToIndex)
+	mux.Handle("words.filippo.io/hi/{$}", redirectToHome)
 
 	mux.Handle("words.filippo.io/unsubscribe/", redirectToButtondown307)
 	mux.Handle("words.filippo.io/subscribers/", redirectToButtondownWithPrefix)
@@ -84,7 +87,8 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("words.filippo.io/static/", redirectToButtondown)
 
 	mux.Handle("words.filippo.io/rss/{$}", FeedHandler())
-	mux.Handle("words.filippo.io/dispatches/rss/{$}", FeedHandler())
+	mux.Handle("words.filippo.io/feed/{$}", redirectToFeed)
+	mux.Handle("words.filippo.io/dispatches/rss/{$}", redirectToFeed)
 
 	mux.Handle("words.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("words.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
