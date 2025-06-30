@@ -84,57 +84,52 @@ redirect == https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcer
 GET https://dl.filippo.io/mkcert/v1.4.4?for=windows/amd64
 redirect == https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-windows-amd64.exe
 
-GET https://buttondown.filippo.io/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
+GET https://words.filippo.io/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
 redirect == https://buttondown.com/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
 code == 307
 
-GET https://buttondown.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
-redirect == https://buttondown.filippo.io/openpgp-is-broken/
+GET https://words.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
+redirect == /openpgp-is-broken/
 
-GET https://buttondown.filippo.io/archive/626bb4fe-7d48-4cb7-a88d-206f9c38a921/
-redirect == https://buttondown.filippo.io/openpgp-is-broken/
+GET https://words.filippo.io/archive/626bb4fe-7d48-4cb7-a88d-206f9c38a921/
+redirect == /openpgp-is-broken/
 
-GET https://buttondown.filippo.io/dispatches/openpgp-is-broken/
-redirect == https://buttondown.filippo.io/openpgp-is-broken/
+GET https://words.filippo.io/dispatches/openpgp-is-broken/
+redirect == /openpgp-is-broken/
 
-GET https://buttondown.filippo.io/openpgp-is-broken/
-redirect == https://words.filippo.io/dispatches/openpgp-is-broken/
-
-GET https://buttondown.filippo.io/openpgp-is-broken/!
+GET https://words.filippo.io/openpgp-is-broken/
 body contains OpenPGP
 body contains <link rel="canonical" href="https://words.filippo.io/openpgp-is-broken/">
+body contains <meta property="og:image" content="https://assets.buttondown.email/images/3590b71d-a913-4f76-86b8-fdc3efadf307.jpeg">
 
-GET https://buttondown.filippo.io/openpgp-is-broken/+
+GET https://words.filippo.io/openpgp-is-broken/+
 redirect == https://buttondown.com/emails/626bb4fe-7d48-4cb7-a88d-206f9c38a921
 
-GET https://buttondown.filippo.io/openpgp-is-broken/foo
+GET https://words.filippo.io/openpgp-is-broken/foo
 code == 404
 
-GET https://buttondown.filippo.io/dispatches/frood/
-redirect == https://buttondown.filippo.io/frood/
+GET https://words.filippo.io/dispatches/frood/
+redirect == /frood/
 
-GET https://buttondown.filippo.io/frood/
-redirect == https://words.filippo.io/dispatches/frood/
-
-GET https://buttondown.filippo.io/frood/!
+GET https://words.filippo.io/frood/
 body contains Alpine
 
-GET https://buttondown.filippo.io/frood/+
+GET https://words.filippo.io/frood/+
 redirect == https://buttondown.com/emails/abe1d314-3190-4176-b0ae-13d7ff1df820
 
-GET https://buttondown.filippo.io/edwards25519-formulas/!
+GET https://words.filippo.io/edwards25519-formulas/
 body !contains Cryptography Dispatches:
 body contains <h2 id="division-and-inverses">Division and inverses</h2>
 
-GET https://buttondown.filippo.io/rss/
+GET https://words.filippo.io/rss/
 body contains <title>Filippo Valsorda</title>
 body contains <link>https://words.filippo.io/
 body contains <item>
 
-GET https://buttondown.filippo.io/dispatches/rss/
+GET https://words.filippo.io/dispatches/rss/
 body contains <title>Filippo Valsorda</title>
 body contains <link>https://words.filippo.io/
 body contains <item>
 
-GET https://buttondown.filippo.io/!
+GET https://words.filippo.io/
 body contains <a href="/fips-hkdf/">The FIPS Compliance of HKDF</a></h1>

@@ -67,8 +67,6 @@ func buttondown(mux *http.ServeMux) {
 		}
 	}()
 
-	redirectToNewsletter := http.RedirectHandler(
-		"https://buttondown.com/cryptography-dispatches/", http.StatusFound)
 	redirectToIndex := http.RedirectHandler("/", http.StatusFound)
 	redirectToButtondown := HostRedirectHandler("buttondown.com", http.StatusFound)
 	// 307 to preserve POST from List-Unsubscribe-Post.
@@ -76,22 +74,21 @@ func buttondown(mux *http.ServeMux) {
 	redirectToButtondownWithPrefix := HostPrefixRedirectHandler(
 		"buttondown.com", "/cryptography-dispatches", http.StatusFound)
 
-	mux.Handle("buttondown.filippo.io/{$}", redirectToNewsletter)
-	mux.Handle("buttondown.filippo.io/!", IndexHandler())
-	mux.Handle("buttondown.filippo.io/dispatches/{$}", redirectToIndex)
-	mux.Handle("buttondown.filippo.io/archive/{$}", redirectToIndex)
+	mux.Handle("words.filippo.io/{$}", IndexHandler())
+	mux.Handle("words.filippo.io/dispatches/{$}", redirectToIndex)
+	mux.Handle("words.filippo.io/archive/{$}", redirectToIndex)
 
-	mux.Handle("buttondown.filippo.io/unsubscribe/", redirectToButtondown307)
-	mux.Handle("buttondown.filippo.io/subscribers/", redirectToButtondownWithPrefix)
-	mux.Handle("buttondown.filippo.io/management/", redirectToButtondownWithPrefix)
-	mux.Handle("buttondown.filippo.io/static/", redirectToButtondown)
+	mux.Handle("words.filippo.io/unsubscribe/", redirectToButtondown307)
+	mux.Handle("words.filippo.io/subscribers/", redirectToButtondownWithPrefix)
+	mux.Handle("words.filippo.io/management/", redirectToButtondownWithPrefix)
+	mux.Handle("words.filippo.io/static/", redirectToButtondown)
 
-	mux.Handle("buttondown.filippo.io/rss/{$}", FeedHandler())
-	mux.Handle("buttondown.filippo.io/dispatches/rss/{$}", FeedHandler())
+	mux.Handle("words.filippo.io/rss/{$}", FeedHandler())
+	mux.Handle("words.filippo.io/dispatches/rss/{$}", FeedHandler())
 
-	mux.Handle("buttondown.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
-	mux.Handle("buttondown.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
-	mux.Handle("buttondown.filippo.io/{slug}/{rest...}", EmailHandler())
+	mux.Handle("words.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
+	mux.Handle("words.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
+	mux.Handle("words.filippo.io/{slug}/{rest...}", EmailHandler())
 }
 
 func HostPrefixRedirectHandler(target, prefix string, code int) http.Handler {
@@ -114,7 +111,7 @@ func SlugRedirectHandler() http.Handler {
 			http.Error(w, "not found", http.StatusNotFound)
 			return
 		}
-		target := "https://buttondown.filippo.io/" + canonicalSlug(email) + "/"
+		target := "/" + canonicalSlug(email) + "/"
 		http.Redirect(w, r, target, http.StatusFound)
 	})
 }
@@ -155,28 +152,20 @@ func EmailHandler() http.Handler {
 			http.Redirect(w, r, target, http.StatusFound)
 			return
 		}
-		if canonical := canonicalSlug(email); canonical != slug && rest == "" {
-			target := "https://buttondown.filippo.io/" + canonical + "/"
+		if rest != "" {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		if canonical := canonicalSlug(email); canonical != slug {
+			target := "/" + canonical + "/"
 			http.Redirect(w, r, target, http.StatusFound)
 			return
 		}
-
-		// For now, hide the new version behind a !, and redirect to Ghost.
-		if rest == "!" {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			if err := emailTmpl.Execute(w, email); err != nil {
-				log.Printf("failed to execute buttondown email template: %v", err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
-			}
-			return
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		if err := emailTmpl.Execute(w, email); err != nil {
+			log.Printf("failed to execute buttondown email template: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
-		if rest == "" {
-			target := "https://words.filippo.io/dispatches/" + slug + "/"
-			http.Redirect(w, r, target, http.StatusFound)
-			return
-		}
-
-		http.Error(w, "not found", http.StatusNotFound)
 	})
 }
 
