@@ -42,8 +42,8 @@
 
     <script defer data-domain="blog.filippo.io" src="https://filippo.io/js/script.js"></script>
 </head>
-
 <body>
+
 <header>
     <a href="https://filippo.io"><picture>
         <source srcset="https://assets.buttondown.email/images/72e03d2e-fcb2-4893-ab9c-8f561c0b07c7.png" media="(prefers-color-scheme: dark)">
@@ -56,6 +56,7 @@
         <iframe scrolling="no" style="width:100%!important;height:220px;border:1px #ccc solid !important"
             src="https://buttondown.com/cryptography-dispatches/?as_embed=true"></iframe>
     </aside>
+
     {{ range . }}
     <article>
         <time datetime="{{ dateFormat .PublishDate "2006-01-02" }}">

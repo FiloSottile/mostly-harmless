@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/gorilla/feeds"
+	"golang.org/x/net/html"
 )
 
 type buttondownEmail struct {
@@ -31,6 +32,7 @@ type buttondownEmail struct {
 		OverrideSlug string `json:"override_slug"`
 		OverrideGUID string `json:"override_guid"`
 	} `json:"metadata"`
+	Image string `json:"-"`
 }
 
 func canonicalSlug(e *buttondownEmail) string {
@@ -307,6 +309,8 @@ func fetchMails() error {
 		}
 		email.Body = template.HTML(out)
 
+		email.Image = extractLastImage(out)
+
 		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
 			return fmt.Errorf("failed to parse publish date %q of email %q: %w", email.PublishDate, email.ID, err)
 		}
@@ -332,4 +336,27 @@ func fetchMails() error {
 		}
 	}
 	return nil
+}
+
+func extractLastImage(htmlContent []byte) (url string) {
+	doc, err := html.Parse(bytes.NewReader(htmlContent))
+	if err != nil {
+		return ""
+	}
+	var traverse func(*html.Node)
+	traverse = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "img" {
+			for _, attr := range n.Attr {
+				if attr.Key == "src" {
+					url = attr.Val
+					break
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			traverse(c)
+		}
+	}
+	traverse(doc)
+	return
 }

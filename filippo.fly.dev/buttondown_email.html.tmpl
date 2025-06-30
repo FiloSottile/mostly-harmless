@@ -8,9 +8,9 @@
     <link rel="alternate" type="application/rss+xml" href="https://words.filippo.io/rss/">
     
     <title>{{ .Subject }}</title>
-    {{ if .Description }}
-    <meta name="description" content="{{ .Description }}">
-    {{ end }}
+    {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
+    <meta property="og:type" content="article">
+    {{ if .Image }}<meta property="og:image" content="{{ .Image }}">{{ end }}
     <meta property="article:published_time" content="{{ .PublishDate }}">
     <link rel="canonical" href="https://words.filippo.io/{{ canonicalSlug . }}/">
 
@@ -99,8 +99,8 @@
         });
     </script>
 </head>
-
 <body>
+
 <header>
     <a href="https://filippo.io"><picture>
         <source srcset="https://assets.buttondown.email/images/72e03d2e-fcb2-4893-ab9c-8f561c0b07c7.png" media="(prefers-color-scheme: dark)">
@@ -127,4 +127,3 @@
         const h2last = document.querySelector("h2#the-picture")
         if (h2last && h2last != h2first) h2last.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2last)
     </script>
-
