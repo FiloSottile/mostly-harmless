@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -65,14 +66,30 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("buttondown.filippo.io/archive/{$}",
 		http.RedirectHandler("https://words.filippo.io/", http.StatusFound))
 
-	mux.Handle("buttondown.filippo.io/unsubscribe/", HostRedirectHandler("buttondown.com",
-		http.StatusTemporaryRedirect)) // 307 to preserve POST from List-Unsubscribe-Post.
-
-	mux.Handle("buttondown.filippo.io/static/", HostRedirectHandler("buttondown.com", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/unsubscribe/", // 307 to preserve POST from List-Unsubscribe-Post.
+		HostRedirectHandler("buttondown.com", http.StatusTemporaryRedirect))
+	mux.Handle("buttondown.filippo.io/subscribers/",
+		HostPrefixRedirectHandler("buttondown.com", "/cryptography-dispatches", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/management/",
+		HostPrefixRedirectHandler("buttondown.com", "/cryptography-dispatches", http.StatusFound))
+	mux.Handle("buttondown.filippo.io/static/",
+		HostRedirectHandler("buttondown.com", http.StatusFound))
 
 	mux.Handle("buttondown.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("buttondown.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("buttondown.filippo.io/{slug}/{rest...}", EmailHandler())
+}
+
+func HostPrefixRedirectHandler(target, prefix string, code int) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		u := &url.URL{
+			Scheme:   "https",
+			Host:     target,
+			Path:     prefix + r.URL.Path,
+			RawQuery: r.URL.RawQuery,
+		}
+		http.Redirect(rw, r, u.String(), code)
+	})
 }
 
 func SlugRedirectHandler() http.Handler {
