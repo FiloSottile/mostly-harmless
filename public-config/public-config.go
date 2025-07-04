@@ -82,28 +82,32 @@ var tmpl = template.Must(template.New("config").Parse(`
             padding: 0 15px;
             margin: 80px auto;
         }
-		img {
-			max-width: 100%;
-			height: auto;
-		}
-		@media print {
-			.container {
-				margin: 0;
-				padding: 0;
-			}
-		}
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        @media print {
+            .container {
+                margin: 0;
+                padding: 0;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-	<h1>Geomys Tuscolo CT Log Server Public Configuration</h1>
-	<p>
-		This is the <em>live</em> public configuration for the
-		<a href="https://groups.google.com/a/chromium.org/g/ct-policy/c/KCzYEIIZSxg/m/zD26fYw4AgAJ">
-		Geomys Tuscolo CT Log Server</a>, a <a href="https://sunlight.dev/">Sunlight</a> instance.
-	
-	{{ range . }}
-		<h2 id="{{ .Path }}"><a href="#{{ .Path }}">{{ .Path }}</a></h2>
-		<pre><code>{{ .Contents }}</code></pre>
-	{{ end }}
+    <h1>Geomys Tuscolo CT Log Server Public Configuration</h1>
+    <p>
+        This is the <em>live</em> public configuration for the
+        <a href="https://groups.google.com/a/chromium.org/g/ct-policy/c/KCzYEIIZSxg/m/zD26fYw4AgAJ">
+        Geomys Tuscolo CT Log Server</a>, a <a href="https://sunlight.dev/">Sunlight</a> instance.
+
+    <p>
+        See also the <a href="https://docs.google.com/document/d/1ID8dX5VuvvrgJrM0Re-jt6Wjhx1eZp-trbpSIYtOhRE/edit?tab=t.0#heading=h.v39dw5r67cif">
+        public playbooks</a>.
+
+    {{ range . }}
+        <h2 id="{{ .Path }}"><a href="#{{ .Path }}">{{ .Path }}</a></h2>
+        <pre><code>{{ .Contents }}</code></pre>
+    {{ end }}
 `))
