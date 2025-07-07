@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -304,7 +303,8 @@ func fetchMails() error {
 		email.Image = extractLastImage(out)
 
 		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
-			return fmt.Errorf("failed to parse publish date %q of email %q: %w", email.PublishDate, email.ID, err)
+			log.Printf("failed to parse publish date %q of email %q: %w", email.PublishDate, email.ID, err)
+			email.PublishDate = time.Now().Format(time.RFC3339)
 		}
 	}
 
