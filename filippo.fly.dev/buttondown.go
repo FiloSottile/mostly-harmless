@@ -303,7 +303,7 @@ func fetchMails() error {
 		email.Image = extractLastImage(out)
 
 		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
-			log.Printf("failed to parse publish date %q of email %q: %w", email.PublishDate, email.ID, err)
+			log.Printf("failed to parse publish date %q of email %q: %v", email.PublishDate, email.ID, err)
 			email.PublishDate = time.Now().Format(time.RFC3339)
 		}
 	}
