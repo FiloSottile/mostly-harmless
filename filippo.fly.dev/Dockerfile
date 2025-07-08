@@ -8,7 +8,7 @@ RUN go install -trimpath
 FROM ghcr.io/astral-sh/uv:0.7.17-python3.13-alpine
 
 ENV PATH=/root/.local/bin:$PATH
-RUN uv tool install markdown==3.8.2 \
+RUN uv tool install markdown==3.8.2 --with mdx_truly_sane_lists==1.3.0 \
     --with pymdown-extensions==10.16 --with pyyaml==6.0.2 \
     --compile-bytecode --python 3.13
 

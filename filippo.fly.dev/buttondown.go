@@ -319,7 +319,7 @@ func fetchMails() error {
 		// https://docs.buttondown.com/using-markdown-rendering
 		// markdown_py -x smarty -x tables -x footnotes -x fenced_code -x pymdownx.tilde -x toc
 		cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
-			"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc")
+			"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
 		cmd.Stdin = bytes.NewReader([]byte(email.Body))
 		out, err := cmd.Output()
 		if err != nil {
