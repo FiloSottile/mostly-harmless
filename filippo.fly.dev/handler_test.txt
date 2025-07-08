@@ -134,3 +134,5 @@ redirect == /rss/
 
 GET https://words.filippo.io/
 body contains <a href="/fips-hkdf/">The FIPS Compliance of HKDF</a></h1>
+body contains <a href="/run-sunlight/">
+body !contains THIS IS A TEST DRAFT
