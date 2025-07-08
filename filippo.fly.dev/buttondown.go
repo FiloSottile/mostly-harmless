@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -27,6 +28,8 @@ type buttondownEmail struct {
 	PublishDate string        `json:"publish_date"`
 	Slug        string        `json:"slug"`
 	Subject     string        `json:"subject"`
+	Status      string        `json:"status"`
+	EmailType   string        `json:"email_type"`
 	Metadata    struct {
 		OverrideSlug string `json:"override_slug"`
 		OverrideGUID string `json:"override_guid"`
@@ -266,7 +269,7 @@ func buttondownGET(url string) (*buttondownResponse, error) {
 
 func fetchMails() error {
 	var allEmails []*buttondownEmail
-	r, err := buttondownGET("https://api.buttondown.com/v1/emails?-email_type=private&-status=draft&-status=scheduled&-status=deleted")
+	r, err := buttondownGET("https://api.buttondown.com/v1/emails")
 	if err != nil {
 		return err
 	}
@@ -284,6 +287,22 @@ func fetchMails() error {
 	if len(allEmails) < 90 {
 		return errors.New("fetched less than 90 emails, something went wrong")
 	}
+
+	allEmails = slices.DeleteFunc(allEmails, func(e *buttondownEmail) bool {
+		if e.EmailType != "public" {
+			log.Printf("hiding email %q with type %q", e.ID, e.EmailType)
+			return true
+		}
+		switch e.Status {
+		case "draft", "scheduled", "managed_by_rss", "deleted", "paused", "errored", "transactional":
+			return true
+		case "about_to_send", "in_flight", "imported", "sent", "throttled", "resending":
+			return false
+		default:
+			log.Printf("unknown status %q for email %q, hiding it", e.Status, e.ID)
+			return true
+		}
+	})
 
 	for _, email := range allEmails {
 		email.Subject = strings.TrimPrefix(email.Subject, "Cryptography Dispatches: ")
