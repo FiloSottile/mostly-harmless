@@ -297,10 +297,10 @@ func fetchMails() error {
 	}
 
 	allEmails = slices.DeleteFunc(allEmails, func(e *buttondownEmail) bool {
-		if e.EmailType != "public" {
-			log.Printf("hiding email %q with type %q", e.ID, e.EmailType)
-			return true
-		}
+		// if e.EmailType != "public" {
+		// 	log.Printf("hiding email %q with type %q", e.ID, e.EmailType)
+		// 	return true
+		// }
 		switch e.Status {
 		case "draft", "scheduled", "managed_by_rss", "deleted", "paused", "errored", "transactional":
 			return true
