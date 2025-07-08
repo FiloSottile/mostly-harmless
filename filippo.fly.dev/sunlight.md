@@ -4,7 +4,10 @@ canonical: https://sunlight.dev/
 ---
 
 <p align="center">
-    <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" height="278" src="images/sunlight_logo_main.png">
+    <picture>
+        <source srcset="images/sunlight_logo_main_negative.png" media="(prefers-color-scheme: dark)">
+        <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" height="278" src="images/sunlight_logo_main.png">
+    </picture>
 </p>
 
 # The Sunlight CT Log
