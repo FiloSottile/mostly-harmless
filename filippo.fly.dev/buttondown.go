@@ -206,10 +206,15 @@ func feedItems() []*feeds.Item {
 	emailsMu.RLock()
 	defer emailsMu.RUnlock()
 	var items []*feeds.Item
-	for _, email := range emails[:10] {
+	for _, email := range emails {
 		created, _ := time.Parse(time.RFC3339, email.PublishDate)
 		if created.Year() < 2024 {
 			// We set the override GUID only for 2024+ emails.
+			continue
+		}
+		if time.Since(created) < 1*time.Hour {
+			// Delay emails by an hour in case I get something wrong and need to
+			// fix it or roll back before it hits the clients forever.
 			continue
 		}
 		item := &feeds.Item{
@@ -232,6 +237,9 @@ func feedItems() []*feeds.Item {
 			item.Description = email.Description
 		}
 		items = append(items, item)
+		if len(items) == 10 {
+			break
+		}
 	}
 	return items
 }
