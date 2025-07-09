@@ -30,7 +30,7 @@ Sunlight's development was sponsored by [Let's Encrypt](https://letsencrypt.org/
 If you have feedback on the design, please join the conversation on the
 [ct-policy mailing list](https://groups.google.com/a/chromium.org/g/ct-policy),
 or in the [#sunlight channel](https://transparency-dev.slack.com/archives/C06PCS2P75Y)
-of the [transparency-dev Slack](https://join.slack.com/t/transparency-dev/shared_invite/zt-27pkqo21d-okUFhur7YZ0rFoJVIOPznQ).
+of the [transparency-dev Slack](https://transparency.dev/slack/).
 
 For more information, read the
 [introductory blog post](https://letsencrypt.org/2024/03/14/introducing-sunlight/).

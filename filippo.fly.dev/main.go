@@ -138,6 +138,7 @@ func handler() http.Handler {
 	mux.Handle("filippo.io/yubikey-agent/info/refs", QueryPreservingRedirectHandler(
 		"https://github.com/FiloSottile/yubikey-agent.git/info/refs", http.StatusFound))
 
+	// TODO: it'd be nice if e.g. filippo.io/age@v1.1.1 worked.
 	mux.Handle("filippo.io/age/", PkgsiteHandler())
 	mux.Handle("filippo.io/mkcert/", PkgsiteHandler())
 	mux.Handle("filippo.io/yubikey-agent/", PkgsiteHandler())
