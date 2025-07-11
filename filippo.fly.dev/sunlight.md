@@ -56,7 +56,7 @@ An [easy to use Go client](https://pkg.go.dev/filippo.io/sunlight#Client) is ava
 The Static CT API is fully specified at [c2sp.org/static-ct-api](https://c2sp.org/static-ct-api),
 and you can test against the logs below.
 
-You might be happy to know that the object storage backends some
+You might be happy to know that the object storage backends used by some
 Static CT log read paths are nearly rate-limit free!
 
 Andrew Ayer also published [Sunglasses](https://github.com/AGWA/sunglasses),
