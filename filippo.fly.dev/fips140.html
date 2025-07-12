@@ -12,25 +12,48 @@
         }
         code, pre {
             font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
         }
-        p {
-            line-height: 1.5em;
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
         }
         a {
             color: inherit;
         }
-        .container {
+        header {
+            margin: 5rem auto;
+            max-width: 400px;
+            padding: 0 10px;
+        }
+        main {
             width: auto;
             max-width: 700px;
             padding: 0 15px;
-            margin: 80px auto;
+            margin: 5rem auto;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            color: Canvas;
+            background-color: CanvasText;
+            font-size: 0.9em;
+            line-height: 1.5em;
         }
 		img {
 			max-width: 100%;
 			height: auto;
+            margin: 0 auto;
+            display: block;
 		}
+        li {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
 		@media print {
-			.container {
+			main {
 				margin: 0;
 				padding: 0;
 			}
@@ -38,7 +61,15 @@
     </style>
 </head>
 <body>
-<div class="container">
+
+<header>
+    <a href="https://geomys.org/"><picture>
+        <source srcset="images/geomys_orizz_B_negativo.png" media="(prefers-color-scheme: dark)">
+        <img src="images/geomys_orizz_B_positivo.png" alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain.">
+    </picture></a>
+</header>
+
+<main>
 <style>
     .inverted {
         /* https://web.dev/articles/light-dark */
@@ -46,7 +77,7 @@
         background-color: CanvasText;
     }
     @media (prefers-color-scheme: dark) {
-        img {
+        main img {
             filter: invert(1);
         }
     }
@@ -56,12 +87,11 @@
         }
     }
 </style>
-<p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="160" src="images/geomys_orizz_B_positivo.png">
 <p>Geomys handles the <a href="https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/details?product=19371">CMVP validation</a> of the <strong>FIPS 140-3 Go Cryptographic Module</strong>, and contributes the module to the upstream Go project, for the benefit of the Go community.</p>
 <p>The <a href="https://go.dev/doc/security/fips140">FIPS 140-3 Go Cryptographic Module</a> is distributed as part of the upstream Go toolchain, where it is seamlessly integrated with the cryptography packages of the Go standard library, and it is replacing the legacy Go+BoringCrypto mode. All FIPS 140-3 approved algorithms in the standard library are implemented by the module, including <em>post-quantum key exchange algorithm ML-KEM</em>, and the module is tested on a wide range of platforms.</p>
 <p>Geomys ensures the ongoing support and maintenance of the FIPS 140-3 Go Cryptographic Module, including <strong>at least one validation per year</strong> of the latest updates to the standard library cryptographic packages, to comply with new requirements and integrate new features and performance improvements, and <strong>validations of security fixes as needed</strong> for supported versions of the module in response to any vulnerabilities or CVEs that can’t be effectively mitigated with a regular Go version update.</p>
-<p>Geomys provides additional commercial services in support of the certification and compliance requirements of Go enterprises, including multiple Fortune 100 companies.</p>
-<p style="text-align: center"><img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0;" src="images/FIPS 140-3 Logo- BW.png">
+<p style="border: 1px solid; padding: 1rem;">Geomys provides additional commercial services in support of the certification and compliance requirements of Go enterprises, including multiple Fortune 100 companies.</p>
+<img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0;" src="images/FIPS 140-3 Logo- BW.png">
 <h2 id="enterprise">Enterprise Package</h2>
 <p>As part of this retainer package, we offer a suite of services that provide a comprehensive and non-disruptive solution to the FIPS 140-3 requirements of Go deployments.</p>
 <ul>

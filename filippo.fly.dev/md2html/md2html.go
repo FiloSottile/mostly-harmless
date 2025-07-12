@@ -24,25 +24,48 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
         }
         code, pre {
             font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
         }
-        p {
-            line-height: 1.5em;
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
         }
         a {
             color: inherit;
         }
-        .container {
+        header {
+            margin: 5rem auto;
+            max-width: 400px;
+            padding: 0 10px;
+        }
+        main {
             width: auto;
             max-width: 700px;
             padding: 0 15px;
-            margin: 80px auto;
+            margin: 5rem auto;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            color: Canvas;
+            background-color: CanvasText;
+            font-size: 0.9em;
+            line-height: 1.5em;
         }
 		img {
 			max-width: 100%;
 			height: auto;
+            margin: 0 auto;
+            display: block;
 		}
+        li {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
 		@media print {
-			.container {
+			main {
 				margin: 0;
 				padding: 0;
 			}
@@ -50,7 +73,15 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
     </style>
 </head>
 <body>
-<div class="container">
+
+<header>
+    <a href="$HEADER_LINK"><picture>
+        <source srcset="$HEADER_DARK" media="(prefers-color-scheme: dark)">
+        <img src="$HEADER_LIGHT" alt="$HEADER_ALT">
+    </picture></a>
+</header>
+
+<main>
 `
 
 // toHTML converts Markdown to HTML.
@@ -67,6 +98,12 @@ func toHTML(md []byte) string {
 type FrontMatter struct {
 	Title     string
 	Canonical string
+	Header    struct {
+		Link  string
+		Light string
+		Dark  string
+		Alt   string
+	}
 }
 
 func main() {
@@ -102,6 +139,10 @@ func main() {
 	replacer := strings.NewReplacer(
 		"$TITLE", fm.Title,
 		"$CANONICAL", fm.Canonical,
+		"$HEADER_LINK", fm.Header.Link,
+		"$HEADER_LIGHT", fm.Header.Light,
+		"$HEADER_DARK", fm.Header.Dark,
+		"$HEADER_ALT", fm.Header.Alt,
 	)
 	htmlPrefix := replacer.Replace(htmlPrefixTemplate)
 

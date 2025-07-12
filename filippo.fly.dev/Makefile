@@ -1,4 +1,4 @@
-%.html: %.md
+%.html: %.md md2html/*
 	go run ./md2html $<
 
 .PHONY: all

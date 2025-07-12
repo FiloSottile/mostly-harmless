@@ -1,6 +1,11 @@
 ---
 title: Geomys FIPS 140-3 Services
 canonical: https://geomys.org/fips140
+header:
+  link: https://geomys.org/
+  light: images/geomys_orizz_B_positivo.png
+  dark: images/geomys_orizz_B_negativo.png
+  alt: The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain.
 ---
 
 <style>
@@ -10,7 +15,7 @@ canonical: https://geomys.org/fips140
         background-color: CanvasText;
     }
     @media (prefers-color-scheme: dark) {
-        img {
+        main img {
             filter: invert(1);
         }
     }
@@ -21,17 +26,15 @@ canonical: https://geomys.org/fips140
     }
 </style>
 
-<p style="text-align: center"><img alt="The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain." width="400" height="160" src="images/geomys_orizz_B_positivo.png">
-
 Geomys handles the [CMVP validation](https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/details?product=19371) of the **FIPS 140-3 Go Cryptographic Module**, and contributes the module to the upstream Go project, for the benefit of the Go community.
 
 The [FIPS 140-3 Go Cryptographic Module](https://go.dev/doc/security/fips140) is distributed as part of the upstream Go toolchain, where it is seamlessly integrated with the cryptography packages of the Go standard library, and it is replacing the legacy Go+BoringCrypto mode. All FIPS 140-3 approved algorithms in the standard library are implemented by the module, including *post-quantum key exchange algorithm ML-KEM*, and the module is tested on a wide range of platforms.
 
 Geomys ensures the ongoing support and maintenance of the FIPS 140-3 Go Cryptographic Module, including **at least one validation per year** of the latest updates to the standard library cryptographic packages, to comply with new requirements and integrate new features and performance improvements, and **validations of security fixes as needed** for supported versions of the module in response to any vulnerabilities or CVEs that can’t be effectively mitigated with a regular Go version update.
 
-Geomys provides additional commercial services in support of the certification and compliance requirements of Go enterprises, including multiple Fortune 100 companies.
+<p style="border: 1px solid; padding: 1rem;">Geomys provides additional commercial services in support of the certification and compliance requirements of Go enterprises, including multiple Fortune 100 companies.</p>
 
-<p style="text-align: center"><img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0;" src="images/FIPS 140-3 Logo- BW.png">
+<img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0;" src="images/FIPS 140-3 Logo- BW.png">
 
 ## Enterprise Package {#enterprise}
 

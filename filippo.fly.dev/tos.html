@@ -12,25 +12,48 @@
         }
         code, pre {
             font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
         }
-        p {
-            line-height: 1.5em;
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
         }
         a {
             color: inherit;
         }
-        .container {
+        header {
+            margin: 5rem auto;
+            max-width: 400px;
+            padding: 0 10px;
+        }
+        main {
             width: auto;
             max-width: 700px;
             padding: 0 15px;
-            margin: 80px auto;
+            margin: 5rem auto;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            color: Canvas;
+            background-color: CanvasText;
+            font-size: 0.9em;
+            line-height: 1.5em;
         }
 		img {
 			max-width: 100%;
 			height: auto;
+            margin: 0 auto;
+            display: block;
 		}
+        li {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
 		@media print {
-			.container {
+			main {
 				margin: 0;
 				padding: 0;
 			}
@@ -38,7 +61,15 @@
     </style>
 </head>
 <body>
-<div class="container">
+
+<header>
+    <a href=""><picture>
+        <source srcset="" media="(prefers-color-scheme: dark)">
+        <img src="" alt="">
+    </picture></a>
+</header>
+
+<main>
 <p><strong>TERMS OF USE</strong></p>
 <p>These Terms of Use constitute a legally binding agreement (the “<strong>Terms</strong>” or “<strong>Agreement</strong>”) between you (“<strong>You</strong>”) and Filippo Valsorda dba Geomys, its representatives, affiliates, officers, and directors (collectively “<strong>Geomys</strong>”) governing Your use of the “Essential Plan” service offered by Geomys (the “<strong>Service</strong>”). You and Geomys may each be referenced in these Terms as a “<strong>Party</strong>” or together as the “<strong>Parties</strong>.”</p>
 <p><strong>ACKNOWLEDGEMENT AND ACCEPTANCE OF AGREEMENT</strong></p>
