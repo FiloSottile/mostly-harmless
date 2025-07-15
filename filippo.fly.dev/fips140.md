@@ -34,7 +34,7 @@ Geomys ensures the ongoing support and maintenance of the FIPS 140-3 Go Cryptogr
 
 <p style="border: 1px solid; padding: 1rem;">Geomys provides additional commercial services in support of the certification and compliance requirements of Go enterprises, including multiple Fortune 100 companies.</p>
 
-<img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0;" src="images/FIPS 140-3 Logo- BW.png">
+<img alt="The FIPS 140-3 logo." width="200" height="112" style="padding: 1em 0; break-after: page;" src="images/FIPS 140-3 Logo- BW.png">
 
 ## Enterprise Package {#enterprise}
 
@@ -58,7 +58,7 @@ We offer these services exclusively as a time-based retainer to better match the
 
 <p style="text-align: center"><span class="inverted">$80,000/year</span></p>
 
-We work with your procurement process. Email us at fips140@geomys.org.
+<p style="break-after: page;">We work with your procurement process. Email us at fips140@geomys.org.</p>
 
 ## Essential Package {#essential}
 

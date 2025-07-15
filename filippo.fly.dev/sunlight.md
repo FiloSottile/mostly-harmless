@@ -1,14 +1,17 @@
 ---
 title: The Sunlight CT Log
 canonical: https://sunlight.dev/
+header:
+  light: images/sunlight_logo_main.png
+  dark: images/sunlight_logo_main_negative.png
+  alt: The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath
 ---
 
-<p align="center">
-    <picture>
-        <source srcset="images/sunlight_logo_main_negative.png" media="(prefers-color-scheme: dark)">
-        <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" height="278" src="images/sunlight_logo_main.png">
-    </picture>
-</p>
+<style>
+    header img {
+        max-width: 250px;
+    }
+</style>
 
 # The Sunlight CT Log
 

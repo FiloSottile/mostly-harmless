@@ -2,7 +2,6 @@
 title: Geomys
 canonical: https://geomys.org/
 header:
-  link: "#"
   light: images/geomys_base_positivo.png
   dark: images/geomys_base_negativo.png
   alt: The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain.

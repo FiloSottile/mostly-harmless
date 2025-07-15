@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"html/template"
 	"log"
 	"os"
 	"strings"
@@ -10,13 +11,13 @@ import (
 	"rsc.io/markdown"
 )
 
-const htmlPrefixTemplate = `<!DOCTYPE html>
+var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="$CANONICAL">
-    <title>$TITLE</title>
+    <link rel="canonical" href="{{ .Canonical }}">
+    <title>{{ .Title }}</title>
     <style>
         :root {
             font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
@@ -36,7 +37,7 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
             color: inherit;
         }
         header {
-            margin: 5rem auto;
+            margin: 4rem auto;
             max-width: 400px;
             padding: 0 10px;
         }
@@ -75,14 +76,14 @@ const htmlPrefixTemplate = `<!DOCTYPE html>
 <body>
 
 <header>
-    <a href="$HEADER_LINK"><picture>
-        <source srcset="$HEADER_DARK" media="(prefers-color-scheme: dark)">
-        <img src="$HEADER_LIGHT" alt="$HEADER_ALT">
-    </picture></a>
+	{{ if .Header.Link }}<a href="{{ .Header.Link }}">{{ end }}<picture>
+        <source srcset="{{ .Header.Dark }}" media="(prefers-color-scheme: dark)">
+        <img src="{{ .Header.Light }}" alt="{{ .Header.Alt }}">
+    </picture>{{ if .Header.Link }}</a>{{ end }}
 </header>
 
 <main>
-`
+`))
 
 // toHTML converts Markdown to HTML.
 func toHTML(md []byte) string {
@@ -132,22 +133,14 @@ func main() {
 		log.Fatalf("Error parsing YAML front matter in %s: %v", inputFile, err)
 	}
 
-	if fm.Title == "" || fm.Canonical == "" {
+	if fm.Title == "" || fm.Canonical == "" || fm.Header.Light == "" || fm.Header.Dark == "" || fm.Header.Alt == "" {
 		log.Fatalf("Error: front matter must contain title and canonical fields")
 	}
 
-	replacer := strings.NewReplacer(
-		"$TITLE", fm.Title,
-		"$CANONICAL", fm.Canonical,
-		"$HEADER_LINK", fm.Header.Link,
-		"$HEADER_LIGHT", fm.Header.Light,
-		"$HEADER_DARK", fm.Header.Dark,
-		"$HEADER_ALT", fm.Header.Alt,
-	)
-	htmlPrefix := replacer.Replace(htmlPrefixTemplate)
-
 	var finalHTML bytes.Buffer
-	finalHTML.WriteString(htmlPrefix)
+	if err := htmlPrefixTemplate.Execute(&finalHTML, fm); err != nil {
+		log.Fatalf("Error executing HTML template: %v", err)
+	}
 	finalHTML.WriteString(toHTML(md))
 
 	outputFile := strings.TrimSuffix(inputFile, ".md") + ".html"

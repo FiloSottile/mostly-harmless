@@ -1,6 +1,11 @@
 ---
 title: Geomys FIPS 140-3 Essential Plan Terms of Service
 canonical: https://geomys.org/fips140/essential/terms
+header:
+  link: "https://geomys.org/"
+  light: images/geomys_base_positivo.png
+  dark: images/geomys_base_negativo.png
+  alt: The Geomys logo, an ink outline of a quaint Italian town on the side of a mountain.
 ---
 
 **TERMS OF USE**

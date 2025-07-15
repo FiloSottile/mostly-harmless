@@ -24,7 +24,7 @@
             color: inherit;
         }
         header {
-            margin: 5rem auto;
+            margin: 4rem auto;
             max-width: 400px;
             padding: 0 10px;
         }
@@ -63,19 +63,18 @@
 <body>
 
 <header>
-    <a href=""><picture>
-        <source srcset="" media="(prefers-color-scheme: dark)">
-        <img src="" alt="">
-    </picture></a>
+	<picture>
+        <source srcset="images/sunlight_logo_main_negative.png" media="(prefers-color-scheme: dark)">
+        <img src="images/sunlight_logo_main.png" alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath">
+    </picture>
 </header>
 
 <main>
-<p align="center">
-    <picture>
-        <source srcset="images/sunlight_logo_main_negative.png" media="(prefers-color-scheme: dark)">
-        <img alt="The Sunlight logo, a bench under a tree in stylized black ink, cast against a large yellow sun, with the text Sunlight underneath" width="250" height="278" src="images/sunlight_logo_main.png">
-    </picture>
-</p>
+<style>
+    header img {
+        max-width: 250px;
+    }
+</style>
 <h1>The Sunlight CT Log</h1>
 <p>Sunlight is a <a href="https://certificate.transparency.dev/">Certificate Transparency</a>
 log implementation and monitoring API designed for scalability, ease of operation,
