@@ -293,6 +293,8 @@ func buttondownMarkdown(text string) (template.HTML, error) {
 		return "", errors.New("failed to render markdown: " + err.Error())
 	}
 	log.Printf("rendered %d bytes of HTML", len(out))
+
+	markdownCache[text] = template.HTML(out)
 	return template.HTML(out), nil
 }
 
