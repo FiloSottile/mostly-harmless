@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	_ "embed"
 	"encoding/json"
 	"errors"
@@ -274,6 +273,29 @@ func buttondownGET(url string) (*buttondownResponse, error) {
 	return &response, nil
 }
 
+var markdownCacheMu sync.Mutex
+var markdownCache = make(map[string]template.HTML)
+
+func buttondownMarkdown(text string) (template.HTML, error) {
+	markdownCacheMu.Lock()
+	defer markdownCacheMu.Unlock()
+	if html, ok := markdownCache[text]; ok {
+		return html, nil
+	}
+
+	log.Printf("rendering %d bytes of Markdown", len(text))
+	// https://docs.buttondown.com/using-markdown-rendering
+	cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
+		"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
+	cmd.Stdin = strings.NewReader(text)
+	out, err := cmd.Output()
+	if err != nil {
+		return "", errors.New("failed to render markdown: " + err.Error())
+	}
+	log.Printf("rendered %d bytes of HTML", len(out))
+	return template.HTML(out), nil
+}
+
 func fetchMails() error {
 	log.Printf("fetching emails from Buttondown...")
 	var allEmails []*buttondownEmail
@@ -314,17 +336,12 @@ func fetchMails() error {
 		email.Subject = strings.TrimPrefix(email.Subject, "Cryptography Dispatches: ")
 		email.Subject = strings.TrimPrefix(email.Subject, "Maintainer Dispatches: ")
 
-		// https://docs.buttondown.com/using-markdown-rendering
-		cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
-			"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
-		cmd.Stdin = bytes.NewReader([]byte(email.Body))
-		out, err := cmd.Output()
+		email.Body, err = buttondownMarkdown(string(email.Body))
 		if err != nil {
-			return errors.New("failed to render markdown: " + err.Error())
+			return err
 		}
-		email.Body = template.HTML(out)
 
-		email.Image = extractLastImage(out)
+		email.Image = extractLastImage(email.Body)
 
 		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
 			log.Printf("failed to parse publish date %q of email %q: %v", email.PublishDate, email.ID, err)
@@ -356,8 +373,8 @@ func fetchMails() error {
 	return nil
 }
 
-func extractLastImage(htmlContent []byte) (url string) {
-	doc, err := html.Parse(bytes.NewReader(htmlContent))
+func extractLastImage(htmlContent template.HTML) (url string) {
+	doc, err := html.Parse(strings.NewReader(string(htmlContent)))
 	if err != nil {
 		return ""
 	}
