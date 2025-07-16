@@ -1,5 +1,8 @@
 app = "filippo"
 
+[deploy]
+  strategy = "bluegreen"
+
 [metrics]
   port = 9091
   path = "/metrics"
@@ -9,9 +12,8 @@ app = "filippo"
   protocol = "tcp"
 
   [services.concurrency]
-    hard_limit = 100
-    soft_limit = 75
-    type = "connections"
+    soft_limit = 200
+    type = "requests"
 
   [[services.ports]]
     handlers = ["http"]
@@ -23,7 +25,7 @@ app = "filippo"
     port = 443
 
   [[services.http_checks]]
-    grace_period = "1s"
+    grace_period = "60s"
     interval = "10s"
     restart_limit = 6
     timeout = "2s"
