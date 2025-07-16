@@ -283,7 +283,6 @@ func buttondownMarkdown(text string) (template.HTML, error) {
 		return html, nil
 	}
 
-	log.Printf("rendering %d bytes of Markdown", len(text))
 	// https://docs.buttondown.com/using-markdown-rendering
 	cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
 		"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
@@ -292,20 +291,17 @@ func buttondownMarkdown(text string) (template.HTML, error) {
 	if err != nil {
 		return "", errors.New("failed to render markdown: " + err.Error())
 	}
-	log.Printf("rendered %d bytes of HTML", len(out))
 
 	markdownCache[text] = template.HTML(out)
 	return template.HTML(out), nil
 }
 
 func fetchMails() error {
-	log.Printf("fetching emails from Buttondown...")
 	var allEmails []*buttondownEmail
 	r, err := buttondownGET("https://api.buttondown.com/v1/emails")
 	if err != nil {
 		return err
 	}
-	log.Printf("fetched %d emails from Buttondown", len(r.Results))
 	allEmails = append(allEmails, r.Results...)
 	for range 20 {
 		if r.Next == nil {
@@ -315,7 +311,6 @@ func fetchMails() error {
 		if err != nil {
 			return err
 		}
-		log.Printf("fetched %d emails from Buttondown", len(r.Results))
 		allEmails = append(allEmails, r.Results...)
 	}
 	if len(allEmails) < 90 {
@@ -355,7 +350,6 @@ func fetchMails() error {
 		return allEmails[i].PublishDate > allEmails[j].PublishDate
 	})
 
-	log.Printf("swapping emails...")
 	emailsMu.Lock()
 	defer emailsMu.Unlock()
 	emails = allEmails
@@ -371,7 +365,6 @@ func fetchMails() error {
 			emailsBySlug[slug] = email
 		}
 	}
-	log.Printf("swapped %d emails", len(allEmails))
 	return nil
 }
 
