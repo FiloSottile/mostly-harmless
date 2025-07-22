@@ -23,10 +23,6 @@ var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE 
             font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
             color-scheme: light dark;
         }
-        code, pre {
-            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-            -webkit-font-smoothing: antialiased;
-        }
         sub, sup {
             line-height: 0;
         }
@@ -37,8 +33,8 @@ var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE 
             color: inherit;
         }
         header {
-            margin: 4rem auto;
-            max-width: 400px;
+            margin: 4rem auto 0;
+            max-width: 350px;
             padding: 0 10px;
         }
         main {
@@ -47,13 +43,21 @@ var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE 
             padding: 0 15px;
             margin: 5rem auto;
         }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
         pre {
             padding: 1em;
             overflow-x: auto;
-            color: Canvas;
-            background-color: CanvasText;
-            font-size: 0.9em;
             line-height: 1.5em;
+            font-size: 0.8em;
         }
 		img {
 			max-width: 100%;
@@ -61,9 +65,8 @@ var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE 
             margin: 0 auto;
             display: block;
 		}
-        li {
-            margin-top: 1em;
-            margin-bottom: 1em;
+        li + li {
+            margin-top: 0.5em;
         }
 		@media print {
 			main {

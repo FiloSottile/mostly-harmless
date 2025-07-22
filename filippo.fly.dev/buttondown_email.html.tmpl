@@ -20,10 +20,6 @@
             font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
             color-scheme: light dark;
         }
-        code, pre {
-            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-            -webkit-font-smoothing: antialiased;
-        }
         p, li {
             line-height: 1.8em;
         }
@@ -42,20 +38,31 @@
             width: auto;
             max-width: 700px;
             padding: 0 15px;
-            margin: 80px auto;
+            margin: 5rem auto;
         }
         h1 {
             text-transform: uppercase;
             margin-top: 0.25em;
             font-size: 2em;
         }
+        h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+        }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
         pre {
             padding: 1em;
             overflow-x: auto;
-            color: Canvas;
-            background-color: CanvasText;
-            font-size: 0.9em;
             line-height: 1.5em;
+            font-size: 0.8em;
         }
 		img {
 			max-width: 100%;
@@ -63,9 +70,8 @@
             margin: 0 auto;
             display: block;
 		}
-        li {
-            margin-top: 1em;
-            margin-bottom: 1em;
+        li + li {
+            margin-top: 0.5em;
         }
     </style>
 
@@ -122,7 +128,7 @@
     </article>
     <aside class="subscribe" style="border: 1px solid; padding: 0 1em; margin: 1em 0;">
         <p style="text-align: center;">
-            <a href="https://filippo.io/newsletter">Subscribe</a>&nbsp;📮&ensp;|&ensp;<a href="https://filippo.io/newsletter">Feed</a>&nbsp;📡&ensp;|&ensp;<a href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky</a>&nbsp;🦋&ensp;|&ensp;<a href="https://abyssdomain.expert/@filippo" rel="me">Mastodon</a>&nbsp;🐘
+            <a href="https://filippo.io/newsletter">Subscribe</a>&nbsp;📮&ensp;|&ensp;<a href="https://words.filippo.io/rss/">Feed</a>&nbsp;📡&ensp;|&ensp;<a href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky</a>&nbsp;🦋&ensp;|&ensp;<a href="https://abyssdomain.expert/@filippo" rel="me">Mastodon</a>&nbsp;🐘
         </p>
     </aside>
     <script>
