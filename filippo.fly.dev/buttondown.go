@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -276,6 +277,8 @@ func buttondownGET(url string) (*buttondownResponse, error) {
 var markdownCacheMu sync.Mutex
 var markdownCache = make(map[string]template.HTML)
 
+var ifRegexp = regexp.MustCompile(`(?s)\{%\s*if(.*?)\{%\s*endif\s*%\}`)
+
 func buttondownMarkdown(text string) (template.HTML, error) {
 	markdownCacheMu.Lock()
 	defer markdownCacheMu.Unlock()
@@ -286,7 +289,8 @@ func buttondownMarkdown(text string) (template.HTML, error) {
 	// https://docs.buttondown.com/using-markdown-rendering
 	cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
 		"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
-	cmd.Stdin = strings.NewReader(text)
+	// Very crude removal of conditional email-only tags.
+	cmd.Stdin = strings.NewReader(ifRegexp.ReplaceAllString(text, ""))
 	out, err := cmd.Output()
 	if err != nil {
 		return "", errors.New("failed to render markdown: " + err.Error())

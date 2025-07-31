@@ -121,6 +121,10 @@ GET https://words.filippo.io/edwards25519-formulas/
 body !contains Cryptography Dispatches:
 body contains <h2 id="division-and-inverses">Division and inverses</h2>
 
+GET https://words.filippo.io/passkey-encryption/
+body !contains Thank you for incentivizing
+body contains Encrypting with passkeys
+
 GET https://words.filippo.io/rss/
 body contains <title>Filippo Valsorda</title>
 body contains <link>https://words.filippo.io/
