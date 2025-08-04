@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -21,6 +20,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/mod/semver"
 )
 
 func main() {
@@ -48,25 +48,12 @@ func handler() http.Handler {
 	redirects(mux)
 	buttondown(mux)
 
-	content, err := fs.Sub(filippoIoContent, "filippo.io")
-	if err != nil {
-		log.Fatal(err)
-	}
-	mux.HandleFunc("filippo.io/", func(w http.ResponseWriter, r *http.Request) {
-		handler := http.FileServer(http.FS(content))
-		tw := &trackingResponseWriter{ResponseWriter: w}
-		handler.ServeHTTP(tw, r)
-		if tw.statusCode == 200 {
-			staticReqs.WithLabelValues(path.Clean(r.URL.Path)).Inc()
-		}
-	})
+	mux.Handle("filippo.io/", StaticHandler())
 
-	mux.Handle("sunlight.dev/fonts/", http.FileServer(http.FS(content)))
-	mux.Handle("sunlight.dev/images/", http.FileServer(http.FS(content)))
+	mux.Handle("sunlight.dev/images/", StaticHandler())
 	mux.Handle("sunlight.dev/{$}", HTMLHandler("sunlight.html"))
 
-	mux.Handle("geomys.org/fonts/", http.FileServer(http.FS(content)))
-	mux.Handle("geomys.org/images/", http.FileServer(http.FS(content)))
+	mux.Handle("geomys.org/images/", StaticHandler())
 	mux.Handle("geomys.org/{$}", HTMLHandler("geomys.html"))
 	mux.Handle("geomys.org/fips140", HTMLHandler("fips140.html"))
 	mux.Handle("geomys.org/fips140/essential/terms", HTMLHandler("tos.html"))
@@ -138,45 +125,32 @@ func handler() http.Handler {
 	mux.Handle("filippo.io/yubikey-agent/info/refs", QueryPreservingRedirectHandler(
 		"https://github.com/FiloSottile/yubikey-agent.git/info/refs", http.StatusFound))
 
-	// TODO: it'd be nice if e.g. filippo.io/age@v1.1.1 worked.
-	mux.Handle("filippo.io/age/", PkgsiteHandler())
-	mux.Handle("filippo.io/mkcert/", PkgsiteHandler())
-	mux.Handle("filippo.io/yubikey-agent/", PkgsiteHandler())
-	mux.Handle("filippo.io/mostly-harmless/", PkgsiteHandler())
-	mux.Handle("filippo.io/mlkem768/", PkgsiteHandler())
-	mux.Handle("filippo.io/xaes256gcm/", PkgsiteHandler())
-	mux.Handle("filippo.io/edwards25519/", PkgsiteHandler())
-	mux.Handle("filippo.io/nistec/", PkgsiteHandler())
-	mux.Handle("filippo.io/bigmod/", PkgsiteHandler())
-	mux.Handle("filippo.io/keygen/", PkgsiteHandler())
-	mux.Handle("filippo.io/intermediates/", PkgsiteHandler())
-	mux.Handle("filippo.io/torchwood/", PkgsiteHandler())
-	mux.Handle("filippo.io/sunlight/", PkgsiteHandler())
-	mux.Handle("filippo.io/csrf/", PkgsiteHandler())
-	mux.Handle("filippo.io/cpace/", PkgsiteHandler())
-
+	filippoIOModules := map[string]bool{
+		"age":             true,
+		"bigmod":          true,
+		"cpace":           true,
+		"csrf":            true,
+		"edwards25519":    true,
+		"intermediates":   true,
+		"keygen":          true,
+		"mkcert":          true,
+		"mlkem768":        true,
+		"mostly-harmless": true,
+		"nistec":          true,
+		"sunlight":        true,
+		"torchwood":       true,
+		"xaes256gcm":      true,
+		"yubikey-agent":   true,
+	}
+	mux.Handle("filippo.io/{name}", PkgsiteHandler(filippoIOModules, StaticHandler()))
+	mux.Handle("filippo.io/{name}/", PkgsiteHandler(filippoIOModules, StaticHandler()))
 	goGetMux := http.NewServeMux()
-	nameRe := regexp.MustCompile(`^[\w\.-]+$`)
-	goGetMux.HandleFunc("filippo.io/{name}/", func(w http.ResponseWriter, r *http.Request) {
-		name := r.PathValue("name")
-		if !nameRe.MatchString(name) {
-			http.Error(w, "Invalid repository name", http.StatusNotFound)
-			return
-		}
-		goGetReqs.WithLabelValues("filippo.io/" + name).Inc()
-		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-		fmt.Fprintf(w, `<head><meta name="go-import" content="filippo.io/%s git https://github.com/FiloSottile/%s">`, name, name)
-	})
-	goGetMux.HandleFunc("c2sp.org/", func(w http.ResponseWriter, r *http.Request) {
-		goGetReqs.WithLabelValues("c2sp.org").Inc()
-		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-		fmt.Fprint(w, `<head><meta name="go-import" content="c2sp.org git https://github.com/C2SP/C2SP">`)
-	})
-	goGetMux.HandleFunc("c2sp.org/CCTV/", func(w http.ResponseWriter, r *http.Request) {
-		goGetReqs.WithLabelValues("c2sp.org/CCTV").Inc()
-		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-		fmt.Fprint(w, `<head><meta name="go-import" content="c2sp.org/CCTV git https://github.com/C2SP/CCTV">`)
-	})
+	for name := range filippoIOModules {
+		module := "filippo.io/" + name
+		goGetMux.Handle(module+"/", GoImportHandler(module, "https://github.com/FiloSottile/"+name))
+	}
+	goGetMux.Handle("c2sp.org/", GoImportHandler("c2sp.org", "https://github.com/C2SP/C2SP"))
+	goGetMux.Handle("c2sp.org/CCTV/", GoImportHandler("c2sp.org/CCTV", "https://github.com/C2SP/CCTV"))
 
 	userAgents := NewTable(100)
 	mux.Handle("filippo.io/heavy/{secret}/useragents", HeavyHitterHandler(userAgents))
@@ -213,11 +187,8 @@ func handler() http.Handler {
 			return
 		}
 
-		// Ignore requests tracked by dl_requests_total or static_requests_total or 404/405s.
 		_, pattern := mux.Handler(r)
-		if pattern != "dl.filippo.io/{project}/{version}" && pattern != "filippo.io/" && pattern != "" {
-			httpReqs.WithLabelValues(pattern).Inc()
-		}
+		httpReqs.WithLabelValues(pattern).Inc()
 
 		// Send browser navigation requests to Plausible Analytics.
 		if r.Header.Get("Sec-Fetch-Mode") == "navigate" {
@@ -232,6 +203,21 @@ func handler() http.Handler {
 
 //go:embed filippo.io
 var filippoIoContent embed.FS
+
+func StaticHandler() http.Handler {
+	content, err := fs.Sub(filippoIoContent, "filippo.io")
+	if err != nil {
+		log.Fatal(err)
+	}
+	handler := http.FileServer(http.FS(content))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tw := &trackingResponseWriter{ResponseWriter: w}
+		handler.ServeHTTP(tw, r)
+		if tw.statusCode == 200 {
+			staticReqs.WithLabelValues(path.Clean(r.URL.Path)).Inc()
+		}
+	})
+}
 
 const mtsSTS = `version: STSv1
 mode: enforce
@@ -277,15 +263,39 @@ func HeavyHitterHandler(table *Table) http.Handler {
 	})
 }
 
-func PkgsiteHandler() http.Handler {
+func PkgsiteHandler(names map[string]bool, fallback http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		name := r.PathValue("name")
+		name, version, hasV := strings.Cut(name, "@")
+		if !hasV {
+			name, _, _ = strings.Cut(name, ".")
+		}
+		if hasV && !semver.IsValid(version) || !names[name] {
+			fallback.ServeHTTP(rw, r)
+			return
+		}
 		u := &url.URL{
 			Scheme:   "https",
 			Host:     "pkg.go.dev",
 			Path:     "/filippo.io" + r.URL.Path,
 			RawQuery: r.URL.RawQuery,
 		}
+		if !hasV {
+			path, symbol, hasSymbol := strings.Cut(r.URL.Path, ".")
+			if hasSymbol {
+				u.Path = "/filippo.io" + path
+				u.Fragment = symbol
+			}
+		}
 		http.Redirect(rw, r, u.String(), http.StatusFound)
+	})
+}
+
+func GoImportHandler(module, repo string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		goGetReqs.WithLabelValues(module).Inc()
+		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		fmt.Fprintf(w, `<head><meta name="go-import" content="%s git %s">`, module, repo)
 	})
 }
 
@@ -414,7 +424,7 @@ var staticReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 }, []string{"path"})
 var httpReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "http_requests_total",
-	Help: "HTTP requests processed, partitioned by handler, excluding {dl,static,goget}_requests_total.",
+	Help: "HTTP requests processed, partitioned by handler, excluding goget_requests_total.",
 }, []string{"handler"})
 var plausibleEvents = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "plausible_events_total",
