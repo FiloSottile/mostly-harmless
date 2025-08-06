@@ -5,4 +5,5 @@
 /root/etc/ssmtp/ssmtp.conf
 /root/etc/ssl/frood-key.pem
 /root/etc/zfs/passwords.yaml
+/root/etc/ksmbd/ksmbdpwd.db
 /TODO

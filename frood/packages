@@ -18,6 +18,7 @@ smartmontools
 tailscale
 ssmtp
 cronie
+ksmbd-tools
 
 # Filesystems and devices
 eudev

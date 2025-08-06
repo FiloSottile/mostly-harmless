@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-for name in sshd-session tmux; do
+for name in sshd-session tmux ksmbd:; do
     if pgrep "$name" >/dev/null 2>&1; then
         exit 0
     fi
