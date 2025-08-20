@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"filippo.io/torchwood"
-	"github.com/schollz/progressbar/v3"
 	"golang.org/x/mod/module"
 	"golang.org/x/mod/sumdb/note"
 	"golang.org/x/mod/sumdb/tlog"
@@ -29,6 +31,7 @@ func main() {
 
 	dbFlag := flag.String("db", "sumdb.sqlite3", "path to the SQLite database file")
 	cacheFlag := flag.String("cache", cache, "path to the cache directory")
+	yoloFlag := flag.Bool("yolo", false, "speed up import by reducing safety")
 	flag.Parse()
 
 	if err := os.MkdirAll(*cacheFlag, 0o755); err != nil {
@@ -52,27 +55,37 @@ func main() {
 			path TEXT NOT NULL,
 			version TEXT NOT NULL,
 			error TEXT DEFAULT NULL
-		) WITHOUT ROWID;
+		) STRICT, WITHOUT ROWID;
 		CREATE UNIQUE INDEX IF NOT EXISTS idx_versions_path_version ON versions (path, version);
 		CREATE TABLE IF NOT EXISTS checkpoint (
 			checkpoint TEXT NOT NULL
-		);
+		) STRICT;
 		CREATE TABLE IF NOT EXISTS hostnames (
 			hostname TEXT NOT NULL PRIMARY KEY,
 			-- etldp1 is the effective TLD+1 of the hostname
-			etldp1 TEXT NOT NULL
-		);
+			etldp1 TEXT NOT NULL,
+		) STRICT;
 		CREATE INDEX IF NOT EXISTS idx_hostnames_etldp1 ON hostnames (etldp1);
 	`); err != nil {
 		slog.Error("failed to create database schema", "error", err)
 		return
 	}
 	sqlitex.ExecuteTransient(db, `PRAGMA foreign_keys = ON;`, nil)
-	// Optimize for initial import speed.
-	sqlitex.ExecuteTransient(db, `PRAGMA journal_mode = TRUNCATE;`, nil)
-	sqlitex.ExecuteTransient(db, `PRAGMA synchronous = OFF;`, nil)
-	sqlitex.ExecuteTransient(db, `PRAGMA cache_size = -1000000;`, nil)
-	sqlitex.ExecuteTransient(db, `PRAGMA temp_store = MEMORY;`, nil)
+	if *yoloFlag {
+		slog.Warn("yolo mode enabled, reducing database safety")
+		// Optimize for initial import speed.
+		sqlitex.ExecuteTransient(db, `PRAGMA journal_mode = TRUNCATE;`, nil)
+		sqlitex.ExecuteTransient(db, `PRAGMA synchronous = OFF;`, nil)
+		sqlitex.ExecuteTransient(db, `PRAGMA cache_size = -1000000;`, nil)
+		sqlitex.ExecuteTransient(db, `PRAGMA temp_store = MEMORY;`, nil)
+	}
+
+	insertVersion := db.Prep(`
+		INSERT INTO versions (idx, path, version, error)
+		VALUES (:idx, :path, :version, :error)`)
+	insertHostname := db.Prep(`
+		INSERT OR IGNORE INTO hostnames (hostname, etldp1)
+		VALUES (:hostname, :etldp1)`)
 
 	fetcher, err := torchwood.NewTileFetcher("https://sum.golang.org/",
 		torchwood.WithTilePath(tlog.Tile.Path))
@@ -92,43 +105,55 @@ func main() {
 		return
 	}
 
-	ctx := context.Background()
-	checkpoint, err := fetchCheckpoint(ctx, fetcher)
-	if err != nil {
-		slog.Error("failed to fetch checkpoint", "error", err)
-		return
-	}
-	hr := torchwood.TileHashReaderWithContext(ctx, checkpoint.Tree, fetcher)
-	if err := updateCheckpoint(db, checkpoint, hr); err != nil {
-		slog.Error("failed to update checkpoint", "error", err)
-		return
-	}
-
-	insertVersion := db.Prep(`INSERT INTO versions (idx, path, version, error) VALUES (:idx, :path, :version, :error)`)
-	insertHostname := db.Prep(`INSERT OR IGNORE INTO hostnames (hostname, etldp1) VALUES (:hostname, :etldp1)`)
-
 	start, err := dbSize(db)
 	if err != nil {
 		slog.Error("failed to get database size", "error", err)
 		return
 	}
-	pb := progressbar.Default(checkpoint.N)
-	pb.Set64(start)
-	release := sqlitex.Save(db)
-	defer func() {
-		var err error
-		release(&err)
-	}()
-	for i, entry := range client.Entries(ctx, checkpoint.Tree, start) {
-		if i%10000 == 0 {
-			var err error
-			release(&err)
-			release = sqlitex.Save(db)
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	ticker := time.NewTicker(5 * time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			slog.Info("shutting down due to interrupt signal")
+			return
+		case <-ticker.C:
 		}
+
+		checkpoint, err := fetchCheckpoint(ctx, fetcher)
+		if err != nil {
+			slog.Error("failed to fetch checkpoint", "error", err)
+			return
+		}
+		hr := torchwood.TileHashReaderWithContext(ctx, checkpoint.Tree, fetcher)
+		if err := updateCheckpoint(db, checkpoint, hr); err != nil {
+			slog.Error("failed to update checkpoint", "error", err)
+			return
+		}
+
+		if err := ingest(ctx, client, db, insertVersion, insertHostname, checkpoint, start); err != nil {
+			slog.Error("failed to ingest entries", "error", err)
+			return
+		}
+
+		slog.Info("ingested entries", "start", start, "end", checkpoint.N)
+		start = checkpoint.N
+	}
+}
+
+func ingest(ctx context.Context, client *torchwood.Client, db *sqlite.Conn,
+	insertVersion *sqlite.Stmt, insertHostname *sqlite.Stmt,
+	checkpoint torchwood.Checkpoint, start int64) (err error) {
+	release := sqlitex.Save(db)
+	defer release(&err)
+
+	for i, entry := range client.Entries(ctx, checkpoint.Tree, start) {
 		v, err := parseEntry(string(entry))
 		if err != nil {
-			slog.Error("failed to parse entry", "entry", entry, "index", i, "error", err)
-			return
+			return fmt.Errorf("failed to parse entry %d: %w", i, err)
 		}
 		checkErr := module.Check(v.Path, v.Version)
 
@@ -139,25 +164,21 @@ func main() {
 			if suffix == hostname {
 				etldp1 = hostname
 			} else {
-				slog.Error("failed to get effective TLD+1", "hostname", hostname, "error", err)
-				return
+				return fmt.Errorf("failed to derive eTLD+1 for %q at index %d: %w", hostname, i, err)
 			}
 		}
 
 		if err := insertHostname.Reset(); err != nil {
-			slog.Error("failed to reset prepared statement", "error", err)
-			return
+			return fmt.Errorf("failed to reset prepared statement for hostname: %w", err)
 		}
 		insertHostname.SetText(":hostname", hostname)
 		insertHostname.SetText(":etldp1", etldp1)
 		if _, err := insertHostname.Step(); err != nil {
-			slog.Error("failed to insert hostname into database", "hostname", hostname, "error", err)
-			return
+			return fmt.Errorf("failed to insert hostname %q into database: %w", hostname, err)
 		}
 
 		if err := insertVersion.Reset(); err != nil {
-			slog.Error("failed to reset prepared statement", "error", err)
-			return
+			return fmt.Errorf("failed to reset prepared statement for version: %w", err)
 		}
 		insertVersion.SetInt64(":idx", i)
 		insertVersion.SetText(":path", v.Path)
@@ -169,12 +190,10 @@ func main() {
 			insertVersion.SetNull(":error")
 		}
 		if _, err := insertVersion.Step(); err != nil {
-			slog.Error("failed to insert entry into database", "index", i, "error", err, "module", v)
-			return
+			return fmt.Errorf("failed to insert version %q into database: %w", v, err)
 		}
-
-		pb.Add(1)
 	}
+	return nil
 }
 
 func parseEntry(entry string) (module.Version, error) {
