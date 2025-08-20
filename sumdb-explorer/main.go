@@ -32,12 +32,26 @@ func main() {
 	dbFlag := flag.String("db", "sumdb.sqlite3", "path to the SQLite database file")
 	cacheFlag := flag.String("cache", cache, "path to the cache directory")
 	yoloFlag := flag.Bool("yolo", false, "speed up import by reducing safety")
+	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	flag.Parse()
+
+	if *debugFlag {
+		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		})))
+	} else {
+		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		})))
+	}
 
 	if err := os.MkdirAll(*cacheFlag, 0o755); err != nil {
 		slog.Error("failed to create cache directory", "error", err)
 		return
 	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 
 	db, err := sqlite.OpenConn(*dbFlag)
 	if err != nil {
@@ -49,6 +63,7 @@ func main() {
 			slog.Error("failed to close SQLite database", "error", err)
 		}
 	}()
+	db.SetInterrupt(ctx.Done())
 	if err := sqlitex.ExecScript(db, `
 		CREATE TABLE IF NOT EXISTS versions (
 			idx INTEGER PRIMARY KEY,
@@ -64,6 +79,8 @@ func main() {
 			hostname TEXT NOT NULL PRIMARY KEY,
 			-- etldp1 is the effective TLD+1 of the hostname
 			etldp1 TEXT NOT NULL,
+			domainr_status TEXT DEFAULT NULL,
+			domainr_updated TEXT DEFAULT NULL
 		) STRICT;
 		CREATE INDEX IF NOT EXISTS idx_hostnames_etldp1 ON hostnames (etldp1);
 	`); err != nil {
@@ -79,6 +96,8 @@ func main() {
 		sqlitex.ExecuteTransient(db, `PRAGMA cache_size = -1000000;`, nil)
 		sqlitex.ExecuteTransient(db, `PRAGMA temp_store = MEMORY;`, nil)
 	}
+
+	go domainr(ctx, *dbFlag)
 
 	insertVersion := db.Prep(`
 		INSERT INTO versions (idx, path, version, error)
@@ -111,10 +130,7 @@ func main() {
 		return
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(1 * time.Minute)
 	for {
 		select {
 		case <-ctx.Done():
@@ -130,7 +146,7 @@ func main() {
 		}
 		hr := torchwood.TileHashReaderWithContext(ctx, checkpoint.Tree, fetcher)
 		if err := updateCheckpoint(db, checkpoint, hr); err != nil {
-			slog.Error("failed to update checkpoint", "error", err)
+			slog.Error("failed to update checkpoint", "error", err, "checkpoint", checkpoint)
 			return
 		}
 
@@ -139,7 +155,7 @@ func main() {
 			return
 		}
 
-		slog.Info("ingested entries", "start", start, "end", checkpoint.N)
+		slog.Debug("ingested entries", "start", start, "end", checkpoint.N)
 		start = checkpoint.N
 	}
 }
@@ -147,7 +163,10 @@ func main() {
 func ingest(ctx context.Context, client *torchwood.Client, db *sqlite.Conn,
 	insertVersion *sqlite.Stmt, insertHostname *sqlite.Stmt,
 	checkpoint torchwood.Checkpoint, start int64) (err error) {
-	release := sqlitex.Save(db)
+	release, err := sqlitex.ImmediateTransaction(db)
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
 	defer release(&err)
 
 	for i, entry := range client.Entries(ctx, checkpoint.Tree, start) {
@@ -280,7 +299,7 @@ func updateCheckpoint(db *sqlite.Conn, checkpoint torchwood.Checkpoint, hr tlog.
 		// already proven to be part of the new tree.
 		expectedHash, err := tlog.TreeHash(oc.N, hr)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to compute old tree hash at size %d: %w", oc.N, err)
 		}
 		if expectedHash != oc.Hash {
 			return errors.New("checkpoint hash mismatch")
