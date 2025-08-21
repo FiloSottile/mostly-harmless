@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"zombiezen.com/go/sqlite"
@@ -30,7 +31,9 @@ func domainr(ctx context.Context, pool *sqlitex.Pool) error {
 	for {
 		if err := sqlitex.Execute(read, `
 		    SELECT DISTINCT etldp1 FROM hostnames
-		    WHERE domainr_status IS NULL OR domainr_updated < datetime('now', '-30 days')
+		    WHERE domainr_status IS NULL
+			OR domainr_status = 'unknown' OR domainr_status = 'undelegated'
+			OR domainr_updated < datetime('now', '-31 days')
 		`, &sqlitex.ExecOptions{
 			ResultFunc: func(stmt *sqlite.Stmt) error {
 				domain := stmt.ColumnText(0)
@@ -54,6 +57,58 @@ func domainr(ctx context.Context, pool *sqlitex.Pool) error {
 			},
 		}); err != nil {
 			slog.Error("failed to fetch domainr statuses", "error", err)
+		}
+
+		size, err := dbSize(read)
+		if err != nil {
+			return fmt.Errorf("failed to get database size: %w", err)
+		}
+		if err := sqlitex.Execute(read, `
+		    SELECT hostname, domainr_status FROM hostnames
+		    WHERE domainr_status != 'active' AND domainr_status IS NOT NULL
+			AND bad_since IS NULL
+		`, &sqlitex.ExecOptions{
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				hostname := stmt.ColumnText(0)
+				status := stmt.ColumnText(1)
+
+				if status == "inactive active" {
+					// There are a few of these and apparently they are active.
+					return nil
+				}
+
+				for _, s := range strings.Split(status, " ") {
+					switch s {
+					case "unknown", "undelegated", "reserved", "premium", "claimed", "tld",
+						"disallowed", "zone", "suffix", "active", "dpml", "pending", "invalid":
+						// These are neutral or active statuses.
+						//
+						// Of these, "undelegated active" is suspect, but could
+						// also be downtime. It would be nice to get access to a
+						// historical database with information on deleted and
+						// re-activated domains, or just compare the current
+						// creation date with the first sumdb entry.
+					case "inactive", "parked", "marketed", "expiring", "deleting", "priced", "transferable":
+						// These are bad statuses.
+						slog.Debug("marking hostname as bad", "hostname", hostname, "status", status)
+						return sqlitex.Execute(write, `
+							UPDATE hostnames
+							SET bad_since = :size
+							WHERE hostname = :hostname
+						`, &sqlitex.ExecOptions{
+							Named: map[string]any{
+								":hostname": hostname,
+								":size":     size,
+							},
+						})
+					default:
+						slog.Warn("unknown domainr status", "hostname", hostname, "status", status)
+					}
+				}
+				return nil
+			},
+		}); err != nil {
+			slog.Error("failed to update hostname statuses", "error", err)
 		}
 
 		select {

@@ -111,7 +111,8 @@ func initDatabase(ctx context.Context, pool *sqlitex.Pool) error {
 			-- etldp1 is the effective TLD+1 of the hostname
 			etldp1 TEXT NOT NULL,
 			domainr_status TEXT DEFAULT NULL,
-			domainr_updated TEXT DEFAULT NULL
+			domainr_updated TEXT DEFAULT NULL,
+			bad_since INTEGER DEFAULT NULL
 		) STRICT;
 		CREATE INDEX IF NOT EXISTS idx_hostnames_etldp1 ON hostnames (etldp1);
 	`)
