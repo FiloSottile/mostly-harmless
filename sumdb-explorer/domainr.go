@@ -14,23 +14,21 @@ import (
 	"zombiezen.com/go/sqlite/sqlitex"
 )
 
-func domainr(ctx context.Context, dbPath string) {
-	db, err := sqlite.OpenConn(dbPath)
+func domainr(ctx context.Context, pool *sqlitex.Pool) error {
+	read, err := pool.Take(ctx)
 	if err != nil {
-		slog.Error("failed to open SQLite database for domainr", "error", err)
-		return
+		return fmt.Errorf("failed to take database connection: %w", err)
 	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			slog.Error("failed to close SQLite database for domainr", "error", err)
-		}
-	}()
-	db.SetInterrupt(ctx.Done())
-	sqlitex.ExecuteTransient(db, `PRAGMA foreign_keys = ON;`, nil)
+	defer pool.Put(read)
+	write, err := pool.Take(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to take database connection: %w", err)
+	}
+	defer pool.Put(write)
 
 	ticker := time.NewTicker(24 * time.Hour)
 	for {
-		if err := sqlitex.Execute(db, `
+		if err := sqlitex.Execute(read, `
 		    SELECT DISTINCT etldp1 FROM hostnames
 		    WHERE domainr_status IS NULL OR domainr_updated < datetime('now', '-30 days')
 		`, &sqlitex.ExecOptions{
@@ -43,7 +41,7 @@ func domainr(ctx context.Context, dbPath string) {
 
 				slog.Debug("fetched domainr status", "domain", domain, "status", status)
 
-				return sqlitex.Execute(db, `
+				return sqlitex.Execute(write, `
 					UPDATE hostnames
 					SET domainr_status = :status, domainr_updated = datetime('now')
 					WHERE etldp1 = :domain
@@ -58,7 +56,11 @@ func domainr(ctx context.Context, dbPath string) {
 			slog.Error("failed to fetch domainr statuses", "error", err)
 		}
 
-		<-ticker.C
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+		}
 	}
 }
 

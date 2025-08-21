@@ -2,21 +2,14 @@ package main
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
-	"time"
 
-	"filippo.io/torchwood"
-	"golang.org/x/mod/module"
-	"golang.org/x/mod/sumdb/note"
-	"golang.org/x/mod/sumdb/tlog"
-	"golang.org/x/net/publicsuffix"
+	"golang.org/x/sync/errgroup"
 	"zombiezen.com/go/sqlite"
 	"zombiezen.com/go/sqlite/sqlitex"
 )
@@ -52,8 +45,22 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+	group, ctx := errgroup.WithContext(ctx)
 
-	db, err := sqlite.OpenConn(*dbFlag)
+	db, err := sqlitex.NewPool(*dbFlag, sqlitex.PoolOptions{
+		PrepareConn: func(db *sqlite.Conn) error {
+			db.SetInterrupt(ctx.Done())
+			if *yoloFlag {
+				slog.Warn("yolo mode enabled, reducing database safety")
+				// Optimize for initial import speed.
+				sqlitex.ExecuteTransient(db, `PRAGMA journal_mode = TRUNCATE;`, nil)
+				sqlitex.ExecuteTransient(db, `PRAGMA synchronous = OFF;`, nil)
+				sqlitex.ExecuteTransient(db, `PRAGMA cache_size = -1000000;`, nil)
+				sqlitex.ExecuteTransient(db, `PRAGMA temp_store = MEMORY;`, nil)
+			}
+			return sqlitex.ExecuteTransient(db, `PRAGMA foreign_keys = ON;`, nil)
+		},
+	})
 	if err != nil {
 		slog.Error("failed to open SQLite database", "error", err)
 		return
@@ -63,8 +70,32 @@ func main() {
 			slog.Error("failed to close SQLite database", "error", err)
 		}
 	}()
-	db.SetInterrupt(ctx.Done())
-	if err := sqlitex.ExecScript(db, `
+	if err := initDatabase(ctx, db); err != nil {
+		slog.Error("failed to initialize database", "error", err)
+		return
+	}
+
+	if !*yoloFlag {
+		group.Go(func() error {
+			err := domainr(ctx, db)
+			return fmt.Errorf("domainr processing failed: %w", err)
+		})
+	}
+	group.Go(func() error {
+		err := ingest(ctx, db, *cacheFlag)
+		return fmt.Errorf("ingestion failed: %w", err)
+	})
+	slog.Error("stopping", "error", group.Wait())
+}
+
+func initDatabase(ctx context.Context, pool *sqlitex.Pool) error {
+	db, err := pool.Take(ctx)
+	if err != nil {
+		return err
+	}
+	defer pool.Put(db)
+
+	return sqlitex.ExecScript(db, `
 		CREATE TABLE IF NOT EXISTS versions (
 			idx INTEGER PRIMARY KEY,
 			path TEXT NOT NULL,
@@ -83,237 +114,5 @@ func main() {
 			domainr_updated TEXT DEFAULT NULL
 		) STRICT;
 		CREATE INDEX IF NOT EXISTS idx_hostnames_etldp1 ON hostnames (etldp1);
-	`); err != nil {
-		slog.Error("failed to create database schema", "error", err)
-		return
-	}
-	sqlitex.ExecuteTransient(db, `PRAGMA foreign_keys = ON;`, nil)
-	if *yoloFlag {
-		slog.Warn("yolo mode enabled, reducing database safety")
-		// Optimize for initial import speed.
-		sqlitex.ExecuteTransient(db, `PRAGMA journal_mode = TRUNCATE;`, nil)
-		sqlitex.ExecuteTransient(db, `PRAGMA synchronous = OFF;`, nil)
-		sqlitex.ExecuteTransient(db, `PRAGMA cache_size = -1000000;`, nil)
-		sqlitex.ExecuteTransient(db, `PRAGMA temp_store = MEMORY;`, nil)
-	}
-
-	go domainr(ctx, *dbFlag)
-
-	insertVersion := db.Prep(`
-		INSERT INTO versions (idx, path, version, error)
-		VALUES (:idx, :path, :version, :error)`)
-	insertHostname := db.Prep(`
-		INSERT OR IGNORE INTO hostnames (hostname, etldp1)
-		VALUES (:hostname, :etldp1)`)
-
-	fetcher, err := torchwood.NewTileFetcher("https://sum.golang.org/",
-		torchwood.WithTilePath(tlog.Tile.Path))
-	if err != nil {
-		slog.Error("failed to create tile fetcher", "error", err)
-		return
-	}
-	dirCache, err := torchwood.NewPermanentCache(fetcher, *cacheFlag,
-		torchwood.WithPermanentCacheTilePath(tlog.Tile.Path))
-	if err != nil {
-		slog.Error("failed to create permanent cache", "error", err)
-		return
-	}
-	client, err := torchwood.NewClient(dirCache, torchwood.WithSumDBEntries())
-	if err != nil {
-		slog.Error("failed to create client", "error", err)
-		return
-	}
-
-	start, err := dbSize(db)
-	if err != nil {
-		slog.Error("failed to get database size", "error", err)
-		return
-	}
-
-	ticker := time.NewTicker(1 * time.Minute)
-	for {
-		select {
-		case <-ctx.Done():
-			slog.Info("shutting down due to interrupt signal")
-			return
-		case <-ticker.C:
-		}
-
-		checkpoint, err := fetchCheckpoint(ctx, fetcher)
-		if err != nil {
-			slog.Error("failed to fetch checkpoint", "error", err)
-			return
-		}
-		hr := torchwood.TileHashReaderWithContext(ctx, checkpoint.Tree, fetcher)
-		if err := updateCheckpoint(db, checkpoint, hr); err != nil {
-			slog.Error("failed to update checkpoint", "error", err, "checkpoint", checkpoint)
-			return
-		}
-
-		if err := ingest(ctx, client, db, insertVersion, insertHostname, checkpoint, start); err != nil {
-			slog.Error("failed to ingest entries", "error", err)
-			return
-		}
-
-		slog.Debug("ingested entries", "start", start, "end", checkpoint.N)
-		start = checkpoint.N
-	}
-}
-
-func ingest(ctx context.Context, client *torchwood.Client, db *sqlite.Conn,
-	insertVersion *sqlite.Stmt, insertHostname *sqlite.Stmt,
-	checkpoint torchwood.Checkpoint, start int64) (err error) {
-	release, err := sqlitex.ImmediateTransaction(db)
-	if err != nil {
-		return fmt.Errorf("failed to start transaction: %w", err)
-	}
-	defer release(&err)
-
-	for i, entry := range client.Entries(ctx, checkpoint.Tree, start) {
-		v, err := parseEntry(string(entry))
-		if err != nil {
-			return fmt.Errorf("failed to parse entry %d: %w", i, err)
-		}
-		checkErr := module.Check(v.Path, v.Version)
-
-		hostname, _, _ := strings.Cut(v.Path, "/")
-		etldp1, err := publicsuffix.EffectiveTLDPlusOne(hostname)
-		if err != nil {
-			suffix, _ := publicsuffix.PublicSuffix(hostname)
-			if suffix == hostname {
-				etldp1 = hostname
-			} else {
-				return fmt.Errorf("failed to derive eTLD+1 for %q at index %d: %w", hostname, i, err)
-			}
-		}
-
-		if err := insertHostname.Reset(); err != nil {
-			return fmt.Errorf("failed to reset prepared statement for hostname: %w", err)
-		}
-		insertHostname.SetText(":hostname", hostname)
-		insertHostname.SetText(":etldp1", etldp1)
-		if _, err := insertHostname.Step(); err != nil {
-			return fmt.Errorf("failed to insert hostname %q into database: %w", hostname, err)
-		}
-
-		if err := insertVersion.Reset(); err != nil {
-			return fmt.Errorf("failed to reset prepared statement for version: %w", err)
-		}
-		insertVersion.SetInt64(":idx", i)
-		insertVersion.SetText(":path", v.Path)
-		insertVersion.SetText(":version", v.Version)
-		if checkErr != nil {
-			slog.Warn("invalid module version", "module", v, "error", checkErr, "index", i)
-			insertVersion.SetText(":error", checkErr.Error())
-		} else {
-			insertVersion.SetNull(":error")
-		}
-		if _, err := insertVersion.Step(); err != nil {
-			return fmt.Errorf("failed to insert version %q into database: %w", v, err)
-		}
-	}
-	return nil
-}
-
-func parseEntry(entry string) (module.Version, error) {
-	name, rest, ok := strings.Cut(string(entry), " ")
-	if !ok {
-		return module.Version{}, errors.New("invalid entry format")
-	}
-	version, rest, ok := strings.Cut(rest, " ")
-	if !ok {
-		return module.Version{}, errors.New("invalid entry format")
-	}
-	v := module.Version{Path: name, Version: version}
-	if module.CanonicalVersion(version) != version {
-		return v, module.VersionError(v, errors.New("version is not canonical"))
-	}
-	_, rest, ok = strings.Cut(rest, "\n")
-	if !ok {
-		return v, module.VersionError(v, errors.New("invalid entry format"))
-	}
-	name1, rest, ok := strings.Cut(rest, " ")
-	if !ok || name1 != name {
-		return v, module.VersionError(v, errors.New("invalid entry format"))
-	}
-	version1, rest, ok := strings.Cut(rest, " ")
-	if !ok || version1 != version+"/go.mod" {
-		return v, module.VersionError(v, errors.New("go.mod version mismatch"))
-	}
-	_, rest, ok = strings.Cut(rest, "\n")
-	if !ok || rest != "" {
-		return v, module.VersionError(v, errors.New("invalid entry format"))
-	}
-	return v, nil
-}
-
-func dbSize(db *sqlite.Conn) (int64, error) {
-	var index int64 = -1
-	if err := sqlitex.ExecuteTransient(db, `SELECT MAX(idx) FROM versions`, &sqlitex.ExecOptions{
-		ResultFunc: func(stmt *sqlite.Stmt) error {
-			index = stmt.ColumnInt64(0)
-			return nil
-		},
-	}); err != nil {
-		return 0, err
-	}
-	if index == -1 {
-		slog.Warn("no entries found in the database, starting from index 0")
-	}
-	return index + 1, nil
-}
-
-func fetchCheckpoint(ctx context.Context, fetcher *torchwood.TileFetcher) (torchwood.Checkpoint, error) {
-	signed, err := fetcher.ReadEndpoint(ctx, "latest")
-	if err != nil {
-		return torchwood.Checkpoint{}, err
-	}
-	v, err := note.NewVerifier("sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8")
-	if err != nil {
-		return torchwood.Checkpoint{}, err
-	}
-	n, err := note.Open(signed, note.VerifierList(v))
-	if err != nil {
-		return torchwood.Checkpoint{}, err
-	}
-	return torchwood.ParseCheckpoint(n.Text)
-}
-
-func updateCheckpoint(db *sqlite.Conn, checkpoint torchwood.Checkpoint, hr tlog.HashReader) error {
-	var old string
-	if err := sqlitex.ExecuteTransient(db, `SELECT checkpoint FROM checkpoint`, &sqlitex.ExecOptions{
-		ResultFunc: func(stmt *sqlite.Stmt) error {
-			old = stmt.ColumnText(0)
-			return nil
-		},
-	}); err != nil {
-		return err
-	}
-	if old != "" {
-		oc, err := torchwood.ParseCheckpoint(old)
-		if err != nil {
-			return err
-		}
-		// We simply fetch the expected hash instead of doing ProveTree and
-		// CheckTree because the TileHashReader only returns hashes that are
-		// already proven to be part of the new tree.
-		expectedHash, err := tlog.TreeHash(oc.N, hr)
-		if err != nil {
-			return fmt.Errorf("failed to compute old tree hash at size %d: %w", oc.N, err)
-		}
-		if expectedHash != oc.Hash {
-			return errors.New("checkpoint hash mismatch")
-		}
-	} else {
-		slog.Warn("no previous checkpoint found, skipping verification")
-	}
-	stmt := db.Prep(`INSERT OR REPLACE INTO checkpoint (checkpoint) VALUES (:checkpoint)`)
-	if err := stmt.Reset(); err != nil {
-		return err
-	}
-	stmt.SetText(":checkpoint", checkpoint.String())
-	if _, err := stmt.Step(); err != nil {
-		return err
-	}
-	return nil
+	`)
 }
