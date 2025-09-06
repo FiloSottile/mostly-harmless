@@ -131,6 +131,7 @@ func handler() http.Handler {
 		"cpace":           true,
 		"csrf":            true,
 		"edwards25519":    true,
+		"hpke":            true,
 		"intermediates":   true,
 		"keygen":          true,
 		"mkcert":          true,
