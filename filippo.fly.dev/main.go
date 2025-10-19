@@ -90,6 +90,10 @@ func handler() http.Handler {
 	mux.Handle("geomys.dev/{$}", http.RedirectHandler("https://geomys.org", http.StatusFound))
 	mux.Handle("geomys.it/{$}", http.RedirectHandler("https://geomys.org", http.StatusFound))
 
+	// Can't explain, you had to be there.
+	mux.Handle("fuckit.dev/{$}", http.RedirectHandler(
+		"https://github.com/transparency-dev/witness/tree/main/cmd/gcp/omniwitness", http.StatusFound))
+
 	mux.Handle("blog.filippo.io/", HostRedirectHandler("words.filippo.io", http.StatusMovedPermanently))
 
 	mux.Handle("www.filippo.io/", HostRedirectHandler("filippo.io", http.StatusMovedPermanently))
