@@ -61,6 +61,8 @@ func handler() http.Handler {
 		"https://buy.stripe.com/8wM4iufSY6q62as9AA", http.StatusFound))
 	mux.Handle("geomys.org/fips140/essential/manage", http.RedirectHandler(
 		"https://billing.stripe.com/p/login/8x29AU94R96B96dgeR2cg00", http.StatusFound))
+	mux.Handle("geomys.org/standard-of-care", http.RedirectHandler(
+		"https://github.com/geomys/standard-of-care", http.StatusFound))
 
 	mux.Handle("age-encryption.org/{$}", http.RedirectHandler("https://github.com/FiloSottile/age", http.StatusFound))
 
