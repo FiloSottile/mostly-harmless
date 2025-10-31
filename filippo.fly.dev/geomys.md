@@ -19,10 +19,10 @@ Geomys is an organization of open source maintainers, founded by [Filippo Valsor
 <p style="max-width: 350px; margin-left: 40px; line-height: 1.5;">
     <b>Ge·omys</b> (<span style="font-family: 'Times New Roman', Times, serif;">ˌjē-ə-mis</span>)&ensp;<i><b>n.</b></i>&ensp;&ensp;<b>1</b>&ensp;(<i>Sci.</i>) a genus of mammals often collectively referred to as the eastern pocket gophers&ensp;&ensp;<b>2</b>&ensp;an organization of open source maintainers
 
-Geomys maintains a portfolio of critical Go projects, and acts as maintainer of last resort for the Go ecosystem. The portfolio includes:
+We maintain a portfolio of critical Go projects according to our [standard of care](https://geomys.org/standard-of-care), and act as [maintainers of last resort](https://words.filippo.io/last-resort/) for the Go ecosystem. The portfolio includes:
 
 * the `crypto/...` and `golang.org/x/crypto/...` packages in the Go standard library (co-maintained with the Google Go team)
-* **the FIPS 140-3 Go Cryptographic Module**, for which Geomys handles the CMVP validation and provides [commercial and enterprise services](https://geomys.org/fips140)
+* **the FIPS 140-3 Go Cryptographic Module**, for which we handle the CMVP validation and provide [commercial and enterprise services](https://geomys.org/fips140)
 * the `filippo.io/...` crypto packages, including [filippo.io/edwards25519](https://filippo.io/edwards25519)
 * [x/crypto/ssh](https://pkg.go.dev/golang.org/x/crypto/ssh), the Go SSH implementation that runs many CI and deployment systems
 * [Staticcheck](https://staticcheck.dev/), the high-signal low-noise static analyzer enabled by default in [vscode-go](https://github.com/golang/vscode-go/wiki/tools#staticcheck)
@@ -30,6 +30,7 @@ Geomys maintains a portfolio of critical Go projects, and acts as maintainer of 
 * [bluemonday](https://github.com/microcosm-cc/bluemonday), the popular HTML sanitizer
 * [age](https://age-encryption.org/), the file encryption tool, library, and format
 * [mkcert](https://mkcert.dev/), a tool to generate local development certificates
+* [sandboxed-step](https://github.com/geomys/sandboxed-step), a GitHub Action to run commands in a gVisor sandbox
 
 A Geomys retainer offers organizations the opportunity to ensure the sustainability of their foundational Go dependencies, and direct access to the expertise of the maintainers, like a fractional internal Go team.
 
