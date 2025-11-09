@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	r255 "github.com/gtank/ristretto255"
-	"github.com/stretchr/testify/require"
 )
 
 type TestVector struct {
@@ -31,49 +30,67 @@ type TestVector struct {
 func hd(t *testing.T, s string) []byte {
 	t.Helper()
 	b, err := hex.DecodeString(s)
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("hex.DecodeString failed: %v", err)
+	}
 	return b
-}
-
-func he(src []byte) []byte {
-	dst := make([]byte, hex.EncodedLen(len(src)))
-	hex.Encode(dst, src)
-	return dst
 }
 
 func checkIsEqualElement(t *testing.T, name string, expected []byte, actual *r255.Element) {
 	t.Helper()
-	e, err := newElement(expected)
-	require.NoError(t, err)
-	require.Equal(t, 1, actual.Equal(e), fmt.Sprintf("%s: e=%+v, a=%+v", name, e, actual))
+	e, err := r255.NewIdentityElement().SetCanonicalBytes(expected)
+	if err != nil {
+		t.Fatalf("newElement failed: %v", err)
+	}
+	if actual.Equal(e) != 1 {
+		t.Fatalf("%s: elements not equal: e=%+v, a=%+v", name, e, actual)
+	}
 }
 
 func checkIsEqualScalar(t *testing.T, name string, expected []byte, actual *r255.Scalar) {
 	t.Helper()
-	e, err := newScalar(expected)
-	require.NoError(t, err)
-	require.Equal(t, 1, actual.Equal(e), fmt.Sprintf("%s: e=%+v, a=%+v", name, e, actual))
+	e, err := r255.NewScalar().SetCanonicalBytes(expected)
+	if err != nil {
+		t.Fatalf("newScalar failed: %v", err)
+	}
+	if actual.Equal(e) != 1 {
+		t.Fatalf("%s: scalars not equal: e=%+v, a=%+v", name, e, actual)
+	}
 }
 
 func TestECVRFRoundTrip(t *testing.T) {
 	alpha := []byte("af82")
 	sk, err := NewPrivateKey(hd(t, "3431c2b03533e280b23232e280b34e2c3132c2b03238e280b23131e280b34500"))
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("NewPrivateKey failed: %v", err)
+	}
 
 	pi, err := sk.Prove(alpha)
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("sk.Prove failed: %v", err)
+	}
 
 	// roundtrip proof
 	p2, err := NewProof(pi.Bytes())
-	require.NoError(t, err)
-	require.True(t, bytes.Equal(pi.Bytes(), p2.Bytes()))
+	if err != nil {
+		t.Fatalf("NewProof failed: %v", err)
+	}
+	if !bytes.Equal(pi.Bytes(), p2.Bytes()) {
+		t.Fatalf("proof roundtrip failed: original != decoded")
+	}
 
 	beta, err := pi.Hash()
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("pi.Hash failed: %v", err)
+	}
 
-	beta2, err := sk.Y.Verify(pi, alpha)
-	require.NoError(t, err)
-	require.True(t, bytes.Equal(beta2, beta))
+	beta2, err := sk.y.Verify(pi, alpha)
+	if err != nil {
+		t.Fatalf("sk.Y.Verify failed: %v", err)
+	}
+	if !bytes.Equal(beta2, beta) {
+		t.Fatalf("beta mismatch: %x != %x", beta2, beta)
+	}
 }
 
 func TestECVRFRISTRETTO255SHA512(t *testing.T) {
@@ -98,64 +115,92 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 	for i, tv := range tests {
 		t.Run(fmt.Sprintf("test vector %d", i), func(t *testing.T) {
 			sk, err := NewPrivateKey(tv.sk)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("NewPrivateKey failed: %v", err)
+			}
 			checkIsEqualScalar(t, "sk", tv.sk, sk.x)
-			checkIsEqualElement(t, "pk", tv.pk, sk.Y.y)
-			salt := sk.Y.y.Bytes()
+			checkIsEqualElement(t, "pk", tv.pk, sk.y.y)
+			salt := sk.y.y.Bytes()
 			x := toUniformBytes(salt, tv.alpha)
-			require.True(t, bytes.Equal(tv.hash_string, x))
+			if !bytes.Equal(tv.hash_string, x) {
+				t.Fatalf("hash_string mismatch: %x != %x", tv.hash_string, x)
+			}
 			h, err := encodeToCurve(salt, tv.alpha)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("encodeToCurve failed: %v", err)
+			}
 			checkIsEqualElement(t, "h", tv.h, h)
 
-			g := r255.NewElement()
-			g = g.ScalarMult(sk.x, h)
-			require.NoError(t, err)
+			g := r255.NewIdentityElement().ScalarMult(sk.x, h)
 			checkIsEqualElement(t, "g", tv.g, g)
 
-			k1 := r255.NewScalar()
-			k1, err = k1.SetUniformBytes(tv.k_string)
-			require.NoError(t, err)
+			k1, err := r255.NewScalar().SetUniformBytes(tv.k_string)
+			if err != nil {
+				t.Fatalf("SetUniformBytes failed: %v", err)
+			}
 			checkIsEqualScalar(t, "k1", tv.k, k1)
 
-			k, err := sk.GenerateNonce(tv.h)
-
-			require.NoError(t, err)
+			k, err := sk.generateNonce(tv.h)
+			if err != nil {
+				t.Fatalf("GenerateNonce failed: %v", err)
+			}
 			checkIsEqualScalar(t, "k", tv.k, k)
 
-			u := r255.NewElement()
-			u = u.ScalarBaseMult(k)
+			u := r255.NewIdentityElement().ScalarBaseMult(k)
 			checkIsEqualElement(t, "U", tv.u, u)
 
-			v := r255.NewElement()
-			v = v.ScalarMult(k, h)
+			v := r255.NewIdentityElement().ScalarMult(k, h)
 			checkIsEqualElement(t, "V", tv.v, v)
-			c_string := hashToChallenge(sk.Y, h, g, u, v)
-			require.True(t, bytes.Equal(tv.c_string, c_string))
-			c, err := GenerateChallenge(sk.Y, h, g, u, v)
-			require.NoError(t, err)
-			require.True(t, bytes.Equal(tv.c, c.Bytes()[:16]))
+			c_string := hashToChallenge(sk.y, h, g, u, v)
+			if !bytes.Equal(tv.c_string, c_string) {
+				t.Fatalf("c_string mismatch: %x != %x", tv.c_string, c_string)
+			}
+			c, err := generateChallenge(sk.y, h, g, u, v)
+			if err != nil {
+				t.Fatalf("GenerateChallenge failed: %v", err)
+			}
+			if !bytes.Equal(tv.c, c.Bytes()[:16]) {
+				t.Fatalf("c mismatch: %x != %x", tv.c, c.Bytes()[:16])
+			}
 			s := r255.NewScalar()
 			s = s.Multiply(c, sk.x)
 			s = s.Add(k, s)
 			checkIsEqualScalar(t, "s", tv.s, s)
-			p1 := Proof{g, c, s}
+			p1 := &Proof{g, c, s}
 
-			require.True(t, bytes.Equal(p1.Bytes(), tv.pi))
+			if !bytes.Equal(p1.Bytes(), tv.pi) {
+				t.Fatalf("pi mismatch: %x != %x", p1.Bytes(), tv.pi)
+			}
 
 			// below: almost the same as round trip test
 			p2, err := sk.Prove(tv.alpha)
-			require.NoError(t, err)
-			require.True(t, bytes.Equal(p2.Bytes(), p1.Bytes()))
-			require.True(t, bytes.Equal(p2.Bytes(), tv.pi))
+			if err != nil {
+				t.Fatalf("sk.Prove failed: %v", err)
+			}
+			if !bytes.Equal(p2.Bytes(), p1.Bytes()) {
+				t.Fatalf("p2 != p1: %x != %x", p2.Bytes(), p1.Bytes())
+			}
+			if !bytes.Equal(p2.Bytes(), tv.pi) {
+				t.Fatalf("p2 != tv.pi: %x != %x", p2.Bytes(), tv.pi)
+			}
 			beta, err := p2.Hash()
-			require.NoError(t, err)
-			require.True(t, bytes.Equal(beta, tv.beta))
+			if err != nil {
+				t.Fatalf("p2.Hash failed: %v", err)
+			}
+			if !bytes.Equal(beta, tv.beta) {
+				t.Fatalf("beta mismatch: %x != %x", beta, tv.beta)
+			}
 
-			beta2, err := sk.Y.Verify(p2, tv.alpha)
-			require.NoError(t, err)
-			require.True(t, bytes.Equal(beta2, beta))
-			require.True(t, bytes.Equal(beta2, tv.beta))
+			beta2, err := sk.y.Verify(p2, tv.alpha)
+			if err != nil {
+				t.Fatalf("sk.Y.Verify failed: %v", err)
+			}
+			if !bytes.Equal(beta2, beta) {
+				t.Fatalf("beta2 != beta: %x != %x", beta2, beta)
+			}
+			if !bytes.Equal(beta2, tv.beta) {
+				t.Fatalf("beta2 != tv.beta: %x != %x", beta2, tv.beta)
+			}
 		})
 	}
 }
