@@ -47,10 +47,7 @@ type PrivateKey struct {
 func GenerateKey() *PrivateKey {
 	r := make([]byte, 64)
 	rand.Read(r)
-	s, err := r255.NewScalar().SetUniformBytes(r)
-	if err != nil {
-		panic(err)
-	}
+	s := must(r255.NewScalar().SetUniformBytes(r))
 	y := r255.NewIdentityElement().ScalarBaseMult(s)
 	return &PrivateKey{
 		y: &PublicKey{y: y},
@@ -87,10 +84,12 @@ func (x *PrivateKey) Bytes() []byte {
 }
 
 // challenge takes first 16 bytes of in to make Challenge
-func challenge(in []byte) (*r255.Scalar, error) {
+func challenge(in []byte) *r255.Scalar {
 	tmp := make([]byte, 32)
 	copy(tmp, in[:cLen])
-	return r255.NewScalar().SetCanonicalBytes(tmp)
+	// SetCanonicalBytes can't return an error, because the most significant
+	// bytes are zero, guaranteeing the value is less than l.
+	return must(r255.NewScalar().SetCanonicalBytes(tmp))
 }
 
 // generateChallenge generates a Challenge given some elements
@@ -100,7 +99,7 @@ func challenge(in []byte) (*r255.Scalar, error) {
 //
 // Output:
 // c - challenge value, integer between 0 and 2^(8*cLen)-1, as a Scalar
-func generateChallenge(pk *PublicKey, h, gamma, u, v *r255.Element) (*r255.Scalar, error) {
+func generateChallenge(pk *PublicKey, h, gamma, u, v *r255.Element) *r255.Scalar {
 	c_string := hashToChallenge(pk, h, gamma, u, v)
 
 	// 7. truncated_c_string = c_string[0]...c_string[cLen-1]
@@ -163,10 +162,7 @@ func NewProof(pi []byte) (*Proof, error) {
 	}
 
 	// c = string_to_int(c_string)
-	c, err := challenge(cs)
-	if err != nil {
-		return nil, err
-	}
+	c := challenge(cs)
 
 	// s = string_to_int(s_string)
 	// if s >= q output "INVALID" and stop
@@ -189,28 +185,25 @@ func (p *Proof) Bytes() (pi []byte) {
 }
 
 // Hash returns the actual VRF hash proven by p.
-func (p *Proof) Hash() (beta []byte, err error) {
+func (p *Proof) Hash() (beta []byte) {
 	// 6. beta_string = Hash(suite_string || proof_to_hash_domain_separator_front || point_to_string(cofactor * Gamma) || proof_to_hash_domain_separator_back)
 	h := sha512.New()
 	h.Write([]byte(suite_string))
 	h.Write([]byte{proof_to_hash_front})
 	h.Write(p.g.Bytes())
 	h.Write([]byte{proof_to_hash_back})
-	return h.Sum(nil), nil
+	return h.Sum(nil)
 }
 
 // Prove computes a VRF hash of the input alpha, and returns a proof that it was
 // computed correctly.
 //
 // The actual hash can be retrieved with [Proof.Hash].
-func (x *PrivateKey) Prove(alpha []byte) (pi *Proof, err error) {
+func (x *PrivateKey) Prove(alpha []byte) (pi *Proof) {
 	// 1. Use SK to derive the VRF secret scalar x and the VRF public key Y = x*B
 	// 2. H = ECVRF_encode_to_curve(encode_to_curve_salt, alpha_string) (see Section 5.4.1)
 	salt := x.y.y.Bytes()
-	h, err := encodeToCurve(salt, alpha)
-	if err != nil {
-		return nil, err
-	}
+	h := encodeToCurve(salt, alpha)
 
 	// 3. h_string = point_to_string(H)
 	hs := h.Bytes() // 32 bytes
@@ -219,18 +212,12 @@ func (x *PrivateKey) Prove(alpha []byte) (pi *Proof, err error) {
 	g := r255.NewIdentityElement().ScalarMult(x.x, h)
 
 	// 5. k = ECVRF_nonce_generation(SK, h_string) (see Section 5.4.2)
-	k, err := x.generateNonce(hs)
-	if err != nil {
-		return nil, err
-	}
+	k := x.generateNonce(hs)
 
 	// 6. c = ECVRF_challenge_generation(Y, H, Gamma, k*B, k*H) (see Section 5.4.3)
 	u := r255.NewIdentityElement().ScalarBaseMult(k)
 	v := r255.NewIdentityElement().ScalarMult(k, h)
-	c, err := generateChallenge(x.y, h, g, u, v)
-	if err != nil {
-		return nil, err
-	}
+	c := generateChallenge(x.y, h, g, u, v)
 
 	// 7. s = (k + c*x) mod q
 	s := r255.NewScalar()
@@ -238,13 +225,12 @@ func (x *PrivateKey) Prove(alpha []byte) (pi *Proof, err error) {
 	s = s.Add(k, s)
 
 	// 8. pi_string = point_to_string(Gamma) || int_to_string(c, cLen) || int_to_string(s, qLen)
-	p := Proof{g, c, s}
-	return &p, nil
+	return &Proof{g, c, s}
 }
 
 // generates a deterministic nonce from given private key and input
 // https://github.com/C2SP/C2SP/blob/filippo/vrf-r255/vrf-r255.md#nonce-generation
-func (x *PrivateKey) generateNonce(h []byte) (k *r255.Scalar, err error) {
+func (x *PrivateKey) generateNonce(h []byte) *r255.Scalar {
 	// 1. nonce_generation_domain_separator = 0x81
 	DS := "\x81"
 
@@ -256,7 +242,7 @@ func (x *PrivateKey) generateNonce(h []byte) (k *r255.Scalar, err error) {
 	ks.Write(h)
 
 	// 3. k = string_to_int(k_string) mod q
-	return r255.NewScalar().SetUniformBytes(ks.Sum(nil))
+	return must(r255.NewScalar().SetUniformBytes(ks.Sum(nil)))
 }
 
 // Verify verifies that p is a valid proof for the generation of its associated
@@ -271,10 +257,7 @@ func (y *PublicKey) Verify(p *Proof, alpha []byte) (beta []byte, err error) {
 
 	// 7. H = ECVRF_encode_to_curve(encode_to_curve_salt, alpha_string) (see Section 5.4.1)
 	salt := y.y.Bytes()
-	h, err := encodeToCurve(salt, alpha)
-	if err != nil {
-		return nil, err
-	}
+	h := encodeToCurve(salt, alpha)
 
 	// 8. U = s*B - c*Y
 	u1 := r255.NewIdentityElement().ScalarBaseMult(p.s)
@@ -287,23 +270,20 @@ func (y *PublicKey) Verify(p *Proof, alpha []byte) (beta []byte, err error) {
 	v := r255.NewIdentityElement().Subtract(v1, v2)
 
 	// 7. c' = ECVRF_challenge_generation(Y, H, Gamma, U, V) (see Section 5.4.3)
-	cc, err := generateChallenge(y, h, p.g, u, v)
-	if err != nil {
-		return nil, err
-	}
+	cc := generateChallenge(y, h, p.g, u, v)
 
 	// 8. If c and c' are equal, output ("VALID", ECVRF_proof_to_hash(pi_string)); else output "INVALID"
 	if p.c.Equal(cc) == 0 {
 		return nil, ErrFailedVerification
 	}
-	return p.Hash()
+	return p.Hash(), nil
 }
 
 // https://github.com/C2SP/C2SP/blob/filippo/vrf-r255/vrf-r255.md#encode-to-curve
-func encodeToCurve(salt []byte, alpha []byte) (h *r255.Element, err error) {
+func encodeToCurve(salt []byte, alpha []byte) *r255.Element {
 	x := toUniformBytes(salt, alpha)
 	// 3. H = ristretto255_one_way_map(hash_string)
-	return r255.NewIdentityElement().SetUniformBytes(x)
+	return must(r255.NewIdentityElement().SetUniformBytes(x))
 }
 
 func toUniformBytes(salt []byte, alpha []byte) []byte {
@@ -313,6 +293,12 @@ func toUniformBytes(salt []byte, alpha []byte) []byte {
 	u.Write([]byte{encode_to_curve_ds})
 	u.Write(salt)
 	u.Write(alpha)
-	x := u.Sum(nil)
-	return x
+	return u.Sum(nil)
+}
+
+func must[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
 }

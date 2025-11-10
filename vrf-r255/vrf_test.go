@@ -65,10 +65,7 @@ func TestECVRFRoundTrip(t *testing.T) {
 		t.Fatalf("NewPrivateKey failed: %v", err)
 	}
 
-	pi, err := sk.Prove(alpha)
-	if err != nil {
-		t.Fatalf("sk.Prove failed: %v", err)
-	}
+	pi := sk.Prove(alpha)
 
 	// roundtrip proof
 	p2, err := NewProof(pi.Bytes())
@@ -79,10 +76,7 @@ func TestECVRFRoundTrip(t *testing.T) {
 		t.Fatalf("proof roundtrip failed: original != decoded")
 	}
 
-	beta, err := pi.Hash()
-	if err != nil {
-		t.Fatalf("pi.Hash failed: %v", err)
-	}
+	beta := pi.Hash()
 
 	beta2, err := sk.y.Verify(pi, alpha)
 	if err != nil {
@@ -125,10 +119,7 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 			if !bytes.Equal(tv.hash_string, x) {
 				t.Fatalf("hash_string mismatch: %x != %x", tv.hash_string, x)
 			}
-			h, err := encodeToCurve(salt, tv.alpha)
-			if err != nil {
-				t.Fatalf("encodeToCurve failed: %v", err)
-			}
+			h := encodeToCurve(salt, tv.alpha)
 			checkIsEqualElement(t, "h", tv.h, h)
 
 			g := r255.NewIdentityElement().ScalarMult(sk.x, h)
@@ -140,10 +131,7 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 			}
 			checkIsEqualScalar(t, "k1", tv.k, k1)
 
-			k, err := sk.generateNonce(tv.h)
-			if err != nil {
-				t.Fatalf("GenerateNonce failed: %v", err)
-			}
+			k := sk.generateNonce(tv.h)
 			checkIsEqualScalar(t, "k", tv.k, k)
 
 			u := r255.NewIdentityElement().ScalarBaseMult(k)
@@ -155,10 +143,7 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 			if !bytes.Equal(tv.c_string, c_string) {
 				t.Fatalf("c_string mismatch: %x != %x", tv.c_string, c_string)
 			}
-			c, err := generateChallenge(sk.y, h, g, u, v)
-			if err != nil {
-				t.Fatalf("GenerateChallenge failed: %v", err)
-			}
+			c := generateChallenge(sk.y, h, g, u, v)
 			if !bytes.Equal(tv.c, c.Bytes()[:16]) {
 				t.Fatalf("c mismatch: %x != %x", tv.c, c.Bytes()[:16])
 			}
@@ -173,20 +158,14 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 			}
 
 			// below: almost the same as round trip test
-			p2, err := sk.Prove(tv.alpha)
-			if err != nil {
-				t.Fatalf("sk.Prove failed: %v", err)
-			}
+			p2 := sk.Prove(tv.alpha)
 			if !bytes.Equal(p2.Bytes(), p1.Bytes()) {
 				t.Fatalf("p2 != p1: %x != %x", p2.Bytes(), p1.Bytes())
 			}
 			if !bytes.Equal(p2.Bytes(), tv.pi) {
 				t.Fatalf("p2 != tv.pi: %x != %x", p2.Bytes(), tv.pi)
 			}
-			beta, err := p2.Hash()
-			if err != nil {
-				t.Fatalf("p2.Hash failed: %v", err)
-			}
+			beta := p2.Hash()
 			if !bytes.Equal(beta, tv.beta) {
 				t.Fatalf("beta mismatch: %x != %x", beta, tv.beta)
 			}
