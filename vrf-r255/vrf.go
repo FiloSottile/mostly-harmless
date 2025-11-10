@@ -83,6 +83,14 @@ func (x *PrivateKey) Bytes() []byte {
 	return x.x.Bytes()
 }
 
+func NewPublicKey(pk []byte) (*PublicKey, error) {
+	y, err := r255.NewIdentityElement().SetCanonicalBytes(pk)
+	if err != nil {
+		return nil, err
+	}
+	return &PublicKey{y: y}, nil
+}
+
 // challenge takes first 16 bytes of in to make Challenge
 func challenge(in []byte) *r255.Scalar {
 	tmp := make([]byte, 32)
