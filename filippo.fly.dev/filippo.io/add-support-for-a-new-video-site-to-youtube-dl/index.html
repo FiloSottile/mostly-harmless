@@ -210,7 +210,7 @@
 
 <p>However Vine is really friendly, and a simple right-click &gt; Inspect Element on the playing video will be enough</p>
 
-<p><img src="/images/Jack Dorsey's post on Vine 2014-01-27 04-25-35.png" alt="The video tag" /></p>
+<p><img src="/images/2014-01-27 04-25-35.png" alt="The video tag" /></p>
 
 <p>So, we just have to get the mp4 URL out of the <code>source</code> tag. <em>Tip</em>: use the Developer Tools to spot what you’re looking for, but then build your regex based on the actual page source, as pretty printing WILL get in your way and the live DOM might be substantially different from the source.</p>
 
@@ -232,7 +232,7 @@
 
 <p>Only the title to go. Again, modern pages help: we can piggyback on Facebook-targeted OpenGraph metadata to reliably extract the title</p>
 
-<p><img src="/images/Jack Dorsey's post on Vine 2014-01-27 04-37-45.png" alt="The OpenGraph tag" /></p>
+<p><img src="/images/2014-01-27 04-37-45.png" alt="The OpenGraph tag" /></p>
 
 <p>Aaaand, there’s a helper for that! The whole <code>InfoExtractor._og_search_*</code> suite.</p>
 
