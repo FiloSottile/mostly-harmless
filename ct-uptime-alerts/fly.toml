@@ -3,29 +3,21 @@ app = "ct-uptime-alerts"
 [deploy]
   strategy = "bluegreen"
 
-[[services]]
+[http_service]
   internal_port = 8080
-  protocol = "tcp"
-  auto_stop_machines = "stop"
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
 
-  [services.concurrency]
+  [http_service.concurrency]
     soft_limit = 200
     type = "requests"
 
-  [[services.ports]]
-    handlers = ["http"]
-    port = 80
-    force_https = true
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
-
-  [[services.http_checks]]
+  [[http_service.checks]]
     grace_period = "60s"
     interval = "10s"
     restart_limit = 6
     timeout = "2s"
     method = "get"
     path = "/geomys.org?threshold=0"
-    protocol = "http"
