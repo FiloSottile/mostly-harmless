@@ -78,12 +78,12 @@ var htmlPrefixTemplate = template.Must(template.New("md2html").Parse(`<!DOCTYPE 
 </head>
 <body>
 
-<header>
+{{ if .Header.Light }}<header>
 	{{ if .Header.Link }}<a href="{{ .Header.Link }}">{{ end }}<picture>
         <source srcset="{{ .Header.Dark }}" media="(prefers-color-scheme: dark)">
         <img src="{{ .Header.Light }}" alt="{{ .Header.Alt }}">
     </picture>{{ if .Header.Link }}</a>{{ end }}
-</header>
+</header>{{ end }}
 
 <main>
 `))
@@ -136,8 +136,11 @@ func main() {
 		log.Fatalf("Error parsing YAML front matter in %s: %v", inputFile, err)
 	}
 
-	if fm.Title == "" || fm.Canonical == "" || fm.Header.Light == "" || fm.Header.Dark == "" || fm.Header.Alt == "" {
+	if fm.Title == "" || fm.Canonical == "" {
 		log.Fatalf("Error: front matter must contain title and canonical fields")
+	}
+	if fm.Header.Light != "" && (fm.Header.Dark == "" || fm.Header.Alt == "") {
+		log.Fatalf("Error: if header.light is set, header.dark and header.alt must also be set")
 	}
 
 	var finalHTML bytes.Buffer

@@ -55,6 +55,7 @@ func handler() http.Handler {
 
 	mux.Handle("geomys.org/images/", StaticHandler())
 	mux.Handle("geomys.org/{$}", HTMLHandler("geomys.html"))
+	mux.Handle("geomys.org/witness/navigli", HTMLHandler("navigli.html"))
 	mux.Handle("geomys.org/fips140", HTMLHandler("fips140.html"))
 	mux.Handle("geomys.org/fips140/essential/terms", HTMLHandler("tos.html"))
 	mux.Handle("geomys.org/fips140/essential/subscribe", http.RedirectHandler(

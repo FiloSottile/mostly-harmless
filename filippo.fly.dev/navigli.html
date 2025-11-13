@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://geomys.org/witness/navigli">
+    <title>The Navigli Witness</title>
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        header {
+            margin: 4rem auto 0;
+            max-width: 350px;
+            padding: 0 10px;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            line-height: 1.5em;
+            font-size: 0.8em;
+        }
+		img {
+			max-width: 100%;
+			height: auto;
+            margin: 0 auto;
+            display: block;
+		}
+        li + li {
+            margin-top: 0.5em;
+        }
+		@media print {
+			main {
+				margin: 0;
+				padding: 0;
+			}
+		}
+    </style>
+</head>
+<body>
+
+
+
+<main>
+<h1>The Navigli Staging Witness</h1>
+<p><code>witness.navigli.sunlight.geomys.org</code> is a staging transparency log witness
+operated by <a href="https://geomys.org/">Geomys</a>. It implements the
+<a href="https://c2sp.org/tlog-witness">c2sp.org/tlog-witness</a> API.</p>
+<p>For the verifier key and configured <a href="https://witness-network.org/log-lists/">witness-network.org log
+lists</a>, see <a href="https://navigli.sunlight.geomys.org/">the system's
+homepage</a>. It generally configures all
+Staging and Testing log lists. If you wish to have your log witnessed, follow
+<a href="https://witness-network.org/participate/">the process to add it to the witness-network.org log
+lists</a>. The lists are updated
+automatically every 15 minutes.</p>
+<p>This is a <strong>staging instance</strong>, and in particular it's the staging instance of
+the Sunlight developers, so it has decent odds of encountering bugs. There is
+uptime monitoring, but it is not connected to phone pagers. Aside from that, we
+plan to keep operating it for the foreseeable future.</p>
+<p>It runs the latest development version of <a href="https://sunlight.dev/">Sunlight</a>, in
+the same process as the staging Geomys <em>Navigli</em> Certificate Transparency logs.
+It is hosted on the same machine as the production Geomys <em>Tuscolo</em> logs, which
+is described in the <a href="https://groups.google.com/a/chromium.org/g/ct-policy/c/KCzYEIIZSxg/m/zD26fYw4AgAJ">log's announcement</a>. The machine's config files are
+<a href="https://config.sunlight.geomys.org/">publicly available</a>. Keys are stored on an
+encrypted filesystem, which is unlocked manually at boot by Geomys staff, but
+are otherwise simple software keys.</p>
+<p>Prometheus metrics are publicly available at
+<a href="https://navigli.sunlight.geomys.org/metrics">navigli.sunlight.geomys.org/metrics</a>
+(look for the <code>sunlight_witness_</code> prefix). They include per-log request
+counters, errors, and abserved log sizes, which might be useful for debugging.</p>
+<!-- for prod, mention https://status.sunlight.geomys.org/ -->
