@@ -31,6 +31,7 @@ func redirects(mux *http.ServeMux) {
 		"/atom.xml":           "https://blog.filippo.io/rss/",
 		"/maintenance":        "https://github.com/FiloSottile/FiloSottile/blob/main/maintenance.md",
 		"/internship":         "https://docs.google.com/document/d/1e6dNtdTmHWmv2U6C407MV5N_wS5aX3LAJ6K_T6bShkE/edit",
+		"/hpke-pq":            "https://github.com/FiloSottile/hpke/blob/main/hpke-pq.md",
 
 		"/psa-enable-automatic-updates-please/":                 "https://blog.filippo.io/psa-enable-automatic-updates-please/",
 		"/salt-and-pepper/":                                     "https://blog.filippo.io/salt-and-pepper/",
