@@ -30,8 +30,9 @@ type buttondownEmail struct {
 	Subject     string        `json:"subject"`
 	Status      string        `json:"status"`
 	Metadata    struct {
-		OverrideSlug string `json:"override_slug"`
-		OverrideGUID string `json:"override_guid"`
+		OverrideSlug  string `json:"override_slug"`
+		OverrideGUID  string `json:"override_guid"`
+		OverrideImage string `json:"override_image"`
 	} `json:"metadata"`
 	Image string `json:"-"`
 }
@@ -343,6 +344,9 @@ func fetchMails() error {
 		}
 
 		email.Image = extractLastImage(email.Body)
+		if email.Metadata.OverrideImage != "" {
+			email.Image = email.Metadata.OverrideImage
+		}
 
 		if _, err := time.Parse(time.RFC3339, email.PublishDate); err != nil {
 			log.Printf("failed to parse publish date %q of email %q: %v", email.PublishDate, email.ID, err)
