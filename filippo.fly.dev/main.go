@@ -150,12 +150,21 @@ func handler() http.Handler {
 		"xaes256gcm":      true,
 		"yubikey-agent":   true,
 	}
-	mux.Handle("filippo.io/{name}", PkgsiteHandler(filippoIOModules, StaticHandler()))
-	mux.Handle("filippo.io/{name}/", PkgsiteHandler(filippoIOModules, StaticHandler()))
+	geomysORGModules := map[string]bool{
+		"ct-archive": true,
+	}
+	mux.Handle("filippo.io/{name}", PkgsiteHandler("filippo.io", filippoIOModules, StaticHandler()))
+	mux.Handle("filippo.io/{name}/", PkgsiteHandler("filippo.io", filippoIOModules, StaticHandler()))
+	mux.Handle("geomys.org/{name}", PkgsiteHandler("geomys.org", geomysORGModules, http.NotFoundHandler()))
+	mux.Handle("geomys.org/{name}/", PkgsiteHandler("geomys.org", geomysORGModules, http.NotFoundHandler()))
 	goGetMux := http.NewServeMux()
 	for name := range filippoIOModules {
 		module := "filippo.io/" + name
 		goGetMux.Handle(module+"/", GoImportHandler(module, "https://github.com/FiloSottile/"+name))
+	}
+	for name := range geomysORGModules {
+		module := "geomys.org/" + name
+		goGetMux.Handle(module+"/", GoImportHandler(module, "https://github.com/geomys/"+name))
 	}
 	goGetMux.Handle("c2sp.org/", GoImportHandler("c2sp.org", "https://github.com/C2SP/C2SP"))
 	goGetMux.Handle("c2sp.org/CCTV/", GoImportHandler("c2sp.org/CCTV", "https://github.com/C2SP/CCTV"))
@@ -271,7 +280,7 @@ func HeavyHitterHandler(table *Table) http.Handler {
 	})
 }
 
-func PkgsiteHandler(names map[string]bool, fallback http.Handler) http.Handler {
+func PkgsiteHandler(host string, names map[string]bool, fallback http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		name := r.PathValue("name")
 		name, version, hasV := strings.Cut(name, "@")
@@ -285,13 +294,13 @@ func PkgsiteHandler(names map[string]bool, fallback http.Handler) http.Handler {
 		u := &url.URL{
 			Scheme:   "https",
 			Host:     "pkg.go.dev",
-			Path:     "/filippo.io" + r.URL.Path,
+			Path:     "/" + host + r.URL.Path,
 			RawQuery: r.URL.RawQuery,
 		}
 		if !hasV {
 			path, symbol, hasSymbol := strings.Cut(r.URL.Path, ".")
 			if hasSymbol {
-				u.Path = "/filippo.io" + path
+				u.Path = "/" + host + path
 				u.Fragment = symbol
 			}
 		}

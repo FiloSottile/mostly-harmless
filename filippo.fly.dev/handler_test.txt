@@ -57,6 +57,15 @@ body contains c2sp.org git https://github.com/C2SP/C2SP
 GET https://c2sp.org/foo/bar?go-get=1
 body contains c2sp.org git https://github.com/C2SP/C2SP
 
+GET https://geomys.org/ct-archive/cmd/photocamera-archiver/?go-get=1
+body contains geomys.org/ct-archive git https://github.com/geomys/ct-archive
+
+GET https://geomys.org/ct-archive/cmd/photocamera-archiver
+redirect == https://pkg.go.dev/geomys.org/ct-archive/cmd/photocamera-archiver
+
+GET https://filippo.io/sunlight/cmd/photocamera-archiver
+redirect == https://geomys.org/ct-archive/cmd/photocamera-archiver
+
 GET https://filippo.io/rwc2024
 redirect == rwc2024/
 

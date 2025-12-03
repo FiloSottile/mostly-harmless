@@ -52,6 +52,9 @@ func redirects(mux *http.ServeMux) {
 		"/gg4": "https://words.filippo.io/full-time-maintainer/",
 		"/gg5": "https://filippo.io/newsletter",
 		"/gg6": "https://go-review.googlesource.com/c/go/+/276272",
+
+		// Link embedded in some archived CT logs.
+		"/sunlight/cmd/photocamera-archiver": "https://geomys.org/ct-archive/cmd/photocamera-archiver",
 	} {
 		if strings.HasSuffix(path, "/") {
 			path = path + "{$}"
