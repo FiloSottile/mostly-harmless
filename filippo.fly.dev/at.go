@@ -107,7 +107,7 @@ func PLCAtomHandler() http.Handler {
 			f.Add(&feeds.Item{
 				Id:          fmt.Sprintf("%s:%d", did, i),
 				IsPermaLink: "false",
-				Title:       "PLC operation",
+				Title:       fmt.Sprintf("%s plc operation %d", did, i),
 				Content:     fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(indented))),
 			})
 		}
