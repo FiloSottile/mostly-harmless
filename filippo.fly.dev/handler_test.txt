@@ -198,3 +198,6 @@ body !contains THIS IS A TEST DRAFT
 
 GET https://geomys.org/witness/navigli
 body contains c2sp.org/tlog-witness
+
+GET https://at.geomys.org/plc/filippo.abyssdomain.expert.atom
+body contains bafyreihpy7ihz7s42hphtuxcji6ovmaxrfdzr6kebxs4flsemiqfinuowy

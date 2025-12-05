@@ -3,6 +3,7 @@ FROM golang:1.24.3-alpine3.21 AS builder
 COPY . src
 WORKDIR src
 ENV CGO_ENABLED=0
+ENV GOTOOLCHAIN=auto
 RUN go install -trimpath
 
 FROM ghcr.io/astral-sh/uv:0.7.17-python3.13-alpine

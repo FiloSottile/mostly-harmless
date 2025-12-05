@@ -47,6 +47,7 @@ func handler() http.Handler {
 	dl(mux)
 	redirects(mux)
 	buttondown(mux)
+	at(mux)
 
 	mux.Handle("filippo.io/", StaticHandler())
 
