@@ -180,10 +180,14 @@ GET https://words.filippo.io/passkey-encryption/
 body !contains Thank you for incentivizing
 body contains Encrypting with passkeys
 
+GET https://words.filippo.io/keyserver-tlog/
+body contains <script>document.querySelectorAll('code.language-diff')
+
 GET https://words.filippo.io/rss/
 body contains <title>Filippo Valsorda</title>
 body contains <link>https://words.filippo.io/
 body contains <item>
+body !contains <script>document.querySelectorAll('code.language-diff')
 
 GET https://words.filippo.io/dispatches/rss/
 redirect == /rss/

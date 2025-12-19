@@ -137,3 +137,4 @@
         const h2last = document.querySelector("h2#the-picture")
         if (h2last && h2last != h2first) h2last.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2last)
     </script>
+    {{ .Metadata.FooterCode }}

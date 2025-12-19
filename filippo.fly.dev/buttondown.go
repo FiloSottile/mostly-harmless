@@ -30,9 +30,10 @@ type buttondownEmail struct {
 	Subject     string        `json:"subject"`
 	Status      string        `json:"status"`
 	Metadata    struct {
-		OverrideSlug  string `json:"override_slug"`
-		OverrideGUID  string `json:"override_guid"`
-		OverrideImage string `json:"override_image"`
+		OverrideSlug  string        `json:"override_slug"`
+		OverrideGUID  string        `json:"override_guid"`
+		OverrideImage string        `json:"override_image"`
+		FooterCode    template.HTML `json:"footer_code"`
 	} `json:"metadata"`
 	Image string `json:"-"`
 }
