@@ -77,6 +77,9 @@ func handler() http.Handler {
 	mux.Handle("age-encryption.org/testkit", http.RedirectHandler(
 		"https://github.com/C2SP/CCTV/tree/main/age", http.StatusFound))
 
+	mux.Handle("age-encryption.org/awesome", http.RedirectHandler(
+		"https://github.com/FiloSottile/awesome-age", http.StatusFound))
+
 	mux.Handle("mkcert.dev/{$}", http.RedirectHandler(
 		"https://github.com/FiloSottile/mkcert", http.StatusFound))
 
