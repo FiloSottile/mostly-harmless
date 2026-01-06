@@ -1,8 +1,8 @@
-filippo.io/mostly-harmless/deps/delta v0.0.0-20260106182554-1e08e04dfd75 h1:LighF80wrVjS34jp5PtcNenHil1zE9kKdRnPOB5rhUs=
-filippo.io/mostly-harmless/deps/delta v0.0.0-20260106182554-1e08e04dfd75/go.mod h1:1uGjMRC/B58iNOhR4dKSJvmOJQic+FPWpvoPeA1X988=
-filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106182554-1e08e04dfd75 h1:CaNAcxfN1K3gJUj4uSw2mHYlJQ0yOQOksh7sb4TeBCE=
-filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106182554-1e08e04dfd75/go.mod h1:d4qmUMUyUiezWG9kUN901/9fxP/b92hg5CB7S4UFHpI=
-filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106182554-1e08e04dfd75 h1:tKsu/fbJBsTvh8nQ2SNMgq7IqXlFE5i2nrrKnDyeKSw=
-filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106182554-1e08e04dfd75/go.mod h1:E3hbTuUqkUUGmnmlUovlCLBKHxZGpoLsPlEVyQl0G64=
+filippo.io/mostly-harmless/deps/delta v0.0.0-20260106185237-502970a44e51 h1:mGqOVG01QlepcmG9ileAElzgiOVgt1t05OXNNW5B3oU=
+filippo.io/mostly-harmless/deps/delta v0.0.0-20260106185237-502970a44e51/go.mod h1:VH2nIxEAejVkDUFwGg8SkyRLw9/4lXPAYkMyRAGYofA=
+filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106185237-502970a44e51 h1:W11V+IwHDGNu39zBR9EBJ69Bw8AB/Mj3hhX8bRNKVc0=
+filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106185237-502970a44e51/go.mod h1:d4qmUMUyUiezWG9kUN901/9fxP/b92hg5CB7S4UFHpI=
+filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106185237-502970a44e51 h1:WCSPAjAQ1FlHRfVvQeD+6mI2FA2FwQ5gHhf1OuwCOJo=
+filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106185237-502970a44e51/go.mod h1:E3hbTuUqkUUGmnmlUovlCLBKHxZGpoLsPlEVyQl0G64=
 filippo.io/mostly-harmless/deps/treble v0.0.0-20260106182554-1e08e04dfd75 h1:UteBcy1IzsyK2F8w3ctuEpN1NbzeHqkELj5Z6gIkXEk=
 filippo.io/mostly-harmless/deps/treble v0.0.0-20260106182554-1e08e04dfd75/go.mod h1:/EYBxlEETo0pHACoSkhO1ojrVtUEGeZ0dEa7Pp+aWs8=
