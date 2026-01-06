@@ -1,9 +1,9 @@
-filippo.io/mostly-harmless/deps/alpha v0.0.0-20260106182753-f1c1ac0ce455 h1:t0wWKhLYF+TEbiPiPXSQw1CL4cu4cwqnxiqjZAmihyA=
-filippo.io/mostly-harmless/deps/alpha v0.0.0-20260106182753-f1c1ac0ce455/go.mod h1:QwSZFO2LjvVRGrmvMhVZdlkI8+eBu6f0XVSvp00nSOU=
-filippo.io/mostly-harmless/deps/beta v0.0.0-20260106182753-f1c1ac0ce455 h1:AqOifW1fq/+2vvAvBg+QxD2F9MhVAnbCcAubyTKKbOM=
-filippo.io/mostly-harmless/deps/beta v0.0.0-20260106182753-f1c1ac0ce455/go.mod h1:/IPyXojyQsy5Y3WRxxYRAyscYf3KjYjE1zjU0noWE2k=
-filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106182753-f1c1ac0ce455 h1:FNAZz2blr5swq0qUwNPnuVOt3wVW8PDIYIXboi8a/sc=
-filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106182753-f1c1ac0ce455/go.mod h1:E3hbTuUqkUUGmnmlUovlCLBKHxZGpoLsPlEVyQl0G64=
+filippo.io/mostly-harmless/deps/alpha v0.0.0-20260106185502-30b5cb65aed8 h1:wPKqJ518TKa6FeolNWdR6UxGJxxexAMARs3mC9/hRPI=
+filippo.io/mostly-harmless/deps/alpha v0.0.0-20260106185502-30b5cb65aed8/go.mod h1:QwSZFO2LjvVRGrmvMhVZdlkI8+eBu6f0XVSvp00nSOU=
+filippo.io/mostly-harmless/deps/beta v0.0.0-20260106185502-30b5cb65aed8 h1:a+77BEmhE29MS2SlsiANxn1s9CUehpfmmiqDPajOBzk=
+filippo.io/mostly-harmless/deps/beta v0.0.0-20260106185502-30b5cb65aed8/go.mod h1:XbwAe03bcSd9jIOetJ6NyaB6O8mrapNbrxelbklRU0g=
+filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106185502-30b5cb65aed8 h1:3zpeMNnvYjVTQfgPZmFDwmo26sxWacmxBpbGtJEiQnE=
+filippo.io/mostly-harmless/deps/gamma v0.0.0-20260106185502-30b5cb65aed8/go.mod h1:E3hbTuUqkUUGmnmlUovlCLBKHxZGpoLsPlEVyQl0G64=
 filippo.io/mostly-harmless/deps/tango v0.0.0-20260106182753-f1c1ac0ce455 h1:E+9/osZ9wON8ghDrStG9exS9Wlpmj7YNXNH3cef7bNY=
 filippo.io/mostly-harmless/deps/tango v0.0.0-20260106182753-f1c1ac0ce455/go.mod h1:QYVbp1AuzSln2xIyjbgMz4ziKXm0LEyih4XofGGcfgk=
 filippo.io/mostly-harmless/deps/thyme v0.0.0-20260106182753-f1c1ac0ce455 h1:ofnls3WrUxkmGjNkAwMZWVXhpGbXgbuNGCiuimB4NC0=
@@ -12,5 +12,5 @@ filippo.io/mostly-harmless/deps/tonic v0.0.0-20260105000932-64e1a164a503 h1:q330
 filippo.io/mostly-harmless/deps/tonic v0.0.0-20260105000932-64e1a164a503/go.mod h1:QcDMQQXPJbBJzISEkXILkEh6hArb8TEVvo7B4UMyWNw=
 filippo.io/mostly-harmless/deps/tulip v0.0.0-20260105000932-64e1a164a503 h1:DQZy+SEyYUkf+ITbrgw2AfnGl5YZU6uOJOyLkxyXKpQ=
 filippo.io/mostly-harmless/deps/tulip v0.0.0-20260105000932-64e1a164a503/go.mod h1:R1UqsQXkUo9ax7H5lV4mt5YawS10DjDrVyycBhttBdU=
-filippo.io/mostly-harmless/deps/winsys v0.0.0-20260106182753-f1c1ac0ce455 h1:+lQ1/5niULtJrzPrS6yfpYM2Hsll4SlQQBRtbqs0seo=
-filippo.io/mostly-harmless/deps/winsys v0.0.0-20260106182753-f1c1ac0ce455/go.mod h1:6iGkr3eleTzIF8s33tKry3ntMtWy8wd8ZoQiUJw3pSE=
+filippo.io/mostly-harmless/deps/winsys v0.0.0-20260106185502-30b5cb65aed8 h1:KTcmloeg4wGmcZgU/BBrZ+SbMQJE64Iwi5p4ELT9kBM=
+filippo.io/mostly-harmless/deps/winsys v0.0.0-20260106185502-30b5cb65aed8/go.mod h1:6iGkr3eleTzIF8s33tKry3ntMtWy8wd8ZoQiUJw3pSE=
