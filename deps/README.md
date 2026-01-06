@@ -23,6 +23,10 @@ flowchart LR
         delta_["."]
     end
     
+    subgraph epsilon["epsilon"]
+        epsilon_["."]
+    end
+
     subgraph tango["tango"]
         tango_["."]
     end
@@ -51,6 +55,7 @@ flowchart LR
     main_pkg2 --> beta_pkg1
     beta_pkg1 --> gamma_
     beta_pkg2 --> delta_
+    delta_ --> epsilon_
     main_pkg1 -.-> tango_
     alpha_ -.-> tonic_
     beta_pkg2 -.-> treble_
