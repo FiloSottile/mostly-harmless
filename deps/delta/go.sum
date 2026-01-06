@@ -1,2 +1,4 @@
 filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106182130-c7fc3d603e7d h1:YsRB9nstXfTaovwmymqppaX9rQV62Pxqqrq+sU7R4ds=
 filippo.io/mostly-harmless/deps/epsilon v0.0.0-20260106182130-c7fc3d603e7d/go.mod h1:d4qmUMUyUiezWG9kUN901/9fxP/b92hg5CB7S4UFHpI=
+filippo.io/mostly-harmless/deps/zeta v0.0.0-20260106184830-6ffacf3bbc09 h1:zpdFeRAIK6gNVYE/lVVXGDlKL7YBVNkdbbetUTO2rNM=
+filippo.io/mostly-harmless/deps/zeta v0.0.0-20260106184830-6ffacf3bbc09/go.mod h1:rG075A+LVoalAi/gZI4ota/9gB16OTUh9EYXZ4vk3Pg=

@@ -1,5 +1,5 @@
-package delta
+package pkg1
 
 import _ "filippo.io/mostly-harmless/deps/epsilon"
 
-func init() { println("delta") }
+func init() { println("delta/pkg1") }
