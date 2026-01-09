@@ -15,7 +15,7 @@ import (
 	"crawshaw.io/sqlite/sqlitex"
 	"filippo.io/mostly-harmless/covfefe"
 	"filippo.io/mostly-harmless/covfefe/cmd/webfefe/data"
-	twitterLogin "github.com/dghubble/gologin/twitter"
+	twitterLogin "github.com/dghubble/gologin/v2/twitter"
 	"github.com/dghubble/oauth1"
 	twitterOAuth1 "github.com/dghubble/oauth1/twitter"
 	"github.com/gorilla/sessions"
