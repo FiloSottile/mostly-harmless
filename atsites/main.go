@@ -2,17 +2,25 @@ package main
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
 	"log/slog"
+	"net"
+	"net/http"
 	"os"
 	"os/signal"
+	"slices"
 	"strings"
 
+	"github.com/bluesky-social/indigo/atproto/identity"
+	"github.com/bluesky-social/indigo/atproto/syntax"
 	indigoutil "github.com/bluesky-social/indigo/util"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
+	"github.com/gorilla/feeds"
 	"golang.org/x/sync/errgroup"
 	"zombiezen.com/go/sqlite"
 	"zombiezen.com/go/sqlite/sqlitex"
@@ -21,6 +29,7 @@ import (
 func main() {
 	dbFlag := flag.String("db", "atsites.sqlite3", "path to the SQLite database file")
 	tapFlag := flag.String("tap", "ws://localhost:2480/channel", "Tap WebSocket URL")
+	listenFlag := flag.String("listen", ":8000", "address to listen on for HTTP server")
 	debugFlag := flag.Bool("debug", false, "enable debug logging")
 	flag.Parse()
 
@@ -70,6 +79,21 @@ func main() {
 		slog.Info("connected to tap", "url", *tapFlag)
 		return s.handleTap(ctx, c)
 	})
+	hs := &http.Server{
+		Addr:        *listenFlag,
+		Handler:     s.httpHandler(),
+		BaseContext: func(_ net.Listener) context.Context { return ctx },
+	}
+	group.Go(func() error {
+		slog.Info("starting HTTP server", "addr", *listenFlag)
+		return hs.ListenAndServe()
+	})
+	group.Go(func() error {
+		<-ctx.Done()
+		slog.Info("shutting down")
+		hs.Shutdown(context.Background())
+		return nil
+	})
 
 	slog.Error("stopping", "error", group.Wait())
 }
@@ -85,7 +109,7 @@ func initDatabase(ctx context.Context, pool *sqlitex.Pool) error {
 		CREATE TABLE IF NOT EXISTS publications (
 			repo TEXT NOT NULL, -- did
 			rkey TEXT NOT NULL,
-			record_json BLOB NOT NULL, -- JSONB
+			record_json BLOB NOT NULL,
 			PRIMARY KEY (repo, rkey)
 		) STRICT;
 		CREATE TABLE IF NOT EXISTS documents (
@@ -93,7 +117,7 @@ func initDatabase(ctx context.Context, pool *sqlitex.Pool) error {
 			rkey TEXT NOT NULL,
 			publication_repo TEXT NOT NULL,
 			publication_rkey TEXT NOT NULL,
-			document_json BLOB NOT NULL, -- JSONB
+			document_json BLOB NOT NULL,
 			PRIMARY KEY (repo, rkey)
 			-- No foreign key because we might observe documents before their publication
 		) STRICT;
@@ -247,4 +271,291 @@ func (s *Server) deleteDocument(ctx context.Context, db *sqlite.Conn, repo, rkey
 	`, &sqlitex.ExecOptions{
 		Args: []any{repo, rkey},
 	})
+}
+
+func (s *Server) httpHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /profile/{handle}", s.handleProfile)
+	mux.HandleFunc("GET /profile/{did}/publication/{rkey}", s.handlePublication)
+	mux.HandleFunc("GET /profile/{did}/publication/{rkey}/atom.xml", s.handleFeed)
+	return mux
+}
+
+//go:embed templates
+var templates embed.FS
+
+var profileTemplate = template.Must(template.New("profile.html").ParseFS(templates, "templates/profile.html"))
+
+func (s *Server) handleProfile(w http.ResponseWriter, r *http.Request) {
+	id, err := syntax.ParseAtIdentifier(r.PathValue("handle"))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("invalid AT identifier: %v", err), http.StatusBadRequest)
+		return
+	}
+	i, err := (&identity.BaseDirectory{}).Lookup(r.Context(), *id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to resolve handle: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	publications, err := s.getPublications(r.Context(), i.DID.String())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to fetch publications: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := profileTemplate.Execute(w, struct {
+		Handle       string
+		DID          string
+		Publications []*Publication
+	}{
+		Handle:       i.Handle.String(),
+		DID:          i.DID.String(),
+		Publications: publications,
+	}); err != nil {
+		slog.ErrorContext(r.Context(), "execute profile template", "error", err)
+	}
+}
+
+func (s *Server) getPublications(ctx context.Context, did string) ([]*Publication, error) {
+	db, err := s.db.Take(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer s.db.Put(db)
+
+	var publications []*Publication
+	if err := sqlitex.Execute(db, `
+		SELECT record_json, rkey
+		FROM publications
+		WHERE repo = ?
+		ORDER BY rowid DESC
+	`, &sqlitex.ExecOptions{
+		Args: []any{did},
+		ResultFunc: func(stmt *sqlite.Stmt) error {
+			publications = append(publications, parsePublication(did, stmt.ColumnText(1),
+				json.RawMessage(stmt.ColumnText(0))))
+			return nil
+		},
+	}); err != nil {
+		return nil, err
+	}
+	return publications, nil
+}
+
+type Publication struct {
+	Repo        string `json:"-"`
+	Rkey        string `json:"-"`
+	Invalid     bool   `json:"-"`
+	URL         string `json:"url"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func parsePublication(repo, rkey string, record json.RawMessage) *Publication {
+	pub := &Publication{Repo: repo, Rkey: rkey}
+	if err := json.Unmarshal(record, &pub); err != nil {
+		pub.Invalid = true
+	}
+	return pub
+}
+
+var publicationTemplate = template.Must(template.New("publication.html").ParseFS(templates, "templates/publication.html"))
+
+func (s *Server) handlePublication(w http.ResponseWriter, r *http.Request) {
+	repo := r.PathValue("did")
+	rkey := r.PathValue("rkey")
+
+	did, err := syntax.ParseDID(repo)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("invalid DID: %v", err), http.StatusBadRequest)
+		return
+	}
+	i, err := (&identity.BaseDirectory{}).LookupDID(r.Context(), did)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to resolve DID: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	publication, err := s.getPublication(r.Context(), repo, rkey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to fetch publication: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if publication == nil {
+		http.Error(w, "publication not found", http.StatusNotFound)
+		return
+	}
+
+	documents, err := s.getDocumentsForPublication(r.Context(), repo, rkey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to fetch documents: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := publicationTemplate.Execute(w, struct {
+		Handle      string
+		DID         string
+		Publication *Publication
+		Documents   []*Document
+	}{
+		Handle:      i.Handle.String(),
+		Publication: publication,
+		Documents:   documents,
+	}); err != nil {
+		slog.ErrorContext(r.Context(), "execute publication template", "error", err)
+	}
+}
+
+type Document struct {
+	Repo        string `json:"-"`
+	Rkey        string `json:"-"`
+	Invalid     bool   `json:"-"`
+	Path        string `json:"path"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	PublishedAt string `json:"publishedAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+func (s *Server) getPublication(ctx context.Context, repo, rkey string) (*Publication, error) {
+	db, err := s.db.Take(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer s.db.Put(db)
+
+	var publication *Publication
+	if err := sqlitex.Execute(db, `
+		SELECT record_json
+		FROM publications
+		WHERE repo = ? AND rkey = ?
+	`, &sqlitex.ExecOptions{
+		Args: []any{repo, rkey},
+		ResultFunc: func(stmt *sqlite.Stmt) error {
+			publication = parsePublication(repo, rkey,
+				json.RawMessage(stmt.ColumnText(0)))
+			return nil
+		},
+	}); err != nil {
+		return nil, err
+	}
+	return publication, nil
+}
+
+func (s *Server) getDocumentsForPublication(ctx context.Context, pubRepo, pubRkey string) ([]*Document, error) {
+	db, err := s.db.Take(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer s.db.Put(db)
+
+	var documents []*Document
+	if err := sqlitex.Execute(db, `
+		SELECT document_json, rkey
+		FROM documents
+		WHERE publication_repo = ? AND publication_rkey = ?
+		AND repo = publication_repo -- don't let strangers inject documents into others' publications
+		ORDER BY rowid DESC
+	`, &sqlitex.ExecOptions{
+		Args: []any{pubRepo, pubRkey},
+		ResultFunc: func(stmt *sqlite.Stmt) error {
+			documents = append(documents, parseDocument(pubRepo, stmt.ColumnText(1),
+				json.RawMessage(stmt.ColumnText(0))))
+			return nil
+		},
+	}); err != nil {
+		return nil, err
+	}
+
+	slices.SortStableFunc(documents, func(a, b *Document) int {
+		if a.PublishedAt == "" && b.PublishedAt == "" {
+			return 0
+		}
+		if a.PublishedAt == "" {
+			return 1
+		}
+		if b.PublishedAt == "" {
+			return -1
+		}
+		return strings.Compare(b.PublishedAt, a.PublishedAt)
+	})
+
+	return documents, nil
+}
+
+func parseDocument(repo, rkey string, record json.RawMessage) *Document {
+	doc := &Document{Repo: repo, Rkey: rkey}
+	if err := json.Unmarshal(record, &doc); err != nil {
+		doc.Invalid = true
+	}
+	return doc
+}
+
+func (s *Server) handleFeed(w http.ResponseWriter, r *http.Request) {
+	repo := r.PathValue("did")
+	rkey := r.PathValue("rkey")
+
+	did, err := syntax.ParseDID(repo)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("invalid DID: %v", err), http.StatusBadRequest)
+		return
+	}
+	i, err := (&identity.BaseDirectory{}).LookupDID(r.Context(), did)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to resolve DID: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	publication, err := s.getPublication(r.Context(), repo, rkey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to fetch publication: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if publication == nil {
+		http.Error(w, "publication not found", http.StatusNotFound)
+		return
+	}
+
+	documents, err := s.getDocumentsForPublication(r.Context(), repo, rkey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to fetch documents: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	f := &feeds.Feed{
+		Title:       publication.Name + " by " + i.Handle.String(),
+		Link:        &feeds.Link{Href: publication.URL},
+		Description: publication.Description,
+		Author:      &feeds.Author{Name: i.Handle.String()},
+	}
+	for _, doc := range documents {
+		item := &feeds.Item{
+			Id:          doc.Rkey,
+			IsPermaLink: "false",
+			Title:       doc.Title,
+			Content:     doc.Description,
+			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", publication.URL, doc.Path)},
+			Author:      &feeds.Author{Name: i.Handle.String()},
+		}
+		t, err := syntax.ParseDatetimeLenient(doc.PublishedAt)
+		if err == nil {
+			item.Created = t.Time()
+		}
+		u, err := syntax.ParseDatetimeLenient(doc.UpdatedAt)
+		if err == nil {
+			item.Updated = u.Time()
+		}
+		f.Add(item)
+	}
+	atom, err := f.ToAtom()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to generate Atom feed: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/atom+xml; charset=utf-8")
+	w.Write([]byte(atom))
+
 }

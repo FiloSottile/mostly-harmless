@@ -7,6 +7,7 @@ tool github.com/bluesky-social/indigo/cmd/tap
 require (
 	github.com/bluesky-social/indigo v0.0.0-20260106221649-6fcd9317e725
 	github.com/coder/websocket v1.8.14
+	github.com/gorilla/feeds v1.2.0
 	golang.org/x/sync v0.19.0
 	zombiezen.com/go/sqlite v1.4.2
 )
