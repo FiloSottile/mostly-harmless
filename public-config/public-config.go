@@ -20,6 +20,7 @@ var configFiles = []string{
 	"/etc/systemd/system/partial-aftersun.timer",
 	"/etc/systemd/system/partial-aftersun-staging.service",
 	"/etc/systemd/system/partial-aftersun-staging.timer",
+	"/etc/systemd/system/age-keyserver.service",
 	"/etc/systemd/system/public-config.service",
 	"/etc/logrotate.d/sunlight",
 	"/etc/logrotate.d/sunlight-staging",
