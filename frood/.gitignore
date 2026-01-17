@@ -1,6 +1,7 @@
 /images
 /usb_disk.img
 /QEMU_EFI.fd
+/root/root/.ssh/id_ed25519
 /root/etc/ssh/ssh_host_ed25519_key
 /root/etc/ssmtp/ssmtp.conf
 /root/etc/ssl/frood-key.pem
