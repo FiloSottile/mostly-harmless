@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"embed"
 	"encoding/json"
 	"flag"
@@ -15,6 +16,7 @@ import (
 	"slices"
 	"strings"
 
+	"filippo.io/mostly-harmless/atsites/internal/db"
 	"github.com/bluesky-social/indigo/atproto/identity"
 	"github.com/bluesky-social/indigo/atproto/syntax"
 	indigoutil "github.com/bluesky-social/indigo/util"
@@ -22,9 +24,11 @@ import (
 	"github.com/coder/websocket/wsjson"
 	"github.com/gorilla/feeds"
 	"golang.org/x/sync/errgroup"
-	"zombiezen.com/go/sqlite"
-	"zombiezen.com/go/sqlite/sqlitex"
+	_ "modernc.org/sqlite"
 )
+
+//go:embed sql/schema.sql
+var schemaSQL string
 
 func main() {
 	dbFlag := flag.String("db", "atsites.sqlite3", "path to the SQLite database file")
@@ -47,27 +51,22 @@ func main() {
 	defer stop()
 	group, ctx := errgroup.WithContext(ctx)
 
-	db, err := sqlitex.NewPool(*dbFlag, sqlitex.PoolOptions{
-		PrepareConn: func(db *sqlite.Conn) error {
-			db.SetInterrupt(ctx.Done())
-			return sqlitex.ExecuteTransient(db, `PRAGMA foreign_keys = ON;`, nil)
-		},
-	})
+	sqlDB, err := sql.Open("sqlite", *dbFlag+"?_pragma=foreign_keys(1)")
 	if err != nil {
 		slog.Error("failed to open SQLite database", "error", err)
 		return
 	}
 	defer func() {
-		if err := db.Close(); err != nil {
+		if err := sqlDB.Close(); err != nil {
 			slog.Error("failed to close SQLite database", "error", err)
 		}
 	}()
-	if err := initDatabase(ctx, db); err != nil {
+	if _, err := sqlDB.ExecContext(ctx, schemaSQL); err != nil {
 		slog.Error("failed to initialize database", "error", err)
 		return
 	}
 
-	s := &Server{db: db}
+	s := &Server{db: sqlDB, queries: db.New(sqlDB)}
 	group.Go(func() error {
 		c, _, err := websocket.Dial(ctx, *tapFlag, nil)
 		if err != nil {
@@ -98,36 +97,9 @@ func main() {
 	slog.Error("stopping", "error", group.Wait())
 }
 
-func initDatabase(ctx context.Context, pool *sqlitex.Pool) error {
-	db, err := pool.Take(ctx)
-	if err != nil {
-		return err
-	}
-	defer pool.Put(db)
-
-	return sqlitex.ExecScript(db, `
-		CREATE TABLE IF NOT EXISTS publications (
-			repo TEXT NOT NULL, -- did
-			rkey TEXT NOT NULL,
-			record_json BLOB NOT NULL,
-			PRIMARY KEY (repo, rkey)
-		) STRICT;
-		CREATE TABLE IF NOT EXISTS documents (
-			repo TEXT NOT NULL, -- did
-			rkey TEXT NOT NULL,
-			publication_repo TEXT NOT NULL,
-			publication_rkey TEXT NOT NULL,
-			document_json BLOB NOT NULL,
-			PRIMARY KEY (repo, rkey)
-			-- No foreign key because we might observe documents before their publication
-		) STRICT;
-		CREATE INDEX IF NOT EXISTS idx_documents_publication
-			ON documents (publication_repo, publication_rkey);
-	`)
-}
-
 type Server struct {
-	db *sqlitex.Pool
+	db      *sql.DB
+	queries *db.Queries
 }
 
 func (s *Server) handleTap(ctx context.Context, c *websocket.Conn) error {
@@ -180,21 +152,28 @@ type recordEvent struct {
 }
 
 func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error {
-	db, err := s.db.Take(ctx)
-	if err != nil {
-		return err
-	}
-	defer s.db.Put(db)
-
 	switch rec.Collection {
 	case "site.standard.publication":
 		if rec.Action == "delete" {
-			return s.deletePublication(ctx, db, rec.Repo, rec.Rkey)
+			slog.DebugContext(ctx, "deleting publication", "repo", rec.Repo, "rkey", rec.Rkey)
+			return s.queries.DeletePublication(ctx, db.DeletePublicationParams{
+				Repo: rec.Repo,
+				Rkey: rec.Rkey,
+			})
 		}
-		return s.storePublication(ctx, db, rec.Repo, rec.Rkey, rec.Record)
+		slog.DebugContext(ctx, "storing publication", "repo", rec.Repo, "rkey", rec.Rkey)
+		return s.queries.StorePublication(ctx, db.StorePublicationParams{
+			Repo:       rec.Repo,
+			Rkey:       rec.Rkey,
+			RecordJson: rec.Record,
+		})
 	case "site.standard.document":
 		if rec.Action == "delete" {
-			return s.deleteDocument(ctx, db, rec.Repo, rec.Rkey)
+			slog.DebugContext(ctx, "deleting document", "repo", rec.Repo, "rkey", rec.Rkey)
+			return s.queries.DeleteDocument(ctx, db.DeleteDocumentParams{
+				Repo: rec.Repo,
+				Rkey: rec.Rkey,
+			})
 		}
 		var r struct {
 			Site string `json:"site"`
@@ -221,56 +200,21 @@ func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error 
 				"uri", fmt.Sprintf("at://%s/%s/%s", rec.Repo, rec.Collection, rec.Rkey))
 			return nil
 		}
-		return s.storeDocument(ctx, db, rec.Repo, rec.Rkey, u.Did, u.Rkey, rec.Record)
+		slog.DebugContext(ctx, "storing document", "repo", rec.Repo, "rkey", rec.Rkey,
+			"publication_repo", u.Did, "publication_rkey", u.Rkey)
+		return s.queries.StoreDocument(ctx, db.StoreDocumentParams{
+			Repo:            rec.Repo,
+			Rkey:            rec.Rkey,
+			PublicationRepo: u.Did,
+			PublicationRkey: u.Rkey,
+			DocumentJson:    rec.Record,
+		})
 	default:
 		slog.DebugContext(ctx, "ignoring record from unknown collection",
 			"uri", fmt.Sprintf("at://%s/%s/%s", rec.Repo, rec.Collection, rec.Rkey))
 	}
 
 	return nil
-}
-
-func (s *Server) storePublication(ctx context.Context, db *sqlite.Conn, repo, rkey string, record json.RawMessage) error {
-	slog.DebugContext(ctx, "storing publication", "repo", repo, "rkey", rkey)
-	return sqlitex.Execute(db, `
-		INSERT INTO publications (repo, rkey, record_json)
-		VALUES (?, ?, ?)
-		ON CONFLICT(repo, rkey) DO UPDATE SET record_json=excluded.record_json
-	`, &sqlitex.ExecOptions{
-		Args: []any{repo, rkey, record},
-	})
-}
-
-func (s *Server) deletePublication(ctx context.Context, db *sqlite.Conn, repo, rkey string) error {
-	slog.DebugContext(ctx, "deleting publication", "repo", repo, "rkey", rkey)
-	return sqlitex.Execute(db, `
-		DELETE FROM publications
-		WHERE repo = ? AND rkey = ?
-	`, &sqlitex.ExecOptions{
-		Args: []any{repo, rkey},
-	})
-}
-
-func (s *Server) storeDocument(ctx context.Context, db *sqlite.Conn, repo, rkey, pubRepo, pubRkey string, record json.RawMessage) error {
-	slog.DebugContext(ctx, "storing document", "repo", repo, "rkey", rkey,
-		"publication_repo", pubRepo, "publication_rkey", pubRkey)
-	return sqlitex.Execute(db, `
-		INSERT INTO documents (repo, rkey, publication_repo, publication_rkey, document_json)
-		VALUES (?, ?, ?, ?, ?)
-		ON CONFLICT(repo, rkey) DO UPDATE SET document_json=excluded.document_json, publication_repo=excluded.publication_repo, publication_rkey=excluded.publication_rkey
-	`, &sqlitex.ExecOptions{
-		Args: []any{repo, rkey, pubRepo, pubRkey, record},
-	})
-}
-
-func (s *Server) deleteDocument(ctx context.Context, db *sqlite.Conn, repo, rkey string) error {
-	slog.DebugContext(ctx, "deleting document", "repo", repo, "rkey", rkey)
-	return sqlitex.Execute(db, `
-		DELETE FROM documents
-		WHERE repo = ? AND rkey = ?
-	`, &sqlitex.ExecOptions{
-		Args: []any{repo, rkey},
-	})
 }
 
 func (s *Server) httpHandler() http.Handler {
@@ -319,27 +263,14 @@ func (s *Server) handleProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getPublications(ctx context.Context, did string) ([]*Publication, error) {
-	db, err := s.db.Take(ctx)
+	rows, err := s.queries.GetPublications(ctx, did)
 	if err != nil {
 		return nil, err
 	}
-	defer s.db.Put(db)
 
-	var publications []*Publication
-	if err := sqlitex.Execute(db, `
-		SELECT record_json, rkey
-		FROM publications
-		WHERE repo = ?
-		ORDER BY rowid DESC
-	`, &sqlitex.ExecOptions{
-		Args: []any{did},
-		ResultFunc: func(stmt *sqlite.Stmt) error {
-			publications = append(publications, parsePublication(did, stmt.ColumnText(1),
-				json.RawMessage(stmt.ColumnText(0))))
-			return nil
-		},
-	}); err != nil {
-		return nil, err
+	publications := make([]*Publication, 0, len(rows))
+	for _, row := range rows {
+		publications = append(publications, parsePublication(did, row.Rkey, row.RecordJson))
 	}
 	return publications, nil
 }
@@ -421,53 +352,31 @@ type Document struct {
 }
 
 func (s *Server) getPublication(ctx context.Context, repo, rkey string) (*Publication, error) {
-	db, err := s.db.Take(ctx)
+	record, err := s.queries.GetPublication(ctx, db.GetPublicationParams{
+		Repo: repo,
+		Rkey: rkey,
+	})
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	defer s.db.Put(db)
-
-	var publication *Publication
-	if err := sqlitex.Execute(db, `
-		SELECT record_json
-		FROM publications
-		WHERE repo = ? AND rkey = ?
-	`, &sqlitex.ExecOptions{
-		Args: []any{repo, rkey},
-		ResultFunc: func(stmt *sqlite.Stmt) error {
-			publication = parsePublication(repo, rkey,
-				json.RawMessage(stmt.ColumnText(0)))
-			return nil
-		},
-	}); err != nil {
-		return nil, err
-	}
-	return publication, nil
+	return parsePublication(repo, rkey, record), nil
 }
 
 func (s *Server) getDocumentsForPublication(ctx context.Context, pubRepo, pubRkey string) ([]*Document, error) {
-	db, err := s.db.Take(ctx)
+	rows, err := s.queries.GetDocumentsForPublication(ctx, db.GetDocumentsForPublicationParams{
+		PublicationRepo: pubRepo,
+		PublicationRkey: pubRkey,
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer s.db.Put(db)
 
-	var documents []*Document
-	if err := sqlitex.Execute(db, `
-		SELECT document_json, rkey
-		FROM documents
-		WHERE publication_repo = ? AND publication_rkey = ?
-		AND repo = publication_repo -- don't let strangers inject documents into others' publications
-		ORDER BY rowid DESC
-	`, &sqlitex.ExecOptions{
-		Args: []any{pubRepo, pubRkey},
-		ResultFunc: func(stmt *sqlite.Stmt) error {
-			documents = append(documents, parseDocument(pubRepo, stmt.ColumnText(1),
-				json.RawMessage(stmt.ColumnText(0))))
-			return nil
-		},
-	}); err != nil {
-		return nil, err
+	documents := make([]*Document, 0, len(rows))
+	for _, row := range rows {
+		documents = append(documents, parseDocument(pubRepo, row.Rkey, row.DocumentJson))
 	}
 
 	slices.SortStableFunc(documents, func(a, b *Document) int {
