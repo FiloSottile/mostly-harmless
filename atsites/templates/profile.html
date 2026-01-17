@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AT Protocol sites by {{ .Handle }}</title>
+
+    {{ range .Publications }}
+    <link rel="alternate" type="application/atom+xml" title="{{ .Name }}" href="/profile/{{ .Repo }}/publication/{{ .Rkey }}/atom.xml">
+    {{- end }}
+
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        header {
+            margin: 5rem auto;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+    </style>
+</head>
+<body>
+
+<main>
+<header>
+<h1>AT Protocol sites by {{ .Handle }}</h1>
+<p>{{ .DID }}</p>
+</header>
+
+{{ if .Publications }}
+{{ range .Publications }}
+{{ if .Invalid }}
+<h2><a href="/profile/{{ .Repo }}/publication/{{ .Rkey }}">{{ .Rkey }}</a> [invalid publication]</h2>
+{{ else }}
+<h2><a href="/profile/{{ .Repo }}/publication/{{ .Rkey }}">{{ .Name }}</a></h2>
+<p>{{ .Description }}</p>
+<p><a href="/profile/{{ .Repo }}/publication/{{ .Rkey }}/atom.xml">[feed]</a></p>
+{{ end }}
+{{ end }}
+{{ else }}
+<p>No publications found.</p>
+{{ end }}

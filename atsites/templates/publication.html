@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Publication.Name }} by {{ .Handle }}</title>
+
+    {{ with .Publication }}
+    <link rel="alternate" type="application/atom+xml" title="{{ .Name }}" href="/profile/{{ .Repo }}/publication/{{ .Rkey }}/atom.xml">
+    {{- end }}
+
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        a {
+            color: inherit;
+        }
+        article {
+            margin-bottom: 3em;
+        }
+        header {
+            margin: 5rem auto;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        article h1 {
+            margin-top: 0.25em;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+<main>
+<header>
+{{ if .Publication.Invalid }}
+<h1>Invalid publication "{{ .Publication.Rkey }}"</h1>
+{{ else }}
+<h1>{{ .Publication.Name }}</h1>
+<p>by <a href="/profile/{{ .Handle }}">{{ .Handle }}</a></p>
+<p>{{ .Publication.Description }}</p>
+<p><a href="/profile/{{ .Publication.Repo }}/publication/{{ .Publication.Rkey }}/atom.xml">[feed]</a></p>
+{{- end }}
+</header>
+
+{{ if .Documents }}
+{{ range .Documents }}
+<article>
+    {{ if .Invalid }}
+    <h1><a href="{{ $.Publication.URL }}/{{ .Path }}" rel="nofollow">{{ .Rkey }} [invalid document]</a></h1>
+    {{ else }}
+    {{ if .PublishedAt }}
+    <time>{{ .PublishedAt }}</time>
+    {{- end }}
+    <h1><a href="{{ $.Publication.URL }}/{{ .Path }}" rel="nofollow">{{ .Title }}</a></h1>
+    {{ if .Description }}
+    <p>{{ .Description }}</p>
+    {{- end }}
+    {{- end }}
+</article>
+{{ end }}
+{{ else }}
+<p>No documents found.</p>
+{{ end }}
