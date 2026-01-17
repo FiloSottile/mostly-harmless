@@ -1,4 +1,5 @@
 app = "filippo-golink"
+primary_region = "fra"
 
 [build]
 image = "ghcr.io/tailscale/golink:main"
@@ -7,5 +8,5 @@ image = "ghcr.io/tailscale/golink:main"
 strategy = "immediate"
 
 [mounts]
-source="golink"
+source="golink_restored"
 destination="/home/nonroot"
