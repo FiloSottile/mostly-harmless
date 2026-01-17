@@ -224,6 +224,8 @@ func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error 
 
 func (s *Server) httpHandler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /{$}", s.handleIndex)
+	mux.Handle("GET /assets/", http.FileServer(http.FS(assets)))
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		if t := lastDocumentSeen.Load(); time.Since(*t) > 24*time.Hour {
 			http.Error(w, "no documents seen in the last 24 hours", http.StatusInternalServerError)
@@ -241,7 +243,18 @@ func (s *Server) httpHandler() http.Handler {
 //go:embed templates
 var templates embed.FS
 
+//go:embed assets
+var assets embed.FS
+
+var indexTemplate = template.Must(template.New("index.html").ParseFS(templates, "templates/index.html"))
 var profileTemplate = template.Must(template.New("profile.html").ParseFS(templates, "templates/profile.html"))
+
+func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := indexTemplate.Execute(w, nil); err != nil && r.Context().Err() == nil {
+		slog.ErrorContext(r.Context(), "execute index template", "error", err)
+	}
+}
 
 func (s *Server) handleProfile(w http.ResponseWriter, r *http.Request) {
 	id, err := syntax.ParseAtIdentifier(r.PathValue("handle"))
@@ -270,7 +283,7 @@ func (s *Server) handleProfile(w http.ResponseWriter, r *http.Request) {
 		Handle:       i.Handle.String(),
 		DID:          i.DID.String(),
 		Publications: publications,
-	}); err != nil {
+	}); err != nil && r.Context().Err() == nil {
 		slog.ErrorContext(r.Context(), "execute profile template", "error", err)
 	}
 }
@@ -348,7 +361,7 @@ func (s *Server) handlePublication(w http.ResponseWriter, r *http.Request) {
 		Handle:      i.Handle.String(),
 		Publication: publication,
 		Documents:   documents,
-	}); err != nil {
+	}); err != nil && r.Context().Err() == nil {
 		slog.ErrorContext(r.Context(), "execute publication template", "error", err)
 	}
 }

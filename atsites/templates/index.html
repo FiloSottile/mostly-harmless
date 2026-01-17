@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AT Sites</title>
+
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        form {
+            display: flex;
+            gap: 0.5em;
+            margin: 2rem 0;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 0.5em;
+            font-size: 1em;
+            font-family: inherit;
+            border: 1px solid currentColor;
+            border-radius: 4px;
+            background: transparent;
+            color: inherit;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            font-family: inherit;
+            border: 1px solid currentColor;
+            border-radius: 4px;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+        }
+        .byline {
+            margin-top: 4rem;
+            font-size: 0.85em;
+        }
+        .byline img {
+            height: 2em;
+            vertical-align: text-bottom;
+        }
+        .note {
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+
+<main>
+<h1>AT Sites</h1>
+
+<p>A small prototype that provides listings and Atom feeds for <a href="https://standard.site/">standard.site</a> publications.</p>
+
+<p>These feeds work regardless of what software is used to publish the documents, and keep working even if the author changes handle or moves their data to a different PDS.</p>
+
+<p>Built with <a href="https://docs.bsky.app/blog/introducing-tap">Tap</a> by <a href="https://geomys.org">Geomys</a>. On AT Protocol, you can just build things! In <a href="https://github.com/FiloSottile/mostly-harmless/tree/main/atsites">very few lines of Go code</a>!</p>
+
+<p class="note">Note that <a href="https://standard.site/#verification">verification</a> is not yet implemented, but may be enforced in the future.</p>
+
+<form action="/profile/" onsubmit="if(this.handle.value) this.action = '/profile/' + this.handle.value; return !!this.handle.value;">
+    <input type="text" name="handle" placeholder="handle (e.g. filippo.abyssdomain.expert)">
+    <button type="submit">Go</button>
+</form>
+
+<p class="byline">by <a href="https://geomys.org"><picture>
+    <source srcset="/assets/geomys_horizontal_white_alpha.png" media="(prefers-color-scheme: dark)">
+    <img src="/assets/geomys_horizontal_black.png" alt="Geomys">
+</picture></a></p>
+</main>
+
+</body>
+</html>
