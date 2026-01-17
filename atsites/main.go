@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"slices"
@@ -224,6 +225,15 @@ func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error 
 
 func (s *Server) httpHandler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET geomys-atsite.exe.xyz/", func(w http.ResponseWriter, r *http.Request) {
+		u := &url.URL{
+			Scheme:   "https",
+			Host:     "sites.at.geomys.org",
+			Path:     r.URL.Path,
+			RawQuery: r.URL.RawQuery,
+		}
+		http.Redirect(w, r, u.String(), http.StatusFound)
+	})
 	mux.HandleFunc("GET /{$}", s.handleIndex)
 	mux.Handle("GET /assets/", http.FileServer(http.FS(assets)))
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
