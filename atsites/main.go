@@ -472,7 +472,7 @@ func (s *Server) handleFeed(w http.ResponseWriter, r *http.Request) {
 			IsPermaLink: "false",
 			Title:       doc.Title,
 			Content:     doc.Description,
-			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", publication.URL, doc.Path)},
+			Link:        &feeds.Link{Href: publication.URL + doc.Path},
 			Author:      &feeds.Author{Name: i.Handle.String()},
 		}
 		t, err := syntax.ParseDatetimeLenient(doc.PublishedAt)

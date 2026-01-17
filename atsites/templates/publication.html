@@ -53,12 +53,12 @@
 {{ range .Documents }}
 <article>
     {{ if .Invalid }}
-    <h1><a href="{{ $.Publication.URL }}/{{ .Path }}" rel="nofollow">{{ .Rkey }} [invalid document]</a></h1>
+    <h1><a href="{{ $.Publication.URL }}{{ .Path }}" rel="nofollow">{{ .Rkey }} [invalid document]</a></h1>
     {{ else }}
     {{ if .PublishedAt }}
     <time>{{ .PublishedAt }}</time>
     {{- end }}
-    <h1><a href="{{ $.Publication.URL }}/{{ .Path }}" rel="nofollow">{{ .Title }}</a></h1>
+    <h1><a href="{{ $.Publication.URL }}{{ .Path }}" rel="nofollow">{{ .Title }}</a></h1>
     {{ if .Description }}
     <p>{{ .Description }}</p>
     {{- end }}
