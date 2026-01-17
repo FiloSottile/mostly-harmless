@@ -15,6 +15,8 @@ import (
 	"os/signal"
 	"slices"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	"filippo.io/mostly-harmless/atsites/internal/db"
 	"github.com/bluesky-social/indigo/atproto/identity"
@@ -29,6 +31,8 @@ import (
 
 //go:embed sql/schema.sql
 var schemaSQL string
+
+var lastDocumentSeen atomic.Pointer[time.Time]
 
 func main() {
 	dbFlag := flag.String("db", "atsites.sqlite3", "path to the SQLite database file")
@@ -200,6 +204,7 @@ func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error 
 				"uri", fmt.Sprintf("at://%s/%s/%s", rec.Repo, rec.Collection, rec.Rkey))
 			return nil
 		}
+		lastDocumentSeen.Store(new(time.Now()))
 		slog.DebugContext(ctx, "storing document", "repo", rec.Repo, "rkey", rec.Rkey,
 			"publication_repo", u.Did, "publication_rkey", u.Rkey)
 		return s.queries.StoreDocument(ctx, db.StoreDocumentParams{
@@ -219,6 +224,14 @@ func (s *Server) handleRecordEvent(ctx context.Context, rec *recordEvent) error 
 
 func (s *Server) httpHandler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		if t := lastDocumentSeen.Load(); time.Since(*t) > 24*time.Hour {
+			http.Error(w, "no documents seen in the last 24 hours", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
 	mux.HandleFunc("GET /profile/{handle}", s.handleProfile)
 	mux.HandleFunc("GET /profile/{did}/publication/{rkey}", s.handlePublication)
 	mux.HandleFunc("GET /profile/{did}/publication/{rkey}/atom.xml", s.handleFeed)

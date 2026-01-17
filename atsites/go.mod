@@ -1,6 +1,6 @@
 module filippo.io/mostly-harmless/atsites
 
-go 1.25.4
+go 1.26rc1
 
 tool (
 	github.com/bluesky-social/indigo/cmd/tap
