@@ -35,6 +35,8 @@ var schemaSQL string
 
 var lastDocumentSeen atomic.Pointer[time.Time]
 
+func init() { lastDocumentSeen.Store(new(time.Now())) }
+
 func main() {
 	dbFlag := flag.String("db", "atsites.sqlite3", "path to the SQLite database file")
 	tapFlag := flag.String("tap", "ws://localhost:2480/channel", "Tap WebSocket URL")
