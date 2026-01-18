@@ -54,20 +54,15 @@ func main() {
 		})))
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	signalCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	group, ctx := errgroup.WithContext(ctx)
+	group, ctx := errgroup.WithContext(signalCtx)
 
 	sqlDB, err := sql.Open("sqlite", *dbFlag+"?_pragma=foreign_keys(1)")
 	if err != nil {
 		slog.Error("failed to open SQLite database", "error", err)
 		return
 	}
-	defer func() {
-		if err := sqlDB.Close(); err != nil {
-			slog.Error("failed to close SQLite database", "error", err)
-		}
-	}()
 	if _, err := sqlDB.ExecContext(ctx, schemaSQL); err != nil {
 		slog.Error("failed to initialize database", "error", err)
 		return
@@ -102,6 +97,13 @@ func main() {
 	})
 
 	slog.Error("stopping", "error", group.Wait())
+	if err := sqlDB.Close(); err != nil {
+		slog.Error("failed to close SQLite database", "error", err)
+	}
+	if err := signalCtx.Err(); err != nil {
+		return // exit 0 on interrupt
+	}
+	os.Exit(1)
 }
 
 type Server struct {
