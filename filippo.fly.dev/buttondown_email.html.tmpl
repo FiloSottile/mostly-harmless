@@ -73,6 +73,19 @@
         li + li {
             margin-top: 0.5em;
         }
+        .subscribe {
+            border: 1px solid;
+            padding: 0 1em;
+            margin: 1em 0;
+        }
+        .subscribe p {
+            text-align: center;
+        }
+        .bluesky-embed {
+            margin-right: auto;
+            margin-left: auto;
+            zoom: 0.75;
+        }
     </style>
 
     <script defer data-domain="blog.filippo.io" src="https://filippo.io/js/script.js"></script>
@@ -126,15 +139,19 @@
             {{ .Body }}
         </section>
     </article>
-    <aside class="subscribe" style="border: 1px solid; padding: 0 1em; margin: 1em 0;">
-        <p style="text-align: center;">
+    <aside class="subscribe">
+        <p>
             <a href="https://filippo.io/newsletter">Subscribe</a>&nbsp;📮&ensp;|&ensp;<a href="https://words.filippo.io/rss/">Feed</a>&nbsp;📡&ensp;|&ensp;<a href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky</a>&nbsp;🦋&ensp;|&ensp;<a href="https://abyssdomain.expert/@filippo" rel="me">Mastodon</a>&nbsp;🐘
         </p>
+    </aside>
+    <aside class="bsky">
+        {{ embedBskyPost (printf "https://words.filippo.io/%s/" (canonicalSlug .)) }}
     </aside>
     <script>
         const h2first = document.querySelector("article h2:first-of-type")
         h2first.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2first)
         const h2last = document.querySelector("h2#the-picture")
+        if (h2last) h2last.parentElement.insertBefore(document.getElementsByClassName("bsky")[0], h2last)
         if (h2last && h2last != h2first) h2last.parentElement.insertBefore(document.getElementsByClassName("subscribe")[0].cloneNode(true), h2last)
     </script>
     {{ .Metadata.FooterCode }}

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -138,9 +139,8 @@ var funcs = template.FuncMap{
 		}
 		return tm.Format(layout), nil
 	},
-	"canonicalSlug": func(e *buttondownEmail) string {
-		return canonicalSlug(e)
-	},
+	"canonicalSlug": canonicalSlug,
+	"embedBskyPost": embedBskyPost,
 }
 
 var emailTmpl = template.Must(template.New("email").Funcs(funcs).Parse(emailTemplate))
@@ -398,4 +398,106 @@ func extractLastImage(htmlContent template.HTML) (url string) {
 	}
 	traverse(doc)
 	return
+}
+
+var bskyClient = &http.Client{
+	Timeout: 5 * time.Second,
+}
+
+var embedBskyCacheMu sync.RWMutex
+var embedBskyCache = make(map[string]template.HTML)
+var embedBskyLastChecked = make(map[string]time.Time)
+
+func embedBskyPost(u string) template.HTML {
+	embedBskyCacheMu.RLock()
+	html := embedBskyCache[u]
+	lastChecked := embedBskyLastChecked[u]
+	embedBskyCacheMu.RUnlock()
+	if html != "" || time.Since(lastChecked) < 10*time.Minute {
+		return html
+	}
+
+	atURL, err := findBskyPost(u)
+	if err != nil {
+		log.Printf("failed to find bsky post for %q: %v", u, err)
+		return ""
+	}
+	if atURL == "" {
+		atURL, err = findBskyPost(strings.TrimSuffix(u, "/"))
+		if err != nil {
+			log.Printf("failed to find bsky post for %q: %v", u, err)
+			return ""
+		}
+	}
+	if atURL == "" {
+		embedBskyCacheMu.Lock()
+		embedBskyCache[u] = ""
+		embedBskyLastChecked[u] = time.Now()
+		embedBskyCacheMu.Unlock()
+		return ""
+	}
+
+	oembedURL := "https://embed.bsky.app/oembed?maxwidth=400&url=" + url.QueryEscape(atURL)
+	req, err := http.NewRequest("GET", oembedURL, nil)
+	if err != nil {
+		log.Printf("failed to create oembed request for %q: %v", atURL, err)
+		return ""
+	}
+	resp, err := bskyClient.Do(req)
+	if err != nil {
+		log.Printf("failed to fetch oembed for %q: %v", atURL, err)
+		return ""
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("unexpected status code fetching oembed for %q: %s", atURL, resp.Status)
+		return ""
+	}
+	var result struct {
+		HTML template.HTML `json:"html"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Printf("failed to decode oembed response for %q: %v", atURL, err)
+		return ""
+	}
+
+	embedBskyCacheMu.Lock()
+	embedBskyCache[u] = result.HTML
+	embedBskyCacheMu.Unlock()
+	return result.HTML
+}
+
+func findBskyPost(u string) (string, error) {
+	query := &url.Values{}
+	query.Add("subject", u)
+	query.Add("source", "app.bsky.feed.post:embed.external.uri")
+	query.Add("did", "did:plc:x2nsupeeo52oznrmplwapppl")
+	query.Add("limit", "10")
+	constellationURL := "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?" + query.Encode()
+	req, err := http.NewRequest("GET", constellationURL, nil)
+	if err != nil {
+		return "", err
+	}
+	resp, err := bskyClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %s", resp.Status)
+	}
+	var result struct {
+		Records []struct {
+			DID  string `json:"did"`
+			Rkey string `json:"rkey"`
+		} `json:"records"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
+	if len(result.Records) == 0 {
+		return "", nil
+	}
+	record := result.Records[len(result.Records)-1] // oldest
+	return "at://" + record.DID + "/app.bsky.feed.post/" + record.Rkey, nil
 }

@@ -166,6 +166,9 @@ code == 404
 GET https://words.filippo.io/dispatches/frood/
 redirect == /frood/
 
+GET https://words.filippo.io/frood
+redirect == /frood/
+
 GET https://words.filippo.io/frood/
 body contains Alpine
 
@@ -179,6 +182,9 @@ body contains <h2 id="division-and-inverses">Division and inverses</h2>
 GET https://words.filippo.io/passkey-encryption/
 body !contains Thank you for incentivizing
 body contains Encrypting with passkeys
+
+GET https://words.filippo.io/gosum/
+body contains go.mod has everything you need
 
 GET https://words.filippo.io/keyserver-tlog/
 body contains <script>document.querySelectorAll('code.language-diff')
