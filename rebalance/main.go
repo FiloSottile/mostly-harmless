@@ -41,7 +41,8 @@ func main() {
 		log.Fatal("input does not contain 'Instrument' in the header")
 	}
 
-	var stock, stockEU, bonds, cash = new(decimal.Big), new(decimal.Big), new(decimal.Big), new(decimal.Big)
+	var stock, stockEU, bonds, gold, cash = new(decimal.Big), new(decimal.Big),
+		new(decimal.Big), new(decimal.Big), new(decimal.Big)
 
 	for scanner.Scan() {
 		instrument := strings.TrimSpace(scanner.Text())
@@ -69,6 +70,8 @@ func main() {
 			stock.Add(stock, value)
 		case "EUNA":
 			bonds.Add(bonds, value)
+		case "GBSE":
+			gold.Add(gold, value)
 		// Betterment stock ETFs.
 		case "VEA", "VTI", "ITOT", "VWO", "VTV", "SCHF", "SPYM", "SCHB", "VOE",
 			"IEFA", "VBR", "IWN", "IWS", "SPDW", "IEMG", "SCHV", "SPYV", "SPEM":
@@ -114,38 +117,44 @@ func main() {
 	total.Add(total, stock)
 	total.Add(total, stockEU)
 	total.Add(total, bonds)
+	total.Add(total, gold)
 	total.Add(total, cash)
 
 	stockPct := new(decimal.Big).Quo(stock, total)
 	stockEUPct := new(decimal.Big).Quo(stockEU, total)
 	bondsPct := new(decimal.Big).Quo(bonds, total)
+	goldPct := new(decimal.Big).Quo(gold, total)
 	cashPct := new(decimal.Big).Quo(cash, total)
 
 	log.Printf("Total stock:      %7.0f (%s)", stock, percent(stockPct))
 	log.Printf("Total stock (EU): %7.0f (%s)", stockEU, percent(stockEUPct))
 	log.Printf("Total bonds:      %7.0f (%s)", bonds, percent(bondsPct))
+	log.Printf("Total gold:       %7.0f (%s)", gold, percent(goldPct))
 	log.Printf("Total cash:       %7.0f (%s)", cash, percent(cashPct))
 	log.Printf("                  -------")
 	log.Printf("Total:            %7.0f", total)
 	log.Println()
 
-	targetStock := new(decimal.Big).Mul(total, decimal.New(70, 2))
-	targetStockEU := new(decimal.Big).Mul(total, decimal.New(20, 2))
-	targetBonds := new(decimal.Big).Mul(total, decimal.New(10, 2))
+	targetStock := new(decimal.Big).Mul(total, decimal.New(675, 3))
+	targetStockEU := new(decimal.Big).Mul(total, decimal.New(195, 3))
+	targetBonds := new(decimal.Big).Mul(total, decimal.New(95, 3))
+	targetGold := new(decimal.Big).Mul(total, decimal.New(35, 3))
 
 	diffStock := new(decimal.Big).Sub(targetStock, stock)
 	diffStockEU := new(decimal.Big).Sub(targetStockEU, stockEU)
 	diffBonds := new(decimal.Big).Sub(targetBonds, bonds)
+	diffGold := new(decimal.Big).Sub(targetGold, gold)
 
-	log.Printf("Target stock:      %7.0f (70%%, %+7.0f)", targetStock, diffStock)
-	log.Printf("Target stock (EU): %7.0f (20%%, %+7.0f)", targetStockEU, diffStockEU)
-	log.Printf("Target bonds:      %7.0f (10%%, %+7.0f)", targetBonds, diffBonds)
+	log.Printf("Target stock:      %7.0f (67.5%%, %+7.0f)", targetStock, diffStock)
+	log.Printf("Target stock (EU): %7.0f (19.5%%, %+7.0f)", targetStockEU, diffStockEU)
+	log.Printf("Target bonds:      %7.0f ( 9.5%%, %+7.0f)", targetBonds, diffBonds)
+	log.Printf("Target gold:       %7.0f ( 3.5%%, %+7.0f)", targetGold, diffGold)
 	log.Println()
 
 	// We don't sell, just buy more, so ignore negative differences and scale
 	// the positive ones proportionally.
 	scale := new(decimal.Big)
-	for _, diff := range []*decimal.Big{diffStock, diffStockEU, diffBonds} {
+	for _, diff := range []*decimal.Big{diffStock, diffStockEU, diffBonds, diffGold} {
 		if diff.Sign() > 0 {
 			scale.Add(scale, diff)
 		}
@@ -162,6 +171,10 @@ func main() {
 	if diffBonds.Sign() > 0 {
 		buyBonds := new(decimal.Big).Mul(diffBonds, proportion)
 		log.Printf("Buy %.0f EUR of EUNA aka AGGH", buyBonds)
+	}
+	if diffGold.Sign() > 0 {
+		buyGold := new(decimal.Big).Mul(diffGold, proportion)
+		log.Printf("Buy %.0f EUR of GBSE", buyGold)
 	}
 }
 
