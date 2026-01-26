@@ -70,3 +70,39 @@ func NestedInVarTime(a, b int) int {
 	}
 	return f()
 }
+
+// Constant expressions are allowed (computed at compile time).
+
+const (
+	numerator   = 100
+	denominator = 7
+	quotient    = numerator / denominator   // allowed: const definition
+	remainder   = numerator % denominator   // allowed: const definition
+	chained     = 1000 / 10 / 2             // allowed: const definition
+	mixed       = (100 + 50) / 3 % 7        // allowed: const definition
+)
+
+func constants() int {
+	// Literal expressions are allowed.
+	x := 100 / 7
+	y := 100 % 7
+
+	// Constant expressions with named constants are allowed.
+	a := numerator / denominator
+	b := numerator % denominator
+
+	// Mixed constant expression.
+	c := (numerator + 50) / denominator
+
+	// But variable expressions are not.
+	v := x + y + a + b + c
+	return v / 2 // want `use of non-constant-time / operator`
+}
+
+func partialConstant(a int) int {
+	// One side constant, one side variable - not allowed.
+	x := a / 10   // want `use of non-constant-time / operator`
+	y := 100 / a  // want `use of non-constant-time / operator`
+	z := a % 10   // want `use of non-constant-time % operator`
+	return x + y + z
+}

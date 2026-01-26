@@ -20,7 +20,8 @@ in cryptographic code.
 
 Operations are allowed in:
   - Test files (*_test.go)
-  - Functions or methods with a VarTime name suffix (e.g., DivideVarTime)`
+  - Functions or methods with a VarTime name suffix (e.g., DivideVarTime)
+  - Constant expressions (evaluated at compile time)`
 
 var Analyzer = &analysis.Analyzer{
 	Name:     "nodivision",
@@ -56,6 +57,10 @@ func run(pass *analysis.Pass) (any, error) {
 		switch n := n.(type) {
 		case *ast.BinaryExpr:
 			if n.Op == token.QUO || n.Op == token.REM {
+				// Skip constant expressions (evaluated at compile time).
+				if pass.TypesInfo.Types[n].Value != nil {
+					return true
+				}
 				pass.ReportRangef(n, "use of non-constant-time %s operator", n.Op)
 			}
 		case *ast.AssignStmt:
