@@ -101,8 +101,31 @@ func constants() int {
 
 func partialConstant(a int) int {
 	// One side constant, one side variable - not allowed.
-	x := a / 10   // want `use of non-constant-time / operator`
-	y := 100 / a  // want `use of non-constant-time / operator`
-	z := a % 10   // want `use of non-constant-time % operator`
+	x := a / 10  // want `use of non-constant-time / operator`
+	y := 100 / a // want `use of non-constant-time / operator`
+	z := a % 10  // want `use of non-constant-time % operator`
 	return x + y + z
+}
+
+// len() expressions are safe because lengths leak via cache side-channels.
+
+func lenBothSides(x, y []byte) int {
+	// Both sides involve len() - allowed.
+	return len(x) / len(y)
+}
+
+func lenAndConstant(x []byte) int {
+	// len() and constant - both safe, allowed.
+	a := len(x) / 8
+	b := len(x) % 16
+	c := (len(x) + 7) / 8 // len in arithmetic expression
+	return a + b + c
+}
+
+func lenAndVariable(x []byte, n int) int {
+	// len() and variable - variable is not safe, not allowed.
+	a := len(x) / n // want `use of non-constant-time / operator`
+	b := n / len(x) // want `use of non-constant-time / operator`
+	c := len(x) % n // want `use of non-constant-time % operator`
+	return a + b + c
 }
