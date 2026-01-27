@@ -81,10 +81,77 @@
         .subscribe p {
             text-align: center;
         }
-        .bluesky-embed {
-            margin-right: auto;
-            margin-left: auto;
-            zoom: 0.75;
+        .bsky-card {
+            border: 1px solid;
+            border-radius: 8px;
+            padding: 1em;
+            margin: 1em auto;
+            max-width: 400px;
+            font-size: 0.9em;
+        }
+        .bsky-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bsky-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .bsky-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+        }
+        .bsky-name {
+            font-weight: 600;
+        }
+        .bsky-handle {
+            color: gray;
+            font-size: 0.85em;
+        }
+        .bsky-logo {
+            color: #1185fe;
+        }
+        .bsky-text {
+            white-space: pre-line;
+            line-height: initial;
+        }
+        .bsky-link {
+            display: block;
+            border: 1px solid;
+            border-radius: 6px;
+            padding: 0.6em 0.8em;
+            text-decoration: none;
+            margin: 1em 0;
+        }
+        .bsky-link-title {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .bsky-link-desc {
+            font-size: 0.85em;
+            color: gray;
+            margin-top: 2px;
+        }
+        .bsky-link-domain {
+            font-size: 0.8em;
+            color: gray;
+            margin-top: 4px;
+        }
+        .bsky-foot {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: gray;
+        }
+        .bsky-foot a {
+            color: inherit;
+            text-decoration: none;
         }
     </style>
 

@@ -183,6 +183,7 @@ GET https://words.filippo.io/passkey-encryption/
 body !contains Thank you for incentivizing
 body contains Encrypting with passkeys
 
+# bsky embed
 GET https://words.filippo.io/gosum/
 body contains go.mod has everything you need
 

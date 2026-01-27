@@ -1,0 +1,24 @@
+<div class="bsky-card">
+<div class="bsky-head">
+<a href="{{.ProfileURL}}" class="bsky-profile">
+<img src="{{.Author.Avatar}}" class="bsky-avatar" alt="">
+<div><div class="bsky-name">{{.Author.DisplayName}}</div>
+<div class="bsky-handle">@{{.Author.Handle}}</div></div>
+</a>
+<a href="{{.WebURL}}" aria-label="View on Bluesky" class="bsky-logo"><svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor"><path d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"/></svg></a>
+</div>
+<p class="bsky-text">{{.Text}}</p>
+{{- if .Embed}}
+<a href="{{.Embed.URI}}" class="bsky-link">
+<div class="bsky-link-title">{{.Embed.Title}}</div>
+{{- if .Embed.Description}}
+<div class="bsky-link-desc">{{.Embed.Description}}</div>
+{{- end}}
+<div class="bsky-link-domain">{{.EmbedDomain}}</div>
+</a>
+{{- end}}
+<div class="bsky-foot">
+<a href="{{.WebURL}}"><span>{{.FormattedDate}}{{if .LikeCount}} · {{.LikeCount}} ❤️{{end}}{{if .RepostCount}} · {{.RepostCount}} 🔁{{end}}</span></a>
+<a href="{{.WebURL}}">Read {{if .ReplyCount}}{{.ReplyCount}} replies {{end}}on Bluesky →</a>
+</div>
+</div>

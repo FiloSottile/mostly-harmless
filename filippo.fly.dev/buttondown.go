@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"errors"
@@ -18,6 +19,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bluesky-social/indigo/atproto/syntax"
 	"github.com/gorilla/feeds"
 	"golang.org/x/net/html"
 )
@@ -406,65 +408,173 @@ var bskyClient = &http.Client{
 
 var embedBskyCacheMu sync.RWMutex
 var embedBskyCache = make(map[string]template.HTML)
-var embedBskyLastChecked = make(map[string]time.Time)
+var embedBskyLastUpdated = make(map[string]time.Time)
+
+type bskyPost struct {
+	Author struct {
+		DisplayName string `json:"displayName"`
+		Handle      string `json:"handle"`
+		Avatar      string `json:"avatar"`
+	}
+	Text        string
+	CreatedAt   time.Time
+	LikeCount   int
+	RepostCount int
+	ReplyCount  int
+	Embed       *bskyEmbed
+	ATURI       string
+}
+
+type bskyEmbed struct {
+	URI         string
+	Title       string
+	Description string
+}
+
+//go:embed bsky_card.html.tmpl
+var bskyCardTemplate string
+
+var bskyCardTmpl = template.Must(template.New("bsky-card").Parse(bskyCardTemplate))
+
+type bskyCardData struct {
+	*bskyPost
+}
+
+func (d bskyCardData) WebURL() string {
+	u, err := syntax.ParseATURI(d.ATURI)
+	if err != nil {
+		return "https://bsky.app"
+	}
+	return fmt.Sprintf("https://bsky.app/profile/%s/post/%s", u.Authority(), u.RecordKey())
+}
+
+func (d bskyCardData) ProfileURL() string {
+	return "https://bsky.app/profile/" + d.Author.Handle
+}
+
+func (d bskyCardData) FormattedDate() string {
+	return d.CreatedAt.Format("Jan 2, 2006")
+}
+
+func (d bskyCardData) EmbedDomain() string {
+	if d.Embed == nil {
+		return ""
+	}
+	u, err := url.Parse(d.Embed.URI)
+	if err != nil {
+		return d.Embed.URI
+	}
+	return u.Host
+}
 
 func embedBskyPost(u string) template.HTML {
 	embedBskyCacheMu.RLock()
-	html := embedBskyCache[u]
-	lastChecked := embedBskyLastChecked[u]
+	cached := embedBskyCache[u]
+	lastUpdated := embedBskyLastUpdated[u]
 	embedBskyCacheMu.RUnlock()
-	if html != "" || time.Since(lastChecked) < 10*time.Minute {
-		return html
+	if time.Since(lastUpdated) < 10*time.Minute {
+		return cached
 	}
 
-	atURL, err := findBskyPost(u)
+	atURI, err := findBskyPost(u)
 	if err != nil {
 		log.Printf("failed to find bsky post for %q: %v", u, err)
 		return ""
 	}
-	if atURL == "" {
-		atURL, err = findBskyPost(strings.TrimSuffix(u, "/"))
+	if atURI == "" {
+		atURI, err = findBskyPost(strings.TrimSuffix(u, "/"))
 		if err != nil {
 			log.Printf("failed to find bsky post for %q: %v", u, err)
 			return ""
 		}
 	}
-	if atURL == "" {
+	if atURI == "" {
 		embedBskyCacheMu.Lock()
 		embedBskyCache[u] = ""
-		embedBskyLastChecked[u] = time.Now()
+		embedBskyLastUpdated[u] = time.Now()
 		embedBskyCacheMu.Unlock()
 		return ""
 	}
 
-	oembedURL := "https://embed.bsky.app/oembed?maxwidth=400&url=" + url.QueryEscape(atURL)
-	req, err := http.NewRequest("GET", oembedURL, nil)
+	apiURL := "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=" +
+		url.QueryEscape(atURI) + "&depth=0&parentHeight=0"
+	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
-		log.Printf("failed to create oembed request for %q: %v", atURL, err)
+		log.Printf("failed to create API request for %q: %v", atURI, err)
 		return ""
 	}
 	resp, err := bskyClient.Do(req)
 	if err != nil {
-		log.Printf("failed to fetch oembed for %q: %v", atURL, err)
+		log.Printf("failed to fetch post thread for %q: %v", atURI, err)
 		return ""
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("unexpected status code fetching oembed for %q: %s", atURL, resp.Status)
-		return ""
-	}
-	var result struct {
-		HTML template.HTML `json:"html"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Printf("failed to decode oembed response for %q: %v", atURL, err)
+		log.Printf("unexpected status code fetching post thread for %q: %s", atURI, resp.Status)
 		return ""
 	}
 
+	var thread struct {
+		Thread struct {
+			Post struct {
+				Author struct {
+					DisplayName string `json:"displayName"`
+					Handle      string `json:"handle"`
+					Avatar      string `json:"avatar"`
+				} `json:"author"`
+				Record struct {
+					Text      string `json:"text"`
+					CreatedAt string `json:"createdAt"`
+				} `json:"record"`
+				LikeCount   int `json:"likeCount"`
+				RepostCount int `json:"repostCount"`
+				ReplyCount  int `json:"replyCount"`
+				Embed       *struct {
+					External *struct {
+						URI         string `json:"uri"`
+						Title       string `json:"title"`
+						Description string `json:"description"`
+					} `json:"external"`
+				} `json:"embed"`
+			} `json:"post"`
+		} `json:"thread"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&thread); err != nil {
+		log.Printf("failed to decode post thread for %q: %v", atURI, err)
+		return ""
+	}
+
+	p := thread.Thread.Post
+	createdAt, _ := time.Parse(time.RFC3339, p.Record.CreatedAt)
+	post := &bskyPost{
+		Author:      p.Author,
+		Text:        p.Record.Text,
+		CreatedAt:   createdAt,
+		LikeCount:   p.LikeCount,
+		RepostCount: p.RepostCount,
+		ReplyCount:  p.ReplyCount,
+		ATURI:       atURI,
+	}
+	if p.Embed != nil && p.Embed.External != nil {
+		post.Embed = &bskyEmbed{
+			URI:         p.Embed.External.URI,
+			Title:       p.Embed.External.Title,
+			Description: p.Embed.External.Description,
+		}
+	}
+
+	var buf bytes.Buffer
+	if err := bskyCardTmpl.Execute(&buf, bskyCardData{post}); err != nil {
+		log.Printf("failed to render bsky card for %q: %v", atURI, err)
+		return ""
+	}
+	rendered := template.HTML(buf.String())
+
 	embedBskyCacheMu.Lock()
-	embedBskyCache[u] = result.HTML
+	embedBskyCache[u] = rendered
+	embedBskyLastUpdated[u] = time.Now()
 	embedBskyCacheMu.Unlock()
-	return result.HTML
+	return rendered
 }
 
 func findBskyPost(u string) (string, error) {
@@ -472,12 +582,14 @@ func findBskyPost(u string) (string, error) {
 	query.Add("subject", u)
 	query.Add("source", "app.bsky.feed.post:embed.external.uri")
 	query.Add("did", "did:plc:x2nsupeeo52oznrmplwapppl")
-	query.Add("limit", "10")
+	query.Add("limit", "1")
+	query.Add("reverse", "true")
 	constellationURL := "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?" + query.Encode()
 	req, err := http.NewRequest("GET", constellationURL, nil)
 	if err != nil {
 		return "", err
 	}
+	req.Header.Set("User-Agent", "+https://words.filippo.io @filippo.abyssdomain.expert")
 	resp, err := bskyClient.Do(req)
 	if err != nil {
 		return "", err
@@ -498,6 +610,6 @@ func findBskyPost(u string) (string, error) {
 	if len(result.Records) == 0 {
 		return "", nil
 	}
-	record := result.Records[len(result.Records)-1] // oldest
+	record := result.Records[0]
 	return "at://" + record.DID + "/app.bsky.feed.post/" + record.Rkey, nil
 }
