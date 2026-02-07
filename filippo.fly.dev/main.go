@@ -31,8 +31,14 @@ func main() {
 	go func() { log.Fatal(metricsServer.ListenAndServe()) }()
 
 	s := &http.Server{
-		Addr:         ":8080",
-		Handler:      handler(),
+		Addr: ":8080",
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if h := os.Getenv("HTTP_HOST"); h != "" && r.Host == "localhost:8080" {
+				r = r.Clone(r.Context())
+				r.Host = h
+			}
+			handler().ServeHTTP(w, r)
+		}),
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
 		IdleTimeout:  10 * time.Minute,
