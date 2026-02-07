@@ -56,7 +56,7 @@ As part of this retainer package, we offer a suite of services that provide a co
 
 We offer these services exclusively as a time-based retainer to better match the ongoing nature of compliance requirements, and to ensure customers aren’t left behind on unsupported or vulnerable versions of the FIPS 140-3 Go Cryptographic Module.
 
-<p style="text-align: center"><span class="inverted">$80,000/year</span></p>
+<p style="text-align: center"><span class="inverted">$86,000/year</span></p>
 
 <p style="break-after: page;">We work with your procurement process. Email us at fips140@geomys.org.</p>
 
