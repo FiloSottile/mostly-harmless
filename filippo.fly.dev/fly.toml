@@ -25,7 +25,7 @@ app = "filippo"
     port = 443
 
   [[services.http_checks]]
-    grace_period = "120s"
+    grace_period = "60s"
     interval = "10s"
     restart_limit = 6
     timeout = "2s"
