@@ -154,6 +154,7 @@ func handler() http.Handler {
 		"keygen":          true,
 		"mkcert":          true,
 		"mlkem768":        true,
+		"mldsa":           true,
 		"mostly-harmless": true,
 		"nistec":          true,
 		"sunlight":        true,
