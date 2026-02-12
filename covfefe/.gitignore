@@ -1,3 +1,6 @@
 twitter.db*
 creds.json
 twitter-media
+cmd/covfefe/covfefe
+cmd/enroll/enroll
+cmd/webfefe/webfefe
