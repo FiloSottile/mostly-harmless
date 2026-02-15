@@ -97,6 +97,8 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("words.filippo.io/dispatches/rss/{$}", redirectToFeed)
 	mux.Handle("words.filippo.io/dispatches/feed/{$}", redirectToFeed)
 
+	mux.Handle("words.filippo.io/subscription-success/{$}", SubscriptionSuccessHandler())
+
 	mux.Handle("words.filippo.io/archive/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("words.filippo.io/dispatches/{slug}/{$}", SlugRedirectHandler())
 	mux.Handle("words.filippo.io/{slug}/{rest...}", EmailHandler())
@@ -173,6 +175,16 @@ func EmailHandler() http.Handler {
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		emailTmpl.Execute(w, email)
+	})
+}
+
+//go:embed buttondown_success.html
+var subscriptionSuccessPage []byte
+
+func SubscriptionSuccessHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Write(subscriptionSuccessPage)
 	})
 }
 
@@ -290,7 +302,7 @@ func buttondownMarkdown(text string) (template.HTML, error) {
 		return html, nil
 	}
 
-	// https://docs.buttondown.com/using-markdown-rendering
+	// https://docs.buttondown.com/using-markdown#extensions
 	cmd := exec.Command("markdown_py", "-x", "smarty", "-x", "tables", "-x", "footnotes",
 		"-x", "fenced_code", "-x", "pymdownx.tilde", "-x", "toc", "-x", "mdx_truly_sane_lists")
 	// Very crude removal of conditional email-only tags.

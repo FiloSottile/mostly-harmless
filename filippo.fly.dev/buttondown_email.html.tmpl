@@ -81,6 +81,30 @@
         .subscribe p {
             text-align: center;
         }
+        .subscribe form {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1em 0;
+        }
+        .subscribe form input[type="email"] {
+            padding: 0.3em 0.5em;
+            font: inherit;
+            flex: 1;
+            min-width: 12em;
+            max-width: 20em;
+            border: 1px solid;
+        }
+        .subscribe form button {
+            padding: 0.3em 0.8em;
+            font: inherit;
+            cursor: pointer;
+            background-color: CanvasText;
+            color: Canvas;
+            border: 1px solid transparent;
+        }
         .bsky-card {
             border: 1px solid;
             border-radius: 8px;
@@ -207,8 +231,13 @@
         </section>
     </article>
     <aside class="subscribe">
+        <form action="https://buttondown.com/api/emails/embed-subscribe/cryptography-dispatches" method="post">
+            <input type="email" name="email" id="bd-email" placeholder="alice@example.com" autocomplete="email" required>
+            <input type="hidden" value="1" name="embed">
+            <button type="submit">Subscribe</button>
+        </form>
         <p>
-            <a href="https://filippo.io/newsletter">Subscribe</a>&nbsp;📮&ensp;|&ensp;<a href="https://words.filippo.io/rss/">Feed</a>&nbsp;📡&ensp;|&ensp;<a href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky</a>&nbsp;🦋&ensp;|&ensp;<a href="https://abyssdomain.expert/@filippo" rel="me">Mastodon</a>&nbsp;🐘
+            <a href="https://words.filippo.io/rss/">Feed</a>&nbsp;📡&ensp;|&ensp;<a href="https://bsky.app/profile/filippo.abyssdomain.expert" rel="me">Bluesky</a>&nbsp;🦋&ensp;|&ensp;<a href="https://abyssdomain.expert/@filippo" rel="me">Mastodon</a>&nbsp;🐘
         </p>
     </aside>
     <aside class="bsky">
