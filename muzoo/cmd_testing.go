@@ -24,6 +24,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 	f := flag.NewFlagSet("muzoo test", flag.ContinueOnError)
 	jobs := f.Int("j", runtime.NumCPU(), "number of parallel jobs")
 	timeout := f.Duration("timeout", 0, "timeout per test invocation")
+	verbose := f.Bool("v", false, "show output for killed mutations")
 	if err := f.Parse(args); err != nil {
 		return err
 	}
@@ -245,9 +246,10 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
-	// Print output for survived and errored mutations.
+	// Print output for survived/errored mutations, and killed if verbose.
 	for _, r := range results {
-		if (r.survived || r.errored) && r.output != "" {
+		show := (r.survived || r.errored || *verbose) && r.output != ""
+		if show {
 			fmt.Printf("\n--- Output for %s (%s) ---\n%s\n", strings.TrimSuffix(r.patch, ".patch"), r.desc, r.output)
 		}
 	}
