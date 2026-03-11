@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -70,9 +71,6 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 		return fmt.Errorf("creating worktree directory: %w", err)
 	}
 
-	var worktreeMu sync.Mutex
-	activeWorktrees := make(map[string]bool)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -81,6 +79,25 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 	go func() {
 		<-sigCh
 		cancel()
+	}()
+
+	// Create worker worktrees, named by worker slot so the Go build/test
+	// cache (keyed by absolute path) is shared across mutations.
+	workerPaths := make([]string, *jobs)
+	for i := range workerPaths {
+		workerPaths[i] = worktreeDir(wtRoot, strconv.Itoa(i))
+		removeWorktree(workerPaths[i]) // clean up leftover from interrupted run
+		if err := createWorktree(workerPaths[i]); err != nil {
+			for j := range i {
+				removeWorktree(workerPaths[j])
+			}
+			return fmt.Errorf("creating worktree: %w", err)
+		}
+	}
+	defer func() {
+		for _, p := range workerPaths {
+			removeWorktree(p)
+		}
 	}()
 
 	type result struct {
@@ -98,7 +115,11 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 		results[i] = result{patch: info.name, desc: descriptionLabel(info.desc)}
 	}
 
-	sem := make(chan struct{}, *jobs)
+	// Worker pool: each slot is a worktree index.
+	sem := make(chan int, *jobs)
+	for i := range *jobs {
+		sem <- i
+	}
 	var wg sync.WaitGroup
 
 	testCmdStr := strings.Join(testCmd, " ")
@@ -108,36 +129,22 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 		go func(idx int, info patchInfo) {
 			defer wg.Done()
 
+			var worker int
 			select {
 			case <-ctx.Done():
 				return
-			case sem <- struct{}{}:
+			case worker = <-sem:
 			}
-			defer func() { <-sem }()
+			defer func() { sem <- worker }()
 
-			num := strings.TrimSuffix(info.name, ".patch")
-			wtPath := worktreeDir(wtRoot, num)
+			wtPath := workerPaths[worker]
 
-			// Register worktree before creation to avoid race with signal handler.
-			worktreeMu.Lock()
-			activeWorktrees[wtPath] = true
-			worktreeMu.Unlock()
-
-			if err := createWorktree(wtPath); err != nil {
-				worktreeMu.Lock()
-				delete(activeWorktrees, wtPath)
-				worktreeMu.Unlock()
+			// Reset worktree to clean state for this mutation.
+			if err := resetWorktree(wtPath); err != nil {
 				results[idx].errored = true
-				results[idx].output = "worktree creation failed: " + err.Error()
+				results[idx].output = "worktree reset failed: " + err.Error()
 				return
 			}
-
-			defer func() {
-				removeWorktree(wtPath)
-				worktreeMu.Lock()
-				delete(activeWorktrees, wtPath)
-				worktreeMu.Unlock()
-			}()
 
 			// Apply patch.
 			if err := gitApply(wtPath, info.diff); err != nil {
@@ -201,17 +208,6 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 	wg.Wait()
 
 	signal.Stop(sigCh)
-
-	// Clean up any remaining worktrees (from interrupted goroutines).
-	worktreeMu.Lock()
-	wts := make([]string, 0, len(activeWorktrees))
-	for wt := range activeWorktrees {
-		wts = append(wts, wt)
-	}
-	worktreeMu.Unlock()
-	for _, wt := range wts {
-		removeWorktree(wt)
-	}
 
 	// If interrupted, don't print a misleading partial summary.
 	if ctx.Err() != nil {

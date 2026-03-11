@@ -169,3 +169,11 @@ func createWorktree(path string) error {
 func removeWorktree(path string) error {
 	return gitRun("worktree", "remove", "--force", path)
 }
+
+// resetWorktree restores a worktree to a clean HEAD state.
+func resetWorktree(path string) error {
+	if err := gitRun("-C", path, "checkout", "HEAD", "--", "."); err != nil {
+		return err
+	}
+	return gitRun("-C", path, "clean", "-fd")
+}
