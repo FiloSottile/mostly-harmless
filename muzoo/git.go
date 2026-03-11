@@ -171,9 +171,34 @@ func removeWorktree(path string) error {
 }
 
 // resetWorktree restores a worktree to a clean HEAD state.
+// It preserves .venv to avoid expensive reinstalls for Python projects.
 func resetWorktree(path string) error {
 	if err := gitRun("-C", path, "checkout", "HEAD", "--", "."); err != nil {
 		return err
 	}
-	return gitRun("-C", path, "clean", "-fd")
+	return gitRun("-C", path, "clean", "-fd", "-e", ".venv")
+}
+
+// reuseOrCreateWorktree reuses an existing worktree (updating to current HEAD)
+// or creates a new one. Reusing preserves tool-managed directories like .venv
+// that are expensive to rebuild.
+func reuseOrCreateWorktree(path string) error {
+	if info, err := os.Stat(path); err == nil && info.IsDir() {
+		head, err := gitOutput("rev-parse", "HEAD")
+		if err != nil {
+			removeWorktree(path)
+			return createWorktree(path)
+		}
+		if err := gitRun("-C", path, "checkout", "--detach", head); err != nil {
+			removeWorktree(path)
+			return createWorktree(path)
+		}
+		if err := resetWorktree(path); err != nil {
+			removeWorktree(path)
+			return createWorktree(path)
+		}
+		return nil
+	}
+	removeWorktree(path) // clean up git's worktree list if path was deleted
+	return createWorktree(path)
 }

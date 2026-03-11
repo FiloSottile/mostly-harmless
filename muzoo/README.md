@@ -52,6 +52,7 @@ that survive (tests still pass) indicate gaps in test coverage.
 
 ```
 muzoo test
+muzoo test -- uv run pytest -x
 muzoo test -j 4 --timeout 30s -- make test
 ```
 

@@ -37,6 +37,9 @@ cmd_rm.go        — muzoo rm
   is the description, trailing blank lines stripped.
 - `test` creates worktrees under `.muzoo-worktrees/` at the repo root (via
   `git rev-parse --git-common-dir`), with a self-ignoring `.gitignore`.
+  Worktrees are reused across runs (updated to current HEAD) to preserve
+  tool-managed directories like `.venv`. `git clean -fd -e .venv` is used
+  between mutations to preserve virtual environments.
 - Test commands run via `sh -c` for pipe/redirect support.
 - `MUZOO_PATCH` and `MUZOO_DESCRIPTION` env vars set for each test invocation.
 
@@ -89,9 +92,9 @@ patches apply cleanly (exits 2 if not). Results: `KILLED` (test failed, good),
 stdout/stderr for survived and errored mutations. Timeout expiry counts as
 killed. Default `-j` is number of CPUs. Signal handling cleans up worktrees on
 SIGINT/SIGTERM. With no test command, defaults to
-`go test -json -short ./... && go test -json ./...` and prints the failed
+`go test -json -failfast -short ./... && go test -json -failfast ./...` and prints the failed
 test(s) next to each killed mutation. When the test command is `pytest` or
-`uv run pytest` (with or without extra arguments), `-v --tb=short` flags are
+`uv run pytest` (with or without extra arguments), `-x -v --tb=short` flags are
 added automatically and failed test names are shown next to each killed
 mutation.
 

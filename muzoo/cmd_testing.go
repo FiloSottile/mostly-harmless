@@ -32,7 +32,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 
 	defaultGoTest := len(testCmd) == 0
 	if defaultGoTest {
-		testCmd = []string{"go test -json -short ./... && go test -json ./..."}
+		testCmd = []string{"go test -json -failfast -short ./... && go test -json -failfast ./..."}
 	}
 
 	pytestCmd := !defaultGoTest && isPytestCmd(testCmd)
@@ -70,24 +70,20 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		cancel()
 	}()
 
-	// Create worker worktrees, named by worker slot so the Go build/test
-	// cache (keyed by absolute path) is shared across mutations.
+	// Create or reuse worker worktrees, named by worker slot so the Go
+	// build/test cache (keyed by absolute path) is shared across mutations.
+	// Worktrees are kept across runs to preserve tool-managed directories
+	// like .venv that are expensive to rebuild.
 	workerPaths := make([]string, *jobs)
 	for i := range workerPaths {
 		workerPaths[i] = worktreeDir(wtRoot, strconv.Itoa(i))
-		removeWorktree(workerPaths[i]) // clean up leftover from interrupted run
-		if err := createWorktree(workerPaths[i]); err != nil {
+		if err := reuseOrCreateWorktree(workerPaths[i]); err != nil {
 			for j := range i {
 				removeWorktree(workerPaths[j])
 			}
 			return fmt.Errorf("creating worktree: %w", err)
 		}
 	}
-	defer func() {
-		for _, p := range workerPaths {
-			removeWorktree(p)
-		}
-	}()
 
 	// Pre-read and validate all patches against a clean worktree (at HEAD),
 	// not the user's potentially-dirty working tree.
