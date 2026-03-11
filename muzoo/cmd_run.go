@@ -17,6 +17,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 func cmdRun(mutDir, relDir string, args []string) error {
@@ -168,6 +169,14 @@ func cmdRun(mutDir, relDir string, args []string) error {
 				"MUZOO_PATCH="+info.name,
 				"MUZOO_DESCRIPTION="+firstLine(info.desc),
 			)
+			// Use a process group so we can kill child processes on
+			// timeout or signal, preventing orphaned test processes.
+			cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+			cmd.Cancel = func() error {
+				syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+				return nil
+			}
+			cmd.WaitDelay = time.Second
 			var outBuf bytes.Buffer
 			cmd.Stdout = &outBuf
 			cmd.Stderr = &outBuf
@@ -184,12 +193,14 @@ func cmdRun(mutDir, relDir string, args []string) error {
 			} else if ctx.Err() != nil {
 				// Parent context cancelled (SIGINT/SIGTERM).
 				return
+			} else if errors.Is(err, context.DeadlineExceeded) {
+				// Timeout expired = mutation killed (GOOD).
+				results[idx].output = output
 			} else {
 				var exitErr *exec.ExitError
 				if errors.As(err, &exitErr) &&
 					exitErr.ExitCode() != 126 && exitErr.ExitCode() != 127 {
 					// Non-zero exit = tests failed = mutation killed (GOOD).
-					// Also treat timeout as killed.
 					results[idx].output = output
 					if defaultGoTest {
 						results[idx].killedTests = formatFailedTests(
