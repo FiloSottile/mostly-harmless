@@ -63,28 +63,24 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 		return fmt.Errorf("writing patch: %w", err)
 	}
 
-	// If no -m, try to generate a description with Claude Code, then
-	// fall back to opening $EDITOR.
-	if !hasMessage {
-		if desc := generateDescription(mutDir, diff); desc != "" {
-			*message = desc
-			if err := os.WriteFile(patchPath, []byte(formatPatch(*message, diff)), 0o644); err != nil {
-				return fmt.Errorf("writing patch: %w", err)
-			}
-		} else {
-			if err := editPatch(patchPath, diff); err != nil {
-				os.Remove(patchPath)
-				return err
-			}
-		}
+	// Check if Claude Code is available for description generation before
+	// restoring, so we know whether to fall back to $EDITOR (which needs
+	// the working tree intact for context).
+	needDescription := !hasMessage
+	hasClaude := false
+	if needDescription {
+		_, err := exec.LookPath("claude")
+		hasClaude = err == nil
 	}
 
-	// Read back the final description for the confirmation message.
-	data, err := os.ReadFile(patchPath)
-	if err != nil {
-		return fmt.Errorf("reading patch: %w", err)
+	// If we need $EDITOR (no -m and no claude), open it before restoring
+	// so the user can see the working tree for context.
+	if needDescription && !hasClaude {
+		if err := editPatch(patchPath, diff); err != nil {
+			os.Remove(patchPath)
+			return err
+		}
 	}
-	description, _ := parsePatch(string(data))
 
 	// Restore tracked files to match the index, excluding the mutations
 	// directory so git restore doesn't overwrite or recreate patch files.
@@ -92,13 +88,32 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 		return fmt.Errorf("restoring working tree: %w", err)
 	}
 
-	// Print confirmation.
 	numStr := strings.TrimSuffix(filename, ".patch")
-	if description != "" {
-		fmt.Printf("Saved mutation %s: %s\n", numStr, firstLine(description))
-	} else {
+
+	// Generate description with Claude Code after restoring, so the user
+	// can start working on the next mutation while this runs.
+	if needDescription && hasClaude {
 		fmt.Printf("Saved mutation %s\n", numStr)
+		if desc := generateDescription(mutDir, diff); desc != "" {
+			if err := os.WriteFile(patchPath, []byte(formatPatch(desc, diff)), 0o644); err != nil {
+				return fmt.Errorf("writing patch: %w", err)
+			}
+			fmt.Printf("Mutation %s: %s\n", numStr, desc)
+		}
+	} else {
+		// Read back description from -m or $EDITOR for confirmation.
+		data, err := os.ReadFile(patchPath)
+		if err != nil {
+			return fmt.Errorf("reading patch: %w", err)
+		}
+		description, _ := parsePatch(string(data))
+		if description != "" {
+			fmt.Printf("Saved mutation %s: %s\n", numStr, firstLine(description))
+		} else {
+			fmt.Printf("Saved mutation %s\n", numStr)
+		}
 	}
+
 	return nil
 }
 
@@ -132,7 +147,7 @@ func generateDescription(mutDir, diff string) string {
 	prompt.WriteString("\n")
 	prompt.WriteString(diff)
 
-	cmd := exec.Command(claude, "--model", "sonnet", "-p", prompt.String())
+	cmd := exec.Command(claude, "--model", "sonnet", "--no-session-persistence", "-p", prompt.String())
 	out, err := cmd.Output()
 	if err != nil {
 		return ""
