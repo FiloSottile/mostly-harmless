@@ -50,11 +50,19 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 		return fmt.Errorf("writing patch: %w", err)
 	}
 
-	// If no -m, open editor on the patch file for the user to add a description.
+	// If no -m, try to generate a description with Claude Code, then
+	// fall back to opening $EDITOR.
 	if !hasMessage {
-		if err := editPatch(patchPath, diff); err != nil {
-			os.Remove(patchPath)
-			return err
+		if desc := generateDescription(diff); desc != "" {
+			*message = desc
+			if err := os.WriteFile(patchPath, []byte(formatPatch(*message, diff)), 0o644); err != nil {
+				return fmt.Errorf("writing patch: %w", err)
+			}
+		} else {
+			if err := editPatch(patchPath, diff); err != nil {
+				os.Remove(patchPath)
+				return err
+			}
 		}
 	}
 
@@ -78,6 +86,28 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 		fmt.Printf("Saved mutation %s\n", numStr)
 	}
 	return nil
+}
+
+// generateDescription tries to use Claude Code to generate a short description
+// for the given diff. Returns empty string if claude is not available or fails.
+func generateDescription(diff string) string {
+	claude, err := exec.LookPath("claude")
+	if err != nil {
+		return ""
+	}
+	prompt := "Describe this mutation (a change to source code that should be caught by tests) " +
+		"in two to five-ish words, first letter lowercase. " +
+		"Output only the description, nothing else.\n\n" + diff
+	cmd := exec.Command(claude, "--model", "sonnet", "-p", prompt)
+	out, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	desc := strings.TrimSpace(string(out))
+	if desc == "" {
+		return ""
+	}
+	return desc
 }
 
 func editPatch(patchPath, diff string) error {

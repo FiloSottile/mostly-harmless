@@ -34,8 +34,10 @@ and restore tracked files to HEAD (`git restore .`).
 muzoo capture -m "change >= to > in foo()"
 ```
 
-If `-m` is omitted, `$EDITOR` opens the patch file directly. Type a description
-above the diff and save.
+If `-m` is omitted and [Claude Code](https://claude.ai/download) (`claude`) is
+available in `$PATH`, a description is generated automatically using the Sonnet
+model. If `claude` is not available, `$EDITOR` opens the patch file directly for
+you to type a description above the diff.
 
 If using Jujutsu, you can capture a mutation quickly by doing
 

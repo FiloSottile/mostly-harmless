@@ -66,8 +66,10 @@ separated by a blank line). Gaps in numbering are allowed (after `rm`).
 ### `capture [-m <message>]`
 
 Saves current unstaged changes (`git diff`) as a new mutation. If `-m`
-is not provided, opens `$EDITOR` on the patch file with empty lines at the top
-for the description. Staged changes are not captured.
+is not provided, tries to generate a description using Claude Code (`claude`
+CLI with Sonnet model). If `claude` is not available or fails, falls back to
+opening `$EDITOR` on the patch file with empty lines at the top for the
+description. Staged changes are not captured.
 After saving, restores the working tree to match the index (`git restore .`).
 
 ### `status`
