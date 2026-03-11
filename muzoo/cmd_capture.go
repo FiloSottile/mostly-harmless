@@ -20,8 +20,9 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 	}
 	hasMessage := *message != ""
 
-	// Get diff of working tree against HEAD.
-	diff, err := gitOutputDir(repoRoot, "diff", "HEAD")
+	// Get unstaged diff (working tree vs index). This matches what
+	// "git restore ." will undo after capture.
+	diff, err := gitOutputDir(repoRoot, "diff")
 	if err != nil {
 		return fmt.Errorf("getting diff: %w", err)
 	}

@@ -31,8 +31,8 @@ cmd_rm.go        — muzoo rm
 ### Key Design Decisions
 
 - All git operations shell out to `git` — no git library.
-- Never uses the git index/staging area. Uses `git diff HEAD` for capture,
-  ensuring compatibility with jj and other tools.
+- Never uses the git index/staging area. Uses `git diff` for capture
+  (unstaged changes only), ensuring `git restore .` cleanly undoes the capture.
 - Patches are parsed by finding the first `diff --git ` line; everything before
   is the description, trailing blank lines stripped.
 - `run` creates worktrees under `.muzoo-worktrees/` at the repo root (via
@@ -62,10 +62,10 @@ separated by a blank line). Gaps in numbering are allowed (after `rm`).
 
 ### `capture [-m <message>]`
 
-Saves current working tree changes (`git diff HEAD`) as a new mutation. If `-m`
+Saves current unstaged changes (`git diff`) as a new mutation. If `-m`
 is not provided, opens `$EDITOR` on the patch file with empty lines at the top
-for the description.
-After saving, restores tracked files to HEAD (`git restore .`).
+for the description. Staged changes are not captured.
+After saving, restores the working tree to match the index (`git restore .`).
 
 ### `status`
 
