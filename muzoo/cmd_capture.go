@@ -20,9 +20,22 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 	}
 	hasMessage := *message != ""
 
+	// Compute a pathspec exclude for the mutations directory so that
+	// git diff and git restore don't interact with mutation patch files.
+	absMutDir, err := filepath.Abs(mutDir)
+	if err != nil {
+		return fmt.Errorf("resolving mutations dir: %w", err)
+	}
+	relMutDir, err := filepath.Rel(repoRoot, absMutDir)
+	if err != nil {
+		return fmt.Errorf("computing relative mutations dir: %w", err)
+	}
+	exclude := fmt.Sprintf(":(exclude)%s", relMutDir)
+
 	// Get unstaged diff (working tree vs index). This matches what
-	// "git restore ." will undo after capture.
-	diff, err := gitOutputDir(repoRoot, "diff")
+	// "git restore ." will undo after capture. The mutations directory
+	// is excluded so we don't capture changes to patch files themselves.
+	diff, err := gitOutputDir(repoRoot, "diff", "--", ".", exclude)
 	if err != nil {
 		return fmt.Errorf("getting diff: %w", err)
 	}
@@ -73,8 +86,9 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 	}
 	description, _ := parsePatch(string(data))
 
-	// Restore tracked files to HEAD.
-	if _, err := gitOutputDir(repoRoot, "restore", "."); err != nil {
+	// Restore tracked files to match the index, excluding the mutations
+	// directory so git restore doesn't overwrite or recreate patch files.
+	if _, err := gitOutputDir(repoRoot, "restore", "--", ".", exclude); err != nil {
 		return fmt.Errorf("restoring working tree: %w", err)
 	}
 
