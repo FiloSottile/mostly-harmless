@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"syscall"
@@ -25,8 +27,9 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 	}
 	testCmd := f.Args()
 
-	if len(testCmd) == 0 {
-		return fmt.Errorf("usage: muzoo run [-j <jobs>] [-timeout <duration>] [--] <test-command...>")
+	defaultGoTest := len(testCmd) == 0
+	if defaultGoTest {
+		testCmd = []string{"go test -json -short ./... && go test -json ./..."}
 	}
 
 	// List and validate all patches.
@@ -81,11 +84,12 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 	}()
 
 	type result struct {
-		patch    string
-		desc     string
-		survived bool
-		errored  bool
-		output   string
+		patch       string
+		desc        string
+		survived    bool
+		errored     bool
+		output      string
+		killedTests string
 	}
 
 	results := make([]result, len(infos))
@@ -161,10 +165,14 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 			cmd.Stderr = &outBuf
 
 			err := cmd.Run()
+			output := outBuf.String()
+			if defaultGoTest {
+				output = formatGoTestOutput(output)
+			}
 			if err == nil {
 				// exit 0 = tests passed = mutation survived (BAD)
 				results[idx].survived = true
-				results[idx].output = outBuf.String()
+				results[idx].output = output
 			} else if ctx.Err() != nil {
 				// Parent context cancelled (SIGINT/SIGTERM).
 				return
@@ -174,13 +182,17 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 					exitErr.ExitCode() != 126 && exitErr.ExitCode() != 127 {
 					// Non-zero exit = tests failed = mutation killed (GOOD).
 					// Also treat timeout as killed.
-					results[idx].output = outBuf.String()
+					results[idx].output = output
+					if defaultGoTest {
+						results[idx].killedTests = formatFailedTests(
+							parseFailedTests(outBuf.String()))
+					}
 				} else {
 					// Infrastructure error: either not an ExitError (e.g.
 					// working directory doesn't exist) or shell exit 126/127
 					// (command not found or not executable).
 					results[idx].errored = true
-					results[idx].output = outBuf.String() + err.Error()
+					results[idx].output = output + err.Error()
 				}
 			}
 		}(i, info)
@@ -220,7 +232,7 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 			fmt.Printf("%s  SURVIVED  %s\n", num, r.desc)
 			survivedCount++
 		default:
-			fmt.Printf("%s  KILLED    %s\n", num, r.desc)
+			fmt.Printf("%s  KILLED    %s%s\n", num, r.desc, r.killedTests)
 			killed++
 		}
 	}
@@ -246,4 +258,83 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 		return &exitError{code: 1, msg: fmt.Sprintf("%d mutation(s) survived, %d errored", survivedCount, errorCount)}
 	}
 	return nil
+}
+
+// parseFailedTests extracts unique leaf failed test names from go test -json output.
+func parseFailedTests(output string) []string {
+	type testEvent struct {
+		Action string `json:"Action"`
+		Test   string `json:"Test"`
+	}
+	seen := make(map[string]bool)
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "{") {
+			continue
+		}
+		var ev testEvent
+		if err := json.Unmarshal([]byte(line), &ev); err != nil {
+			continue
+		}
+		if ev.Action == "fail" && ev.Test != "" {
+			seen[ev.Test] = true
+		}
+	}
+	// Filter to leaf tests only (exclude parents of subtests).
+	var failed []string
+	for t := range seen {
+		isParent := false
+		for t2 := range seen {
+			if t2 != t && strings.HasPrefix(t2, t+"/") {
+				isParent = true
+				break
+			}
+		}
+		if !isParent {
+			failed = append(failed, t)
+		}
+	}
+	sort.Strings(failed)
+	return failed
+}
+
+// formatGoTestOutput extracts human-readable output from go test -json lines.
+func formatGoTestOutput(output string) string {
+	type testEvent struct {
+		Action string `json:"Action"`
+		Output string `json:"Output"`
+	}
+	var b strings.Builder
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "{") {
+			if line != "" {
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+			continue
+		}
+		var ev testEvent
+		if err := json.Unmarshal([]byte(line), &ev); err != nil {
+			b.WriteString(line)
+			b.WriteByte('\n')
+			continue
+		}
+		if ev.Action == "output" {
+			b.WriteString(ev.Output)
+		}
+	}
+	return b.String()
+}
+
+// formatFailedTests returns a short summary of failed tests for display.
+func formatFailedTests(tests []string) string {
+	if len(tests) == 0 {
+		return ""
+	}
+	const maxShow = 3
+	if len(tests) <= maxShow {
+		return " [" + strings.Join(tests, ", ") + "]"
+	}
+	return fmt.Sprintf(" [%s, ... +%d more]", strings.Join(tests[:maxShow], ", "), len(tests)-maxShow)
 }

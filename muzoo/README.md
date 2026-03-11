@@ -51,9 +51,13 @@ Run a test command against each mutation in parallel git worktrees. Mutations
 that survive (tests still pass) indicate gaps in test coverage.
 
 ```
-muzoo run -- go test -short ./... && go test ./...
+muzoo run
 muzoo run -j 4 --timeout 30s -- make test
 ```
+
+With no test command, `muzoo run` defaults to `go test -short ./... && go test
+./...` — running short tests first, then full tests if needed — and prints the
+name of the failed test(s) next to each killed mutation.
 
 The working directory of the test command matches your current directory
 relative to the repo root (e.g. if you run `muzoo run` from `src/foo`, the test

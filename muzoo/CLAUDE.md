@@ -81,14 +81,16 @@ flags as `CONFLICT`. Detects mutations lost during rebase (`LOST`). Already
 applied patches are flagged as `APPLIED` errors (should be removed with
 `muzoo rm`).
 
-### `run [-j <jobs>] [--timeout <duration>] [--] <test-command...>`
+### `run [-j <jobs>] [--timeout <duration>] [--] [test-command...]`
 
 Runs test command against each mutation in parallel worktrees. Pre-checks all
 patches apply cleanly (exits 2 if not). Results: `KILLED` (test failed, good),
 `SURVIVED` (test passed, bad), `ERROR` (worktree/apply error). Shows captured
 stdout/stderr for survived and errored mutations. Timeout expiry counts as
 killed. Default `-j` is number of CPUs. Signal handling cleans up worktrees on
-SIGINT/SIGTERM.
+SIGINT/SIGTERM. With no test command, defaults to
+`go test -json -short ./... && go test -json ./...` and prints the failed
+test(s) next to each killed mutation.
 
 ### `list`, `show <number>`, `rm <number>`
 
