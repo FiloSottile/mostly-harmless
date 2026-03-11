@@ -66,7 +66,7 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 	// If no -m, try to generate a description with Claude Code, then
 	// fall back to opening $EDITOR.
 	if !hasMessage {
-		if desc := generateDescription(diff); desc != "" {
+		if desc := generateDescription(mutDir, diff); desc != "" {
 			*message = desc
 			if err := os.WriteFile(patchPath, []byte(formatPatch(*message, diff)), 0o644); err != nil {
 				return fmt.Errorf("writing patch: %w", err)
@@ -104,15 +104,35 @@ func cmdCapture(repoRoot, mutDir string, args []string) error {
 
 // generateDescription tries to use Claude Code to generate a short description
 // for the given diff. Returns empty string if claude is not available or fails.
-func generateDescription(diff string) string {
+func generateDescription(mutDir, diff string) string {
 	claude, err := exec.LookPath("claude")
 	if err != nil {
 		return ""
 	}
-	prompt := "Describe this mutation (a change to source code that should be caught by tests) " +
+
+	// Collect existing descriptions as examples for consistency.
+	examples := existingDescriptions(mutDir)
+	if len(examples) == 0 {
+		examples = []string{
+			"z norm check reduced to last element only",
+			"skip non-zero hint padding check",
+		}
+	}
+
+	var prompt strings.Builder
+	prompt.WriteString("Describe this mutation (a change to source code that should be caught by tests) " +
 		"in two to five-ish words, first letter lowercase. " +
-		"Output only the description, nothing else.\n\n" + diff
-	cmd := exec.Command(claude, "--model", "sonnet", "-p", prompt)
+		"Output only the description, nothing else.\n\n")
+	prompt.WriteString("Examples of existing descriptions for reference:\n")
+	for _, ex := range examples {
+		prompt.WriteString("- ")
+		prompt.WriteString(ex)
+		prompt.WriteString("\n")
+	}
+	prompt.WriteString("\n")
+	prompt.WriteString(diff)
+
+	cmd := exec.Command(claude, "--model", "sonnet", "-p", prompt.String())
 	out, err := cmd.Output()
 	if err != nil {
 		return ""
@@ -122,6 +142,24 @@ func generateDescription(diff string) string {
 		return ""
 	}
 	return desc
+}
+
+// existingDescriptions returns the first line of each non-empty description
+// from existing patches in the mutations directory.
+func existingDescriptions(mutDir string) []string {
+	patches, err := listPatches(mutDir)
+	if err != nil {
+		return nil
+	}
+	var descs []string
+	for _, p := range patches {
+		desc, _, err := readPatch(mutDir, p)
+		if err != nil || desc == "" {
+			continue
+		}
+		descs = append(descs, firstLine(desc))
+	}
+	return descs
 }
 
 func editPatch(patchPath, diff string) error {
