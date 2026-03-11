@@ -252,9 +252,9 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
-	// Print output for survived/errored mutations, and killed if verbose.
+	// Print output for errored mutations, and killed if verbose.
 	for _, r := range results {
-		show := (r.survived || r.errored || *verbose) && r.output != ""
+		show := (r.errored || *verbose) && r.output != ""
 		if show {
 			fmt.Printf("\n--- Output for %s (%s) ---\n%s\n", strings.TrimSuffix(r.patch, ".patch"), r.desc, r.output)
 		}

@@ -91,7 +91,7 @@ applied patches are flagged as `APPLIED` errors (should be removed with
 Runs test command against each mutation in parallel worktrees. Pre-checks all
 patches apply cleanly (exits 2 if not). Results: `KILLED` (test failed, good),
 `SURVIVED` (test passed, bad), `ERROR` (worktree/apply error). Shows captured
-stdout/stderr for survived and errored mutations. Timeout expiry counts as
+stdout/stderr for errored mutations. Timeout expiry counts as
 killed. Default `-j` is number of CPUs. Signal handling cleans up worktrees on
 SIGINT/SIGTERM. With no test command, defaults to
 `go test -json -failfast -short ./... && go test -json -failfast ./...` and prints the failed
