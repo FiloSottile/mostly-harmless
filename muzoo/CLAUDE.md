@@ -10,13 +10,15 @@ version-controlled and curated — no equivalent-mutant exclusion lists needed.
 
 ## Architecture
 
-Single Go binary, no dependencies beyond the standard library and `git` in
-`$PATH`. Optional `mergiraf` integration for better rebase success.
+Single Go binary with only `golang.org/x/term` beyond the standard library.
+Requires `git` in `$PATH`. Optional `mergiraf` integration for better rebase
+success.
 
 ### File Layout
 
 ```
 main.go          — entry point, CLI dispatch
+color.go         — TTY detection and ANSI color helpers
 patch.go         — patch parsing, numbering, file I/O
 git.go           — git operations (apply, diff, worktrees)
 cmd_capture.go   — muzoo capture

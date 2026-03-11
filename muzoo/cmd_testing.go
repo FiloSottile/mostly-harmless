@@ -234,6 +234,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 	}
 
 	// Print results.
+	tty := isTerminal(os.Stdout)
 	killed := 0
 	survivedCount := 0
 	errorCount := 0
@@ -241,13 +242,14 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		num := strings.TrimSuffix(r.patch, ".patch")
 		switch {
 		case r.errored:
-			fmt.Printf("%s  ERROR     %s\n", num, r.desc)
+			fmt.Printf("%s  %s     %s\n", num, colorize(tty, "ERROR", colorRed), r.desc)
 			errorCount++
 		case r.survived:
-			fmt.Printf("%s  SURVIVED  %s\n", num, r.desc)
+			fmt.Printf("%s  %s  %s\n", num, colorize(tty, "SURVIVED", colorRed), r.desc)
 			survivedCount++
 		default:
-			fmt.Printf("%s  KILLED    %s%s\n", num, r.desc, r.killedTests)
+			killedTests := colorize(tty, r.killedTests, colorDim)
+			fmt.Printf("%s  %s    %s%s\n", num, colorize(tty, "KILLED", colorGreen), r.desc, killedTests)
 			killed++
 		}
 	}
@@ -260,19 +262,11 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
-	total := killed + survivedCount + errorCount
-	fmt.Printf("\n%d/%d mutations killed.", killed, total)
-	if survivedCount > 0 {
-		fmt.Printf(" %d survived.", survivedCount)
-	}
-	if errorCount > 0 {
-		fmt.Printf(" %d errored.", errorCount)
-	}
 	fmt.Println()
-
 	if survivedCount > 0 || errorCount > 0 {
-		return &exitError{code: 1, msg: fmt.Sprintf("%d mutation(s) survived, %d errored", survivedCount, errorCount)}
+		return &exitError{code: 1, msg: fmt.Sprintf("%d mutation(s) survived, %d errored, %d killed", survivedCount, errorCount, killed)}
 	}
+	fmt.Fprintf(os.Stderr, "muzoo: all %d mutation(s) killed\n", killed)
 	return nil
 }
 
