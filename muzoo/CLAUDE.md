@@ -4,7 +4,7 @@
 
 `muzoo` is a CLI tool for curated mutation testing. Mutations are hand-crafted
 (or LLM-assisted) patches stored alongside a repository. The tool helps create,
-rebase, and run these mutations against a test suite, failing if any mutation
+rebase, and test these mutations against a test suite, failing if any mutation
 survives (tests still pass). Unlike automated mutation frameworks, mutations are
 version-controlled and curated — no equivalent-mutant exclusion lists needed.
 
@@ -22,7 +22,7 @@ git.go           — git operations (apply, diff, worktrees)
 cmd_capture.go   — muzoo capture
 cmd_status.go    — muzoo status
 cmd_rebase.go    — muzoo rebase (three-way merge, mergiraf)
-cmd_run.go       — muzoo run (parallel worktree execution)
+cmd_testing.go   — muzoo test (parallel worktree execution)
 cmd_list.go      — muzoo list
 cmd_show.go      — muzoo show
 cmd_rm.go        — muzoo rm
@@ -35,7 +35,7 @@ cmd_rm.go        — muzoo rm
   (unstaged changes only), ensuring `git restore .` cleanly undoes the capture.
 - Patches are parsed by finding the first `diff --git ` line; everything before
   is the description, trailing blank lines stripped.
-- `run` creates worktrees under `.muzoo-worktrees/` at the repo root (via
+- `test` creates worktrees under `.muzoo-worktrees/` at the repo root (via
   `git rev-parse --git-common-dir`), with a self-ignoring `.gitignore`.
 - Test commands run via `sh -c` for pipe/redirect support.
 - `MUZOO_PATCH` and `MUZOO_DESCRIPTION` env vars set for each test invocation.
@@ -53,7 +53,7 @@ separated by a blank line). Gaps in numbering are allowed (after `rm`).
 
 | Command   | 0                    | 1                      | 2            |
 |-----------|----------------------|------------------------|--------------|
-| `run`     | All killed           | Any survived/errored   | Setup error  |
+| `test`    | All killed           | Any survived/errored   | Setup error  |
 | `rebase`  | All rebased          | Any failed/lost        | Setup error  |
 | `status`  | All apply cleanly    | Any conflicts          | Setup error  |
 | `capture` | Saved                | —                      | No changes   |
@@ -81,7 +81,7 @@ flags as `CONFLICT`. Detects mutations lost during rebase (`LOST`). Already
 applied patches are flagged as `APPLIED` errors (should be removed with
 `muzoo rm`).
 
-### `run [-j <jobs>] [--timeout <duration>] [--] [test-command...]`
+### `test [-j <jobs>] [--timeout <duration>] [--] [test-command...]`
 
 Runs test command against each mutation in parallel worktrees. Pre-checks all
 patches apply cleanly (exits 2 if not). Results: `KILLED` (test failed, good),
@@ -113,9 +113,9 @@ Create a test git repo, add some code with tests, then:
 sed -i 's/foo/bar/' file.go
 muzoo capture -m "change foo to bar"
 
-# Check status, run mutations
+# Check status, test mutations
 muzoo status
-muzoo run -- go test ./...
+muzoo test -- go test ./...
 ```
 
 ## Future Directions (out of scope for v1)

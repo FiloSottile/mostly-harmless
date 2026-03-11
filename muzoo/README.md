@@ -3,7 +3,7 @@
 A CLI tool for curated mutation testing.
 
 A little zoo of mutations are hand-crafted (or LLM-generated) and stored
-alongside a repository. `muzoo run` applies each mutation in a parallel git
+alongside a repository. `muzoo test` applies each mutation in a parallel git
 worktree and runs tests to ensure they fail. Unlike automated mutation
 frameworks, there are no equivalent-mutant exclusion lists to maintain.
 `muzoo capture` makes it cheap to create new mutations.
@@ -45,22 +45,22 @@ jj new
 muzoo capture && jj squash -f @-
 ```
 
-### Running mutations
+### Testing mutations
 
 Run a test command against each mutation in parallel git worktrees. Mutations
 that survive (tests still pass) indicate gaps in test coverage.
 
 ```
-muzoo run
-muzoo run -j 4 --timeout 30s -- make test
+muzoo test
+muzoo test -j 4 --timeout 30s -- make test
 ```
 
-With no test command, `muzoo run` defaults to `go test -short ./... && go test
+With no test command, `muzoo test` defaults to `go test -short ./... && go test
 ./...` — running short tests first, then full tests if needed — and prints the
 name of the failed test(s) next to each killed mutation.
 
 The working directory of the test command matches your current directory
-relative to the repo root (e.g. if you run `muzoo run` from `src/foo`, the test
+relative to the repo root (e.g. if you run `muzoo test` from `src/foo`, the test
 runs in `src/foo` inside the worktree).
 
 Each test invocation has `MUZOO_PATCH` (patch file path) and `MUZOO_DESCRIPTION`

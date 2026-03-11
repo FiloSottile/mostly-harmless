@@ -57,7 +57,7 @@ func run(args []string) error {
 		return cmdStatus(repoRoot, *mutationsDir, args)
 	case "rebase":
 		return cmdRebase(repoRoot, *mutationsDir, args)
-	case "run":
+	case "test":
 		cwd, err := os.Getwd()
 		if err != nil {
 			return fmt.Errorf("getting working directory: %w", err)
@@ -71,7 +71,7 @@ func run(args []string) error {
 		if err != nil {
 			return fmt.Errorf("computing relative directory: %w", err)
 		}
-		return cmdRun(*mutationsDir, relDir, args)
+		return cmdTest(*mutationsDir, relDir, args)
 	case "list":
 		return cmdList(*mutationsDir, args)
 	case "show":

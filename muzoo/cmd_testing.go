@@ -20,8 +20,8 @@ import (
 	"time"
 )
 
-func cmdRun(mutDir, relDir string, args []string) error {
-	f := flag.NewFlagSet("muzoo run", flag.ContinueOnError)
+func cmdTest(mutDir, relDir string, args []string) error {
+	f := flag.NewFlagSet("muzoo test", flag.ContinueOnError)
 	jobs := f.Int("j", runtime.NumCPU(), "number of parallel jobs")
 	timeout := f.Duration("timeout", 0, "timeout per test invocation")
 	if err := f.Parse(args); err != nil {
