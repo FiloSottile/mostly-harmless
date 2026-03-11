@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
+func cmdRun(mutDir, relDir string, args []string) error {
 	f := flag.NewFlagSet("muzoo run", flag.ContinueOnError)
 	jobs := f.Int("j", runtime.NumCPU(), "number of parallel jobs")
 	timeout := f.Duration("timeout", 0, "timeout per test invocation")
@@ -41,24 +41,6 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 	if len(patches) == 0 {
 		fmt.Println("No mutations found.")
 		return nil
-	}
-
-	// Pre-read and validate all patches.
-	type patchInfo struct {
-		name string
-		desc string
-		diff string
-	}
-	var infos []patchInfo
-	for _, p := range patches {
-		desc, diff, err := readPatch(mutDir, p)
-		if err != nil {
-			return fmt.Errorf("reading %s: %w", p, err)
-		}
-		if err := gitApplyCheck(repoRoot, diff); err != nil {
-			return &exitError{code: 2, msg: fmt.Sprintf("patch %s does not apply cleanly; run 'muzoo rebase' first", p)}
-		}
-		infos = append(infos, patchInfo{name: p, desc: desc, diff: diff})
 	}
 
 	// Use git common dir parent for worktree placement.
@@ -99,6 +81,25 @@ func cmdRun(repoRoot, mutDir, relDir string, args []string) error {
 			removeWorktree(p)
 		}
 	}()
+
+	// Pre-read and validate all patches against a clean worktree (at HEAD),
+	// not the user's potentially-dirty working tree.
+	type patchInfo struct {
+		name string
+		desc string
+		diff string
+	}
+	var infos []patchInfo
+	for _, p := range patches {
+		desc, diff, err := readPatch(mutDir, p)
+		if err != nil {
+			return fmt.Errorf("reading %s: %w", p, err)
+		}
+		if err := gitApplyCheck(workerPaths[0], diff); err != nil {
+			return &exitError{code: 2, msg: fmt.Sprintf("patch %s does not apply cleanly; run 'muzoo rebase' first", p)}
+		}
+		infos = append(infos, patchInfo{name: p, desc: desc, diff: diff})
+	}
 
 	type result struct {
 		patch       string

@@ -71,7 +71,7 @@ func run(args []string) error {
 		if err != nil {
 			return fmt.Errorf("computing relative directory: %w", err)
 		}
-		return cmdRun(repoRoot, *mutationsDir, relDir, args)
+		return cmdRun(*mutationsDir, relDir, args)
 	case "list":
 		return cmdList(*mutationsDir, args)
 	case "show":
