@@ -90,7 +90,10 @@ stdout/stderr for survived and errored mutations. Timeout expiry counts as
 killed. Default `-j` is number of CPUs. Signal handling cleans up worktrees on
 SIGINT/SIGTERM. With no test command, defaults to
 `go test -json -short ./... && go test -json ./...` and prints the failed
-test(s) next to each killed mutation.
+test(s) next to each killed mutation. When the test command is `pytest` or
+`uv run pytest` (with or without extra arguments), `-v --tb=short` flags are
+added automatically and failed test names are shown next to each killed
+mutation.
 
 ### `list`, `show <number>`, `rm <number>`
 

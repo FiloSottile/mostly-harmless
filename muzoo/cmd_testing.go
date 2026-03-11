@@ -35,6 +35,11 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		testCmd = []string{"go test -json -short ./... && go test -json ./..."}
 	}
 
+	pytestCmd := !defaultGoTest && isPytestCmd(testCmd)
+	if pytestCmd {
+		testCmd = addPytestFlags(testCmd)
+	}
+
 	// List and validate all patches.
 	patches, err := listPatches(mutDir)
 	if err != nil {
@@ -186,6 +191,8 @@ func cmdTest(mutDir, relDir string, args []string) error {
 			output := outBuf.String()
 			if defaultGoTest {
 				output = formatGoTestOutput(output)
+			} else if pytestCmd {
+				output = formatPytestOutput(output)
 			}
 			if err == nil {
 				// exit 0 = tests passed = mutation survived (BAD)
@@ -205,7 +212,10 @@ func cmdTest(mutDir, relDir string, args []string) error {
 					results[idx].output = output
 					if defaultGoTest {
 						results[idx].killedTests = formatFailedTests(
-							parseFailedTests(outBuf.String()))
+							parseFailedTests(outBuf.String()), 3)
+					} else if pytestCmd {
+						results[idx].killedTests = formatFailedTests(
+							parsePytestFailedTests(outBuf.String()), 1)
 					}
 				} else {
 					// Infrastructure error: either not an ExitError (e.g.
@@ -338,13 +348,66 @@ func formatGoTestOutput(output string) string {
 }
 
 // formatFailedTests returns a short summary of failed tests for display.
-func formatFailedTests(tests []string) string {
+// maxShow controls how many test names to include before truncating.
+func formatFailedTests(tests []string, maxShow int) string {
 	if len(tests) == 0 {
 		return ""
 	}
-	const maxShow = 3
 	if len(tests) <= maxShow {
 		return " [" + strings.Join(tests, ", ") + "]"
 	}
 	return fmt.Sprintf(" [%s, ... +%d more]", strings.Join(tests[:maxShow], ", "), len(tests)-maxShow)
+}
+
+// isPytestCmd returns true if the test command runs pytest.
+func isPytestCmd(testCmd []string) bool {
+	cmd := strings.Join(testCmd, " ")
+	cmd = strings.TrimSpace(cmd)
+	return cmd == "pytest" || cmd == "uv run pytest" ||
+		strings.HasPrefix(cmd, "pytest ") || strings.HasPrefix(cmd, "uv run pytest ")
+}
+
+// addPytestFlags adds -v and --tb=short to a pytest command for parseable output.
+func addPytestFlags(testCmd []string) []string {
+	cmd := strings.Join(testCmd, " ")
+	cmd = strings.TrimSpace(cmd)
+	// Insert flags right after "pytest".
+	if strings.HasPrefix(cmd, "uv run pytest") {
+		cmd = strings.Replace(cmd, "uv run pytest", "uv run pytest -v --tb=short", 1)
+	} else {
+		cmd = strings.Replace(cmd, "pytest", "pytest -v --tb=short", 1)
+	}
+	return []string{cmd}
+}
+
+// parsePytestFailedTests extracts failed test names from pytest -v output.
+// It looks for lines like "FAILED tests/test_foo.py::test_bar" in the
+// short test summary section.
+func parsePytestFailedTests(output string) []string {
+	var failed []string
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "FAILED ") {
+			continue
+		}
+		// "FAILED tests/test_foo.py::TestClass::test_bar - reason"
+		name := strings.TrimPrefix(line, "FAILED ")
+		if dash := strings.Index(name, " - "); dash != -1 {
+			name = name[:dash]
+		}
+		// Extract just the test function/method name (after last ::).
+		if idx := strings.LastIndex(name, "::"); idx != -1 {
+			name = name[idx+2:]
+		}
+		failed = append(failed, name)
+	}
+	sort.Strings(failed)
+	return failed
+}
+
+// formatPytestOutput trims pytest output to the most useful parts.
+// With -v --tb=short, the output is already fairly concise, so we
+// just return it as-is.
+func formatPytestOutput(output string) string {
+	return output
 }
