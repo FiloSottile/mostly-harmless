@@ -105,3 +105,9 @@ Here is an example prompt that yielded good results with Claude Code:
 > at the end give me a summary of the ones you added and ideas for more
 
 It helps to generate 2-3 examples manually to set the style.
+
+You can ask the LLM to keep going and focus on security-relevant or plausible
+human mistakes to perform differential mutation testing:
+
+> can you think of more mutations that simulate plausible human mistakes or overlooked steps, or security-critical deviations, or bugs that are not likely in this implementation but might be in other
+languages (like my case using strcmp instead of memcmp), or other mutations that are likely not to break naive test vectors (i.e. they don't break the whole computation but only some edge case)
