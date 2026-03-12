@@ -85,6 +85,48 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
+	// Run the test command on a clean worktree first to make sure it passes
+	// without any mutations. If the tests are already broken, every mutation
+	// would appear killed, giving a false positive.
+	fmt.Fprintf(os.Stderr, "muzoo: running tests on un-mutated tree...\n")
+	{
+		wtPath := workerPaths[0]
+		var sanityCmd *exec.Cmd
+		if *timeout > 0 {
+			tctx, tcancel := context.WithTimeout(ctx, *timeout)
+			defer tcancel()
+			sanityCmd = exec.CommandContext(tctx, "sh", "-c", strings.Join(testCmd, " "))
+		} else {
+			sanityCmd = exec.CommandContext(ctx, "sh", "-c", strings.Join(testCmd, " "))
+		}
+		sanityCmd.Dir = filepath.Join(wtPath, relDir)
+		sanityCmd.Env = append(os.Environ(),
+			"MUZOO_PATCH=",
+			"MUZOO_DESCRIPTION=",
+		)
+		sanityCmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+		sanityCmd.Cancel = func() error {
+			syscall.Kill(-sanityCmd.Process.Pid, syscall.SIGKILL)
+			return nil
+		}
+		sanityCmd.WaitDelay = time.Second
+		var outBuf bytes.Buffer
+		sanityCmd.Stdout = &outBuf
+		sanityCmd.Stderr = &outBuf
+		if err := sanityCmd.Run(); err != nil {
+			if ctx.Err() != nil {
+				return &exitError{code: 2, msg: "interrupted"}
+			}
+			output := outBuf.String()
+			if defaultGoTest {
+				output = formatGoTestOutput(output)
+			}
+			fmt.Fprintf(os.Stderr, "\n%s\n", output)
+			return &exitError{code: 2, msg: "tests fail without mutations; fix the tests first"}
+		}
+		fmt.Fprintf(os.Stderr, "muzoo: tests pass, running mutations...\n")
+	}
+
 	// Pre-read and validate all patches against a clean worktree (at HEAD),
 	// not the user's potentially-dirty working tree.
 	type patchInfo struct {
@@ -262,7 +304,6 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
-	fmt.Println()
 	if survivedCount > 0 || errorCount > 0 {
 		return &exitError{code: 1, msg: fmt.Sprintf("%d mutation(s) survived, %d errored, %d killed", survivedCount, errorCount, killed)}
 	}
