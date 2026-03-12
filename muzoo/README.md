@@ -84,3 +84,24 @@ muzoo rm <number>       # delete a mutation
 Patches are stored as `NNNN.patch` files. A patch file contains an optional
 description (lines before the first `diff --git` line, separated by a blank
 line) followed by a `git diff`.
+
+## Using LLMs to generate mutations
+
+Here is an example prompt that yielded good results with Claude Code:
+
+> ! muzoo -help
+
+> make new mutations, focusing in particular on boundary conditions, e.g. everything that checks `> x` should be mutated to `> x + 1` and `> x - 1`
+>
+> make them by editing @src/mldsa/mldsa.py and then running
+> ```
+> muzoo -mutations ./tests/testdata/mutations/ capture -m "short description in 3-5 words"
+> ```
+>
+> you can keep going in a loop
+>
+> look at @tests/testdata/mutations/ for examples
+>
+> at the end give me a summary of the ones you added and ideas for more
+
+It helps to generate 2-3 examples manually to set the style.
