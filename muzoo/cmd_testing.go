@@ -50,6 +50,17 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		return nil
 	}
 
+	// Warn if there are uncommitted changes outside the mutations directory,
+	// since muzoo test runs against HEAD in worktrees and won't see them.
+	if repoRoot, err := gitRepoRoot(); err == nil {
+		absMutDir, _ := filepath.Abs(mutDir)
+		relMutDir, _ := filepath.Rel(repoRoot, absMutDir)
+		exclude := fmt.Sprintf(":(exclude)%s", relMutDir)
+		if diff, err := gitOutputDir(repoRoot, "diff", "HEAD", "--", ".", exclude); err == nil && diff != "" {
+			fmt.Fprintf(os.Stderr, "muzoo: warning: working tree has uncommitted changes; tests run against HEAD\n")
+		}
+	}
+
 	// Use git common dir parent for worktree placement.
 	wtRoot, err := worktreeRoot()
 	if err != nil {
