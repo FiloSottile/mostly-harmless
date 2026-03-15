@@ -31,7 +31,7 @@ Operations are allowed in:
 Safe values include:
   - Constants and literals
   - Expressions involving len() (lengths leak via cache side-channels anyway)
-  - Return values of functions marked with //cryptocheck:return-value-is-not-secret
+  - Return values of functions marked with //cryptovet:return-value-is-not-secret
   - Range loop index variables (already leaked by loop progression)`
 
 var Analyzer = &analysis.Analyzer{
@@ -42,12 +42,12 @@ var Analyzer = &analysis.Analyzer{
 }
 
 // notSecretPragma is the comment pragma that marks a function's return value as not secret.
-const notSecretPragma = "//cryptocheck:return-value-is-not-secret"
+const notSecretPragma = "//cryptovet:return-value-is-not-secret"
 
 func run(pass *analysis.Pass) (any, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
-	// First pass: find functions marked with //cryptocheck:notSecret.
+	// First pass: find functions marked with //cryptovet:return-value-is-not-secret.
 	notSecretFuncs := findNotSecretFuncs(pass, inspect)
 
 	nodeFilter := []ast.Node{
@@ -112,7 +112,7 @@ func run(pass *analysis.Pass) (any, error) {
 	return nil, nil
 }
 
-// findNotSecretFuncs finds all functions marked with //cryptocheck:notSecret.
+// findNotSecretFuncs finds all functions marked with //cryptovet:return-value-is-not-secret.
 func findNotSecretFuncs(pass *analysis.Pass, inspect *inspector.Inspector) map[*types.Func]bool {
 	result := make(map[*types.Func]bool)
 
@@ -164,7 +164,7 @@ func isSafeExpr(pass *analysis.Pass, expr ast.Expr, notSecretFuncs map[*types.Fu
 		return true
 	}
 
-	// Check if the expression is a call to a //cryptocheck:notSecret function.
+	// Check if the expression is a call to a //cryptovet:return-value-is-not-secret function.
 	if isNotSecretCall(pass, expr, notSecretFuncs) {
 		return true
 	}
@@ -225,7 +225,7 @@ func isRangeIndexVar(pass *analysis.Pass, expr ast.Expr, stack []ast.Node) bool 
 }
 
 // isNotSecretCall reports whether expr is a call to a function marked with
-// //cryptocheck:notSecret.
+// //cryptovet:return-value-is-not-secret.
 func isNotSecretCall(pass *analysis.Pass, expr ast.Expr, notSecretFuncs map[*types.Func]bool) bool {
 	call, ok := expr.(*ast.CallExpr)
 	if !ok {

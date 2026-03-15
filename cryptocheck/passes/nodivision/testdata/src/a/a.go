@@ -76,10 +76,10 @@ func NestedInVarTime(a, b int) int {
 const (
 	numerator   = 100
 	denominator = 7
-	quotient    = numerator / denominator   // allowed: const definition
-	remainder   = numerator % denominator   // allowed: const definition
-	chained     = 1000 / 10 / 2             // allowed: const definition
-	mixed       = (100 + 50) / 3 % 7        // allowed: const definition
+	quotient    = numerator / denominator // allowed: const definition
+	remainder   = numerator % denominator // allowed: const definition
+	chained     = 1000 / 10 / 2           // allowed: const definition
+	mixed       = (100 + 50) / 3 % 7      // allowed: const definition
 )
 
 func constants() int {
@@ -203,22 +203,22 @@ func powerOfTwoNamedConstUnsigned(a uint) uint {
 	return x + y
 }
 
-// Functions marked with //cryptocheck:return-value-is-not-secret return safe values.
+// Functions marked with //cryptovet:return-value-is-not-secret return safe values.
 
 // notSecret does blah blah blah
 //
-//cryptocheck:return-value-is-not-secret
+//cryptovet:return-value-is-not-secret
 func notSecret[T any](a T) T { return a }
 
-//cryptocheck:return-value-is-not-secret
+//cryptovet:return-value-is-not-secret
 //go:noinline
 func addPublic(a, b int) int { return a + b }
 
 func useNotSecret(secret, public int) int {
 	// Both operands must be safe for the operation to be safe.
 	// notSecret() on one side is not enough.
-	a := notSecret(secret) / public           // want `use of non-constant-time / operator`
-	b := secret / notSecret(public)           // want `use of non-constant-time / operator`
+	a := notSecret(secret) / public            // want `use of non-constant-time / operator`
+	b := secret / notSecret(public)            // want `use of non-constant-time / operator`
 	c := notSecret(secret) / notSecret(public) // OK: both sides are safe
 
 	// Without notSecret, it's flagged.
@@ -291,9 +291,9 @@ func rangeIndexArithmetic(f []byte) int {
 func rangeIndexNotValue(f []byte, secret int) int {
 	// The value variable from range is NOT safe, only the index.
 	for i, v := range f {
-		_ = i / 7            // OK: index is safe
-		_ = int(v) / secret  // want `use of non-constant-time / operator`
-		_ = secret / int(v)  // want `use of non-constant-time / operator`
+		_ = i / 7           // OK: index is safe
+		_ = int(v) / secret // want `use of non-constant-time / operator`
+		_ = secret / int(v) // want `use of non-constant-time / operator`
 	}
 	return 0
 }
