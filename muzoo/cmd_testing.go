@@ -96,6 +96,13 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		}
 	}
 
+	// Disable Python bytecode caching. Python's .pyc validation uses
+	// (mtime-seconds, file-size) pairs, not content hashes. Since git
+	// checkout and git apply can produce files with the same mtime (same
+	// second) and size as a previous mutation, Python may silently reuse
+	// stale bytecode from a different mutation, causing false kills.
+	testEnv := append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
+
 	// Run the test command on a clean worktree first to make sure it passes
 	// without any mutations. If the tests are already broken, every mutation
 	// would appear killed, giving a false positive.
@@ -111,7 +118,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 			sanityCmd = exec.CommandContext(ctx, "sh", "-c", strings.Join(testCmd, " "))
 		}
 		sanityCmd.Dir = filepath.Join(wtPath, relDir)
-		sanityCmd.Env = append(os.Environ(),
+		sanityCmd.Env = append(testEnv,
 			"MUZOO_PATCH=",
 			"MUZOO_DESCRIPTION=",
 		)
@@ -220,7 +227,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 				cmd = exec.CommandContext(ctx, "sh", "-c", testCmdStr)
 			}
 			cmd.Dir = filepath.Join(wtPath, relDir)
-			cmd.Env = append(os.Environ(),
+			cmd.Env = append(testEnv,
 				"MUZOO_PATCH="+info.name,
 				"MUZOO_DESCRIPTION="+firstLine(info.desc),
 			)
