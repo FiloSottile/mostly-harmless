@@ -212,3 +212,29 @@ body contains c2sp.org/tlog-witness
 
 GET https://at.geomys.org/plc/filippo.abyssdomain.expert.atom
 body contains bafyreihpy7ihz7s42hphtuxcji6ovmaxrfdzr6kebxs4flsemiqfinuowy
+
+GET https://uptime.geomys.org/ct/
+body contains Certificate Transparency Uptime Alerts
+
+GET https://uptime.geomys.org/ct/24h/geomys.org
+body contains geomys.org
+
+GET https://uptime.geomys.org/ct/24h/geomys.org?threshold=90
+body contains geomys.org
+
+GET https://uptime.geomys.org/ct/24h/http?threshold=100
+code == 503
+body contains http
+
+GET https://uptime.geomys.org/ct/24h/geomys.org?threshold=invalid
+code == 400
+body contains invalid threshold
+
+GET https://uptime.geomys.org/witness/
+body contains Witness Uptime Monitoring
+
+GET https://uptime.geomys.org/witness/log-list
+body contains geomys.org/witness/test-log+c0787ff4
+
+GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
+body contains witness signature valid, timestamp

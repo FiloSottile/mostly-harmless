@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -17,22 +16,20 @@ import (
 
 const ctREADME = `# Certificate Transparency Uptime Alerts
 
-This is a little service that checks
+This is a little service that makes it possible to set up alerting for
 
-	https://www.gstatic.com/ct/compliance/endpoint_uptime.csv
+	https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv
 
-and makes it possible to set up alerting for it.
-
-e.g. https://ct-uptime-alerts.fly.dev/geomys.org will return a 503 if any lines
-matching "geomys.org" have an uptime column below 99.95.
+e.g. https://uptime.geomys.org/ct/24h/geomys.org will return a 503 if any
+lines matching "geomys.org" have an uptime column below 99.5.
 
 You can use it with any filter string, and it also takes a parameter like
-"?threshold=99.8". You're welcome to use our instance (no guarantees!), or you
-can run your own:
+"?threshold=98". You're welcome to use our instance, but no guarantees!
 
-	https://github.com/FiloSottile/mostly-harmless/tree/main/ct-uptime-alerts
+We recommend setting up alerting such that the endpoint is checked from multiple
+locations, and you are only alerted if all locations hit 503s for more than 15 minutes.
 
-There is also a witness monitoring service at https://ct-uptime-alerts.fly.dev/witness/.
+There is also a witness monitoring service at https://uptime.geomys.org/witness/.
 `
 
 const witnessREADME = `# Witness Uptime Monitoring
@@ -49,7 +46,7 @@ and checks that the witness responds with a fresh, valid signature.
 
 The witness can be configured with the following log list
 
-	https://ct-uptime-alerts.fly.dev/witness/log-list
+	https://uptime.geomys.org/witness/log-list
 
 or directly with this log vkey
 
@@ -59,33 +56,26 @@ so it will accept the checkpoint.
 
 To run a check, request /witness/add-checkpoint/ followed by the witness vkey, e.g.
 
-	https://ct-uptime-alerts.fly.dev/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
+	https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
 
 The vkey name must be the submission prefix of the witness.
+
+We recommend setting up alerting such that the endpoint is checked from multiple
+locations, and you are only alerted if all locations hit 503s for more than 15 minutes.
+
+There is also a CT uptime monitoring service at https://uptime.geomys.org/ct/.
 `
 
-func main() {
-	s := &http.Server{
-		Addr:         ":8080",
-		Handler:      handler(),
-		ReadTimeout:  1 * time.Minute,
-		WriteTimeout: 1 * time.Minute,
-		IdleTimeout:  10 * time.Minute,
-	}
-	log.Fatal(s.ListenAndServe())
-}
-
-var client = &http.Client{
+var uptimeClient = &http.Client{
 	Timeout: 5 * time.Second,
 }
 
-func handler() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", func(w http.ResponseWriter, r *http.Request) {
+func uptime(mux *http.ServeMux) {
+	mux.HandleFunc("uptime.geomys.org/ct/{$}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		fmt.Fprint(w, ctREADME)
 	})
-	mux.HandleFunc("/{filter}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("uptime.geomys.org/ct/24h/{filter}", func(w http.ResponseWriter, r *http.Request) {
 		filter := r.PathValue("filter")
 		if filter == "" {
 			msg := "missing filter in path"
@@ -93,7 +83,7 @@ func handler() http.Handler {
 			return
 		}
 
-		threshold := 99.95
+		threshold := 99.5
 		if t := r.URL.Query().Get("threshold"); t != "" {
 			parsed, err := strconv.ParseFloat(t, 64)
 			if err != nil {
@@ -104,7 +94,7 @@ func handler() http.Handler {
 			threshold = parsed
 		}
 
-		resp, err := client.Get("https://www.gstatic.com/ct/compliance/endpoint_uptime.csv")
+		resp, err := uptimeClient.Get("https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv")
 		if err != nil {
 			msg := fmt.Sprintf("error fetching data: %v", err)
 			http.Error(w, msg, http.StatusBadGateway)
@@ -150,24 +140,25 @@ func handler() http.Handler {
 			return
 		}
 
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		if alerted {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Write(output.Bytes())
 	})
-	mux.HandleFunc("/witness/{$}", func(w http.ResponseWriter, r *http.Request) {
+
+	mux.HandleFunc("uptime.geomys.org/witness/{$}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		fmt.Fprint(w, witnessREADME)
 	})
-	mux.HandleFunc("/witness/log-list", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("uptime.geomys.org/witness/log-list", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		fmt.Fprintln(w, "logs/v0")
 		fmt.Fprintln(w, "vkey geomys.org/witness/test-log+c0787ff4+AeMb5VOzy60PTGdGmLPxOKGAa0jNyDGsgv2rnprGju1t")
 		fmt.Fprintln(w, "qpd 86400")
-		fmt.Fprintln(w, "contact https://ct-uptime-alerts.fly.dev/witness/")
+		fmt.Fprintln(w, "contact https://uptime.geomys.org/witness/")
 	})
-	mux.HandleFunc("/witness/add-checkpoint/{vkey...}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("uptime.geomys.org/witness/add-checkpoint/{vkey...}", func(w http.ResponseWriter, r *http.Request) {
 		vkey := r.PathValue("vkey")
 		v, err := torchwood.NewCosignatureVerifier(vkey)
 		if err != nil {
@@ -176,7 +167,7 @@ func handler() http.Handler {
 			return
 		}
 		url := "https://" + v.Name() + "/add-checkpoint"
-		resp, err := client.Post(url, "text/plain", tlogWitnessBody(1))
+		resp, err := uptimeClient.Post(url, "text/plain", tlogWitnessBody(1))
 		if err != nil {
 			msg := fmt.Sprintf("error submitting checkpoint: %v", err)
 			http.Error(w, msg, http.StatusBadGateway)
@@ -186,7 +177,7 @@ func handler() http.Handler {
 			// Might be the first time we submit to this witness, try again with
 			// old size zero.
 			resp.Body.Close()
-			resp, err = client.Post(url, "text/plain", tlogWitnessBody(0))
+			resp, err = uptimeClient.Post(url, "text/plain", tlogWitnessBody(0))
 			if err != nil {
 				msg := fmt.Sprintf("error submitting checkpoint: %v", err)
 				http.Error(w, msg, http.StatusBadGateway)
@@ -224,8 +215,6 @@ func handler() http.Handler {
 		}
 		fmt.Fprintf(w, "witness signature valid, timestamp %d\n", t)
 	})
-
-	return mux
 }
 
 func tlogWitnessBody(old int64) io.Reader {

@@ -55,6 +55,7 @@ func handler() http.Handler {
 	redirects(mux)
 	buttondown(mux)
 	at(mux)
+	uptime(mux)
 
 	mux.Handle("filippo.io/", StaticHandler())
 
