@@ -238,3 +238,6 @@ body contains geomys.org/witness/test-log+c0787ff4
 
 GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
 body contains witness signature valid, timestamp
+
+GET https://tlog.directory/
+body contains tlog.directory

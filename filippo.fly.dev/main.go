@@ -62,6 +62,8 @@ func handler() http.Handler {
 	mux.Handle("sunlight.dev/images/", StaticHandler())
 	mux.Handle("sunlight.dev/{$}", HTMLHandler("sunlight.html"))
 
+	mux.Handle("tlog.directory/{$}", HTMLHandler("tlog_directory.html"))
+
 	mux.Handle("geomys.org/images/", StaticHandler())
 	mux.Handle("geomys.org/{$}", HTMLHandler("geomys.html"))
 	mux.Handle("geomys.org/witness/navigli", HTMLHandler("navigli.html"))
