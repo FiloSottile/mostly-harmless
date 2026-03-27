@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://uptime.geomys.org/witness/">
+    <title>Witness Uptime Monitoring</title>
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        header {
+            margin: 4rem auto 0;
+            max-width: 350px;
+            padding: 0 10px;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            line-height: 1.5em;
+            font-size: 0.8em;
+        }
+		img {
+			max-width: 100%;
+			height: auto;
+            margin: 0 auto;
+            display: block;
+		}
+        li + li {
+            margin-top: 0.5em;
+        }
+		@media print {
+			main {
+				margin: 0;
+				padding: 0;
+			}
+		}
+    </style>
+</head>
+<body>
+
+
+
+<main>
+<h1>Witness Uptime Monitoring</h1>
+<p>This is a little service that submits the following checkpoint to a witness</p>
+<pre><code>geomys.org/witness/test-log
+1
+BCml5C32yqMcl0gjTrcSOeNVx59oPnSdytBzDGBO5k0=
+
+— geomys.org/witness/test-log wHh/9BPsoBNr2x0Ol3qPBYasIN0HI2ZiBg5ac0v3LQq/7F+YO7U4oWbDeJn1VaWVrlbSEM30Gr7WWYQjj2SBxRoJ/Ao=
+</code></pre>
+<p>and checks that the witness responds with a fresh, valid signature.</p>
+<p>The witness can be configured with the following log list</p>
+<pre><code>https://uptime.geomys.org/witness/log-list
+</code></pre>
+<p>or directly with this log vkey</p>
+<pre><code>geomys.org/witness/test-log+c0787ff4+AeMb5VOzy60PTGdGmLPxOKGAa0jNyDGsgv2rnprGju1t
+</code></pre>
+<p>so it will accept the checkpoint.</p>
+<p>To run a check, request /witness/add-checkpoint/ followed by the witness vkey, e.g.</p>
+<pre><code>https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
+</code></pre>
+<p>The vkey name must be the submission prefix of the witness.</p>
+<p>We recommend setting up alerting such that the endpoint is checked from multiple
+locations, and you are only alerted if all locations hit 503s for more than 15 minutes.</p>
+<p>There is also a CT uptime monitoring service at
+<a href="https://uptime.geomys.org/ct/">https://uptime.geomys.org/ct/</a>.</p>

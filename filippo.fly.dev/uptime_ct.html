@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://uptime.geomys.org/ct/">
+    <title>Certificate Transparency Uptime Alerts</title>
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        header {
+            margin: 4rem auto 0;
+            max-width: 350px;
+            padding: 0 10px;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            line-height: 1.5em;
+            font-size: 0.8em;
+        }
+		img {
+			max-width: 100%;
+			height: auto;
+            margin: 0 auto;
+            display: block;
+		}
+        li + li {
+            margin-top: 0.5em;
+        }
+		@media print {
+			main {
+				margin: 0;
+				padding: 0;
+			}
+		}
+    </style>
+</head>
+<body>
+
+
+
+<main>
+<h1>Certificate Transparency Uptime Alerts</h1>
+<p>This is a little service that makes it possible to set up alerting for
+<a href="https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv">endpoint_uptime_24h.csv</a>.</p>
+<p>e.g. <code>https://uptime.geomys.org/ct/24h/geomys.org</code> will return a 503 if any
+lines matching &quot;geomys.org&quot; have an uptime column below 99.5.</p>
+<p>You can use it with any filter string, and it also takes a parameter like
+<code>?threshold=98</code>. You're welcome to use our instance, but no guarantees!</p>
+<p>We recommend setting up alerting such that the endpoint is checked from multiple
+locations, and you are only alerted if all locations hit 503s for more than 15 minutes.</p>
+<p>There is also a witness monitoring service at
+<a href="https://uptime.geomys.org/witness/">https://uptime.geomys.org/witness/</a>.</p>
