@@ -18,6 +18,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/schollz/progressbar/v3"
 )
 
 func cmdTest(mutDir, relDir string, args []string) error {
@@ -188,10 +190,32 @@ func cmdTest(mutDir, relDir string, args []string) error {
 
 	testCmdStr := strings.Join(testCmd, " ")
 
+	bar := progressbar.NewOptions(len(infos),
+		progressbar.OptionSetWriter(os.Stderr),
+		progressbar.OptionSetDescription("testing"),
+		progressbar.OptionShowCount(),
+		progressbar.OptionClearOnFinish(),
+		progressbar.OptionSetElapsedTime(true),
+		progressbar.OptionShowElapsedTimeOnFinish(),
+	)
+
+	var runningMu sync.Mutex
+	running := make(map[string]struct{})
+	updateBarDesc := func() {
+		var names []string
+		for n := range running {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		bar.Describe("testing " + strings.Join(names, ", "))
+	}
+
 	for i, info := range infos {
 		wg.Add(1)
 		go func(idx int, info patchInfo) {
 			defer wg.Done()
+
+			num := strings.TrimSuffix(info.name, ".patch")
 
 			var worker int
 			select {
@@ -200,6 +224,18 @@ func cmdTest(mutDir, relDir string, args []string) error {
 			case worker = <-sem:
 			}
 			defer func() { sem <- worker }()
+
+			runningMu.Lock()
+			running[num] = struct{}{}
+			updateBarDesc()
+			runningMu.Unlock()
+			defer func() {
+				runningMu.Lock()
+				delete(running, num)
+				updateBarDesc()
+				runningMu.Unlock()
+				bar.Add(1)
+			}()
 
 			wtPath := workerPaths[worker]
 
