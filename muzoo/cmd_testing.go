@@ -34,7 +34,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 
 	defaultGoTest := len(testCmd) == 0
 	if defaultGoTest {
-		testCmd = []string{"go test -json -failfast -short ./... && go test -json -failfast ./..."}
+		testCmd = []string{"go test -json -failfast -parallel 2 -short ./... && go test -json -failfast -parallel 2 ./..."}
 	}
 
 	pytestCmd := !defaultGoTest && isPytestCmd(testCmd)
