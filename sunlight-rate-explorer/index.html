@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Static CT read-load explorer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 2em auto; padding: 0 1em; line-height: 1.45; }
+  h1 { font-size: 1.4em; margin-bottom: 0.2em; }
+  p { color: #555; }
+  .control { margin: 1.2em 0 0.4em; }
+  .control label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.25em; }
+  .control .val { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 400; color: inherit; }
+  input[type=range] { width: 100%; }
+  .results { background: #f3f3f5; border: 1px solid #e2e2e6; padding: 0.8em 1em; border-radius: 6px; margin-top: 1.2em; }
+  .results .row { display: flex; justify-content: space-between; padding: 0.2em 0; }
+  .results .rate { font-size: 1.15em; font-weight: 700; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .tests { margin-top: 2em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82em; border-top: 1px solid #ddd; padding-top: 0.8em; }
+  .tests h2 { font-family: system-ui, sans-serif; font-size: 1em; margin: 0 0 0.4em; }
+  .tests .pass { color: #0a7a2f; }
+  .tests .fail { color: #b00020; font-weight: 700; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #161618; color: #e6e6e6; }
+    p { color: #aaa; }
+    .results { background: #222226; border-color: #333; }
+    .results .row span:first-child { color: #aaa; }
+    .tests { border-color: #333; }
+  }
+</style>
+</head>
+<body>
+<h1>Static CT partial-tile read load</h1>
+<p>
+  A <a href="https://c2sp.org/static-ct-api">Static CT API</a> log serves level-0
+  entries in tiles of 256. While a tile is incomplete, a tailing client must
+  re-fetch it as a <em>partial tile</em> on every poll, re-downloading the
+  entries it already has. For a slow-growing log this wastes a lot of bandwidth:
+  a log growing 10 leaves/s polled every second yields partials of 10, 20, 30,
+  &hellip;, 250, then 256+4, 14, &hellip; This page shows the resulting steady-state
+  read rate measured in leaves/second.
+</p>
+
+<div class="control">
+  <label>Log growth rate <span class="val" id="growthLabel"></span></label>
+  <input type="range" id="growth" min="-2" max="4" step="0.01" value="1">
+</div>
+
+<div class="control">
+  <label>Poll period <span class="val" id="pollLabel"></span></label>
+  <input type="range" id="poll" min="0" max="3.6" step="0.01" value="0">
+</div>
+
+<div class="results">
+  <div class="row"><span>Ideal read rate (= log growth)</span><span class="mono" id="ideal">—</span></div>
+  <div class="row"><span>Actual read rate (with refetches)</span><span class="mono rate" id="actual">—</span></div>
+  <div class="row"><span>Overhead factor</span><span class="mono" id="overhead">—</span></div>
+  <div class="row"><span>Leaves added per poll (avg)</span><span class="mono" id="delta">—</span></div>
+</div>
+
+<div class="tests" id="tests"></div>
+
+<script>
+const TILE = 256;
+
+// pollCost returns the number of leaves a client must download to advance its
+// view of a static-ct-api log from size sOld to size sNew, assuming it always
+// fetches the latest partial level-0 tile so it can see the newest entries.
+//
+// The cost of a tile fetch equals its width in leaves: 256 for a full tile,
+// 1..255 for a partial tile. When a poll crosses one or more tile boundaries,
+// the "first" tile (where the client left off) gets refetched in full because
+// it is now complete, all intermediate tiles are fetched as full tiles, and
+// the "last" tile is a partial (or full, if sNew is tile-aligned).
+function pollCost(sOld, sNew) {
+  if (sNew <= sOld) return 0;
+  const firstTile = Math.floor(sOld / TILE);
+  const lastTile = Math.floor((sNew - 1) / TILE);
+  const tailRem = sNew % TILE;
+  const tailCost = tailRem === 0 ? TILE : tailRem;
+  if (firstTile === lastTile) {
+    // Single-tile poll: fetch one (partial or full) tile of size tailCost.
+    // The client refetches any prior partial bytes it already had.
+    return tailCost;
+  }
+  // Crossed at least one boundary. The first tile is now complete, so it costs
+  // a full TILE. Intermediate full tiles cost TILE each. The trailing tile
+  // costs tailCost.
+  const intermediate = (lastTile - firstTile - 1) * TILE;
+  return TILE + intermediate + tailCost;
+}
+
+// averageCostPerPoll simulates a steady-growth log and returns the average
+// download size of a poll, in leaves, for a given leaves-per-poll increment.
+//
+// The cost depends only on leavesPerPoll = growth * pollPeriod, not on the
+// individual factors, so we simulate once and scale. We simulate enough polls
+// to cover many tile boundaries so the result is independent of starting
+// phase.
+function averageCostPerPoll(leavesPerPoll) {
+  if (leavesPerPoll <= 0) return 0;
+  const targetTiles = 1000;
+  const targetLeaves = targetTiles * TILE;
+  let polls = Math.max(4000, Math.ceil(targetLeaves / leavesPerPoll));
+  polls = Math.min(polls, 1_000_000);
+
+  let sReal = 0;
+  let sOld = 0;
+  let total = 0;
+  for (let i = 0; i < polls; i++) {
+    sReal += leavesPerPoll;
+    const sNew = Math.floor(sReal);
+    total += pollCost(sOld, sNew);
+    sOld = sNew;
+  }
+  return total / polls;
+}
+
+function averageRate(growthPerSec, pollPeriodSec) {
+  return averageCostPerPoll(growthPerSec * pollPeriodSec) / pollPeriodSec;
+}
+
+function fmtLeaves(x) {
+  if (!isFinite(x)) return String(x);
+  if (x >= 1e6) return (x / 1e6).toFixed(2) + 'M';
+  if (x >= 1e3) return (x / 1e3).toFixed(2) + 'k';
+  if (x >= 10)  return x.toFixed(1);
+  if (x >= 1)   return x.toFixed(2);
+  return x.toFixed(3);
+}
+
+function fmtSeconds(s) {
+  if (s >= 3600) return (s / 3600).toFixed(2) + ' h';
+  if (s >= 60)   return (s / 60).toFixed(2) + ' min';
+  if (s >= 1)    return s.toFixed(2) + ' s';
+  return (s * 1000).toFixed(0) + ' ms';
+}
+
+function render() {
+  const growth = Math.pow(10, parseFloat(document.getElementById('growth').value));
+  const poll   = Math.pow(10, parseFloat(document.getElementById('poll').value));
+  document.getElementById('growthLabel').textContent = fmtLeaves(growth) + ' leaves/s';
+  document.getElementById('pollLabel').textContent   = fmtSeconds(poll);
+
+  const actual = averageRate(growth, poll);
+  document.getElementById('ideal').textContent    = fmtLeaves(growth) + ' leaves/s';
+  document.getElementById('actual').textContent   = fmtLeaves(actual) + ' leaves/s';
+  document.getElementById('overhead').textContent = (actual / growth).toFixed(2) + '×';
+  document.getElementById('delta').textContent    = fmtLeaves(growth * poll) + ' leaves';
+}
+
+document.getElementById('growth').addEventListener('input', render);
+document.getElementById('poll').addEventListener('input', render);
+render();
+
+// ---------------- tests ----------------
+
+function runTests() {
+  const cases = [
+    // Single-tile polls: the cost equals the new partial width.
+    ['pollCost(0, 10) == 10',                  pollCost(0, 10),         10],
+    ['pollCost(10, 20) == 20',                 pollCost(10, 20),        20],
+    ['pollCost(0, 256) == 256 (full tile)',    pollCost(0, 256),        256],
+    ['pollCost(100, 256) == 256',              pollCost(100, 256),      256],
+    ['pollCost(0, 0) == 0',                    pollCost(0, 0),          0],
+    ['pollCost(1000, 1000) == 0',              pollCost(1000, 1000),    0],
+    // Crossing one boundary: first tile becomes full, then a new partial.
+    ['pollCost(250, 260) == 256 + 4',          pollCost(250, 260),      260],
+    ['pollCost(0, 257) == 256 + 1',            pollCost(0, 257),        257],
+    // Crossing from a tile-aligned start: no refetch waste.
+    ['pollCost(256, 300) == 44',               pollCost(256, 300),      44],
+    // Crossing two boundaries: 100 refetched + 256 intermediate + 88 partial.
+    ['pollCost(100, 600) == 256 + 256 + 88',   pollCost(100, 600),      600],
+    // Two-tile span, tile-aligned end.
+    ['pollCost(100, 512) == 256 + 256',        pollCost(100, 512),      512],
+
+    // Steady-state simulations.
+    //
+    // growth = 256, poll = 1s: each poll completes exactly one full tile, so
+    // there is no waste at all.
+    ['avg(256/s, 1s) == 256',                  averageRate(256, 1),     256, 1e-9],
+    // growth = 1, poll = 1s: every poll adds one leaf. Over each 256-poll
+    // cycle from a tile-aligned start, costs are 1, 2, ..., 255, 256, summing
+    // to 256*257/2 = 32896, for an average of 128.5 leaves/s — a 128.5×
+    // overhead vs the ideal 1 leaf/s.
+    ['avg(1/s, 1s)    == 128.5',               averageRate(1, 1),       128.5, 1e-9],
+    // Scaling growth and poll period together keeps the overhead factor the
+    // same, because the cost per poll depends only on leavesPerPoll. Doubling
+    // growth while halving the poll period doubles the absolute rate.
+    ['avg(2/s, 0.5s)  == 2 * avg(1/s, 1s)',    averageRate(2, 0.5),     2 * averageRate(1, 1), 1e-9],
+    // growth much larger than a tile: overhead approaches 1× because each
+    // poll crosses many boundaries and the per-poll waste is bounded by TILE.
+    ['avg(1e6/s, 1s) within 1% of 1e6',        averageRate(1e6, 1),     1e6, 1e4],
+    // Half-tile per poll: first poll costs 128, second poll crosses and
+    // costs 256+0=256, repeating. Average = (128 + 256)/2 = 192.
+    ['avg(128/s, 1s)  == 192',                 averageRate(128, 1),     192, 1e-9],
+  ];
+
+  const host = document.getElementById('tests');
+  host.innerHTML = '<h2>Tests</h2>';
+  let passed = 0;
+  for (const [name, got, want, tol = 0] of cases) {
+    const ok = Math.abs(got - want) <= tol;
+    if (ok) passed++;
+    const line = document.createElement('div');
+    line.className = ok ? 'pass' : 'fail';
+    line.textContent = (ok ? 'PASS  ' : 'FAIL  ') + name + '   (got ' + got + ')';
+    host.appendChild(line);
+  }
+  const summary = document.createElement('div');
+  summary.style.marginTop = '0.5em';
+  summary.textContent = passed + ' / ' + cases.length + ' passed';
+  host.appendChild(summary);
+}
+runTests();
+</script>
+</body>
+</html>
