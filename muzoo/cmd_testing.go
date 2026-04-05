@@ -171,6 +171,7 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		desc        string
 		survived    bool
 		errored     bool
+		timedOut    bool
 		output      string
 		killedTests string
 	}
@@ -253,15 +254,16 @@ func cmdTest(mutDir, relDir string, args []string) error {
 				return
 			}
 
-			// Run test command.
-			var cmd *exec.Cmd
+			// Run test command. Create the timeout context here (not
+			// earlier) so the timeout covers only test execution, not
+			// worktree reset and patch application.
+			cmdCtx := ctx
 			if *timeout > 0 {
-				tctx, tcancel := context.WithTimeout(ctx, *timeout)
+				var tcancel context.CancelFunc
+				cmdCtx, tcancel = context.WithTimeout(ctx, *timeout)
 				defer tcancel()
-				cmd = exec.CommandContext(tctx, "sh", "-c", testCmdStr)
-			} else {
-				cmd = exec.CommandContext(ctx, "sh", "-c", testCmdStr)
 			}
+			cmd := exec.CommandContext(cmdCtx, "sh", "-c", testCmdStr)
 			cmd.Dir = filepath.Join(wtPath, relDir)
 			cmd.Env = append(testEnv,
 				"MUZOO_PATCH="+info.name,
@@ -293,8 +295,9 @@ func cmdTest(mutDir, relDir string, args []string) error {
 			} else if ctx.Err() != nil {
 				// Parent context cancelled (SIGINT/SIGTERM).
 				return
-			} else if errors.Is(err, context.DeadlineExceeded) {
+			} else if cmdCtx.Err() == context.DeadlineExceeded {
 				// Timeout expired = mutation killed (GOOD).
+				results[idx].timedOut = true
 				results[idx].output = output
 			} else {
 				var exitErr *exec.ExitError
@@ -343,6 +346,9 @@ func cmdTest(mutDir, relDir string, args []string) error {
 		case r.survived:
 			fmt.Printf("%s  %s  %s\n", num, colorize(tty, "SURVIVED", colorRed), r.desc)
 			survivedCount++
+		case r.timedOut:
+			fmt.Printf("%s  %s   %s\n", num, colorize(tty, "TIMEOUT", colorGreen), r.desc)
+			killed++
 		default:
 			killedTests := colorize(tty, r.killedTests, colorDim)
 			fmt.Printf("%s  %s    %s%s\n", num, colorize(tty, "KILLED", colorGreen), r.desc, killedTests)
