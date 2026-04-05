@@ -66,9 +66,10 @@ Commands:
       Check which mutations apply cleanly. Shows OK, APPLIED (error — mutation
       is already part of the tree), or CONFLICT for each patch.
 
-  rebase
+  rebase [--llm]
       Update mutations to apply against current HEAD. Uses three-way merge and
-      optionally mergiraf for conflict resolution.
+      optionally mergiraf for conflict resolution. With --llm, falls back to
+      Claude for conflicts that git and mergiraf cannot resolve.
 
   list
       List mutations with their descriptions.
@@ -128,6 +129,7 @@ Examples:
 
   # Rebase mutations after updating the code
   muzoo rebase
+  muzoo rebase --llm
 
   # List all mutations
   muzoo list
@@ -137,7 +139,8 @@ Examples:
   muzoo rm 3
 
 Requires git in $PATH. Optionally uses mergiraf (https://mergiraf.org)
-for improved rebase conflict resolution.
+for improved rebase conflict resolution. With --llm, muzoo rebase can also
+use Claude Code (https://claude.ai/download) for remaining conflicts.
 
 Install: go install filippo.io/mostly-harmless/muzoo@latest
 `

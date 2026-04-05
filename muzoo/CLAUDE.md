@@ -23,7 +23,7 @@ patch.go         — patch parsing, numbering, file I/O
 git.go           — git operations (apply, diff, worktrees)
 cmd_capture.go   — muzoo capture
 cmd_status.go    — muzoo status
-cmd_rebase.go    — muzoo rebase (three-way merge, mergiraf)
+cmd_rebase.go    — muzoo rebase (three-way merge, mergiraf, LLM)
 cmd_testing.go   — muzoo test (parallel worktree execution)
 cmd_list.go      — muzoo list
 cmd_show.go      — muzoo show
@@ -69,7 +69,7 @@ separated by a blank line). Gaps in numbering are allowed (after `rm`).
 
 Saves current unstaged changes (`git diff`) as a new mutation. If `-m`
 is not provided, tries to generate a description using Claude Code (`claude`
-CLI with Sonnet model). If `claude` is not available or fails, falls back to
+CLI). If `claude` is not available or fails, falls back to
 opening `$EDITOR` on the patch file with empty lines at the top for the
 description. Staged changes are not captured.
 After saving, restores the working tree to match the index (`git restore .`).
@@ -80,13 +80,14 @@ Shows state of each mutation: `OK` (applies cleanly), `APPLIED` (already
 applied — an error, since mutations should not be part of the tree), or
 `CONFLICT`. Exits 1 if any patches are `APPLIED` or `CONFLICT`.
 
-### `rebase`
+### `rebase [--llm]`
 
 Updates mutations to apply against current HEAD. For each conflicting patch,
-tries: (1) `git apply -3` three-way merge, (2) `mergiraf` if available, (3)
-flags as `CONFLICT`. Detects mutations lost during rebase (`LOST`). Already
-applied patches are flagged as `APPLIED` errors (should be removed with
-`muzoo rm`).
+cascades through strategies: (1) `git apply -3` three-way merge, (2) `mergiraf`
+per-file if available, (3) with `--llm`, Claude Code per-file for remaining
+conflicts. Flags unresolved patches as `CONFLICT`. Detects mutations lost during
+rebase (`LOST`). Already applied patches are flagged as `APPLIED` errors (should
+be removed with `muzoo rm`).
 
 ### `test [-j <jobs>] [--timeout <duration>] [--] [test-command...]`
 
@@ -132,8 +133,6 @@ muzoo test -- go test ./...
 
 - **`muzoo generate`**: LLM-proposed mutations for a file or diff, applied to
   working tree for review, then captured normally.
-- **`muzoo rebase --llm`**: LLM-assisted conflict resolution when `git apply -3`
-  and mergiraf both fail.
 - **`muzoo cover`**: Generate coverage profile (Go/LCOV) marking lines touched
   by any mutation, for overlaying with test coverage.
 - **PR-scoped mutations**: `muzoo generate --diff HEAD~1` to generate mutations

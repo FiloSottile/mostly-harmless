@@ -15,7 +15,8 @@ go install filippo.io/mostly-harmless/muzoo@latest
 ```
 
 Requires `git` in `$PATH`. Optionally uses [`mergiraf`](https://mergiraf.org)
-for improved rebase conflict resolution.
+for improved rebase conflict resolution. With `--llm`, `muzoo rebase` can also
+use [Claude Code](https://claude.ai/download) (`claude`) for remaining conflicts.
 
 ## Usage
 
@@ -35,8 +36,8 @@ muzoo capture -m "change >= to > in foo()"
 ```
 
 If `-m` is omitted and [Claude Code](https://claude.ai/download) (`claude`) is
-available in `$PATH`, a description is generated automatically using the Sonnet
-model. If `claude` is not available, `$EDITOR` opens the patch file directly for
+available in `$PATH`, a description is generated automatically. If `claude` is
+not available, `$EDITOR` opens the patch file directly for
 you to type a description above the diff.
 
 If using Jujutsu, you can capture a mutation quickly by doing
@@ -74,6 +75,7 @@ Each test invocation has `MUZOO_PATCH` (patch file path) and `MUZOO_DESCRIPTION`
 ```
 muzoo status            # check which mutations apply cleanly
 muzoo rebase            # update mutations to apply against current HEAD
+muzoo rebase --llm      # also use Claude for unresolved conflicts
 muzoo list              # list mutations with descriptions
 muzoo show <number>     # display a full patch
 muzoo rm <number>       # delete a mutation

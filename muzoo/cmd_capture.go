@@ -147,7 +147,7 @@ func generateDescription(mutDir, diff string) string {
 	prompt.WriteString("\n")
 	prompt.WriteString(diff)
 
-	cmd := exec.Command(claude, "--model", "sonnet", "--no-session-persistence", "-p", prompt.String())
+	cmd := exec.Command(claude, "--no-session-persistence", "-p", prompt.String())
 	out, err := cmd.Output()
 	if err != nil {
 		return ""
