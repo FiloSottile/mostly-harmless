@@ -12,6 +12,9 @@
   .control label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.25em; }
   .control .val { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 400; color: inherit; }
   input[type=range] { width: 100%; }
+  .chart { margin: 1em 0 0; padding: 0; }
+  .chart canvas { width: 100%; height: auto; display: block; }
+  .chart figcaption { color: #666; font-size: 0.85em; margin-top: 0.4em; }
   .results { background: #f3f3f5; border: 1px solid #e2e2e6; padding: 0.8em 1em; border-radius: 6px; margin-top: 1.2em; }
   .results .row { display: flex; justify-content: space-between; padding: 0.2em 0; }
   .results .rate { font-size: 1.15em; font-weight: 700; }
@@ -26,6 +29,7 @@
     .results { background: #222226; border-color: #333; }
     .results .row span:first-child { color: #aaa; }
     .tests { border-color: #333; }
+    .chart figcaption { color: #888; }
   }
 </style>
 </head>
@@ -40,6 +44,18 @@
   &hellip;, 250, then 256+4, 14, &hellip; This page shows the resulting steady-state
   read rate measured in leaves/second.
 </p>
+<p>
+  A client that can tolerate some latency can avoid partial-tile refetches
+  by fetching only newly-completed full tiles, and only falling back to the
+  trailing partial after waiting a few polls. The <em>skip</em> slider below
+  models this
+  <a href="https://filippo.io/torchwood">torchwood</a>-style policy: at N =
+  0 the client naïvely fetches everything up to the log tip on every poll;
+  at N ≥ 1 it fetches only full tiles when any have completed since the
+  last fetch, and falls back to the partial only after N polls of no
+  progress. Whenever each poll crosses a tile boundary (growth ≥ ~one
+  tile/poll) partials are never fetched and the rate equals the ideal.
+</p>
 
 <div class="control">
   <label>Log growth rate <span class="val" id="growthLabel"></span></label>
@@ -51,12 +67,22 @@
   <input type="range" id="poll" min="0" max="3.6" step="0.01" value="0">
 </div>
 
+<div class="control">
+  <label>Skip partial if full tile in last N polls <span class="val" id="skipLabel"></span></label>
+  <input type="range" id="skip" min="0" max="10" step="1" value="0">
+</div>
+
 <div class="results">
   <div class="row"><span>Ideal read rate (= log growth)</span><span class="mono" id="ideal">—</span></div>
   <div class="row"><span>Actual read rate (with refetches)</span><span class="mono rate" id="actual">—</span></div>
   <div class="row"><span>Overhead factor</span><span class="mono" id="overhead">—</span></div>
   <div class="row"><span>Leaves added per poll (avg)</span><span class="mono" id="delta">—</span></div>
 </div>
+
+<figure class="chart">
+  <canvas id="chart" width="1440" height="720"></canvas>
+  <figcaption>Actual read rate vs poll period, at the selected growth rate. Both axes are logarithmic. The dashed line marks the ideal rate; the dot marks the current poll-period selection.</figcaption>
+</figure>
 
 <div class="tests" id="tests"></div>
 
@@ -94,30 +120,80 @@ function pollCost(sOld, sNew) {
 // download size of a poll, in leaves, for a given leaves-per-poll increment.
 //
 // The cost depends only on leavesPerPoll = growth * pollPeriod, not on the
-// individual factors, so we simulate once and scale. We simulate enough polls
-// to cover many tile boundaries so the result is independent of starting
-// phase.
-function averageCostPerPoll(leavesPerPoll) {
+// individual factors, so we simulate once and scale. `targetTiles` controls
+// how many tile crossings to cover (more = less phase noise), and `maxPolls`
+// caps the loop so chart sweeps stay interactive.
+//
+// `skipN` enables the partial-skipping optimization.
+//
+//   - skipN = 0 is the no-optimization baseline: every poll fetches every
+//     new leaf, including the trailing partial tile.
+//   - skipN >= 1 switches to a torchwood-style policy:
+//       * If a new full tile has completed, fetch only the newly-completed
+//         full tiles (stop at the last tile boundary ≤ log). Deferring the
+//         trailing partial avoids paying for bytes that will be refetched
+//         as part of the next full tile.
+//       * Otherwise (no new full tile), wait up to N-1 polls before falling
+//         back to fetching the partial. skipN = 1 falls back immediately
+//         the poll after a skip, which is the minimum patience that still
+//         skips anything.
+//
+// At steady-state growth rates where each poll completes a new full tile,
+// partials are never fetched and the rate exactly matches the ideal — for
+// example at growth = 255 leaves/s, poll = 1s, the client fetches one full
+// tile on almost every poll and skips the rare poll where the boundary
+// hasn't shifted.
+function averageCostPerPoll(leavesPerPoll, skipN = 0, targetTiles = 1000, maxPolls = 1_000_000) {
   if (leavesPerPoll <= 0) return 0;
-  const targetTiles = 1000;
   const targetLeaves = targetTiles * TILE;
   let polls = Math.max(4000, Math.ceil(targetLeaves / leavesPerPoll));
-  polls = Math.min(polls, 1_000_000);
+  polls = Math.min(polls, maxPolls);
 
-  let sReal = 0;
-  let sOld = 0;
+  let sReal = 0;       // notional continuous log size, to avoid rounding drift
+  let cursor = 0;      // highest leaf the client has downloaded
   let total = 0;
+  let idle = 0;        // polls since the last fetch (partial-fallback counter)
+
   for (let i = 0; i < polls; i++) {
     sReal += leavesPerPoll;
-    const sNew = Math.floor(sReal);
-    total += pollCost(sOld, sNew);
-    sOld = sNew;
+    const log = Math.floor(sReal);
+    if (log <= cursor) continue;
+
+    if (skipN === 0) {
+      total += pollCost(cursor, log);
+      cursor = log;
+      continue;
+    }
+
+    const targetFull = Math.floor(log / TILE) * TILE;
+    if (targetFull > cursor) {
+      // A new full tile is available. Fetch only the newly-completed full
+      // tiles — leave the trailing partial for later so that it rolls into
+      // the next full-tile fetch without being refetched.
+      total += pollCost(cursor, targetFull);
+      cursor = targetFull;
+      idle = 0;
+    } else if (idle >= skipN) {
+      // No new full tile. Fall back to fetching the trailing partial after
+      // waiting skipN polls since the last fetch.
+      total += pollCost(cursor, log);
+      cursor = log;
+      idle = 0;
+    } else {
+      idle++;
+    }
   }
   return total / polls;
 }
 
-function averageRate(growthPerSec, pollPeriodSec) {
-  return averageCostPerPoll(growthPerSec * pollPeriodSec) / pollPeriodSec;
+function averageRate(growthPerSec, pollPeriodSec, skipN = 0) {
+  return averageCostPerPoll(growthPerSec * pollPeriodSec, skipN) / pollPeriodSec;
+}
+
+// Cheaper version used to sample the chart curve. Lower accuracy is fine
+// because the curve is smooth at the scale we're plotting.
+function averageRateFast(growthPerSec, pollPeriodSec, skipN = 0) {
+  return averageCostPerPoll(growthPerSec * pollPeriodSec, skipN, 100, 50_000) / pollPeriodSec;
 }
 
 function fmtLeaves(x) {
@@ -139,18 +215,187 @@ function fmtSeconds(s) {
 function render() {
   const growth = Math.pow(10, parseFloat(document.getElementById('growth').value));
   const poll   = Math.pow(10, parseFloat(document.getElementById('poll').value));
+  const skipN  = parseInt(document.getElementById('skip').value, 10);
   document.getElementById('growthLabel').textContent = fmtLeaves(growth) + ' leaves/s';
   document.getElementById('pollLabel').textContent   = fmtSeconds(poll);
+  document.getElementById('skipLabel').textContent   = 'N = ' + skipN;
 
-  const actual = averageRate(growth, poll);
+  const actual = averageRate(growth, poll, skipN);
   document.getElementById('ideal').textContent    = fmtLeaves(growth) + ' leaves/s';
   document.getElementById('actual').textContent   = fmtLeaves(actual) + ' leaves/s';
   document.getElementById('overhead').textContent = (actual / growth).toFixed(2) + '×';
   document.getElementById('delta').textContent    = fmtLeaves(growth * poll) + ' leaves';
+
+  drawChart(growth, poll, actual, skipN);
+}
+
+// drawChart plots actual read rate as a function of poll period, at the
+// currently selected growth rate. Both axes are log10. When skipN > 0, the
+// N = 0 curve is drawn underneath as a faint reference so the effect of the
+// optimization is visible.
+function drawChart(growth, currentPoll, currentActual, skipN) {
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // X axis: poll period in seconds, matching the slider range (1 s .. ~1 h).
+  const xMinLog = 0;    // log10(1s)
+  const xMaxLog = 3.6;  // log10(~4000s)
+  // Y axis: leaves/s. Sweep polls first to determine the y range.
+  const samples = 120;
+  const xs = new Array(samples);
+  const ys = new Array(samples);
+  const ysRef = skipN > 0 ? new Array(samples) : null;
+  let yMin = growth, yMax = growth;
+  for (let i = 0; i < samples; i++) {
+    const xLog = xMinLog + (xMaxLog - xMinLog) * (i / (samples - 1));
+    const p = Math.pow(10, xLog);
+    const r = averageRateFast(growth, p, skipN);
+    xs[i] = xLog;
+    ys[i] = r;
+    if (r > yMax) yMax = r;
+    if (r < yMin) yMin = r;
+    if (ysRef) {
+      const ref = averageRateFast(growth, p, 0);
+      ysRef[i] = ref;
+      if (ref > yMax) yMax = ref;
+    }
+  }
+  // Pad the y range to the nearest decade for tidy gridlines.
+  const yMinLog = Math.floor(Math.log10(Math.max(yMin, 1e-6)));
+  const yMaxLog = Math.ceil(Math.log10(Math.max(yMax, yMin * 1.01, 1e-6)));
+
+  // Read theme-aware colors from the document so the chart matches the
+  // surrounding page in both light and dark mode.
+  const cs = getComputedStyle(document.body);
+  const fg = cs.color;
+  const bg = cs.backgroundColor;
+  const dim = 'rgba(128,128,128,0.35)';
+  const grid = 'rgba(128,128,128,0.18)';
+  const accent = '#2b7fff';
+  const ideal = '#9a9a9a';
+
+  // Layout.
+  const pad = { l: 110, r: 24, t: 18, b: 72 };
+  const plotW = W - pad.l - pad.r;
+  const plotH = H - pad.t - pad.b;
+  const xPx = (xLog) => pad.l + plotW * (xLog - xMinLog) / (xMaxLog - xMinLog);
+  const yPx = (v) => {
+    const l = Math.log10(Math.max(v, Math.pow(10, yMinLog)));
+    return pad.t + plotH * (1 - (l - yMinLog) / (yMaxLog - yMinLog));
+  };
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Gridlines and axis labels.
+  ctx.font = '20px ui-monospace, SFMono-Regular, Menlo, monospace';
+  ctx.fillStyle = fg;
+  ctx.strokeStyle = grid;
+  ctx.lineWidth = 1;
+
+  // Y gridlines at each decade.
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let l = yMinLog; l <= yMaxLog; l++) {
+    const y = yPx(Math.pow(10, l));
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(W - pad.r, y);
+    ctx.stroke();
+    ctx.fillText(fmtLeaves(Math.pow(10, l)) + ' l/s', pad.l - 10, y);
+  }
+
+  // X gridlines + labels at a handful of round seconds values.
+  const xTicks = [1, 10, 60, 300, 600, 1800, 3600];
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  for (const t of xTicks) {
+    const xLog = Math.log10(t);
+    if (xLog < xMinLog || xLog > xMaxLog) continue;
+    const x = xPx(xLog);
+    ctx.beginPath();
+    ctx.moveTo(x, pad.t);
+    ctx.lineTo(x, H - pad.b);
+    ctx.stroke();
+    ctx.fillText(fmtSeconds(t), x, H - pad.b + 8);
+  }
+
+  // Axis titles.
+  ctx.fillStyle = fg;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('poll period', pad.l + plotW / 2, H - 8);
+  ctx.save();
+  ctx.translate(24, pad.t + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textBaseline = 'top';
+  ctx.fillText('actual read rate', 0, 0);
+  ctx.restore();
+
+  // Ideal line (horizontal at y = growth).
+  ctx.strokeStyle = ideal;
+  ctx.setLineDash([8, 6]);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, yPx(growth));
+  ctx.lineTo(W - pad.r, yPx(growth));
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = ideal;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('ideal', pad.l + 8, yPx(growth) - 4);
+
+  // N = 0 reference curve, if the user has enabled skipping.
+  if (ysRef) {
+    ctx.strokeStyle = 'rgba(128,128,128,0.55)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    for (let i = 0; i < samples; i++) {
+      const x = xPx(xs[i]);
+      const y = yPx(ysRef[i]);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Main curve.
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let i = 0; i < samples; i++) {
+    const x = xPx(xs[i]);
+    const y = yPx(ys[i]);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Current-selection marker.
+  ctx.fillStyle = accent;
+  const cx = xPx(Math.log10(currentPoll));
+  const cy = yPx(currentActual);
+  ctx.beginPath();
+  ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = bg;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Plot frame.
+  ctx.strokeStyle = dim;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(pad.l, pad.t, plotW, plotH);
 }
 
 document.getElementById('growth').addEventListener('input', render);
 document.getElementById('poll').addEventListener('input', render);
+document.getElementById('skip').addEventListener('input', render);
 render();
 
 // ---------------- tests ----------------
@@ -194,6 +439,48 @@ function runTests() {
     // Half-tile per poll: first poll costs 128, second poll crosses and
     // costs 256+0=256, repeating. Average = (128 + 256)/2 = 192.
     ['avg(128/s, 1s)  == 192',                 averageRate(128, 1),     192, 1e-9],
+
+    // Partial-skip optimization.
+    //
+    // Exactly one tile per poll, N = 1: every poll completes a full tile and
+    // fetches exactly that tile, with nothing trailing. Rate = ideal.
+    ['skipN=1 avg(256/s, 1s) == 256',          averageRate(256, 1, 1),  256,   1e-9],
+    ['skipN=1 avg(512/s, 1s) == 512',          averageRate(512, 1, 1),  512,   1e-9],
+    // Half a tile per poll, N = 1: skip, fetch-full, skip, fetch-full. Each
+    // fetch is exactly one full tile (cursor was tile-aligned). Rate = ideal.
+    ['skipN=1 avg(128/s, 1s) == 128',          averageRate(128, 1, 1),  128,   1e-9],
+    // Quarter tile per poll: with N = 3, the natural cycle is skip, skip,
+    // skip, fetch-full (every 4 polls a tile boundary crosses and forces a
+    // fetch). N = 5 behaves identically because the forced fetch resets idle
+    // before the skipN threshold matters. Both hit ideal.
+    ['skipN=3 avg(64/s, 1s)  == 64',           averageRate(64, 1, 3),   64,    1e-9],
+    ['skipN=5 avg(64/s, 1s)  == 64',           averageRate(64, 1, 5),   64,    1e-9],
+    // 1.5 tiles per poll, N = 1: every poll completes a new full tile, so
+    // each poll fetches only to the last tile boundary (skipping the
+    // trailing 128-leaf partial). Pattern is 256, 512, 256, 512 (next poll
+    // absorbs the previous partial as a full tile with no refetch),
+    // averaging exactly 384/poll — the ideal.
+    ['skipN=1 avg(384/s, 1s) == 384',          averageRate(384, 1, 1),  384,   1e-9],
+    // Just-under-one-tile-per-poll: the hardest case for the naïve baseline,
+    // but near-ideal for N = 1. The client fetches one full tile on almost
+    // every poll and skips once every 256 polls when the boundary fails to
+    // move. Over the steady-state cycle the cursor lags very slightly and
+    // the rate averages to exactly the ideal 255 leaves/s.
+    ['skipN=1 avg(255/s, 1s) ≈ 255',           averageRate(255, 1, 1),  255,   0.1],
+    // Growth = 100/s, N = 1: strictly beats the naïve baseline. The rule
+    // fetches partials only as a fallback after a skipped poll, so waste
+    // from partial refetches drops substantially.
+    ['skipN=1 avg(100/s, 1s) < baseline',      averageRate(100, 1, 1) < averageRate(100, 1, 0) ? 1 : 0, 1],
+    // 1 leaf/s, N = 1: fetch every other poll. Per 256-poll cycle the fetch
+    // costs are 2, 4, 6, ..., 256, summing to 16512 for an average of 64.5 —
+    // exactly half the 128.5 baseline.
+    ['skipN=1 avg(1/s, 1s)   == 64.5',         averageRate(1, 1, 1),    64.5,  1e-9],
+    // skipN = 0 is identical to the no-argument baseline.
+    ['skipN=0 matches baseline',               averageRate(10, 1, 0),   averageRate(10, 1), 1e-9],
+    // Patience never hurts at coarse steps: at growth = 10, N = 1 is no worse
+    // than N = 0, and N = 3 is no worse than N = 0.
+    ['skipN=1 <= skipN=0 (growth=10)',         averageRate(10, 1, 1) <= averageRate(10, 1, 0) + 1e-9 ? 1 : 0, 1],
+    ['skipN=3 <= skipN=0 (growth=100)',        averageRate(100, 1, 3) <= averageRate(100, 1, 0) + 1e-9 ? 1 : 0, 1],
   ];
 
   const host = document.getElementById('tests');
