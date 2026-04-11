@@ -175,16 +175,17 @@ function averageCostPerPoll(leavesPerPoll, skipN = 0, targetTiles = 1000, maxPol
   let sReal = 0;       // notional continuous log size, to avoid rounding drift
   let cursor = 0;      // highest leaf the client has downloaded
   let total = 0;
-  let idle = 0;        // polls since the last fetch (partial-fallback counter)
+  let idle = 0;        // polls since the last fetch (wall-clock, not new-data)
 
   for (let i = 0; i < polls; i++) {
     sReal += leavesPerPoll;
     const log = Math.floor(sReal);
-    if (log <= cursor) continue;
 
     if (skipN === 0) {
-      total += pollCost(cursor, log);
-      cursor = log;
+      if (log > cursor) {
+        total += pollCost(cursor, log);
+        cursor = log;
+      }
       continue;
     }
 
@@ -196,10 +197,13 @@ function averageCostPerPoll(leavesPerPoll, skipN = 0, targetTiles = 1000, maxPol
       total += pollCost(cursor, targetFull);
       cursor = targetFull;
       idle = 0;
-    } else if (idle >= skipN - 1) {
-      // No new full tile. Fall back to fetching the trailing partial.
-      // skipN = 1 → idle >= 0 → always fetches (torchwood exactly);
-      // skipN = 2 → idle >= 1 → skips one poll then fetches; etc.
+    } else if (log > cursor && idle >= skipN - 1) {
+      // No new full tile, and we've been patient long enough: fall back
+      // to the trailing partial. skipN = 1 → idle >= 0 → fetch every
+      // new-data poll (torchwood exactly); skipN = 2 → fetch every other
+      // poll; etc. Patience is counted in wall-clock polls so "wait
+      // N − 1 polls between partial fetches" is literal regardless of
+      // how quickly the log is growing.
       total += pollCost(cursor, log);
       cursor = log;
       idle = 0;
@@ -217,7 +221,7 @@ function averageRate(growthPerSec, pollPeriodSec, skipN = 0) {
 // Cheaper version used to sample the chart curve. Lower accuracy is fine
 // because the curve is smooth at the scale we're plotting.
 function averageRateFast(growthPerSec, pollPeriodSec, skipN = 0) {
-  return averageCostPerPoll(growthPerSec * pollPeriodSec, skipN, 100, 50_000) / pollPeriodSec;
+  return averageCostPerPoll(growthPerSec * pollPeriodSec, skipN, 50, 200_000) / pollPeriodSec;
 }
 
 function fmtLeaves(x) {
@@ -522,9 +526,11 @@ function runTests() {
     // the naïve baseline because it stops at tile boundaries instead of
     // fetching the trailing partial.
     ['skipN=1 avg(100/s, 1s) < baseline',      averageRate(100, 1, 1) < averageRate(100, 1, 0) ? 1 : 0, 1],
-    // N = 1 at sub-tile growth is no better than naive on the rate — it
-    // fetches every poll — but the partial-skip behavior at boundary polls
-    // still makes it strictly ≤ baseline.
+    // N = 2 at 1 leaf/poll: fetches on every other poll, costs
+    // 2, 4, ..., 254 across the cycle, then a full 256-leaf tile fetch
+    // at the tile boundary. Sum 16512 / 256 polls = 64.5 leaves/poll
+    // (a touch above half the naïve 128.5 baseline because the closing
+    // full-tile fetch is heavier than the partial it replaces).
     ['skipN=2 avg(1/s, 1s)   == 64.5',         averageRate(1, 1, 2),    64.5,  1e-9],
     // skipN = 0 is identical to the no-argument baseline.
     ['skipN=0 matches baseline',               averageRate(10, 1, 0),   averageRate(10, 1), 1e-9],
