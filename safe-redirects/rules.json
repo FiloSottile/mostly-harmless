@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "transform": { "host": "nitter.net" } }
+    },
+    "condition": {
+      "regexFilter": "^https?://(?:www\\.)?x\\.com(?:[/?#]|$)",
+      "resourceTypes": ["main_frame"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "transform": { "host": "old.reddit.com" } }
+    },
+    "condition": {
+      "regexFilter": "^https?://(?:www\\.)?reddit\\.com(?:[/?#]|$)",
+      "resourceTypes": ["main_frame"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "transform": { "host": "scribe.rip" } }
+    },
+    "condition": {
+      "regexFilter": "^https?://(?:[^/]+\\.)?medium\\.com(?:[/?#]|$)",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]

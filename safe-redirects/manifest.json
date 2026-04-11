@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Safe Redirects",
+  "version": "1.0.0",
+  "description": "Redirects x.com to nitter.net, reddit.com to old.reddit.com, and medium.com (with subdomains) to scribe.rip.",
+  "permissions": ["declarativeNetRequestWithHostAccess"],
+  "host_permissions": [
+    "*://x.com/*",
+    "*://www.x.com/*",
+    "*://nitter.net/*",
+    "*://reddit.com/*",
+    "*://www.reddit.com/*",
+    "*://old.reddit.com/*",
+    "*://medium.com/*",
+    "*://*.medium.com/*",
+    "*://scribe.rip/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "redirects",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
