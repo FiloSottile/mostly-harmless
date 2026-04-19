@@ -20,12 +20,19 @@ var configFiles = []string{
 	"/etc/systemd/system/partial-aftersun.timer",
 	"/etc/systemd/system/partial-aftersun-staging.service",
 	"/etc/systemd/system/partial-aftersun-staging.timer",
+	"/etc/systemd/system/heliograph-dashboard.service",
+	"/etc/systemd/system/heliograph-dashboard.timer",
 	"/etc/systemd/system/age-keyserver.service",
+	"/etc/systemd/system/pkg-geomys-dev.service",
+	"/etc/systemd/system/plc-replica.service",
 	"/etc/systemd/system/public-config.service",
 	"/etc/logrotate.d/sunlight",
 	"/etc/logrotate.d/sunlight-staging",
 	"/etc/caddy/Caddyfile",
 	"/etc/prometheus/prometheus.yml",
+	"/usr/local/bin/zfs-textfile",
+	"/etc/systemd/system/zfs-textfile.service",
+	"/etc/systemd/system/zfs-textfile.timer",
 }
 
 func main() {
