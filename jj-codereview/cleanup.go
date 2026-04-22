@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func cmdCleanup(args []string) {
@@ -24,16 +25,32 @@ Abandons mutable changes that were merged in a origin branch.
 	defer os.Remove(config)
 	jjLog := jjLog(config)
 
+	mergedByChangeID := map[string]string{}
+	for _, line := range nonBlankLines(cmdOutput("git", "log",
+		"--format=%H %(trailers:key=Change-Id,valueonly)",
+		"--since=45 days ago", "--remotes=origin")) {
+		commit, changeID, ok := strings.Cut(line, " ")
+		if !ok || changeID == "" {
+			continue
+		}
+		if _, ok := mergedByChangeID[changeID]; !ok {
+			mergedByChangeID[changeID] = commit
+		}
+	}
+
 	for _, rev := range jjLog("-T", "commit_id ++ '\n'", "-r", "mutable()") {
 		changeID := trim(cmdOutput("git", "show", "-s", `--format=%(trailers:key=Change-Id,valueonly)`, rev))
 		if changeID == "" {
 			continue
 		}
-		merged := jjLog("-r", `::remote_bookmarks(remote=origin) & description("Change-Id: `+changeID+`")`)
-		if len(merged) == 0 {
+		mergedRev, ok := mergedByChangeID[changeID]
+		if !ok {
 			continue
 		}
+		for _, child := range jjLog("-T", "commit_id ++ '\n'", "-r", "children("+rev+")") {
+			run("jj", "rebase", "-s", child, "-d", mergedRev)
+		}
 		run("jj", "abandon", "-r", rev)
-		printf("merged as %s", merged[0])
+		printf("merged as %s", mergedRev)
 	}
 }
