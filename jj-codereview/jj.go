@@ -10,7 +10,7 @@ var jjConfigTOML = `
 "jjcrbranchpoint(x)" = "heads(::x & ::remote_bookmarks(remote=origin))"
 "jjcrbranchhead(x)" = "jjcrbranchpoint(x):: & remote_bookmarks(remote=origin)"
 
-[templates]
+[template-aliases]
 bookmarks = "separate('\n', remote_bookmarks.map(|b| if(b.remote() == 'origin', b.name()))) ++ '\n'"
 
 [ui]
