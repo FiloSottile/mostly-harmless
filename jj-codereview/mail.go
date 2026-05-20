@@ -25,6 +25,7 @@ func cmdMail(args []string) {
 		trybot     = flags.Bool("trybot", false, "run trybots on the uploaded CLs")
 		wip        = flags.Bool("wip", false, "set the status of a change to Work-in-Progress")
 		autoSubmit = flags.Bool("autosubmit", false, "set autosubmit on the uploaded CLs")
+		branch     = flags.String("branch", "", "branch to mail to (overrides auto-detection)")
 	)
 	flags.Var(rList, "r", "comma-separated list of reviewers")
 	flags.Var(ccList, "cc", "comma-separated list of people to CC:")
@@ -34,7 +35,7 @@ func cmdMail(args []string) {
 		fmt.Fprintf(stderr(), trim(`
 Usage: %s mail %s [-r reviewer,...] [-cc mail,...]
 	[-autosubmit] [-trybot] [-wip] [-hashtag tag,...]
-	[revisions]
+	[-branch name] [revisions]
 
 Mails all changes in "remote_bookmarks(remote=origin)..revisions".
 
@@ -79,12 +80,16 @@ If revisions is not specified, it's set to "@-".
 		cmdOutput("jj", "--quiet", revConfig, "--config-file", config, "log", "-r", "jjcrmailpending()"))
 
 	for _, commit := range heads {
-		branches := jjLog("-T", "bookmarks", "-r", "jjcrbranchhead("+commit+")")
-		if len(branches) != 1 {
-			dief("cannot determine branch for commit %s, got %v", commit, branches)
+		target := *branch
+		if target == "" {
+			branches := jjLog("-T", "bookmarks", "-r", "jjcrbranchhead("+commit+")")
+			if len(branches) != 1 {
+				dief("cannot determine branch for commit %s, got %v; use -branch to specify one", commit, branches)
+			}
+			target = strings.TrimSuffix(branches[0], "@origin")
 		}
 
-		refSpec := commit + ":refs/for/" + strings.TrimSuffix(branches[0], "@origin")
+		refSpec := commit + ":refs/for/" + target
 		start := "%"
 		if *rList != "" {
 			refSpec += mailList(start, "r", string(*rList))
