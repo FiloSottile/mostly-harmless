@@ -1,6 +1,6 @@
-# Review Pending Parser
+# Pending Review Parser
 
-This Go program parses the NIST Cryptographic Module Validation Program (CMVP) "Modules In Process" HTML page to extract all entries that are in "Review Pending" status and counts how many entered the queue before a specified cutoff date (5/8/2025).
+This Go program parses the NIST Cryptographic Module Validation Program (CMVP) "Modules In Process" HTML page to extract all entries that are in "Pending Review" status and counts how many entered the queue before a specified cutoff date (4/25/2026).
 
 ## Usage
 
@@ -25,16 +25,16 @@ By default, the program downloads the latest data from the NIST website. Use the
 - **Live data**: Downloads the latest modules list from NIST website by default
 - **Local file support**: Can work with saved HTML files using `-local` flag
 - Parses HTML table structure to extract module information
-- Filters for entries with "Review Pending" status
-- Extracts dates from status field (format: "Review Pending (MM/DD/YYYY)")
-- Counts entries that entered the queue before 5/8/2025
+- Filters for entries with "Pending Review" status
+- Extracts dates from status field (format: "Pending Review (MM/DD/YYYY)")
+- Counts entries that entered the queue before 4/25/2026
 - Provides both detailed output and summary-only mode
 
 ## Example Output
 
 ```
-Total Review Pending entries: 180
-Entries before 5/8/2025: 151
+Total Pending Review entries: 105
+Entries before 4/25/2026: 77
 ```
 
 ## Dependencies

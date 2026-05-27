@@ -57,21 +57,21 @@ func main() {
 	var entries []ModuleEntry
 	parseTable(doc, &entries)
 
-	// Filter for Review Pending entries
-	reviewPendingEntries := filterReviewPending(entries)
+	// Filter for Pending Review entries
+	pendingReviewEntries := filterPendingReview(entries)
 
-	// Count entries before 5/8/2025
-	cutoffDate := time.Date(2025, 5, 8, 0, 0, 0, 0, time.UTC)
+	// Count entries before 4/25/2026
+	cutoffDate := time.Date(2026, 4, 25, 0, 0, 0, 0, time.UTC)
 	countBefore := 0
 
-	for _, entry := range reviewPendingEntries {
+	for _, entry := range pendingReviewEntries {
 		if entry.Date.Before(cutoffDate) {
 			countBefore++
 		}
 	}
 
-	fmt.Printf("Total Review Pending entries: %d\n", len(reviewPendingEntries))
-	fmt.Printf("Entries before 5/8/2025: %d\n", countBefore)
+	fmt.Printf("Total Pending Review entries: %d\n", len(pendingReviewEntries))
+	fmt.Printf("Entries before 4/25/2026: %d\n", countBefore)
 }
 
 func parseTable(n *html.Node, entries *[]ModuleEntry) {
@@ -132,8 +132,8 @@ func parseTableRow(tr *html.Node) *ModuleEntry {
 		Status:     cells[3],
 	}
 
-	// Parse date from status field if it contains "Review Pending (date)"
-	if strings.Contains(entry.Status, "Review Pending") {
+	// Parse date from status field if it contains "Pending Review (date)"
+	if strings.Contains(entry.Status, "Pending Review") {
 		date := parseDate(entry.Status)
 		if !date.IsZero() {
 			entry.Date = date
@@ -156,8 +156,8 @@ func extractText(n *html.Node) string {
 }
 
 func parseDate(status string) time.Time {
-	// Extract date from "Review Pending (MM/DD/YYYY)" format
-	re := regexp.MustCompile(`Review Pending\s+\((\d{1,2})/(\d{1,2})/(\d{4})\)`)
+	// Extract date from "Pending Review (MM/DD/YYYY)" format
+	re := regexp.MustCompile(`Pending Review\s+\((\d{1,2})/(\d{1,2})/(\d{4})\)`)
 	matches := re.FindStringSubmatch(status)
 	if len(matches) != 4 {
 		return time.Time{}
@@ -174,10 +174,10 @@ func parseDate(status string) time.Time {
 	return date
 }
 
-func filterReviewPending(entries []ModuleEntry) []ModuleEntry {
+func filterPendingReview(entries []ModuleEntry) []ModuleEntry {
 	var filtered []ModuleEntry
 	for _, entry := range entries {
-		if strings.Contains(entry.Status, "Review Pending") {
+		if strings.Contains(entry.Status, "Pending Review") {
 			filtered = append(filtered, entry)
 		}
 	}
