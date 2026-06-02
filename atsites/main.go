@@ -276,7 +276,7 @@ func (s *Server) handleProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("invalid AT identifier: %v", err), http.StatusBadRequest)
 		return
 	}
-	i, err := (&identity.BaseDirectory{}).Lookup(r.Context(), *id)
+	i, err := (&identity.BaseDirectory{}).Lookup(r.Context(), id)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to resolve handle: %v", err), http.StatusInternalServerError)
 		return
