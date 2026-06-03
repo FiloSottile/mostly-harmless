@@ -6,8 +6,9 @@ track point at a time until the marker is exactly where you were — and read of
 the precise timestamp.
 
 It's a single self-contained `index.html` (everything runs in your browser, the
-file never leaves your machine). It uses [Leaflet](https://leafletjs.com/) and
-OpenStreetMap tiles for the map.
+file never leaves your machine). [Leaflet](https://leafletjs.com/) is inlined so
+the page works as-is — including through htmlpreview — and the map draws its base
+tiles from OpenStreetMap.
 
 **Use it right away:**
 [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/FiloSottile/mostly-harmless/blob/main/gpx-scrubber/index.html)
