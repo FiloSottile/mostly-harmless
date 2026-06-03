@@ -1081,6 +1081,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   el("prev").addEventListener("click", function () { setIdx(idx - 1); });
   el("next").addEventListener("click", function () { setIdx(idx + 1); });
 
+  // Capture phase, so we handle the arrows before they reach the map element
+  // (which would otherwise pan); stopPropagation keeps anything downstream from
+  // also acting on them.
   document.addEventListener("keydown", function (e) {
     if (!pts.length) return;
     if (e.target.tagName === "INPUT" && e.target.type === "file") return;
@@ -1097,7 +1100,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
       default: return;
     }
     e.preventDefault();
-  });
+    e.stopPropagation();
+  }, true);
 
   // File input + drag and drop.
   function readFile(f) {
