@@ -962,7 +962,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
     }
     var latlngs = pts.map(function (p) { return [p.lat, p.lon]; });
     if (!map) {
-      map = L.map("map", { zoomControl: true });
+      // Disable the map's own keyboard panning so the arrow keys are free to
+      // drive the scrubber instead.
+      map = L.map("map", { zoomControl: true, keyboard: false });
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors", maxZoom: 19
       }).addTo(map);
