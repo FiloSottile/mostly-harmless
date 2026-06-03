@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPX Time Scrubber</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #14161a;
+    --panel: #1e2127;
+    --border: #2c313a;
+    --text: #e6e8eb;
+    --muted: #98a0ab;
+    --accent: #4f9eed;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; white-space: nowrap; }
+  header .hint { color: var(--muted); font-size: 12px; }
+  header label.file {
+    background: var(--accent);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  header label.file input { display: none; }
+  #map { flex: 1 1 auto; min-height: 200px; background: #0c0d10; }
+  .leaflet-container { background: #0c0d10; }
+
+  #drop {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--muted);
+    border: 2px dashed var(--border);
+    margin: 24px;
+    border-radius: 12px;
+    padding: 32px;
+    transition: border-color .15s, color .15s;
+  }
+  #drop.over { border-color: var(--accent); color: var(--text); }
+  #drop strong { color: var(--text); }
+
+  #controls {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    padding: 12px 16px 16px;
+    display: none;
+  }
+  #controls.active { display: block; }
+
+  .sliderrow { display: flex; align-items: center; gap: 12px; }
+  .sliderrow button {
+    background: var(--border);
+    color: var(--text);
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    flex: 0 0 auto;
+    user-select: none;
+  }
+  .sliderrow button:hover { background: #39404c; }
+  .sliderrow button:active { background: var(--accent); }
+  input[type=range] {
+    flex: 1 1 auto;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid #fff;
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid #fff;
+    cursor: pointer;
+  }
+
+  #readout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px 24px;
+    margin-top: 14px;
+  }
+  .stat .label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .stat .value {
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .stat .value.big { font-size: 20px; font-weight: 600; }
+  .stat .sub { color: var(--muted); font-size: 12px; }
+  .keys {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .keys kbd {
+    background: var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: inherit;
+    color: var(--text);
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>GPX Time Scrubber</h1>
+  <label class="file">Open GPX… <input id="file" type="file" accept=".gpx,application/gpx+xml,text/xml"></label>
+  <span class="hint" id="filename"></span>
+</header>
+
+<div id="drop">
+  <div>
+    <strong>Drop a .gpx file here</strong> or use “Open GPX…”.<br>
+    Then drag the slider to a spot, and use the arrow keys to home in on the exact moment.
+  </div>
+</div>
+
+<div id="map" style="display:none"></div>
+
+<div id="controls">
+  <div class="sliderrow">
+    <button id="prev" title="Previous point (←)">‹</button>
+    <input id="slider" type="range" min="0" max="0" value="0" step="1">
+    <button id="next" title="Next point (→)">›</button>
+  </div>
+
+  <div id="readout">
+    <div class="stat">
+      <div class="label">Time (local)</div>
+      <div class="value big" id="time-local">—</div>
+      <div class="sub" id="time-utc"></div>
+    </div>
+    <div class="stat">
+      <div class="label">Elapsed from start</div>
+      <div class="value" id="elapsed">—</div>
+      <div class="sub" id="point-idx"></div>
+    </div>
+    <div class="stat">
+      <div class="label">Position</div>
+      <div class="value" id="coords">—</div>
+      <div class="sub" id="elev"></div>
+    </div>
+    <div class="stat">
+      <div class="label">Distance from start</div>
+      <div class="value" id="dist">—</div>
+      <div class="sub" id="speed"></div>
+    </div>
+  </div>
+
+  <div class="keys">
+    <kbd>←</kbd> <kbd>→</kbd> step one point ·
+    <kbd>Shift</kbd>+arrow or <kbd>PgUp</kbd>/<kbd>PgDn</kbd> jump 10 ·
+    <kbd>Home</kbd>/<kbd>End</kbd> start/end · click the track to jump
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+  "use strict";
+
+  var pts = [];        // { lat, lon, ele, time(Date|null), cumDist(m) }
+  var map, track, marker, startMark, endMark;
+  var idx = 0;
+
+  var el = function (id) { return document.getElementById(id); };
+  var slider = el("slider");
+
+  // --- Parsing ---------------------------------------------------------------
+
+  function parseGPX(text) {
+    var doc = new DOMParser().parseFromString(text, "application/xml");
+    if (doc.querySelector("parsererror")) throw new Error("Not valid XML.");
+    // Prefer track points; fall back to route points, then waypoints.
+    var nodes = doc.getElementsByTagName("trkpt");
+    if (!nodes.length) nodes = doc.getElementsByTagName("rtept");
+    if (!nodes.length) nodes = doc.getElementsByTagName("wpt");
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      var lat = parseFloat(n.getAttribute("lat"));
+      var lon = parseFloat(n.getAttribute("lon"));
+      if (isNaN(lat) || isNaN(lon)) continue;
+      var eleN = n.getElementsByTagName("ele")[0];
+      var timeN = n.getElementsByTagName("time")[0];
+      var t = null;
+      if (timeN && timeN.textContent) {
+        var parsed = new Date(timeN.textContent.trim());
+        if (!isNaN(parsed.getTime())) t = parsed;
+      }
+      out.push({
+        lat: lat, lon: lon,
+        ele: eleN ? parseFloat(eleN.textContent) : null,
+        time: t, cumDist: 0
+      });
+    }
+    return out;
+  }
+
+  function haversine(a, b) {
+    var R = 6371000, toR = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * toR, dLon = (b.lon - a.lon) * toR;
+    var s = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(a.lat * toR) * Math.cos(b.lat * toR) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+  }
+
+  // --- Loading ---------------------------------------------------------------
+
+  function load(text, name) {
+    var parsed;
+    try { parsed = parseGPX(text); }
+    catch (e) { alert("Could not parse GPX: " + e.message); return; }
+    if (parsed.length < 2) { alert("No usable track points found in this GPX."); return; }
+
+    var d = 0;
+    for (var i = 0; i < parsed.length; i++) {
+      if (i > 0) d += haversine(parsed[i - 1], parsed[i]);
+      parsed[i].cumDist = d;
+    }
+    pts = parsed;
+    el("filename").textContent = (name || "") + " · " + pts.length + " points";
+
+    slider.max = String(pts.length - 1);
+    slider.value = "0";
+    idx = 0;
+
+    el("drop").style.display = "none";
+    el("map").style.display = "block";
+    el("controls").classList.add("active");
+
+    buildMap();
+    update();
+    slider.focus();
+  }
+
+  function buildMap() {
+    var latlngs = pts.map(function (p) { return [p.lat, p.lon]; });
+    if (!map) {
+      map = L.map("map", { zoomControl: true });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors", maxZoom: 19
+      }).addTo(map);
+    } else {
+      if (track) map.removeLayer(track);
+      if (marker) map.removeLayer(marker);
+      if (startMark) map.removeLayer(startMark);
+      if (endMark) map.removeLayer(endMark);
+    }
+
+    track = L.polyline(latlngs, { color: "#4f9eed", weight: 4, opacity: .85 }).addTo(map);
+    startMark = L.circleMarker(latlngs[0], {
+      radius: 6, color: "#fff", weight: 2, fillColor: "#2ecc71", fillOpacity: 1
+    }).addTo(map).bindTooltip("Start");
+    endMark = L.circleMarker(latlngs[latlngs.length - 1], {
+      radius: 6, color: "#fff", weight: 2, fillColor: "#e74c3c", fillOpacity: 1
+    }).addTo(map).bindTooltip("End");
+    marker = L.circleMarker(latlngs[0], {
+      radius: 9, color: "#fff", weight: 3, fillColor: "#f1c40f", fillOpacity: 1
+    }).addTo(map);
+
+    map.fitBounds(track.getBounds(), { padding: [30, 30] });
+
+    // Click the map to jump to the nearest track point.
+    map.on("click", function (e) {
+      var best = 0, bestD = Infinity;
+      for (var i = 0; i < pts.length; i++) {
+        var dla = pts[i].lat - e.latlng.lat, dlo = pts[i].lon - e.latlng.lng;
+        var dd = dla * dla + dlo * dlo;
+        if (dd < bestD) { bestD = dd; best = i; }
+      }
+      setIdx(best);
+    });
+  }
+
+  // --- Formatting ------------------------------------------------------------
+
+  var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function fmtLocal(d) {
+    return DOW[d.getDay()] + " " + d.getDate() + " " + MON[d.getMonth()] + " " +
+      d.getFullYear() + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()) +
+      ":" + pad(d.getSeconds());
+  }
+  function fmtUTC(d) {
+    return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" +
+      pad(d.getUTCDate()) + " " + pad(d.getUTCHours()) + ":" +
+      pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds()) + " UTC";
+  }
+  function fmtDur(ms) {
+    var s = Math.round(ms / 1000);
+    var h = Math.floor(s / 3600); s -= h * 3600;
+    var m = Math.floor(s / 60); s -= m * 60;
+    return (h ? h + "h " : "") + pad(m) + "m " + pad(s) + "s";
+  }
+  function fmtDist(m) {
+    return m >= 1000 ? (m / 1000).toFixed(2) + " km" : Math.round(m) + " m";
+  }
+
+  // --- Update ----------------------------------------------------------------
+
+  function update() {
+    var p = pts[idx];
+
+    if (marker) {
+      marker.setLatLng([p.lat, p.lon]);
+      if (!map.getBounds().contains(marker.getLatLng())) map.panTo(marker.getLatLng());
+    }
+
+    if (p.time) {
+      el("time-local").textContent = fmtLocal(p.time);
+      el("time-utc").textContent = fmtUTC(p.time);
+      var start = pts[0].time;
+      el("elapsed").textContent = start ? fmtDur(p.time - start) : "—";
+    } else {
+      el("time-local").textContent = "no timestamp";
+      el("time-utc").textContent = "";
+      el("elapsed").textContent = "—";
+    }
+
+    el("point-idx").textContent = "point " + (idx + 1) + " of " + pts.length;
+    el("coords").textContent = p.lat.toFixed(6) + ", " + p.lon.toFixed(6);
+    el("elev").textContent = (p.ele != null && !isNaN(p.ele))
+      ? "elev " + Math.round(p.ele) + " m" : "";
+    el("dist").textContent = fmtDist(p.cumDist);
+
+    // Instantaneous speed from the neighbouring point with a timestamp.
+    var speed = "";
+    var prev = pts[idx - 1];
+    if (p.time && prev && prev.time) {
+      var dt = (p.time - prev.time) / 1000;
+      if (dt > 0) {
+        var v = (p.cumDist - prev.cumDist) / dt; // m/s
+        speed = (v * 3.6).toFixed(1) + " km/h";
+      }
+    }
+    el("speed").textContent = speed;
+
+    if (slider.value !== String(idx)) slider.value = String(idx);
+  }
+
+  function setIdx(i) {
+    idx = Math.max(0, Math.min(pts.length - 1, i));
+    update();
+  }
+
+  // --- Events ----------------------------------------------------------------
+
+  slider.addEventListener("input", function () { setIdx(parseInt(slider.value, 10)); });
+  el("prev").addEventListener("click", function () { setIdx(idx - 1); });
+  el("next").addEventListener("click", function () { setIdx(idx + 1); });
+
+  document.addEventListener("keydown", function (e) {
+    if (!pts.length) return;
+    if (e.target.tagName === "INPUT" && e.target.type === "file") return;
+    var step = e.shiftKey ? 10 : 1;
+    switch (e.key) {
+      case "ArrowLeft":  setIdx(idx - step); break;
+      case "ArrowRight": setIdx(idx + step); break;
+      case "ArrowDown":  setIdx(idx - step); break;
+      case "ArrowUp":    setIdx(idx + step); break;
+      case "PageDown":   setIdx(idx - 10); break;
+      case "PageUp":     setIdx(idx + 10); break;
+      case "Home":       setIdx(0); break;
+      case "End":        setIdx(pts.length - 1); break;
+      default: return;
+    }
+    e.preventDefault();
+  });
+
+  // File input + drag and drop.
+  function readFile(f) {
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () { load(r.result, f.name); };
+    r.readAsText(f);
+  }
+  el("file").addEventListener("change", function (e) { readFile(e.target.files[0]); });
+
+  var drop = el("drop");
+  ["dragenter", "dragover"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      e.preventDefault();
+      if (drop.style.display !== "none") drop.classList.add("over");
+    });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      e.preventDefault();
+      drop.classList.remove("over");
+    });
+  });
+  document.addEventListener("drop", function (e) {
+    if (e.dataTransfer && e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+  });
+})();
+</script>
+</body>
+</html>
