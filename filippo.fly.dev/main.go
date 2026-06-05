@@ -76,6 +76,11 @@ func handler() http.Handler {
 	mux.Handle("geomys.org/standard-of-care", http.RedirectHandler(
 		"https://github.com/geomys/standard-of-care", http.StatusFound))
 
+	mux.Handle("sites.at.geomys.org/{$}", HTMLHandler("atsites.html"))
+	mux.Handle("sites.at.geomys.org/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "AT Sites was an early experiment providing Atom feeds for standard.site publications. It has shut down.", http.StatusGone)
+	}))
+
 	mux.Handle("age-encryption.org/{$}", http.RedirectHandler("https://github.com/FiloSottile/age", http.StatusFound))
 
 	mux.Handle("age-encryption.org/design", http.RedirectHandler(
