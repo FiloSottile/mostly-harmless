@@ -28,7 +28,7 @@ func uptime(mux *http.ServeMux) {
 			return
 		}
 
-		threshold := 99.5
+		var queryThreshold float64
 		if t := r.URL.Query().Get("threshold"); t != "" {
 			parsed, err := strconv.ParseFloat(t, 64)
 			if err != nil {
@@ -36,7 +36,7 @@ func uptime(mux *http.ServeMux) {
 				http.Error(w, msg, http.StatusBadRequest)
 				return
 			}
-			threshold = parsed
+			queryThreshold = parsed
 		}
 
 		resp, err := uptimeClient.Get("https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv")
@@ -72,6 +72,15 @@ func uptime(mux *http.ServeMux) {
 					msg := fmt.Sprintf("error parsing data: invalid line %q", line)
 					http.Error(w, msg, http.StatusInternalServerError)
 					return
+				}
+				var threshold float64
+				switch {
+				case queryThreshold != 0:
+					threshold = queryThreshold
+				case fields[1] == "add-chain", fields[1] == "add-pre-chain":
+					threshold = 95
+				default:
+					threshold = 99
 				}
 				if uptime < threshold {
 					alerted = true

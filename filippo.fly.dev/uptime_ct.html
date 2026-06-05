@@ -72,7 +72,9 @@
 <p>This is a little service that makes it possible to set up alerting for
 <a href="https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv">endpoint_uptime_24h.csv</a>.</p>
 <p>e.g. <code>https://uptime.geomys.org/ct/24h/geomys.org</code> will return a 503 if any
-lines matching &quot;geomys.org&quot; have an uptime column below 99.5.</p>
+lines matching &quot;geomys.org&quot; have an uptime column below 95 (for <code>/add-chain</code> and
+<code>/add-pre-chain</code>, which are queried by Google every hour) or 99 (for all other
+endpoints, which are queried by Google every 10 minutes).</p>
 <p>You can use it with any filter string, and it also takes a parameter like
 <code>?threshold=98</code>. You're welcome to use our instance, but no guarantees!</p>
 <p>We recommend setting up alerting such that the endpoint is checked from multiple

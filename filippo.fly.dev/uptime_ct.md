@@ -9,7 +9,9 @@ This is a little service that makes it possible to set up alerting for
 [endpoint_uptime_24h.csv](https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv).
 
 e.g. `https://uptime.geomys.org/ct/24h/geomys.org` will return a 503 if any
-lines matching "geomys.org" have an uptime column below 99.5.
+lines matching "geomys.org" have an uptime column below 95 (for `/add-chain` and
+`/add-pre-chain`, which are queried by Google every hour) or 99 (for all other
+endpoints, which are queried by Google every 10 minutes).
 
 You can use it with any filter string, and it also takes a parameter like
 `?threshold=98`. You're welcome to use our instance, but no guarantees!
