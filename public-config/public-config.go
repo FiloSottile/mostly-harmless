@@ -28,6 +28,7 @@ var configFiles = []string{
 	"/etc/systemd/system/public-config.service",
 	"/etc/logrotate.d/jsonl",
 	"/etc/caddy/Caddyfile",
+	"/etc/systemd/system/caddy.service.d/override.conf",
 	"/etc/prometheus/prometheus.yml",
 	"/usr/local/bin/zfs-textfile",
 	"/etc/systemd/system/zfs-textfile.service",
