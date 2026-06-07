@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amend Issuer</title>
+    <style>
+        :root {
+            font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+            color-scheme: light dark;
+        }
+        sub, sup {
+            line-height: 0;
+        }
+        p, li {
+            line-height: 1.8em;
+        }
+        a {
+            color: inherit;
+        }
+        header {
+            margin: 4rem auto 0;
+            max-width: 350px;
+            padding: 0 10px;
+        }
+        main {
+            width: auto;
+            max-width: 700px;
+            padding: 0 15px;
+            margin: 5rem auto;
+        }
+        code, pre {
+            color: Canvas;
+            background-color: CanvasText;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        :not(pre) > code {
+            font-size: 0.8em;
+            padding: 4px 5px;
+        }
+        pre {
+            padding: 1em;
+            overflow-x: auto;
+            line-height: 1.5em;
+            font-size: 0.8em;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+        li + li {
+            margin-top: 0.5em;
+        }
+        textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 9em;
+            margin: 1em 0;
+            padding: 0.8em;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            font-size: 0.8em;
+            line-height: 1.4em;
+            color: FieldText;
+            background-color: Field;
+            border: 1px solid GrayText;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            font: inherit;
+            font-size: 0.9em;
+            padding: 0.6em 1.4em;
+            margin: 0.5em 0 1.5em;
+            color: Canvas;
+            background-color: CanvasText;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        button#copy {
+            font-size: 0.8em;
+            padding: 0.4em 1em;
+            margin: 0.8em 0 1.5em;
+            color: CanvasText;
+            background-color: transparent;
+            border: 1px solid GrayText;
+        }
+        pre#output {
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 1.5em;
+        }
+        pre#output.placeholder {
+            opacity: 0.6;
+        }
+        pre#output.error {
+            color: Canvas;
+            background-color: #b00020;
+        }
+        @media print {
+            main {
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main>
+
+<h1>Amend Issuer</h1>
+
+<p>This is a simple tool that given an X.509 issuer and a child, produces an
+<a href="https://www.rfc-editor.org/rfc/rfc9925.html">unsigned RFC 9925</a> version
+of the issuer, using for its <code>Subject</code> field the exact byte-encoding of
+the child’s <code>Issuer</code> field.</p>
+
+<p>This allows working around encoding mismatches that are
+<a href="https://lobste.rs/s/6a5wiw/fooling_go_s_x_509_certificate#c_2gva79">not
+supported by the Go verifier</a>,
+<a href="https://github.com/golang/go/issues/31440#issuecomment-4660191943">intentionally
+so</a>. Using this tool does not require access to any private keys.</p>
+
+<p>If the issuer is a <strong>root</strong>, the amended unsigned version can be used
+in place of or in addition to the original root with equivalent semantics;
+certificates that were issued with the differently-encoded <code>Issuer</code> will
+verify against the amended version. If the issuer is an
+<strong>intermediate</strong>, the amended version will not naturally verify against
+the original root; instead—after manually checking the intermediate is valid and
+signed by a trusted root and unrestricted—the amended version can be included in the
+trusted root pool, so that leaves with the differently-encoded <code>Issuer</code>
+will verify against it directly.</p>
+
+<p>This was designed for the Go verifier, but probably works with other stacks, too.</p>
+
+<p>A similar technique can be used to amend other issuer mis-encodings that are
+rejected by Go’s crypto/x509 package, or by other X.509 verifiers.</p>
+
+<textarea id="issuer" spellcheck="false" autocapitalize="off" autocomplete="off"
+    placeholder="Issuer PEM-encoded certificate"></textarea>
+
+<textarea id="child" spellcheck="false" autocapitalize="off" autocomplete="off"
+    placeholder="Child PEM-encoded certificate"></textarea>
+
+<button id="amend" disabled>Loading…</button>
+
+<pre id="output" class="placeholder">AMENDED ISSUER AS PEM-ENCODED CERTIFICATE</pre>
+
+<button id="copy" disabled>Copy</button>
+
+</main>
+
+<script src="wasm_exec.js"></script>
+<script src="amend.js"></script>
+
+</body>
+</html>
