@@ -79,4 +79,4 @@ contact us at <u>fips140@</u> on this domain.
 
 # Our clients
 
-<img alt="The logos of Interchain, Smallstep, Ava Labs, Teleport, SandboxAQ, Tailscale, and Charm" width="600" height="422" style="background-color: white;" src="images/clients.png">
+<img alt="The logos of Sigsum, Teleport, Ava Labs, Datadog, Tailscale, and Sentry" width="600" height="422" style="background-color: white;" src="images/clients.png">
