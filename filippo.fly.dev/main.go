@@ -75,6 +75,8 @@ func handler() http.Handler {
 		"https://billing.stripe.com/p/login/8x29AU94R96B96dgeR2cg00", http.StatusFound))
 	mux.Handle("geomys.org/standard-of-care", http.RedirectHandler(
 		"https://github.com/geomys/standard-of-care", http.StatusFound))
+	mux.Handle("geomys.org/fips140-wasm", http.RedirectHandler( // from the v1.0.1 Security Policy
+		"https://github.com/geomys/go/blob/fips140-wasm/.github/README.md", http.StatusFound))
 
 	mux.Handle("sites.at.geomys.org/{$}", HTMLHandler("atsites.html"))
 	mux.Handle("sites.at.geomys.org/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
