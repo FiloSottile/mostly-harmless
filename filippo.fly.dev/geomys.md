@@ -77,6 +77,14 @@ contact us at <u>fips140@</u> on this domain.
 
 [Daniel McCarney](https://github.com/cpu) is a systems security engineer focused on applied cryptography and internet-scale infrastructure. He's a maintainer of Rustls, a high-performance TLS implementation written in Rust, and has made numerous open source contributions spanning both the Rust and Go communities. While at Let's Encrypt, he helped design and standardize the ACME protocol (RFC 8555), developing the software and specification that has since secured over 500 million domains. He lives in the Laurentides, Quebec, where the forest provides the perfect setting for digging in to complex challenges.
 
+<img alt="" width="130" height="118" src="images/daniel.jpg">
+
+Daniel Morsing is a software engineer who started as an embedded systems developer, but fell head-first into the Go ecosystem and has been a contributor since 2012. He's worked at multiple start-ups on compilers, DNS, time-series databases, content-delivery networks and, orchestration and even had a 5 year stint as a freelance video producer. He now does maintenance on the Go compiler and runtime.
+
+<p style="text-align: right;">
+    Daniel Morsing er en software ingeniør der startede som en embedded software udvikler, men faldt hovedet først ind i Go's økosystem og har bidragt til det siden 2012. Han har arbejdet hos flere start-ups på kompilere, DNS, tidsserier databaser, content-delivery netværk og orkestrering. Ud over det, har han også arbejdet som kameraman i 5 år. Nu vedligeholder han Go's kompilere og runtime.
+</p>
+
 # Our clients
 
 <img alt="The logos of Sigsum, Teleport, Ava Labs, Datadog, Tailscale, and Sentry" width="600" height="422" style="background-color: white;" src="images/clients.png">
