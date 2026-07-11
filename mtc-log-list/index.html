@@ -4,13 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MTC log-list entry generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter&family=Raleway&family=Source+Code+Pro&display=swap" rel="stylesheet">
 <style>
 :root { color-scheme: light dark; --yellow:#ffd447; --ink:#181818; --paper:#fff; --muted:#666; }
 @media (prefers-color-scheme:dark) { :root { --paper:#171717; --ink:#eee; --muted:#aaa; } }
 * { box-sizing:border-box; }
-body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.5 system-ui,sans-serif; }
+body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.4 "Raleway",sans-serif; }
 main { max-width:700px; margin:72px auto; padding:0 20px; }
-h1,h2 { font-family:Georgia,serif; line-height:1.15; }
+h1,h2 { font-family:"Bitter",serif; line-height:1.15; }
 h1 { font-size:2.25rem; margin-bottom:.4rem; }
 a { color:inherit; text-decoration-thickness:1px; }
 .intro { color:var(--muted); margin-bottom:2.5rem; }
@@ -18,7 +21,7 @@ label { display:block; font-weight:650; margin:1.25rem 0 .35rem; }
 .hint { color:var(--muted); font-size:.9rem; margin:.3rem 0 0; }
 input, textarea, button { font:inherit; }
 input[type=text], input[type=url], input[type=number], textarea { width:100%; padding:.7rem .8rem; border:1px solid #999; border-radius:3px; background:var(--paper); color:var(--ink); }
-textarea { min-height:9rem; resize:vertical; font-family:ui-monospace,monospace; font-size:.88rem; }
+textarea { min-height:9rem; resize:vertical; font-family:"Source Code Pro",monospace; font-size:.88rem; -webkit-font-smoothing:antialiased; }
 button { margin-top:1.5rem; padding:.7rem 1rem; border:1px solid var(--ink); border-radius:3px; background:var(--yellow); color:#111; cursor:pointer; font-weight:700; }
 button:disabled { opacity:.55; cursor:wait; }
 #error { color:#b42318; white-space:pre-wrap; margin-top:1rem; }
