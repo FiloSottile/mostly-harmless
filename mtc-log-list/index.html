@@ -40,9 +40,12 @@ footer { color:var(--muted); font-size:.9rem; }
 <label for="lognum">Log number</label>
 <input id="lognum" type="number" min="1" max="65535" value="1" required>
 
-<label for="key">ML-DSA-44 public key</label>
-<input id="key" type="file" required>
+<label for="key">ML-DSA-44 public key file</label>
+<input id="key" type="file">
 <p class="hint">A raw ML-DSA-44 public key, or a PKIX SubjectPublicKeyInfo in DER or PEM (<code>PUBLIC KEY</code>) form.</p>
+
+<label for="key-text">Or paste the public key</label>
+<textarea id="key-text" placeholder="Base64-encoded raw key or DER SubjectPublicKeyInfo, or a PEM PUBLIC KEY block" spellcheck="false"></textarea>
 
 <label for="contact">Operator contact</label>
 <input id="contact" type="text" placeholder="https://example.com/security" required>
@@ -56,7 +59,7 @@ footer { color:var(--muted); font-size:.9rem; }
 <div class="actions"><button id="copy" type="button">Copy</button></div>
 <p class="hint">The origin is included explicitly and follows <a href="https://c2sp.org/mtc-tlog">c2sp.org/mtc-tlog</a>.</p>
 </section>
-<hr><footer>Built with Go WebAssembly and <a href="https://filippo.io/torchwood">Torchwood</a>.</footer>
+<hr><footer>Built with Go WebAssembly and <a href="https://filippo.io/torchwood">Torchwood</a> by <a href="https://geomys.org">Geomys</a>.</footer>
 </main>
 <script src="wasm_exec.js"></script>
 <script>
@@ -76,7 +79,13 @@ document.querySelector('#form').addEventListener('submit', async e => {
     const caid = document.querySelector('#caid').value.trim();
     const lognum = document.querySelector('#lognum').value;
     const origin = `oid/1.3.6.1.4.1.${caid}.0.${lognum}`;
-    const bytes = new Uint8Array(await document.querySelector('#key').files[0].arrayBuffer());
+    const file = document.querySelector('#key').files[0];
+    const pasted = document.querySelector('#key-text').value.trim();
+    if (!file && !pasted) throw new Error('Select a public key file or paste a public key.');
+    if (file && pasted) throw new Error('Provide the public key either as a file or as pasted text, not both.');
+    const bytes = file
+      ? new Uint8Array(await file.arrayBuffer())
+      : new TextEncoder().encode(pasted);
     const r = generateLogListEntry(origin, bytes);
     if (r.error) throw new Error(r.error);
     const contact = document.querySelector('#contact').value.trim();

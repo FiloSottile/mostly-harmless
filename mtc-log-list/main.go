@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -48,6 +49,10 @@ func makeVKey(name string, input []byte) (string, error) {
 			return "", fmt.Errorf("expected a PUBLIC KEY PEM block, got %q", block.Type)
 		}
 		der = block.Bytes
+	} else if text := strings.Join(strings.Fields(string(input)), ""); text != "" {
+		if decoded, err := base64.StdEncoding.DecodeString(text); err == nil {
+			der = decoded
+		}
 	}
 	var pk *mldsa.PublicKey
 	if key, err := mldsa_x509.ParsePKIXPublicKey(der); err == nil {
