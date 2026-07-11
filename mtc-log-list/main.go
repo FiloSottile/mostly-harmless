@@ -3,7 +3,6 @@
 package main
 
 import (
-	"crypto/x509"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -11,6 +10,7 @@ import (
 	"syscall/js"
 
 	"filippo.io/mldsa"
+	mldsa_x509 "filippo.io/mldsa/x509"
 	"filippo.io/torchwood"
 )
 
@@ -50,7 +50,7 @@ func makeVKey(name string, input []byte) (string, error) {
 		der = block.Bytes
 	}
 	var pk *mldsa.PublicKey
-	if key, err := x509.ParsePKIXPublicKey(der); err == nil {
+	if key, err := mldsa_x509.ParsePKIXPublicKey(der); err == nil {
 		var ok bool
 		pk, ok = key.(*mldsa.PublicKey)
 		if !ok || pk.Parameters() != mldsa.MLDSA44() {
