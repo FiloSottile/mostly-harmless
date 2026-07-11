@@ -81,7 +81,8 @@ document.querySelector('#form').addEventListener('submit', async e => {
   try {
     const caid = document.querySelector('#caid').value.trim();
     const lognum = document.querySelector('#lognum').value;
-    const origin = `oid/1.3.6.1.4.1.${caid}.0.${lognum}`;
+    const cosigner = `oid/1.3.6.1.4.1.${caid}`;
+    const origin = `${cosigner}.0.${lognum}`;
     const file = document.querySelector('#key').files[0];
     const pasted = document.querySelector('#key-text').value.trim();
     if (!file && !pasted) throw new Error('Select a public key file or paste a public key.');
@@ -89,7 +90,7 @@ document.querySelector('#form').addEventListener('submit', async e => {
     const bytes = file
       ? new Uint8Array(await file.arrayBuffer())
       : new TextEncoder().encode(pasted);
-    const r = generateLogListEntry(origin, bytes);
+    const r = generateLogListEntry(cosigner, bytes);
     if (r.error) throw new Error(r.error);
     const contact = document.querySelector('#contact').value.trim();
     document.querySelector('#output').value = r.output.replace('qpd 86400', `origin ${origin}\nqpd 86400`).replace('contact https://github.com/your-org/your-repo/issues', `contact ${contact}`);

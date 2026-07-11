@@ -37,9 +37,8 @@ func result(output, err string) any {
 
 func makeVKey(name string, input []byte) (string, error) {
 	if name == "" {
-		return "", errors.New("log origin is required")
+		return "", errors.New("cosigner name is required")
 	}
-	origin := name
 	der := input
 	if block, rest := pem.Decode(input); block != nil {
 		if len(strings.TrimSpace(string(rest))) != 0 {
@@ -67,7 +66,7 @@ func makeVKey(name string, input []byte) (string, error) {
 			return "", fmt.Errorf("parse ML-DSA-44 public key as SubjectPublicKeyInfo or raw key: %w", err)
 		}
 	}
-	v, err := torchwood.NewCosignatureVerifierFromKey(origin, pk)
+	v, err := torchwood.NewCosignatureVerifierFromKey(name, pk)
 	if err != nil {
 		return "", fmt.Errorf("make verifier key: %w", err)
 	}
