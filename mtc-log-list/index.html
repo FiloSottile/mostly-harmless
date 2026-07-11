@@ -44,9 +44,6 @@ footer { color:var(--muted); font-size:.9rem; }
 <input id="key" type="file" required>
 <p class="hint">A raw ML-DSA-44 public key, or a PKIX SubjectPublicKeyInfo in DER or PEM (<code>PUBLIC KEY</code>) form.</p>
 
-<label for="qpd">Maximum checkpoint requests per day</label>
-<input id="qpd" type="number" min="1" max="2147483647" value="86400" required>
-
 <label for="contact">Operator contact</label>
 <input id="contact" type="text" placeholder="https://example.com/security" required>
 
@@ -82,9 +79,8 @@ document.querySelector('#form').addEventListener('submit', async e => {
     const bytes = new Uint8Array(await document.querySelector('#key').files[0].arrayBuffer());
     const r = generateLogListEntry(origin, bytes);
     if (r.error) throw new Error(r.error);
-    const qpd = document.querySelector('#qpd').value;
     const contact = document.querySelector('#contact').value.trim();
-    document.querySelector('#output').value = r.output.replace('qpd 86400', `origin ${origin}\nqpd ${qpd}`).replace('contact https://github.com/your-org/your-repo/issues', `contact ${contact}`);
+    document.querySelector('#output').value = r.output.replace('qpd 86400', `origin ${origin}\nqpd 86400`).replace('contact https://github.com/your-org/your-repo/issues', `contact ${contact}`);
     document.querySelector('#result').style.display = 'block';
   } catch (e) { error.textContent = e.message; document.querySelector('#result').style.display = 'none'; }
 });
