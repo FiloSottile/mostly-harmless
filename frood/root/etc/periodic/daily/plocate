@@ -1,0 +1,3 @@
+#!/bin/sh
+# Disable daily updatedb invocation from plocate package.
+exit 0

@@ -54,7 +54,7 @@ curl
 moreutils
 git
 findutils
-findutils-locate
+plocate
 less
 sqlite
 restic
