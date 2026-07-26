@@ -3,3 +3,9 @@ iface lo inet loopback
 
 auto eth0
 iface eth0 inet dhcp
+
+# Brought up by the iliad service, not by networking, so a powered off Iliad
+# router can't fail the boot and take sshd and tailscale with it.
+iface eth1 inet dhcp
+    # Enable 2500baseT/Full.
+    pre-up ethtool -s $IFACE advertise 0x1800000001028 || echo "$IFACE: failed to advertise 2.5G/5G" >&2

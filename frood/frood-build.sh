@@ -5,6 +5,12 @@ __() { printf "\n\033[1;32m* %s [%s]\033[0m\n" "$1" "$(date -u +"%Y-%m-%dT%H:%M:
 
 ROOTFS_DEST=$(mktemp -d)
 
+__ "Checking for local secrets"
+
+missing=$(grep '^/root/' /mnt/.gitignore | while read -r path; do
+    [ -e "/mnt$path" ] || echo "  $path"; done)
+[ -n "$missing" ] && printf 'Missing files:\n%s\n' "$missing" >&2 && exit 1
+
 __ "Fetching alpine-make-rootfs"
 
 wget https://raw.githubusercontent.com/alpinelinux/alpine-make-rootfs/v0.7.0/alpine-make-rootfs \
@@ -46,6 +52,7 @@ apk add --no-cache systemd-efistub ukify
 CMDLINE="rdinit=/sbin/init console=tty1 console=ttyAMA0"
 
 ukify build --output "$1" --cmdline "$CMDLINE" \
+    --uname "$(ls "$ROOTFS_DEST/lib/modules")" \
     --linux "$ROOTFS_DEST/boot/vmlinuz-lts" \
     --initrd "$ROOTFS_DEST/boot/initramfs-lts" \
     --os-release "@$ROOTFS_DEST/etc/frood-release"

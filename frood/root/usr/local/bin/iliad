@@ -1,0 +1,20 @@
+#!/bin/sh
+# Run a command with all of its network traffic sent over the Iliad uplink.
+set -eu
+
+table=iliad
+
+if [ $# -eq 0 ]; then
+    echo "usage: ${0##*/} <command> [args...]" >&2
+    exit 2
+fi
+
+cgroup="/sys/fs/cgroup/$table"
+if [ ! -d "$cgroup" ]; then
+    echo "${0##*/}: no $table cgroup, is the iliad service running?" >&2
+    exit 1
+fi
+
+# Sockets are matched by the cgroup they were created in.
+echo $$ > "$cgroup/cgroup.procs"
+exec "$@"

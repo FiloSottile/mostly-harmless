@@ -1,0 +1,74 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh
+
+description="Send marked traffic over the Iliad uplink"
+
+: "${iface:=eth1}"
+: "${table:=iliad}"
+: "${mark:=0x2}"
+: "${priority:=100}"
+
+depend() {
+    need net cgroups
+}
+
+default_gateway() {
+    ip -4 route list default dev "$iface" |
+        awk '{ for (i = 1; i < NF; i++) if ($i == "via") { print $(i + 1); exit } }'
+}
+
+start() {
+    local gw
+
+    # IPv6 would take $iface without consulting the rule below. Replies come
+    # back on $iface but route back out the primary one, which strict reverse
+    # path filtering treats as spoofed.
+    ebegin "Bringing up $iface"
+    sysctl -qw "net.ipv6.conf.$iface.disable_ipv6=1" &&
+        sysctl -qw "net.ipv4.conf.$iface.rp_filter=2" &&
+        ifup "$iface"
+    eend $? || return 1
+
+    gw="$(default_gateway)"
+    if [ -z "$gw" ]; then
+        eerror "The lease on $iface carries no default route"
+        return 1
+    fi
+
+    ebegin "Routing packets marked $mark over $iface via $gw"
+    ip route replace default via "$gw" dev "$iface" table "$table" &&
+        { ip rule list | grep -q "lookup $table" ||
+            ip rule add fwmark "$mark" table "$table" priority "$priority"; }
+    eend $? || return 1
+
+    ebegin "Marking traffic from the $table cgroup"
+    # nft resolves the path to a cgroup id at load time, so it has to exist.
+    mkdir -p "/sys/fs/cgroup/$table" || { eend 1; return 1; }
+    # type route reruns the routing decision when the mark is set, but not
+    # source address selection, so the packets still carry the primary uplink's
+    # address and have to be masqueraded.
+    nft -f - << EOF
+table ip $table
+delete table ip $table
+table ip $table {
+	chain output {
+		type route hook output priority mangle; policy accept
+		socket cgroupv2 level 1 "$table" meta mark set $mark
+	}
+	chain postrouting {
+		type nat hook postrouting priority srcnat; policy accept
+		meta mark $mark oifname "$iface" masquerade
+	}
+}
+EOF
+    eend $?
+}
+
+stop() {
+    ebegin "Tearing down the $table policy routing"
+    nft delete table ip "$table" 2> /dev/null
+    while ip rule del table "$table" 2> /dev/null; do :; done
+    rmdir "/sys/fs/cgroup/$table" 2> /dev/null
+    ifdown "$iface"
+    eend $?
+}

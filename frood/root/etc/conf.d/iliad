@@ -1,0 +1,10 @@
+# Interface plugged into the Iliad router.
+iface="eth1"
+
+# Names the routing table, the nftables table, and the cgroup.
+table="iliad"
+
+# Mark applied to Iliad traffic, and priority of the rule matching it.
+# Tailscale's own rules start at 5210.
+mark="0x2"
+priority="100"

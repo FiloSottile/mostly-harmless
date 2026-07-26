@@ -4,6 +4,9 @@ zfs-lts
 linux-firmware-none
 alpine-base
 util-linux
+iproute2
+nftables
+ethtool
 kbd-bkeymaps
 ca-certificates
 tzdata

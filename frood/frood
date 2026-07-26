@@ -50,7 +50,8 @@ case "$1" in
         fi
         qemu-system-aarch64 -M virt -cpu cortex-a72 -m 4G -nographic \
             -bios QEMU_EFI.fd -kernel images/"$image" \
-            -drive file=usb_disk.img,if=virtio,format=raw
+            -drive file=usb_disk.img,if=virtio,format=raw \
+            -nic user -nic user,net=10.0.3.0/24
         ;;
     format)
         docker run --rm -v "$PWD":/mnt alpine:3.20.3 sh -c \

@@ -1,11 +1,13 @@
 #!/bin/sh
 set -e
 
+rc-update add sysfs sysinit
 rc-update add devfs sysinit
 rc-update add dmesg sysinit
 rc-update add udev sysinit
 rc-update add udev-trigger sysinit
 rc-update add udev-settle sysinit
+rc-update add cgroups sysinit
 
 rc-update add udev-postmount default
 
@@ -33,6 +35,7 @@ rc-update add smartd default
 rc-update add zfs-zed default
 rc-update add sshd default
 rc-update add tailscale default
+rc-update add iliad default
 rc-update add srvmonitor default
 rc-update add ksmbd default
 
