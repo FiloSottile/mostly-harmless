@@ -1,5 +1,7 @@
 Set of scripts to export flights from TripIt and import them into Flightdiary. Quick and dirty.
 
+Dependencies are managed with [uv](https://docs.astral.sh/uv/): run the scripts with `uv run`, e.g. `uv run sync.py`.
+
 ## TripIt setup
 
 * Register an application at https://www.tripit.com/developer

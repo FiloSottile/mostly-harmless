@@ -1,0 +1,10 @@
+[project]
+name = "tripit-to-flightdiary"
+version = "0.1.0"
+description = "Scripts to export flights from TripIt and import them into Flightdiary"
+requires-python = ">=3.9"
+dependencies = [
+    "beautifulsoup4",
+    "html5lib",
+    "requests-oauthlib",
+]
