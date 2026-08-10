@@ -100,6 +100,7 @@ func uptime(mux *http.ServeMux) {
 		}
 		w.Write(output.Bytes())
 	})
+	mux.HandleFunc("uptime.geomys.org/ct/add-pre-chain/{log...}", ctAddPreChain)
 
 	mux.Handle("uptime.geomys.org/witness/{$}", HTMLHandler("uptime_witness.html"))
 	mux.HandleFunc("uptime.geomys.org/witness/log-list", func(w http.ResponseWriter, r *http.Request) {

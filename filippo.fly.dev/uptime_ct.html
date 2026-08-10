@@ -70,14 +70,39 @@
 <main>
 <h1>Certificate Transparency Uptime Alerts</h1>
 <p>This is a little service that makes it possible to set up alerting for
+live end-to-end submissions to <code>/add-pre-chain</code> and for
 <a href="https://www.gstatic.com/ct/compliance/endpoint_uptime_24h.csv">endpoint_uptime_24h.csv</a>.</p>
-<p>e.g. <code>https://uptime.geomys.org/ct/24h/geomys.org</code> will return a 503 if any
+<p><code>https://uptime.geomys.org/ct/add-pre-chain/</code> followed by a log's submission URL (e.g.
+<code>https://uptime.geomys.org/ct/add-pre-chain/tuscolo2026h2.sunlight.geomys.org</code>)
+will submit a test precertificate to the log, verify the returned SCT, check its
+inclusion in the latest checkpoint, and return a 502 on any failure.</p>
+<p>The log must be configured to trust the following root:</p>
+<pre><code>-----BEGIN CERTIFICATE-----
+MIIBoTCCAUagAwIBAgIQJF3At5kFb/ALs7DKDHOj/jAKBggqhkjOPQQDAjAvMQ8w
+DQYDVQQKEwZHZW9teXMxHDAaBgNVBAMTE0NUIFVwdGltZSBUZXN0IFJvb3QwIBcN
+MjYwODEwMjExNjM0WhgPMjEyNjA4MTAyMTE2MzRaMC8xDzANBgNVBAoTBkdlb215
+czEcMBoGA1UEAxMTQ1QgVXB0aW1lIFRlc3QgUm9vdDBZMBMGByqGSM49AgEGCCqG
+SM49AwEHA0IABPq8ghb4w5w/h8kitiw4fO1XVeLeIUAlMukXu7opzLEaJ4FWOD1N
+rhdqKE5OsFF3xThVHHKRe04VaJfToSCbPtKjQjBAMA4GA1UdDwEB/wQEAwICBDAP
+BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTjXl2CUECHEpvgnMpSbucwxjWJ6TAK
+BggqhkjOPQQDAgNJADBGAiEAni4jwIvsmigHV/9HIElYC46X7KfZNKGwvSLFl0TT
+hhoCIQDtaaQRDgNGY2fUURksTEYCvg0cTbntOIvHza+u0c3x5w==
+-----END CERTIFICATE-----
+</code></pre>
+<p>Only Static CT logs listed in
+<a href="https://www.gstatic.com/ct/log_list/v3/all_logs_list.json">all_logs_list.json</a>
+are supported.</p>
+<p>The precertificate is a deterministic function of the log and of the current
+minute, so submissions can be deduplicated by the log. Results are cached by
+this service, for a maximum of one new log entry per log per minute.</p>
+<p><code>https://uptime.geomys.org/ct/24h/geomys.org</code> will return a 503 if any
 lines matching &quot;geomys.org&quot; have an uptime column below 95 (for <code>/add-chain</code> and
 <code>/add-pre-chain</code>, which are queried by Google every hour) or 99 (for all other
 endpoints, which are queried by Google every 10 minutes).</p>
 <p>You can use it with any filter string, and it also takes a parameter like
 <code>?threshold=98</code>. You're welcome to use our instance, but no guarantees!</p>
-<p>We recommend setting up alerting such that the endpoint is checked from multiple
-locations, and you are only alerted if all locations hit 503s for more than 15 minutes.</p>
+<p>We recommend setting up alerting such that the endpoints are checked from multiple
+locations, and you are only alerted if all locations hit 503s. The submission
+endpoints require a high (10-15s) timeout.</p>
 <p>There is also a witness monitoring service at
 <a href="https://uptime.geomys.org/witness/">https://uptime.geomys.org/witness/</a>.</p>

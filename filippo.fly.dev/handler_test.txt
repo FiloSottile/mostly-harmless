@@ -230,6 +230,14 @@ GET https://uptime.geomys.org/ct/24h/geomys.org?threshold=invalid
 code == 400
 body contains invalid threshold
 
+# requires CT_UPTIME_ROOT_KEY
+GET https://uptime.geomys.org/ct/add-pre-chain/loreto2026h2.sunlight.geomys.org
+body contains SCT verified and included, timestamp
+
+GET https://uptime.geomys.org/ct/add-pre-chain/unknown.example.com
+code == 400
+body contains unknown log
+
 GET https://uptime.geomys.org/witness/
 body contains Witness Uptime Monitoring
 
