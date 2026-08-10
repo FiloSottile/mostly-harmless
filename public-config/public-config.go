@@ -32,6 +32,8 @@ var bothConfigFiles = []string{
 }
 
 var tuscoloConfigFiles = []string{
+	"/etc/sunlight/sunlight-golf.yaml",
+	"/etc/systemd/system/sunlight-golf.service",
 	"/etc/systemd/system/heliograph-dashboard.service",
 	"/etc/systemd/system/heliograph-dashboard.timer",
 	"/etc/systemd/system/heliograph-dashboard-trastevere.service",
