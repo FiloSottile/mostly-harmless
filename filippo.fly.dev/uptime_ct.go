@@ -45,6 +45,14 @@ func ctAddPreChain(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unknown log", http.StatusBadRequest)
 		return
 	}
+	// Shards are expected to go read-only at the end of their temporal
+	// interval, don't alert on them.
+	if !time.Now().Before(l.notAfterLimit) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		fmt.Fprintf(w, "not submitting to read-only shard, temporal interval ended %s\n",
+			l.notAfterLimit.Format(time.RFC3339))
+		return
+	}
 	keys, err := ctUptimeKeys()
 	if err != nil {
 		msg := fmt.Sprintf("error loading key material: %v", err)

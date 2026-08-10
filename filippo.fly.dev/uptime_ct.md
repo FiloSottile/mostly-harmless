@@ -38,6 +38,9 @@ The precertificate is a deterministic function of the log and of the current
 minute, so submissions can be deduplicated by the log. Results are cached by
 this service, for a maximum of one new log entry per log per minute.
 
+Once a shard's temporal interval ends and the log is expected to go read-only,
+no submission is attempted and the endpoint returns a 200.
+
 `https://uptime.geomys.org/ct/24h/geomys.org` will return a 503 if any
 lines matching "geomys.org" have an uptime column below 95 (for `/add-chain` and
 `/add-pre-chain`, which are queried by Google every hour) or 99 (for all other

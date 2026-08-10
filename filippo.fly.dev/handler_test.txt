@@ -238,6 +238,9 @@ GET https://uptime.geomys.org/ct/add-pre-chain/unknown.example.com
 code == 400
 body contains unknown log
 
+GET https://uptime.geomys.org/ct/add-pre-chain/tuscolo2026h1.sunlight.geomys.org
+body contains not submitting to read-only shard
+
 GET https://uptime.geomys.org/witness/
 body contains Witness Uptime Monitoring
 
