@@ -170,6 +170,7 @@ func handler() http.Handler {
 		"mostly-harmless": true,
 		"nistec":          true,
 		"sunlight":        true,
+		"passkey":         true,
 		"torchwood":       true,
 		"xaes256gcm":      true,
 		"yubikey-agent":   true,
