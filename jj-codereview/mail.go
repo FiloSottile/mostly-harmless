@@ -24,6 +24,7 @@ func cmdMail(args []string) {
 
 		trybot     = flags.Bool("trybot", false, "run trybots on the uploaded CLs")
 		wip        = flags.Bool("wip", false, "set the status of a change to Work-in-Progress")
+		ready      = flags.Bool("ready", false, "set the status of a Work-in-Progress change to ready for review")
 		autoSubmit = flags.Bool("autosubmit", false, "set autosubmit on the uploaded CLs")
 		branch     = flags.String("branch", "", "branch to mail to (overrides auto-detection)")
 	)
@@ -34,7 +35,7 @@ func cmdMail(args []string) {
 	flags.Usage = func() {
 		fmt.Fprintf(stderr(), trim(`
 Usage: %s mail %s [-r reviewer,...] [-cc mail,...]
-	[-autosubmit] [-trybot] [-wip] [-hashtag tag,...]
+	[-autosubmit] [-trybot] [-wip] [-ready] [-hashtag tag,...]
 	[-branch name] [revisions]
 
 Mails all changes in "remote_bookmarks(remote=origin)..revisions".
@@ -47,6 +48,9 @@ If revisions is not specified, it's set to "@-".
 	if len(flags.Args()) > 1 {
 		flags.Usage()
 		exit(2)
+	}
+	if *wip && *ready {
+		dief("-wip and -ready are mutually exclusive")
 	}
 
 	revConfig := `--config=revset-aliases."jjcrmail()"=@-`
@@ -114,6 +118,10 @@ If revisions is not specified, it's set to "@-".
 		}
 		if *wip {
 			refSpec += start + "wip"
+			start = ","
+		}
+		if *ready {
+			refSpec += start + "ready"
 			start = ","
 		}
 		if *autoSubmit {
