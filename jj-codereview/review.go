@@ -51,6 +51,7 @@ Available commands:
 
 	mail [-r reviewer,...] [-cc mail,...] [options] [revisions]
 	fetch <query>
+	reply [-f file] <query>
 	cleanup
 
 `
@@ -78,6 +79,8 @@ func main() {
 		cmd = cmdCleanup
 	case "fetch":
 		cmd = cmdFetch
+	case "reply":
+		cmd = cmdReply
 	}
 
 	cmd(args)
