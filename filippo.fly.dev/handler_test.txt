@@ -48,15 +48,6 @@ code == 404
 GET https://filippo.io/notathing@v1.0.0
 code == 404
 
-GET https://c2sp.org/CCTV/age?go-get=1
-body contains c2sp.org/CCTV git https://github.com/C2SP/CCTV
-
-GET https://c2sp.org/foo?go-get=1
-body contains c2sp.org git https://github.com/C2SP/C2SP
-
-GET https://c2sp.org/foo/bar?go-get=1
-body contains c2sp.org git https://github.com/C2SP/C2SP
-
 GET https://geomys.org/ct-archive/cmd/photocamera-archiver/?go-get=1
 body contains geomys.org/ct-archive git https://github.com/geomys/ct-archive
 
@@ -94,21 +85,6 @@ redirect == https://words.filippo.io/123?abc
 
 GET https://www.filippo.io/123?abc
 redirect == https://filippo.io/123?abc
-
-GET https://c2sp.org/age
-redirect == https://github.com/C2SP/C2SP/blob/main/age.md
-
-GET https://c2sp.org/tlog-witness@v0.1.0
-redirect == https://github.com/C2SP/C2SP/blob/tlog-witness/v0.1.0/tlog-witness.md
-
-GET https://c2sp.org/static-ct-api@v1.0.0-rc.1
-redirect == https://github.com/C2SP/C2SP/blob/static-ct-api/v1.0.0-rc.1/static-ct-api.md
-
-GET https://c2sp.org/CCTV
-redirect == https://github.com/C2SP/CCTV/
-
-GET https://c2sp.org/CCTV/age
-redirect == https://github.com/C2SP/CCTV/tree/main/age
 
 GET https://mta-sts.filippo.io/.well-known/mta-sts.txt
 body contains version: STSv1

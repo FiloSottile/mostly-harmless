@@ -122,23 +122,6 @@ func handler() http.Handler {
 
 	mux.Handle("www.filippo.io/", HostRedirectHandler("filippo.io", http.StatusMovedPermanently))
 
-	mux.Handle("c2sp.org/{$}", http.RedirectHandler("https://github.com/C2SP/C2SP/", http.StatusFound))
-	mux.Handle("c2sp.org/CCTV", http.RedirectHandler("https://github.com/C2SP/CCTV/", http.StatusFound))
-	mux.HandleFunc("c2sp.org/{name}", func(w http.ResponseWriter, r *http.Request) {
-		if name, vers, ok := strings.Cut(r.PathValue("name"), "@"); ok {
-			http.Redirect(w, r, "https://github.com/C2SP/C2SP/blob/"+name+"/"+vers+"/"+name+".md", http.StatusFound)
-		} else {
-			http.Redirect(w, r, "https://github.com/C2SP/C2SP/blob/main/"+name+".md", http.StatusFound)
-		}
-	})
-	mux.HandleFunc("c2sp.org/CCTV/{name}", func(w http.ResponseWriter, r *http.Request) {
-		name := r.PathValue("name")
-		http.Redirect(w, r, "https://github.com/C2SP/CCTV/tree/main/"+name, http.StatusFound)
-	})
-	// Renamed test vectors and specs.
-	mux.Handle("c2sp.org/CCTV/ed25519vectors", http.RedirectHandler("https://c2sp.org/CCTV/ed25519", http.StatusFound))
-	mux.Handle("c2sp.org/sunlight", http.RedirectHandler("https://c2sp.org/static-ct-api", http.StatusFound))
-
 	mux.Handle("mta-sts.filippo.io/.well-known/mta-sts.txt", MTASTSHandler())
 	mux.Handle("mta-sts.bip.filippo.io/.well-known/mta-sts.txt", MTASTSHandler())
 	mux.Handle("mta-sts.ml.filippo.io/.well-known/mta-sts.txt", MTASTSHandler())
@@ -191,8 +174,6 @@ func handler() http.Handler {
 		module := "geomys.org/" + name
 		goGetMux.Handle(module+"/", GoImportHandler(module, "https://github.com/geomys/"+name))
 	}
-	goGetMux.Handle("c2sp.org/", GoImportHandler("c2sp.org", "https://github.com/C2SP/C2SP"))
-	goGetMux.Handle("c2sp.org/CCTV/", GoImportHandler("c2sp.org/CCTV", "https://github.com/C2SP/CCTV"))
 
 	userAgents := NewTable(100)
 	mux.Handle("filippo.io/heavy/{secret}/useragents", HeavyHitterHandler(userAgents))
