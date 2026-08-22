@@ -150,6 +150,7 @@ func handler() http.Handler {
 		"mkcert":          true,
 		"mlkem768":        true,
 		"mldsa":           true,
+		"mlockexe":        true,
 		"mostly-harmless": true,
 		"nistec":          true,
 		"sunlight":        true,
