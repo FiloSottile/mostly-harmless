@@ -88,6 +88,7 @@ func buttondown(mux *http.ServeMux) {
 	mux.Handle("words.filippo.io/hi/{$}", redirectToHome)
 
 	mux.Handle("words.filippo.io/unsubscribe/", redirectToButtondown307)
+	mux.Handle("words.filippo.io/confirm-subscription/", redirectToButtondown)
 	mux.Handle("words.filippo.io/subscribers/", redirectToButtondownWithPrefix)
 	mux.Handle("words.filippo.io/management/", redirectToButtondownWithPrefix)
 	mux.Handle("words.filippo.io/static/", redirectToButtondown)

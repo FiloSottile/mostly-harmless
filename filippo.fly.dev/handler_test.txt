@@ -119,6 +119,9 @@ GET https://words.filippo.io/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=a
 redirect == https://buttondown.com/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?email=aed37188-54a0-4d80-8bee-4bb8aa17653a
 code == 307
 
+GET https://words.filippo.io/confirm-subscription/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa?source=reminder
+redirect == https://buttondown.com/confirm-subscription/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa?source=reminder
+
 GET https://words.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
 redirect == /openpgp-is-broken/
 
