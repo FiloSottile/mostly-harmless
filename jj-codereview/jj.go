@@ -11,7 +11,7 @@ var jjConfigTOML = `
 "jjcrbranchhead(x)" = "jjcrbranchpoint(x):: & remote_bookmarks(remote=origin)"
 
 [template-aliases]
-bookmarks = "separate('\n', remote_bookmarks.map(|b| if(b.remote() == 'origin', b.name()))) ++ '\n'"
+bookmarks = "remote_bookmarks.filter(|b| b.remote() == 'origin').map(|b| b.name()).join('\n') ++ '\n'"
 
 [ui]
 color = "never"
