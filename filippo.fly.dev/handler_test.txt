@@ -185,6 +185,10 @@ GET https://words.filippo.io/
 body contains <a href="/fips-hkdf/">The FIPS Compliance of HKDF</a></h1>
 body contains <a href="/run-sunlight/">
 body !contains THIS IS A TEST DRAFT
+body !contains Subscription confirmed. Thank you!
+
+GET https://words.filippo.io/?state=confirmed_subscription
+body contains <div class="notice" role="status">Subscription confirmed. Thank you!</div>
 
 GET https://geomys.org/witness/navigli
 body contains c2sp.org/tlog-witness

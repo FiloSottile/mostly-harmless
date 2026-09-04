@@ -192,11 +192,17 @@ func SubscriptionSuccessHandler() http.Handler {
 func IndexHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		indexTmpl.Execute(w, func() []*buttondownEmail {
-			emailsMu.RLock()
-			defer emailsMu.RUnlock()
-			return emails
-		}())
+		indexTmpl.Execute(w, struct {
+			Emails                []*buttondownEmail
+			ConfirmedSubscription bool
+		}{
+			Emails: func() []*buttondownEmail {
+				emailsMu.RLock()
+				defer emailsMu.RUnlock()
+				return emails
+			}(),
+			ConfirmedSubscription: r.URL.Query().Get("state") == "confirmed_subscription",
+		})
 	})
 }
 
