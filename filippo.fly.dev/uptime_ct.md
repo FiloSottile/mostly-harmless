@@ -35,7 +35,8 @@ Only Static CT logs listed in
 are supported.
 
 The precertificate is a deterministic function of the log and of the current
-minute, so submissions can be deduplicated by the log. Results are cached by
+minute, so submissions can be deduplicated by the log. Its names are under the
+dedicated test domain `flowers-to-gophers.com`. Results are cached by
 this service, for a maximum of one new log entry per log per minute.
 
 Once a shard's temporal interval ends and the log is expected to go read-only,

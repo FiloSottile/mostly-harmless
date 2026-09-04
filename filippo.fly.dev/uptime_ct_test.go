@@ -79,7 +79,7 @@ func TestCTUptimePrecert(t *testing.T) {
 	if !a.NotAfter.Equal(minute.Add(24 * time.Hour)) {
 		t.Errorf("NotAfter = %v", a.NotAfter)
 	}
-	want := []string{"uptime.geomys.org", "45.20.10.08.2026.tuscolo2026h2-sunlight-geomys-org.uptime.geomys.org"}
+	want := []string{"flowers-to-gophers.com", "45.20.10.08.2026.tuscolo2026h2-sunlight-geomys-org.flowers-to-gophers.com"}
 	if !slices.Equal(a.DNSNames, want) {
 		t.Errorf("DNSNames = %q", a.DNSNames)
 	}

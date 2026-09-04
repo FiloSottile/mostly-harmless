@@ -93,7 +93,8 @@ hhoCIQDtaaQRDgNGY2fUURksTEYCvg0cTbntOIvHza+u0c3x5w==
 <a href="https://www.gstatic.com/ct/log_list/v3/all_logs_list.json">all_logs_list.json</a>
 are supported.</p>
 <p>The precertificate is a deterministic function of the log and of the current
-minute, so submissions can be deduplicated by the log. Results are cached by
+minute, so submissions can be deduplicated by the log. Its names are under the
+dedicated test domain <code>flowers-to-gophers.com</code>. Results are cached by
 this service, for a maximum of one new log entry per log per minute.</p>
 <p>Once a shard's temporal interval ends and the log is expected to go read-only,
 no submission is attempted and the endpoint returns a 200.</p>

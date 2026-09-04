@@ -190,7 +190,7 @@ func ctUptimePrecert(name string, minute time.Time, l *ctLogInfo, keys *ctUptime
 	// Only the TBSCertificate needs to be deterministic, as logs deduplicate
 	// on it (along with the issuer key hash), not on the signed certificate.
 	serial := sha256.Sum256(fmt.Appendf(nil, "ct-uptime/%s/%d", name, minute.Unix()))
-	label := fmt.Sprintf("%02d.%02d.%02d.%02d.%04d.%s.uptime.geomys.org",
+	label := fmt.Sprintf("%02d.%02d.%02d.%02d.%04d.%s.flowers-to-gophers.com",
 		minute.Minute(), minute.Hour(), minute.Day(), minute.Month(), minute.Year(),
 		ctDNSLabel(name))
 	notAfter := minute.Add(24 * time.Hour)
@@ -204,13 +204,13 @@ func ctUptimePrecert(name string, minute time.Time, l *ctLogInfo, keys *ctUptime
 		SerialNumber: new(big.Int).SetBytes(serial[:16]),
 		Subject: pkix.Name{
 			Organization: []string{"Geomys"},
-			CommonName:   "uptime.geomys.org",
+			CommonName:   "flowers-to-gophers.com",
 		},
 		// A NotBefore older than 48 hours would make the submission low
 		// priority, as it couldn't be a certificate issuance latency bottleneck.
 		NotBefore:   minute.Add(-1 * time.Hour),
 		NotAfter:    notAfter,
-		DNSNames:    []string{"uptime.geomys.org", label},
+		DNSNames:    []string{"flowers-to-gophers.com", label},
 		KeyUsage:    x509.KeyUsageDigitalSignature,
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		ExtraExtensions: []pkix.Extension{
