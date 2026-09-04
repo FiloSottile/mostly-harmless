@@ -120,7 +120,7 @@ redirect == https://buttondown.com/unsubscribe/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaa?e
 code == 307
 
 GET https://words.filippo.io/confirm-subscription/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa?source=reminder
-redirect == https://buttondown.com/confirm-subscription/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa?source=reminder
+redirect == https://buttondown.com/cryptography-dispatches/confirm-subscription/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa?source=reminder
 
 GET https://words.filippo.io/archive/cryptography-dispatches-hello-world-and-openpgp/
 redirect == /openpgp-is-broken/
