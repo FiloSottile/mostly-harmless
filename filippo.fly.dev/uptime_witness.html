@@ -88,6 +88,21 @@ BCml5C32yqMcl0gjTrcSOeNVx59oPnSdytBzDGBO5k0=
 <pre><code>https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
 </code></pre>
 <p>The vkey name must be the submission prefix of the witness.</p>
+<p>Since ML-DSA vkeys are too long for some uptime monitoring services, the
+witness can also be referenced by just its name and key hash, e.g.</p>
+<pre><code>https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+6bc44249
+</code></pre>
+<p>If the key is one of the known vkeys listed below, the signature is
+verified and the response is</p>
+<pre><code>witness signature valid, timestamp 1757980800
+</code></pre>
+<p>Otherwise, the response is only checked for a fresh cosignature by that key
+name and hash, without verifying it, and the response is</p>
+<pre><code>witness signature present but NOT verified (unknown key), timestamp 1757980800
+</code></pre>
+<p>The known vkeys are</p>
+<!-- known-vkeys -->
+<p>To add a key to the list, <a href="https://github.com/FiloSottile/mostly-harmless/blob/main/filippo.fly.dev/uptime.go">open a pull request</a>.</p>
 <p>We recommend setting up alerting such that the endpoint is checked from multiple
 locations, and you are only alerted if all locations hit 503s for more than 15 minutes.</p>
 <p>There is also a CT uptime monitoring service at

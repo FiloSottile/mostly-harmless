@@ -31,6 +31,27 @@ To run a check, request /witness/add-checkpoint/ followed by the witness vkey, e
 
 The vkey name must be the submission prefix of the witness.
 
+Since ML-DSA vkeys are too long for some uptime monitoring services, the
+witness can also be referenced by just its name and key hash, e.g.
+
+    https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+6bc44249
+
+If the key is one of the known vkeys listed below, the signature is
+verified and the response is
+
+    witness signature valid, timestamp 1757980800
+
+Otherwise, the response is only checked for a fresh cosignature by that key
+name and hash, without verifying it, and the response is
+
+    witness signature present but NOT verified (unknown key), timestamp 1757980800
+
+The known vkeys are
+
+<!-- known-vkeys -->
+
+To add a key to the list, [open a pull request](https://github.com/FiloSottile/mostly-harmless/blob/main/filippo.fly.dev/uptime.go).
+
 We recommend setting up alerting such that the endpoint is checked from multiple
 locations, and you are only alerted if all locations hit 503s for more than 15 minutes.
 

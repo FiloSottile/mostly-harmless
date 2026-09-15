@@ -233,5 +233,22 @@ body contains geomys.org/witness/test-log+c0787ff4
 GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G
 body contains witness signature valid, timestamp
 
+GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+a3e00fe2
+body contains witness signature present but NOT verified (unknown key), timestamp
+
+GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+6bc44249
+body contains witness signature valid, timestamp
+
+GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org+00000000
+code == 502
+body contains no signature by witness.navigli.sunlight.geomys.org+00000000
+
+GET https://uptime.geomys.org/witness/add-checkpoint/witness.navigli.sunlight.geomys.org
+code == 400
+body contains invalid witness reference
+
+GET https://uptime.geomys.org/witness/
+body contains witness.navigli.sunlight.geomys.org+6bc44249+
+
 GET https://tlog.directory/
 body contains tlog.directory
