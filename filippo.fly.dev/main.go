@@ -78,6 +78,9 @@ func handler() http.Handler {
 	mux.Handle("geomys.org/fips140-wasm", http.RedirectHandler( // from the v1.0.1 Security Policy
 		"https://github.com/geomys/go/blob/fips140-wasm/.github/README.md", http.StatusFound))
 
+	mux.Handle("geomys.it/images/", StaticHandler())
+	mux.Handle("geomys.it/{$}", HTMLHandler("geomys_it.html"))
+
 	mux.Handle("sites.at.geomys.org/{$}", HTMLHandler("atsites.html"))
 	mux.Handle("sites.at.geomys.org/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "AT Sites was an early experiment providing Atom feeds for standard.site publications. It has shut down.", http.StatusGone)
@@ -112,7 +115,6 @@ func handler() http.Handler {
 	mux.Handle("ticketbleed.com/{$}", http.RedirectHandler("https://filippo.io/ticketbleed/", http.StatusFound))
 
 	mux.Handle("geomys.dev/{$}", http.RedirectHandler("https://geomys.org", http.StatusFound))
-	mux.Handle("geomys.it/{$}", http.RedirectHandler("https://geomys.org", http.StatusFound))
 
 	// Can't explain, you had to be there.
 	mux.Handle("fuckit.dev/{$}", http.RedirectHandler(

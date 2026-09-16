@@ -80,6 +80,11 @@ GET https://geomys.org/images/geomys_orizz_B_positivo.png
 GET https://geomys.org/images/does_not_exist
 code == 404
 
+GET https://geomys.it/
+body contains Geomys Trust and Transparency
+
+GET https://geomys.it/images/geomys_base_positivo.png
+
 GET https://blog.filippo.io/123?abc
 redirect == https://words.filippo.io/123?abc
 
