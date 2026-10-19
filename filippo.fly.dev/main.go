@@ -65,7 +65,7 @@ func handler() http.Handler {
 	mux.Handle("tlog.directory/{$}", HTMLHandler("tlog_directory.html"))
 
 	emsign := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "connected")
+		io.WriteString(w, "connected\n")
 	})
 	mux.Handle("aaa.emsign.filippo.io/{$}", emsign)
 	mux.Handle("g3.emsign.filippo.io/{$}", emsign)
