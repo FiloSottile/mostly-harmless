@@ -69,6 +69,8 @@ func handler() http.Handler {
 	})
 	mux.Handle("aaa.emsign.filippo.io/{$}", emsign)
 	mux.Handle("g3.emsign.filippo.io/{$}", emsign)
+	mux.Handle("GET aaa.emsign.filippo.io/info/refs", EmptyGitRepoHandler())
+	mux.Handle("GET g3.emsign.filippo.io/info/refs", EmptyGitRepoHandler())
 
 	mux.Handle("geomys.org/images/", StaticHandler())
 	mux.Handle("geomys.org/{$}", HTMLHandler("geomys.html"))
@@ -358,6 +360,29 @@ func HostReverseProxyHandler(target string) http.Handler {
 			pr.SetURL(&url.URL{Scheme: "https", Host: target})
 		},
 	}
+}
+
+// emptyGitRepoRefs is the smart HTTP protocol v0 advertisement of a repository
+// with no refs. Clients requesting protocol v2 fall back to v0, and with no refs
+// to fetch they don't make further requests.
+var emptyGitRepoRefs = pktLine("# service=git-upload-pack\n") + "0000" +
+	pktLine("0000000000000000000000000000000000000000 capabilities^{}\x00"+
+		"object-format=sha1 agent=filippo.fly.dev\n") + "0000"
+
+func pktLine(s string) string {
+	return fmt.Sprintf("%04x", len(s)+4) + s
+}
+
+func EmptyGitRepoHandler() http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("service") != "git-upload-pack" {
+			http.Error(rw, "only git-upload-pack is supported", http.StatusForbidden)
+			return
+		}
+		rw.Header().Set("Content-Type", "application/x-git-upload-pack-advertisement")
+		rw.Header().Set("Cache-Control", "no-cache")
+		io.WriteString(rw, emptyGitRepoRefs)
+	})
 }
 
 type trackingResponseWriter struct {

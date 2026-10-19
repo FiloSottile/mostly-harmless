@@ -257,3 +257,13 @@ body contains witness.navigli.sunlight.geomys.org+6bc44249+
 
 GET https://tlog.directory/
 body contains tlog.directory
+
+GET https://g3.emsign.filippo.io/
+body contains connected
+
+GET https://g3.emsign.filippo.io/info/refs?service=git-upload-pack
+header content-type == application/x-git-upload-pack-advertisement
+body contains capabilities^{}
+
+GET https://g3.emsign.filippo.io/info/refs?service=git-receive-pack
+code == 403
