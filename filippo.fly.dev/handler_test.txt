@@ -263,7 +263,13 @@ body contains connected
 
 GET https://g3.emsign.filippo.io/info/refs?service=git-upload-pack
 header content-type == application/x-git-upload-pack-advertisement
-body contains capabilities^{}
+body contains refs/heads/main
+
+POST https://g3.emsign.filippo.io/git-upload-pack
+posttype application/x-git-upload-pack-request
+postbody 0000
+header content-type == application/x-git-upload-pack-result
+body contains Your git client accepted a forged certificate
 
 GET https://g3.emsign.filippo.io/info/refs?service=git-receive-pack
 code == 403
