@@ -9,10 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v93/github"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"golang.org/x/oauth2"
 )
 
 var gitHubClient *github.Client
@@ -22,15 +21,19 @@ func getLatestVersion(ctx context.Context, project string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return *rel.TagName, nil
+	return rel.TagName, nil
 }
 
 func dl(mux *http.ServeMux) {
-	tc := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
-	))
-	tc.Timeout = 10 * time.Second
-	gitHubClient = github.NewClient(tc)
+	opts := []github.ClientOptionsFunc{github.WithTimeout(10 * time.Second)}
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		opts = append(opts, github.WithAuthToken(token))
+	}
+	var err error
+	gitHubClient, err = github.NewClient(opts...)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Print an error at startup if we can't fetch the latest versions.
 	if _, err := getLatestVersion(context.Background(), "age"); err != nil {

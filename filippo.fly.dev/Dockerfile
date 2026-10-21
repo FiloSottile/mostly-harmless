@@ -1,4 +1,4 @@
-FROM golang:1.24.3-alpine3.21 AS builder
+FROM golang:1.27.3-alpine3.23 AS builder
 
 COPY . src
 WORKDIR src
@@ -6,7 +6,7 @@ ENV CGO_ENABLED=0
 ENV GOTOOLCHAIN=auto
 RUN go install -trimpath
 
-FROM ghcr.io/astral-sh/uv:0.7.17-python3.13-alpine
+FROM ghcr.io/astral-sh/uv:0.13.5-python3.13-alpine3.23
 
 ENV PATH=/root/.local/bin:$PATH
 RUN uv tool install markdown==3.8.2 --with mdx_truly_sane_lists==1.3.0 \
